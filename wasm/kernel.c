@@ -137,13 +137,11 @@ typedef struct {
   // The 100-byte name limit fits in seven bits beside a full 32-bit pointer.
   uint64_t location;
   uint64_t hash;
-  uint64_t head;
 } NameRow;
 
 INLINE NameRow scan_name(const uint8_t *p) {
   const uint8_t *start = p;
   uint64_t hash = 0;
-  uint64_t first = load64(start);
   const v128_t separator = wasm_i8x16_splat(';');
   for (;;) {
     uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(p), separator));
@@ -165,14 +163,14 @@ INLINE NameRow scan_name(const uint8_t *p) {
     p += 16;
   }
   uint32_t length = (uint32_t)(p - start);
-  uint64_t head = first & byte_masks[length < 8 ? length : 8];
-  return (NameRow){((uint64_t)(uintptr_t)start << 7) | length, hash, head};
+  return (NameRow){((uint64_t)(uintptr_t)start << 7) | length, hash};
 }
 
 INLINE ParsedRow lookup_row(NameRow row) {
   const uint8_t *start = (const uint8_t *)(uintptr_t)(row.location >> 7);
   uint32_t length = (uint32_t)row.location & 127;
-  return (ParsedRow){start + length + 1, find_station(start, length, row.hash, row.head)};
+  uint64_t head = load64(start) & byte_masks[length < 8 ? length : 8];
+  return (ParsedRow){start + length + 1, find_station(start, length, row.hash, head)};
 }
 
 INLINE ParsedRow scan_row(const uint8_t *p) { return lookup_row(scan_name(p)); }
