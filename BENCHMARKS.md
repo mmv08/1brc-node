@@ -1,6 +1,83 @@
 # Benchmark and experiment log
 
-## Method
+## Current result: branchless solver, 2026-10-19
+
+The current tree ships only the selected Wasm solver. `./run.sh` uses it by
+default; the JavaScript solver and rejected alternatives remain in git history.
+Core Ultra 7 258V, Node 26.12.0, all eight cores, `performance` profile/governor/EPP,
+same billion independent rows and 13,795,455,110-byte file.
+
+Final verification used **16 full-file warm-ups and seven alternating rounds**.
+Every process validates complete stdout. Scores discard the fastest and slowest
+run, averaging the remaining five. Both programs ran in the same benchmark batch.
+
+| Solver | Trimmed mean | Best |
+| --- | ---: | ---: |
+| Original Wasm, `5fb6e47`, four lanes / 128 KiB | 1.997 s | 1.973 s |
+| **Final solver, three lanes / 512 KiB** | **1.447 s** | **1.442 s** |
+
+**27.5% less elapsed time; 1.38× throughput**
+(9.53 logical GB/s). Every one of the 30 full-file processes was correct,
+and all 14 measured processes reported zero filesystem input. Final Wasm peak
+RSS was 156,996 KiB. This is a cached-input result with startup,
+compilation, I/O, aggregation, merge, output and shutdown included.
+
+The largest gains came from comparing masked head/tail words unconditionally
+and masking both final hash words before selecting the result. This removes
+name-length branches while preserving the hash and complete name verification.
+SIMD updates exact 64-bit sums, counts and 16-bit extrema together. Three parsing
+lanes won the later comparisons, with a smaller **6,244-byte** module. Automatic
+worker count stays enabled; the selected default chunk size is **512 KiB**.
+
+### Attempt checkpoints
+
+All attempts were committed before comparison. Slower attempts were reverted
+or replaced by the winning checkpoint; no runtime strategy registry remains.
+Numbers below are matched within each row, and must not be combined across rows.
+Except the lane screening, these used five rounds with fastest/slowest discarded.
+
+| Checkpoint | Attempt and matched result | Decision |
+| --- | --- | --- |
+| `a13abb2` | SIMD statistics: 1.995 → 1.976 s | Retained; rechecked later |
+| `52a9807` | Full-name verification without redundant hash equality: 1.958 → 1.902 s | Retained |
+| `d623826` | Direct cache-line records: 1.907 → 1.967 s | Rejected |
+| `463ef0a` | Branchless name matching: 1.906 → 1.563 s | Retained |
+| `2e73454` | Branchless final hash words: 1.571 → 1.462 s | Retained |
+| `c7fc418` | Packed arithmetic temperatures: 1.450 → 1.506 s | Rejected |
+| `9ced9b2` | Two lanes: 1.543 s, three-run screening mean | Rejected |
+| `87ecf7f`, `03e39f8` | Three / four / six lanes: 1.457 / 1.470 / 1.475 s | Three selected |
+| `d339097` | Six lanes, SIMD / scalar statistics: 1.475 / 1.505 s | SIMD retained |
+| `2420c4c` | Remove slower backend; select three lanes and 512 KiB default | Retained |
+| `b252f1f` | Single-load temperature parser: 1.449 → 1.482 s | Rejected |
+
+Eager optimizing compilation (`--no-liftoff`) showed no useful gain: 1.472 s
+versus 1.475 s with ordinary tiering. No extra V8 flags are required.
+
+Scheduling checks, five rounds each:
+
+| Setting, three lanes | Trimmed mean |
+| --- | ---: |
+| 64 / 128 / 256 / 512 KiB, first batch | 1.486 / 1.466 / 1.452 / 1.447 s |
+| Six / seven / eight workers, 128 KiB | 1.665 / 1.563 / 1.466 s |
+| 512 KiB / 1 MiB / 2 MiB / 4 MiB, follow-up | 1.449 / 1.461 / 1.494 / 1.554 s |
+
+Final validation: all **20 tests pass on Node 24 and Node 26**, including every
+legal temperature, official fixtures, 10,000 keys, whole-key collision injection,
+chunk boundaries and exact sums. Biome and C formatting checks pass. Exact-count
+verification confirms **1,000,000,000 rows and 413 stations** against full expected
+output. The default shell launcher's stdout also matches the expected file exactly.
+
+Raw final comparison: `results/1792422301889-compare-final-original-vs-winner.json`.
+Baseline source hash matches the saved pre-optimization
+report exactly. Detailed per-attempt timing, CPU usage, RSS and source hashes
+are in the corresponding local `results/*-compare-*.json` files; the final summary
+is `results/2026-10-19-optimization-summary.json`.
+
+For reproduction, create worktrees from the attempt commits and pass their
+absolute `calculate.mjs` paths to `CASES`, with `ENGINE=wasm` for historical trees.
+The benchmark driver hashes dependencies from each script's own worktree.
+
+## Historical method and measurements
 
 - Core Ultra 7 258V, 4 P + 4 E cores, 30 GiB RAM, Linux, Node 26.12.0.
 - Unless noted otherwise, OS `powersave` / `balance_power` preference unchanged;
@@ -45,7 +122,7 @@ Wasm was about 1.5× faster than JS. Scalar and SIMD Wasm were nearly tied on
 the weather dataset's short names: most of the gain cannot be credited to SIMD
 alone. Scalar/control implementations are now historical, not runtime options.
 
-## Latest retained change
+## Earlier compact-record change
 
 The winning combination is **40-byte records plus outlined cold insertion**,
 compiled at `-O3`. Same billion-row input, 16 warm-up processes, five alternating
@@ -87,7 +164,7 @@ use the matched comparison above instead.
 Exact-count verification returned **1,000,000,000 measurements and 413 stations**,
 matching the complete expected output, in 1.949 s (1.98 s including Node startup,
 **156,552 KiB peak RSS**, about 153 MiB). All **20 production tests** pass on
-Node 24/26, and Biome and C-format checks pass. The current Wasm binary is only
+Node 24/26, and Biome and C-format checks pass. The Wasm binary at that checkpoint was only
 **7,868 bytes**, with no imports.
 
 ## Performance-mode rerun, 2026-10-19
@@ -154,7 +231,8 @@ roughly 12.5 s for sync, 12.0 s for sequential macro-ranges, and 15.2 s for asyn
 ## Source history, not permanent variants
 
 Checkpoint **`ff83918`** preserves all experimental source, binaries and drivers.
-The current tree intentionally keeps just the JS reference and one Wasm kernel.
+The current tree keeps one Wasm solver; the JS reference and other implementations
+are available only in git history.
 For reproduction without disturbing the current checkout:
 
 ```sh

@@ -1,45 +1,51 @@
 # The Wasm SIMD kernel
 
-One production implementation: `kernel.c` → `kernel.wasm`. Failed alternatives
-were removed and are recorded in [BENCHMARKS.md](../BENCHMARKS.md). Experimental
-source and binaries are preserved in git checkpoint **`ff83918`**.
+One production implementation: `kernel.c` → `kernel.wasm`. Rejected alternatives
+live in git history. [BENCHMARKS.md](../BENCHMARKS.md) records matched comparisons,
+checkpoint commits and local raw reports.
 
 ```sh
-ENGINE=wasm ./run.sh measurements.txt
+./run.sh measurements.txt
 ```
 
-Node retains file reads, workers, dynamic range scheduling, row ownership,
+Node handles file reads, workers, dynamic range scheduling, row ownership,
 UTF-8 result decoding, merging, sorting and formatting. Each worker owns a
-private Wasm instance and table. Its Buffer aliases the input region of Wasm
-memory: the filesystem writes there directly, without a second input copy.
-Memory grows before any views are constructed and never during parsing.
+private Wasm instance and table. Its input Buffer aliases Wasm memory, so the
+filesystem writes there directly. Memory grows before any views are created
+and never during parsing.
 
-The freestanding C kernel imports nothing: no libc, WASI or host callbacks.
-SIMD uses `i8x16.eq`/`i8x16.bitmask` for 16-byte delimiter scanning and complete
-middle-word comparisons. Four independent newline-aligned lanes overlap work.
-New-key initialization/copying is a cold, non-inlined function.
+The freestanding kernel imports nothing: no libc, WASI or host callbacks.
+SIMD scans 16 bytes for delimiters and verifies the middle of long names.
+Three independent newline-aligned lanes overlap work. New-key insertion is a
+cold, non-inlined function. The selected binary is **6,244 bytes**.
 
-The compact/cold combination improved matched full-file time by about **4%**.
-The final binary is **7,868 bytes**. Only this implementation is built/shipped;
-the experimental alternatives live in git history, not a runtime registry.
+Short-name matching loads and masks the head and tail unconditionally, avoiding
+branches whose outcomes vary with station-name length. Hashing similarly masks
+both parts of the last 16-byte block before selecting the rolling hash result.
+The hash algorithm is unchanged. A matching bucket always receives complete
+name verification; hash equality is not an additional hot-path requirement.
 
-Station records are exactly **40 bytes**:
+Station records remain exactly **40 bytes**:
 
 | Offset | Field |
 | ---: | --- |
 | 0 | signed Int64 sum, in tenths |
 | 8 | Uint32 count |
 | 12, 14 | Int16 min/max |
-| 16 | Uint32 hash |
+| 16 | Uint32 fingerprint, retained for inspection |
 | 20 | key offset (low 20 bits) and byte length (upper bits) |
 | 24, 32 | Uint64 head/tail filters |
 
-The bounded key arena fits in 20 bits even for 10,000 maximum-length names.
-Hashes and head/tail are only filters: every name byte is verified. The final
-vector overlaps the tail without reading beyond a key. No station dictionary
-or input-specific results are embedded. BigInt conversion happens once per
-result station, never per measurement. All challenge sums fit exactly in a JS
-Number after conversion.
+One 128-bit load/store updates the statistics. An `i64x2.add` updates the sum
+and count; signed `i16x8.min/max` and masks merge the extrema. Counts cannot
+reach 2^32 within the billion-row challenge, so incrementing the count cannot
+carry into its adjacent min/max fields. Sums are exact signed 64-bit integers.
+
+The bounded name arena fits in 20 bits even for 10,000 maximum-length names.
+Every name byte is checked, including the middle of names sharing identical
+heads and tails. No input dictionary or precomputed results are embedded.
+BigInt conversion happens once per result station, never per measurement.
+All challenge sums fit exactly in a JS Number after conversion.
 
 Build and inspect:
 
