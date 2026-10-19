@@ -1,6 +1,78 @@
 # Benchmark and experiment log
 
-## Current result: three-stage pipeline, 2026-10-19
+## Current result: bounded parser and paired hashing, 2026-10-19
+
+The third round uses the challenge's 100-byte name bound to reduce carried
+parser state and bound full-name verification. It also uses a cheaper hash
+and a direct first-bucket lookup. Same Core Ultra 7 258V, Node 26.12.0,
+performance mode, eight workers, 512 KiB chunks and billion-row file.
+The final source checkpoint is `3d83125`; only the fastest implementation is
+shipped. Every checkpoint in this round is unsigned.
+
+After **16 full-file warm-up processes**, seven alternating rounds gave:
+
+| Solver | Trimmed mean | Best |
+| --- | ---: | ---: |
+| Previous winner, `7947d0d` | 1.347 s | 1.336 s |
+| **Selected bounded parser** | **1.257 s** | **1.246 s** |
+
+**6.7% less elapsed time**, or **1.072× throughput**, in the same batch.
+Each score drops the fastest and slowest run and averages the remaining five.
+All 30 full-file processes produced complete expected stdout. All 14 measured
+runs reported zero filesystem input: this is a cached **10.98 logical GB/s**
+result including startup, compilation, reads, parsing, aggregation, merging,
+sorting, output and shutdown. Peak RSS: 156,932 KiB.
+
+The name length fits in seven bits beside its full 32-bit pointer. Carrying
+that descriptor and the hash, then loading the head word during lookup,
+reduces the state live between phases. Names over 16 bytes use bounded SIMD
+middle comparisons and a final overlapping vector, covering every byte
+without reading beyond the name. The new hash mixes each masked word pair
+with one multiplication. Lookup checks the first bucket directly, with the
+remaining collision probe loop outlined in C. Normal V8 settings stay enabled.
+Exact signed 64-bit sums, the 40-byte record ABI and input handling are preserved.
+No dictionary or data-set-specific station names are embedded.
+
+### Third-round attempt checkpoints
+
+Matched five-round trimmed means within each row; separate batches must not
+be combined. Attempts remain in git history, with only the winner in the tree.
+
+| Commit | Attempt and matched result | Decision |
+| --- | --- | --- |
+| `f4fd49a` | Outline long-name middle check: 1.337 → 1.334 s | No clear isolated gain; refined below |
+| `791a8b5` | Bound middle vectors to 100 bytes: 1.362 → 1.340 s | Retained in combination |
+| `3264521` | Pack name pointer/length alone: 1.412 s versus 1.362 s baseline | Rejected alone |
+| `4d73de5` | Packed descriptor plus deferred head load: 1.321 s versus 1.362 s baseline | Retained |
+| `414fb5a` | Add bounded name verification: 1.316 s versus 1.333 s compact state alone | Retained |
+| `e67f649` | Outline collision probing: 1.301 s versus 1.316 s previous combination | Retained |
+| `f7a635c` | One multiplication per word pair: 1.292 s versus 1.316 s previous combination | Retained |
+| `09b8062` | Paired hashing plus outlined probing: 1.258 s versus 1.276 s paired hashing alone | Selected |
+| `0bae486` | Exploit 10K bound for 16-bit bucket references: 1.328 s versus 1.258 s 32-bit pointers | Rejected |
+| `3d83125` | Restore only the selected combination | Final source checkpoint |
+
+Disabling Wasm inlining failed to improve the baseline: 1.375 s versus 1.362 s
+with normal settings in the same batch. Outlined checks with inlining disabled
+measured 1.395 s. These flags are not shipped.
+The smaller table saved space, but decoding its scaled offsets cost more time
+on this input. The 10K-station limit was already used for fixed-size allocation.
+
+All **21 tests pass on Node 24 and Node 26**. The added differential test checks
+10,000 short UTF-8/NUL names, exact aggregates, three lanes, multiple chunk
+sizes and worker counts. Existing tests cover all legal temperatures, 100-byte
+names, long-name collision fault injection and the billion-row sum bound.
+Biome and C-format checks pass. Full-file verification confirms exactly
+**1,000,000,000 measurements and 413 stations**, with complete expected output.
+The default launcher matches it byte-for-byte. The import-free SIMD kernel is
+**5,798 bytes**, down from 6,267 bytes.
+
+Raw final report: `results/1792425110465-compare-r3-final-verification.json`.
+Its baseline source hash matches the second round's final winner exactly.
+Per-attempt reports use `results/*-compare-r3-*.json`; the summary is
+`results/2026-10-19-round3-summary.json`. Temporary experiment worktrees are
+removed after verification; checkpoints can recreate them.
+
+## Previous round: three-stage pipeline, 2026-10-19
 
 A second optimization round retained direct bucket indexing, staged processing,
 and fixed-lane SIMD shuffles. Same Core Ultra 7 258V, Node 26.12.0, performance

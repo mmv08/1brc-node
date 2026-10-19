@@ -19,16 +19,26 @@ SIMD scans 16 bytes for delimiters and verifies the middle of long names.
 Three independent newline-aligned lanes run name scanning, station lookup and
 statistics updates in separate phases. Each lookup installs a complete new key
 before the next lookup; updates remain ordered even when lanes share a station.
-New-key insertion is a
-cold, non-inlined function. The selected binary is **6,267 bytes**.
+C outlines new-key insertion and collision probing into cold functions.
+V8 uses its normal compilation and inlining settings. The selected binary is
+**5,798 bytes**.
 
-Short-name matching loads and masks the head and tail unconditionally, avoiding
-branches whose outcomes vary with station-name length. Hashing similarly masks
-both parts of the last 16-byte block before selecting the rolling hash result.
-The rolling hash is unchanged. Its high 15 bits select a bucket directly;
-the folded fingerprint is computed only on insertion for inspection. A matching
-bucket always receives complete
-name verification; hash equality is not an additional hot-path requirement.
+The 100-byte name limit fits the length into seven bits beside the full 32-bit
+input pointer. Scanning carries just that packed value and the hash into lookup;
+lookup then loads the head word. Short-name matching loads and masks the head
+and tail unconditionally, avoiding branches that vary with name length.
+
+Hashing mixes each 16-byte block with one 64-bit multiplication, masking both
+words in the final partial block. The high 15 bits select a bucket directly;
+the folded fingerprint is computed only on insertion for inspection. Lookup
+checks the first bucket directly and probes further on a name mismatch. A
+matching bucket always receives complete name verification; hash equality is
+not an additional hot-path requirement.
+
+For names longer than 16 bytes, the 100-byte limit permits at most five fixed
+middle-vector comparisons plus an overlapping final vector. These reads stay
+inside the actual name and check every byte. Head/tail filters fully cover
+shorter names. Arbitrary valid station names and distributions are supported.
 
 Station records remain exactly **40 bytes**:
 
