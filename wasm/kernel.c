@@ -204,7 +204,7 @@ EXPORT(buckets_base) uint32_t buckets_base(void) { return (uint32_t)(uintptr_t)b
 EXPORT(station_count) uint32_t station_count(void) { return used; }
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
-  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 2;
+  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 4;
   if (p == begin) return p;
   while (p < end && p[-1] != '\n') p++;
   return p;
@@ -215,13 +215,23 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *a = (const uint8_t *)(uintptr_t)begin;
   const uint8_t *limit = (const uint8_t *)(uintptr_t)end;
   const uint8_t *end_a = boundary(a, limit, 1);
+  const uint8_t *end_b = boundary(a, limit, 2);
+  const uint8_t *end_c = boundary(a, limit, 3);
   const uint8_t *b = end_a;
-  while (a < end_a && b < limit) {
+  const uint8_t *c = end_b;
+  const uint8_t *d = end_c;
+  while (a < end_a && b < end_b && c < end_c && d < limit) {
     ParsedRow row_a = scan_row(a);
     ParsedRow row_b = scan_row(b);
+    ParsedRow row_c = scan_row(c);
+    ParsedRow row_d = scan_row(d);
     a = update_row(row_a);
     b = update_row(row_b);
+    c = update_row(row_c);
+    d = update_row(row_d);
   }
   while (a < end_a) a = process_row(a);
-  while (b < limit) b = process_row(b);
+  while (b < end_b) b = process_row(b);
+  while (c < end_c) c = process_row(c);
+  while (d < limit) d = process_row(d);
 }
