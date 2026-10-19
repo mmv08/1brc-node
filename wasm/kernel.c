@@ -261,12 +261,10 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
     NameRow name_a = scan_name(a);
     NameRow name_b = scan_name(b);
     NameRow name_c = scan_name(c);
-    ParsedRow row_a = lookup_row(name_a);
-    ParsedRow row_b = lookup_row(name_b);
-    ParsedRow row_c = lookup_row(name_c);
-    a = update_row(row_a);
-    b = update_row(row_b);
-    c = update_row(row_c);
+    // Consume each lookup immediately so its pointers need not stay live.
+    a = update_row(lookup_row(name_a));
+    b = update_row(lookup_row(name_b));
+    c = update_row(lookup_row(name_c));
   }
   while (a < end_a) a = process_row(a);
   while (b < end_b) b = process_row(b);
