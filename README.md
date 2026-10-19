@@ -3,11 +3,11 @@
 One optimized implementation: Node handles workers, file reads and final output;
 a freestanding Wasm SIMD kernel parses and aggregates the measurements.
 On this Core Ultra 7 258V in performance mode, the cached billion-row benchmark
-averages **1.002 seconds**. The selected optimization reduced elapsed time
-by **2.4%** against the previous winner in a matched test.
-Only the selected solver is shipped. Optimization attempts are checkpointed in
-git, with measured results in [BENCHMARKS.md](BENCHMARKS.md). A subsequent
-learned-cache audit retained this implementation after all nine variants regressed.
+averages **0.866 seconds**. The eleventh optimization round reduced elapsed time
+by **13.8%** against the previous winner in a matched test.
+Only the selected solver is shipped. Earlier attempts are checkpointed in git;
+every round's measured results, including rejected attempts, are in
+[BENCHMARKS.md](BENCHMARKS.md).
 
 ## Run
 
@@ -28,26 +28,32 @@ while processing. This is an optimized valid-input parser, not a CSV validator.
 ## Design
 
 - Workers claim 512 KiB ranges using a shared atomic counter, naturally balancing work
-  across the machine's different CPU cores.
+  across the machine's different CPU cores. They load only the kernel engine, and
+  each result is merged as soon as it arrives.
 - A preceding byte and trailing overlap ensure exact row ownership when a
   range splits a name or temperature. The full file isn't loaded into the heap.
 - Input buffers alias Wasm memory directly. One host call processes a chunk;
   there are no per-row JS/Wasm calls or input copies.
-- Three lanes scan delimiters together. Short names stay in SIMD registers for
-  hashing and matching, then each row updates its statistics immediately. Longer
-  names use a fully staged general parser supporting names up to 100 bytes.
+- Three lanes scan delimiters together, in a counted loop without per-lane bounds
+  checks. Rows with names below 16 bytes find their newline with two vector
+  compares, so the next row never waits for its temperature to decode.
 - Short keys include the delimiter, encoding the complete name and its length in
   one vector. An empty record cannot match them, so empty buckets can reference
   a shared zero record without a separate empty check on the hot path.
-- Short-name hash mixing XORs both words with their constants in SIMD before
-  extracting them for the multiplication.
-- Decimal-point detection determines row width independently of sign normalization,
-  shortening the path to the next input row while retaining the numeric lookup.
+- When any lane's name needs another vector, the three rows take one branch-free
+  path for every name below 32 bytes, comparing canonical two-vector keys. Longer
+  names use the general parser supporting names up to 100 bytes.
+- Temperatures decode with one table lookup anchored at the decimal point: the
+  two bytes before it, the tenths digit and the sign select a statistics delta.
+- One SIMD add updates the exact signed 64-bit sum and count; signed 16-bit
+  min/max use the same delta vector. Objects are allocated per station, never
+  per measurement.
 - A pointer table references compact 40-byte records. Hashing includes the
-  delimiter and mixes each word pair with one multiplication. Complete name
-  verification remains mandatory; insertion and collision probing are outlined.
-- SIMD updates exact signed 64-bit sums, counts and min/max values; fixed lane
-  shuffles merge the fields. Objects are allocated per station, never per measurement.
+  delimiter and mixes each word pair with one multiplication. While the table is
+  sparse, a station colliding on its first bucket retunes the mixing words so
+  every station hits directly. Complete name verification remains mandatory.
+- The build derives Wasm branch hints from calls to cold functions, so V8 keeps
+  cold blocks and their register spills out of the hot loop.
 - Final sorting uses UTF-16 order and Java-compatible rounding.
 
 Details: [wasm/README.md](wasm/README.md).
@@ -67,7 +73,8 @@ npm run check:c
 Tests cover official fixtures, every legal temperature, Unicode/NUL/100-byte
 names, every name length, repeated-key transitions, 10,000 keys, exact sums/counts,
 chunk boundaries, missing newlines, sum bounds, zero-copy memory growth/reset,
-SIMD opcodes, whole-key collisions and names differing only by trailing NUL bytes.
+SIMD opcodes, whole-key collisions and names differing only by trailing NUL bytes,
+first-bucket collision retuning and the shipped branch hints.
 Temperature coverage includes every digit/sign/width combination, leading zeros,
 negative zero, LF and CRLF.
 Collision tests fault-inject cached metadata in the production kernel.
@@ -85,7 +92,8 @@ npm run format
 
 This uses existing Clang/LLD tools. `CLANG`, `WASM_LD`, and `CLANG_FORMAT` can
 select project-local tools; no global installation is performed by the scripts.
-The build records source/binary hashes and compiler/linker commands.
+The build records source/binary hashes, compiler/linker commands and the
+branch hints it derives.
 
 ## Generate and measure
 

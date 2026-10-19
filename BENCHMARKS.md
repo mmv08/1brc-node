@@ -1,6 +1,150 @@
 # Benchmark and experiment log
 
-## Latest audit: learned station caches rejected, 2026-10-19
+## Current result: eleventh round, 2026-10-19
+
+The eleventh round shortens each lane's dependency chain, makes the long-name
+fallback branch-free, retunes hash mixers away from first-bucket collisions and
+derives Wasm branch hints so V8 keeps cold paths out of the hot loop. Workers
+also start from a smaller entry module. Defaults remain eight workers and
+512 KiB chunks. Only the selected solver is shipped. This round's attempts were
+screened in temporary worktrees and are **not committed**; their sources are
+saved locally under `results/round11-attempts/`.
+
+Same Core Ultra 7 258V, Node 26.12.0, performance mode, eight workers,
+512 KiB chunks and billion-row input. After **16 full-file warm-up processes**,
+nine alternating rounds gave:
+
+| Solver | Trimmed mean | Best |
+| --- | ---: | ---: |
+| Previous winner, `fe74b8e` | 1.005 s | 0.995 s |
+| **Eleventh-round solver** | **0.866 s** | **0.849 s** |
+
+**13.8% less elapsed time**, or **1.161× throughput**, in the matched comparison.
+The candidate was faster in all nine paired rounds. Scores discard the fastest
+and slowest run and average the remaining seven. This is a cached
+**15.93 logical GB/s** result including startup, compilation, reads, parsing,
+aggregation, merging, sorting, output and shutdown. Average user CPU fell from
+6.06 s to 4.98 s; system time, almost entirely the read copy, stayed near 1.4 s.
+Peak RSS: 157,872 KiB. The import-free module is **11,499 bytes**.
+
+An initial comparison with the same settings measured 1.006 s for the previous
+winner and 0.858 s (14.7% less) for the candidate, whose command-line entry then
+awaited the formatter import separately; the shipped entry awaits both together.
+The candidate was faster in all nine rounds there too. Separate batches must not
+be combined.
+
+### Diagnosis
+
+Pinned single-core counters for the previous winner on the 100M-row file showed
+**90 native instructions and 20.7 cycles per row** on a P-core (IPC 4.3), about
+five store uops per row of which only one was the statistics store, 12% of user
+cycles in the long-name fallback and 0.06 mispredicted branches per row, mostly
+from long names. Native code showed V8 spilling values that only cold paths
+needed, rebuilding SIMD constants every iteration and inserting masked variable
+shifts. A worker timeline put reads at about 20% and parsing at about 80% of
+worker time, with roughly 40 ms before all workers parse and 15 ms after.
+
+### Selected changes
+
+Single-core screening ran the production reader and each kernel on the 100M-row
+file in one thread, pinned to a P-core (cpu 2 or 3) or an E-core (cpu 5 or 6),
+alternating variants and taking medians. Each row compares a matched pair in one
+batch; separate rows must not be combined. Values are cycles per row unless noted.
+
+| Change | P-core | E-core | Instructions/row |
+| --- | ---: | ---: | ---: |
+| Temperature lookup anchored at the decimal point | 20.67 → 20.01 | — | 89.7 → 82.3 |
+| Statistics delta vectors selected by that lookup | 20.0 → 18.9 | — | 82.3 → 78.6 |
+| Bitmask key verification | 18.8 → 18.8 | — | 78.4 → 76.0 |
+| Two overlapping vectors verify long names | 18.98 → 18.7 | — | 76.0 → 77.0 |
+| Branch-free two-vector fallback below 32 bytes | 18.78 → 18.51 | 24.5 → 22.7 | 77.1 → 76.0 |
+| Outlined miss lookup recomputes the hash | 18.73 → 18.75 | — | 76.1 → 73.7 |
+| Derived branch hints, newline kernel | 17.87 → 17.28 | 24.38 → 23.02 | 81.9 → 74.2 |
+| Newline row advance and counted loop, both hinted | 18.63 → 17.18 | 22.66 → 23.03 | 69.3 → 73.5 |
+| Self-tuning mixers | 16.99 → 16.35 | 22.76 → 21.82 | 73.3 → 72.1 |
+| Inlined fallback marked by a cold call | 16.38 → 16.04 | 22.00 → 21.56 | 72.4 → 72.1 |
+| Splat and mixer constants loaded from memory | 15.97 → 15.55 | 21.45 → 20.99 | 72.1 → 71.6 |
+
+The temperature index packs the low nibbles of the two bytes before the decimal,
+the tenths digit and the sign bit; one `uint16` lookup returns the offset of a
+precomputed vector holding the sum increment, a count increment and the value
+for the min/max lanes. This removes the sign normalization's variable shift and
+the scalar-to-vector moves. Two-vector verification removes the long-name
+`length == 16` branch, which caused 16% of mispredictions. The two-vector
+fallback hashes canonical 32-byte keys exactly like the general parser and
+compares them with the arena copy, so a triple containing a long name no longer
+mispredicts inside the fallback.
+
+Branch hints changed nothing measurable on the previous kernel (about 484 ms
+single-core either way), but once cold paths dominated register pressure they
+removed about eight native instructions per row, mostly spills. The newline
+row advance trades about four instructions for a roughly halved dependency
+chain: P-cores, which were latency-bound, gain 7.8% while E-cores lose 1.7%;
+weighted by their share of chunks it is a clear gain, confirmed in full runs.
+Three station pairs share a first bucket under the initial mixers, sending 0.7%
+of rows through probing; retuning removes all of them.
+
+Matched full-file checkpoints, seven alternating rounds after six warm-ups,
+each compared only within its own batch:
+
+| Report | Previous winner | Checkpoints |
+| --- | ---: | --- |
+| `s1-wide1` | 0.977 s | two-vector fallback 0.918 s |
+| `s2-nl3a` | 0.994 s | fallback with hints 0.927 s; newline advance 0.911 s |
+| `s3-inl1` | 1.002 s | newline advance 0.909 s; inlined fallback 0.882 s |
+| `s4-cst2` | 0.997 s | inlined fallback 0.876 s; loaded constants 0.861 s |
+
+A dedicated worker entry, merging each result as it arrives and loading the
+formatter after spawning measured 0.860 versus 0.866 s, then 0.850 versus
+0.860 s in eleven-round batches. The re-swept chunk size kept 512 KiB:
+256 KiB 0.873 s, **512 KiB 0.857 s**, 1 MiB 0.873 s.
+
+### Rejected attempts
+
+| Attempt | Matched result | Decision |
+| --- | --- | --- |
+| Scalar comparison of mixed key words | 82.3 → 85.7 instructions/row; V8 emitted a redundant load beside each memory compare | Rejected |
+| Negated maximum with one `i16x8.min` | −2 instructions/row; P 15.92 → 16.25, E 21.50 → 21.62 | Rejected |
+| CR flag from a 64-bit temperature word | 73.7 → 79.4 instructions/row; P 18.64 → 18.78 | Rejected |
+| Per-lane long-name calls | P 16.22 → 15.99, E 21.72 → 21.79, +2 instructions/row | Rejected: mixed |
+| Multivalue fallback returns | P 16.21 → 16.34, E 22.13 → 22.21 | Rejected |
+| Newline search in the two-vector path | P 15.87 → 16.24, E 21.47 → 22.10 | Rejected |
+| Offset-free digit addressing | −0.9 instructions/row, cycles within noise | Not adopted |
+| Four lanes | P 15.48 → 15.47, E 21.07 → 21.79 | Rejected |
+| Per-lane fallback helper | P 15.48 → 15.74, E 21.07 → 21.41 | Rejected |
+| Twice-unrolled inner loop | P 15.86 → 15.88, E 21.07 → 21.37 | Rejected |
+| Outlined general parser | 71.5 → 74.2 instructions/row, E 21.17 → 21.40 | Rejected |
+| Main thread parses while workers boot | 0.855 s versus 0.850 s without it | Rejected |
+| Explicit `process.exit()` after output | Exit lag unchanged at 5–12 ms | Rejected |
+| Zero-copy input: `node:ffi` `mmap` with `MAP_FIXED` into Wasm memory | Correct; system time 1.3 → 0.5 s, but 0.90–0.92 s versus 0.81–0.83 s; one worker spent 17–27% more user cycles parsing from DRAM across 4 KiB pages | Rejected; also needs an experimental API |
+
+Removing the record's now-unread long-name head/tail plumbing perturbed V8's
+register allocation of the whole loop (+0.6 instructions/row, about 1% slower),
+so the shipped kernel keeps it. Hand-placed hints first confirmed that V8 14.6
+applies `metadata.code.branch_hint`; the build now derives them structurally.
+
+### Verification
+
+All **26 tests pass on Node 24 and Node 26**, including new checks for the
+shipped branch hints and first-bucket collision retuning; Biome and C-format
+checks pass. The retuning test finds two names sharing a first bucket, checks
+exact aggregates and confirms every station owns the bucket and fingerprint its
+retuned hash selects. Existing tests cover every temperature spelling with LF
+and CRLF, every name length from 1 to 100 bytes, 10,000 stations, collisions,
+reset and exact sums through the production kernel. Exact-count verification
+confirms **1,000,000,000 measurements and 413 stations**; the default launcher's
+output matches byte-for-byte. All 68 full-file processes in the two final
+batches produced complete expected stdout, and all 36 measured runs reported
+zero filesystem input.
+
+Final report: `results/1792435279540-compare-r11-final-verification.json`.
+Initial report: `results/1792434966893-compare-r11-final.json`. Checkpoint reports
+use `results/*-compare-s[1-7]-*.json`; the summary is
+`results/2026-10-19-round11-summary.json`. Temporary worktrees are removed.
+Selected production source hash:
+`2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886`.
+
+## Previous audit: learned station caches rejected, 2026-10-19
 
 The tenth round implemented a learned short-name cache with complete key
 verification and partial aggregates. The approximately 94% routing hit rate
@@ -66,7 +210,7 @@ counters are in `results/round10-partial-cache-assembly.txt` and
 removed. The selected production source hash remains
 `b1b71b79679a57c282982078416336c21ab0d34460986546e02f7f7aaf5ccdf8`.
 
-## Current result: direct decimal-point row advancement, 2026-10-19
+## Previous result: direct decimal-point row advancement, 2026-10-19
 
 The ninth round determines the temperature's decimal position directly from
 its first four bytes. This makes row advancement and the fractional-digit
