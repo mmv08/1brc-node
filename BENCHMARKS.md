@@ -1,6 +1,64 @@
 # Benchmark and experiment log
 
-## Latest audit: delimiter checks and SIMD masks, 2026-10-19
+## Current result: direct decimal-point row advancement, 2026-10-19
+
+The ninth round determines the temperature's decimal position directly from
+its first four bytes. This makes row advancement and the fractional-digit
+address independent of sign normalization. The numeric lookup, hashing,
+station layout, SIMD statistics and runtime defaults remain unchanged.
+The selected source checkpoint is `bbdc73f`; `18f946f` adds regression coverage.
+Only the fastest verified implementation is shipped. All commits are unsigned.
+
+Same Core Ultra 7 258V, Node 26.12.0, performance mode, eight workers,
+512 KiB chunks and billion-row input. After **16 full-file warm-up processes**,
+nine alternating rounds with reversed case order gave:
+
+| Solver | Trimmed mean | Best |
+| --- | ---: | ---: |
+| Previous winner, `342abbc` | 1.027 s | 1.020 s |
+| **Direct decimal advancement, `bbdc73f`** | **1.002 s** | **0.993 s** |
+
+**2.4% less elapsed time**, or **1.025× throughput**, in the matched comparison.
+Scores discard the fastest and slowest run and average the remaining seven.
+This is a cached **13.77 logical GB/s** result including startup, compilation,
+reads, parsing, aggregation, merging, sorting, output and shutdown.
+Selected peak RSS: 157,208 KiB. The import-free Wasm module is **7,693 bytes**,
+down from 7,729 bytes.
+
+An initial nine-round comparison after 12 warm-ups measured 1.037 s for the
+previous winner and 1.006 s for the candidate. The candidate was faster in
+every paired round across both batches. Separate batches must not be combined.
+
+The trial followed diagnostics showing approximately 81% of instrumented
+worker read/parse time inside the parser, with little DRAM stalling in a
+separate pinned-core profile (`results/assessment-summary.json`). The change
+targets a dependency rather than relying on the count of branches or loads.
+For valid temperatures, the decimal is at byte 1, 2 or 3. Digits have ASCII
+bit 4 set; the decimal does not. Masking out byte 0 excludes the optional minus
+sign, so `ctz((~word) & 0x10101000) >> 3` gives the decimal offset. Adding three
+gives the row width, plus one for CRLF. Native inspection confirms `tzcnt`
+determines that offset before the sign-dependent digit shift.
+
+All **24 tests pass on Node 24 and Node 26**, and Biome/C-format checks pass.
+The new production-parser test checks all **4,400 temperature/newline
+combinations**: both signs, one/two integer digits, every digit combination,
+leading zeros and negative zero, with LF/CRLF and an absent final newline.
+Repeated short keys exercise the parsing lanes, multiple chunk sizes and
+worker counts. Existing collision, arbitrary-name and exact-sum tests pass.
+
+All **64 full-file benchmark processes** produced complete expected stdout.
+All **36 measured runs** reported zero filesystem input. Exact-count
+verification confirms **1,000,000,000 measurements and 413 stations**;
+the default launcher's output matches byte-for-byte.
+
+Final report: `results/1792429482910-compare-r9-final-verification.json`.
+Initial report: `results/1792429427443-compare-r9-decimal-advance.json`.
+Summary: `results/2026-10-19-round9-summary.json`; inspected native code is in
+`results/round9-decimal-assembly.txt`. The temporary baseline worktree is
+removed. Selected production source hash:
+`b1b71b79679a57c282982078416336c21ab0d34460986546e02f7f7aaf5ccdf8`.
+
+## Previous audit: delimiter checks and SIMD masks, 2026-10-19
 
 The eighth round tested a combined delimiter-presence check and generated
 short-name masks. Neither improved the complete program. The production source,
@@ -52,7 +110,7 @@ removed; all four attempts remain in their checkpoint commits. The selected
 production source hash is unchanged:
 `44bd983a2ad21923217190e6abc809155afc5cec52c6ba7421da2897219e4622`.
 
-## Current result: SIMD hash mixing, 2026-10-19
+## Previous result: SIMD hash mixing, 2026-10-19
 
 The seventh round keeps the canonical short-name key in SIMD for the hash's
 two XOR operations, then extracts both mixed words for multiplication.

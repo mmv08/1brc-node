@@ -37,7 +37,7 @@ the next lookup; updates remain ordered even when lanes share a station.
 
 C also outlines new-key insertion and collision probing into cold functions.
 V8 uses its normal compilation and inlining settings. The selected binary is
-**7,729 bytes**. No alternate table layouts or lane strategies are shipped.
+**7,693 bytes**. No alternate table layouts or lane strategies are shipped.
 
 The general scanner packs the name's length into seven bits beside its full
 32-bit pointer and carries that descriptor plus the hash into lookup. Hashing
@@ -67,6 +67,16 @@ Station records remain exactly **40 bytes**:
 | 16 | Uint32 fingerprint, retained for inspection |
 | 20 | key offset (low 20 bits) and byte length (upper bits) |
 | 24–39 | 16-byte delimiter-terminated key for names below 16 bytes; raw head/tail words otherwise |
+
+Temperature bounds put the decimal point at byte offset 1, 2 or 3 in the
+first four bytes. Digits have ASCII bit 4 set; the decimal point does not.
+Ignoring byte 0 excludes the optional minus sign, so
+`ctz((~word) & 0x10101000) >> 3` locates the decimal point directly.
+The row width is that offset plus three, with one extra byte for CRLF.
+This determines row advancement and the fractional-digit address independently
+of sign normalization. The existing numeric lookup remains unchanged.
+Tests cover all 4,400 sign/digit-width/newline combinations, including leading
+zeros and negative zero, through the production parser.
 
 One 128-bit load/store updates the statistics. An `i64x2.add` updates the sum
 and count; signed `i16x8.min/max` compute the extrema. Fixed lane shuffles merge
