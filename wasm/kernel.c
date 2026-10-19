@@ -189,6 +189,13 @@ INLINE NameRow scan_name(const uint8_t *p) {
   return (NameRow){((uint64_t)(uintptr_t)start << 7) | length, hash};
 }
 
+INLINE NameRow scan_short_name(const uint8_t *start, uint32_t matches) {
+  uint32_t length = (uint32_t)__builtin_ctz(matches);
+  uint64_t low = load64(start) & byte_masks[length < 8 ? length : 8];
+  uint64_t high = load64(start + 8) & byte_masks[length > 8 ? length - 8 : 0];
+  return (NameRow){((uint64_t)(uintptr_t)start << 7) | length, mix_pair(0, low, high)};
+}
+
 INLINE ParsedRow lookup_row(NameRow row) {
   const uint8_t *start = (const uint8_t *)(uintptr_t)(row.location >> 7);
   uint32_t length = (uint32_t)row.location & 127;
@@ -223,6 +230,21 @@ INLINE const uint8_t *update_row(ParsedRow row) {
 
 INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row(p)); }
 
+typedef struct {
+  const uint8_t *a;
+  const uint8_t *b;
+  const uint8_t *c;
+} RowPointers;
+
+// Preserve the complete valid-input parser when any name needs another block.
+__attribute__((noinline, cold)) static RowPointers process_three(const uint8_t *a, const uint8_t *b,
+                                                                 const uint8_t *c) {
+  const uint8_t *next_a = process_row(a);
+  const uint8_t *next_b = process_row(b);
+  const uint8_t *next_c = process_row(c);
+  return (RowPointers){next_a, next_b, next_c};
+}
+
 EXPORT(reset) void reset(void) {
   memset(buckets, 0, sizeof(buckets));
   used = 0;
@@ -242,7 +264,7 @@ EXPORT(buckets_base) uint32_t buckets_base(void) { return (uint32_t)(uintptr_t)b
 EXPORT(station_count) uint32_t station_count(void) { return used; }
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
-  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 4;
+  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 3;
   if (p == begin) return p;
   while (p < end && p[-1] != '\n') p++;
   return p;
@@ -254,26 +276,31 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *limit = (const uint8_t *)(uintptr_t)end;
   const uint8_t *end_a = boundary(a, limit, 1);
   const uint8_t *end_b = boundary(a, limit, 2);
-  const uint8_t *end_c = boundary(a, limit, 3);
   const uint8_t *b = end_a;
   const uint8_t *c = end_b;
-  const uint8_t *d = end_c;
-  while (a < end_a && b < end_b && c < end_c && d < limit) {
-    NameRow name_a = scan_name(a);
-    NameRow name_b = scan_name(b);
-    NameRow name_c = scan_name(c);
-    NameRow name_d = scan_name(d);
-    ParsedRow row_a = lookup_row(name_a);
-    ParsedRow row_b = lookup_row(name_b);
-    ParsedRow row_c = lookup_row(name_c);
-    ParsedRow row_d = lookup_row(name_d);
-    a = update_row(row_a);
-    b = update_row(row_b);
-    c = update_row(row_c);
-    d = update_row(row_d);
+  while (a < end_a && b < end_b && c < limit) {
+    const v128_t separator = wasm_i8x16_splat(';');
+    uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(a), separator));
+    uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(b), separator));
+    uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(c), separator));
+    if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
+      NameRow name_a = scan_short_name(a, matches_a);
+      NameRow name_b = scan_short_name(b, matches_b);
+      NameRow name_c = scan_short_name(c, matches_c);
+      ParsedRow row_a = lookup_row(name_a);
+      ParsedRow row_b = lookup_row(name_b);
+      ParsedRow row_c = lookup_row(name_c);
+      a = update_row(row_a);
+      b = update_row(row_b);
+      c = update_row(row_c);
+    } else {
+      RowPointers next = process_three(a, b, c);
+      a = next.a;
+      b = next.b;
+      c = next.c;
+    }
   }
   while (a < end_a) a = process_row(a);
   while (b < end_b) b = process_row(b);
-  while (c < end_c) c = process_row(c);
-  while (d < limit) d = process_row(d);
+  while (c < limit) c = process_row(c);
 }

@@ -1,9 +1,9 @@
 {
   "compiler": "clang version 22.1.8 (Fedora 22.1.8-4.fc44)\nTarget: x86_64-redhat-linux-gnu\nThread model: posix\nInstalledDir: /usr/bin\nConfiguration file: /etc/clang/x86_64-redhat-linux-gnu-clang.cfg",
   "linker": "LLD 20.0.0",
-  "sourceSha256": "20cdab00eff13ab20401f475d03dc84cc8e9cb8f04ae77368ce0493e160c6635",
-  "sha256": "4952889baff8732fa09662f7350ff9c768c5ae549cac826c136449da1510927c",
-  "bytes": 7205,
+  "sourceSha256": "383b8df3b446b12f0651d23ee2e4a86746fe73bfc4d6d50d6c2b9193567138e9",
+  "sha256": "28adb785161d1c1e20c7e4f897b51ae882d14cccd30852adabce64432bbaf51c",
+  "bytes": 7290,
   "compile": [
     "--target=wasm32",
     "-std=c11",
