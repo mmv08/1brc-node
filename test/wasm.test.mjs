@@ -161,6 +161,41 @@ test('10K short UTF-8/NUL keys preserve all aggregates across lanes and chunks',
   }
 });
 
+test('every name length and repeated keys preserve aggregates across parser transitions', async () => {
+  const directory = mkdtempSync(join(tmpdir(), '1brc-name-lengths-'));
+  const file = join(directory, 'input.txt');
+  const names = Array.from({ length: 100 }, (_, i) => 'x'.repeat(i + 1));
+  const repeated = ['A', '東京', 'y'.repeat(15), 'z'.repeat(16), 'é'.repeat(50)];
+  const expected = new Map();
+  let input = '';
+  for (let i = 0; i < 6000; i++) {
+    const name = i % 7 < 4 ? repeated[Math.floor(i / 37) % repeated.length] : names[i % 100];
+    const value = ((i * 137) % 1999) - 999;
+    input += `${name};${(value / 10).toFixed(1)}${i % 3 ? '\n' : '\r\n'}`;
+    const row = expected.get(name);
+    if (row) {
+      row[1] = Math.min(row[1], value);
+      row[2] += value;
+      row[3] = Math.max(row[3], value);
+      row[4]++;
+    } else expected.set(name, [name, value, value, value, 1]);
+  }
+  writeFileSync(file, input.slice(0, -1));
+  try {
+    const rows = [...expected.values()];
+    const output = format(rows);
+    for (const chunkSize of [128, 4096, 1048576]) {
+      for (const workers of [1, 3]) {
+        const actual = await calculate(file, { workers, chunkSize });
+        assert.equal(format(actual), output);
+        assert.deepEqual(actual, rows);
+      }
+    }
+  } finally {
+    rmSync(directory, { recursive: true });
+  }
+});
+
 function hashName(name) {
   const bytes = Buffer.from(name);
   let hash = 0n;
