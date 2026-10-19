@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { addBranchHints } from './branch-hints.mjs';
 
 const clang = process.env.CLANG ?? 'clang';
 const linker =
@@ -28,17 +29,24 @@ const link = [
   ...flavor,
   '--no-entry',
   '--export-memory',
-  '--strip-all',
   '--initial-memory=2097152',
   '--max-memory=1073741824',
   '-z',
   'stack-size=65536',
   'results/build/kernel.o',
   '-o',
-  'wasm/kernel.wasm',
+  'results/build/kernel-linked.wasm',
 ];
 execFileSync(clang, compile, { stdio: 'inherit' });
 execFileSync(linker, link, { stdio: 'inherit' });
+// The linked module keeps function names only to locate cold callees; the
+// shipped module drops every custom section except the derived branch hints.
+const source = readFileSync('wasm/kernel.c', 'utf8');
+const cold = [
+  ...source.matchAll(/__attribute__\(\(noinline, cold\)\)\s+static\s+[\w\s]+?\**(\w+)\(/g),
+].map((match) => match[1]);
+const hinted = addBranchHints(readFileSync('results/build/kernel-linked.wasm'), cold);
+writeFileSync('wasm/kernel.wasm', hinted.bytes);
 chmodSync('wasm/kernel.wasm', 0o644);
 const bytes = readFileSync('wasm/kernel.wasm');
 if (WebAssembly.Module.imports(new WebAssembly.Module(bytes)).length) {
@@ -52,6 +60,8 @@ const report = {
   bytes: bytes.length,
   compile,
   link,
+  cold,
+  branchHints: hinted.summary,
 };
 writeFileSync('wasm/build.json', `${JSON.stringify(report, null, 2)}\n`);
 console.log(`kernel: ${bytes.length} bytes, SIMD, no imports`);

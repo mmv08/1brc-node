@@ -1,9 +1,9 @@
 {
   "compiler": "clang version 22.1.8 (Fedora 22.1.8-4.fc44)\nTarget: x86_64-redhat-linux-gnu\nThread model: posix\nInstalledDir: /usr/bin\nConfiguration file: /etc/clang/x86_64-redhat-linux-gnu-clang.cfg",
   "linker": "LLD 20.0.0",
-  "sourceSha256": "7cca7d2b6a8c48fc45599804561d2b6865e38ba21a9d561cb7aebb83fd65b2ce",
-  "sha256": "345684c0b45563698f78b8193296be4ce7513e655d28c04c1e27b895669983fc",
-  "bytes": 7693,
+  "sourceSha256": "051ac2c9bac84658f1d0a344fa45cb2038788644a26b1eef6b351695c3e4df89",
+  "sha256": "914115f49dd74e9b129009569cc24ce026efd75e15d42887c636e90e6ba13518",
+  "bytes": 11499,
   "compile": [
     "--target=wasm32",
     "-std=c11",
@@ -25,13 +25,45 @@
     "wasm",
     "--no-entry",
     "--export-memory",
-    "--strip-all",
     "--initial-memory=2097152",
     "--max-memory=1073741824",
     "-z",
     "stack-size=65536",
     "results/build/kernel.o",
     "-o",
-    "wasm/kernel.wasm"
+    "results/build/kernel-linked.wasm"
+  ],
+  "cold": ["same_middle", "insert_station", "retune", "probe_station", "find_name", "cold_path"],
+  "branchHints": [
+    {
+      "function": "reset",
+      "likely": 3,
+      "unlikely": 0
+    },
+    {
+      "function": "parse_chunk",
+      "likely": 25,
+      "unlikely": 27
+    },
+    {
+      "function": "find_name",
+      "likely": 3,
+      "unlikely": 3
+    },
+    {
+      "function": "insert_station",
+      "likely": 1,
+      "unlikely": 0
+    },
+    {
+      "function": "probe_station",
+      "likely": 2,
+      "unlikely": 1
+    },
+    {
+      "function": "retune",
+      "likely": 7,
+      "unlikely": 0
+    }
   ]
 }

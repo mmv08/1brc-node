@@ -22,7 +22,12 @@ export function sourceHash(engine = 'wasm', script = 'calculate.mjs') {
       ),
     );
     if (engine === 'wasm')
-      paths.push('wasm/engine.mjs', 'wasm/kernel.c', 'wasm/kernel.wasm', 'wasm/build.json');
+      paths.push(
+        ...['wasm/engine.mjs', 'wasm/worker.mjs'].filter((path) => existsSync(resolve(root, path))),
+        'wasm/kernel.c',
+        'wasm/kernel.wasm',
+        'wasm/build.json',
+      );
   }
   const hash = createHash('sha256');
   for (const path of paths) hash.update(`${path}\0`).update(readFileSync(resolve(root, path)));

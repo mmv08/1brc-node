@@ -27,7 +27,13 @@ test('shipped kernel matches its source/build hashes, uses SIMD, and has no impo
   );
   const bytes = readFileSync(new URL('../wasm/kernel.wasm', import.meta.url));
   assert.equal(manifest.sha256, createHash('sha256').update(bytes).digest('hex'));
-  assert.deepEqual(WebAssembly.Module.imports(new WebAssembly.Module(bytes)), []);
+  const shipped = new WebAssembly.Module(bytes);
+  assert.deepEqual(WebAssembly.Module.imports(shipped), []);
+  // Derived branch hints keep cold paths and their spills out of the hot loop.
+  const [hints] = WebAssembly.Module.customSections(shipped, 'metadata.code.branch_hint');
+  assert.ok(hints.byteLength > 0);
+  const parser = manifest.branchHints.find((entry) => entry.function === 'parse_chunk');
+  assert.ok(parser.likely > 0 && parser.unlikely > 0);
   const wabt = await wabtFactory();
   const module = wabt.readWasm(Uint8Array.from(bytes), { readDebugNames: true });
   try {
@@ -269,7 +275,9 @@ test('every name length and repeated keys preserve aggregates across parser tran
   }
 });
 
-function hashName(name) {
+const initialMixers = [0x9e3779b185ebca87n, 0xc2b2ae3d27d4eb4fn];
+
+function hashName(name, [mixLow, mixHigh] = initialMixers) {
   const bytes = Buffer.from(`${name};`);
   let hash = 0n;
   for (let p = 0; p < bytes.length; p += 16) {
@@ -279,8 +287,7 @@ function hashName(name) {
       low |= BigInt(bytes[p + i]) << BigInt(i * 8);
     for (let i = 0; i < Math.min(8, bytes.length - p - 8); i++)
       high |= BigInt(bytes[p + 8 + i]) << BigInt(i * 8);
-    hash =
-      ((hash ^ low ^ 0x9e3779b185ebca87n) * (high ^ 0xc2b2ae3d27d4eb4fn)) & 0xffffffffffffffffn;
+    hash = ((hash ^ low ^ mixLow) * (high ^ mixHigh)) & 0xffffffffffffffffn;
   }
   return {
     fingerprint: Number((hash ^ (hash >> 32n)) & 0xffffffffn),
@@ -355,4 +362,48 @@ test('short-name collisions preserve length and every byte across independent la
       [changed, 2, 24, 2, 12],
     ]);
   }
+});
+
+test('first-bucket collisions retune the mixers so every station hits directly', async () => {
+  const kernel = await createKernel(65536);
+  const buffer = kernel.allocateBuffer(65536 + 256);
+  const parse = kernel.makeParser(buffer);
+  const view = new DataView(kernel.memory);
+  const base = kernel.api.stations_base();
+  const buckets = kernel.api.buckets_base();
+  // Two short names that share a first bucket under the initial mixers.
+  const seen = new Map();
+  let pair;
+  for (let i = 0; !pair; i++) {
+    const name = `n${i}`;
+    const { slot } = hashName(name);
+    if (seen.has(slot)) pair = [seen.get(slot), name];
+    else seen.set(slot, name);
+  }
+  const names = [...pair, 'A', '東京', 'x'.repeat(20), 'y'.repeat(40)];
+  const expected = new Map();
+  let text = '';
+  for (let i = 0; i < 1200; i++) {
+    const name = names[(i * 7) % names.length];
+    const value = ((i * 389) % 1999) - 999;
+    text += `${name};${(value / 10).toFixed(1)}${i % 4 ? '\n' : '\r\n'}`;
+    const row = expected.get(name);
+    if (row) {
+      row[0] = Math.min(row[0], value);
+      row[1] += value;
+      row[2] = Math.max(row[2], value);
+      row[3]++;
+    } else expected.set(name, [value, value, value, 1]);
+  }
+  parse(0, fill(buffer, text));
+  const rows = kernel.rows();
+  assert.deepEqual(new Map(rows.map(([name, ...stats]) => [name, stats])), expected);
+  const mixers = kernel.api.mixers_base();
+  const mix = [view.getBigUint64(mixers, true), view.getBigUint64(mixers + 8, true)];
+  assert.notDeepEqual(mix, initialMixers);
+  rows.forEach(([name], id) => {
+    const { slot, fingerprint } = hashName(name, mix);
+    assert.equal(view.getUint32(buckets + slot * 4, true), base + id * 40, name);
+    assert.equal(view.getUint32(base + id * 40 + 16, true), fingerprint, name);
+  });
 });

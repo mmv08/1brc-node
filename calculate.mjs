@@ -1,9 +1,7 @@
 import { closeSync, fstatSync, openSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
 import { pathToFileURL } from 'node:url';
-import { isMainThread, parentPort, Worker, workerData } from 'node:worker_threads';
-import { format } from './lib/format.mjs';
-import { aggregate } from './wasm/engine.mjs';
+import { Worker } from 'node:worker_threads';
 
 export async function calculate(file, options = {}) {
   const fd = openSync(file, 'r');
@@ -25,27 +23,23 @@ export async function calculate(file, options = {}) {
       chunkSize,
       queue,
     };
-    if (workers === 1) return await aggregate(config);
+    if (workers === 1) return await (await import('./wasm/engine.mjs')).aggregate(config);
     const threads = [];
     try {
+      // Workers load only the kernel engine; each result arrives before its
+      // thread finishes exiting.
       const parts = await Promise.all(
         Array.from(
           { length: workers },
           () =>
             new Promise((resolve, reject) => {
-              const worker = new Worker(new URL(import.meta.url), {
+              const worker = new Worker(new URL('./wasm/worker.mjs', import.meta.url), {
                 workerData: config,
               });
               threads.push(worker);
-              let result;
-              worker.once('message', (data) => {
-                result = data;
-              });
+              worker.once('message', resolve);
               worker.once('error', reject);
-              worker.once('exit', (code) => {
-                if (code !== 0 || !result) reject(new Error(`Worker exited with code ${code}`));
-                else resolve(result);
-              });
+              worker.once('exit', (code) => reject(new Error(`Worker exited with code ${code}`)));
             }),
         ),
       );
@@ -62,19 +56,23 @@ export async function calculate(file, options = {}) {
         }
       }
       return [...merged.values()];
-    } finally {
+    } catch (error) {
       await Promise.all(threads.map((worker) => worker.terminate()));
+      throw error;
     }
   } finally {
     closeSync(fd);
   }
 }
 
-if (!isMainThread) {
-  parentPort.postMessage(await aggregate(workerData));
-} else if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
-    process.stdout.write(format(await calculate(process.argv[2] ?? 'measurements.txt')));
+    // Workers start before the formatter loads.
+    const [rows, { format }] = await Promise.all([
+      calculate(process.argv[2] ?? 'measurements.txt'),
+      import('./lib/format.mjs'),
+    ]);
+    process.stdout.write(format(rows));
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;
