@@ -2,47 +2,27 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-export const inliningFlags = [
+const inliningFlags = [
   '--max-inlined-bytecode-size=1000',
   '--max-inlined-bytecode-size-cumulative=4000',
 ];
 
 export function nodeRuntime() {
-  // npm overwrites NODE; NODE_BIN intentionally uses a different name.
   const local = resolve('.runtimes/node-v26.12.0/bin/node');
   return process.env.NODE_BIN ?? (existsSync(local) ? local : process.execPath);
 }
 
 export function nodeFlags(env) {
   if (env.FLAGS !== undefined) return env.FLAGS.split(/\s+/).filter(Boolean);
-  return ['phased', 'round3', 'hybrid', 'lean', 'direct'].includes(env.ENGINE ?? 'phased')
-    ? inliningFlags
-    : [];
+  return env.ENGINE === 'wasm' ? [] : inliningFlags;
 }
 
 export function sourceHash(engine = 'phased', script = 'calculate.mjs') {
   const paths = [script];
   if (script === 'calculate.mjs') {
-    paths.push(
-      'lib/aggregate.mjs',
-      'lib/baseline.mjs',
-      'lib/format.mjs',
-      'lib/parse-utils.mjs',
-      'lib/read.mjs',
-    );
-    if (engine === 'wasm') {
-      paths.push(
-        'wasm/engine.mjs',
-        'wasm/kernel.c',
-        'wasm/next.c',
-        'wasm/variants.mjs',
-        'tools/build-wasm.mjs',
-        'wasm/build.json',
-      );
-      const manifest = JSON.parse(readFileSync('wasm/build.json', 'utf8'));
-      for (const { variant } of manifest.modules) paths.push(`wasm/kernel-${variant}.wasm`);
-    } else if (!['phased', 'baseline'].includes(engine)) paths.push(`experiments/${engine}.mjs`);
-    if (engine === 'masked') paths.push('experiments/flat.mjs');
+    paths.push('lib/aggregate.mjs', 'lib/format.mjs', 'lib/parse-utils.mjs', 'lib/read.mjs');
+    if (engine === 'wasm')
+      paths.push('wasm/engine.mjs', 'wasm/kernel.c', 'wasm/kernel.wasm', 'wasm/build.json');
   }
   const hash = createHash('sha256');
   for (const path of paths) hash.update(`${path}\0`).update(readFileSync(path));

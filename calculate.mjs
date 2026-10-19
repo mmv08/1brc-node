@@ -1,30 +1,14 @@
-import { execFileSync } from 'node:child_process';
-import { closeSync, fstatSync, openSync, readlinkSync } from 'node:fs';
+import { closeSync, fstatSync, openSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { pathToFileURL } from 'node:url';
 import { isMainThread, parentPort, Worker, workerData } from 'node:worker_threads';
 import { aggregate } from './lib/aggregate.mjs';
 import { format } from './lib/format.mjs';
 
 async function runEngine(config) {
-  if (process.env.PIN_WORKERS) {
-    const cpus = process.env.PIN_WORKERS.split(',');
-    const tid = readlinkSync('/proc/thread-self').split('/').at(-1);
-    execFileSync('taskset', ['-pc', cpus[(config.workerIndex ?? 0) % cpus.length], tid], {
-      stdio: 'ignore',
-    });
-  }
   if (config.engine === 'phased') return aggregate(config);
   if (config.engine === 'wasm') return (await import('./wasm/engine.mjs')).aggregate(config);
-  if (config.engine === 'baseline') return (await import('./lib/baseline.mjs')).aggregate(config);
-  if (
-    !['objects', 'flat', 'soa', 'masked', 'round3', 'hybrid', 'lean', 'direct'].includes(
-      config.engine,
-    )
-  )
-    throw new Error('Unknown ENGINE');
-  const engine = await import(`./experiments/${config.engine}.mjs`);
-  return engine.aggregate(config);
+  throw new Error('ENGINE must be phased (JavaScript) or wasm');
 }
 
 export async function calculate(file, options = {}) {
@@ -46,7 +30,6 @@ export async function calculate(file, options = {}) {
       size,
       chunkSize,
       queue,
-      file: file instanceof URL ? fileURLToPath(file) : file,
       engine: options.engine ?? process.env.ENGINE ?? 'phased',
     };
     if (workers === 1) return await runEngine(config);
@@ -55,10 +38,10 @@ export async function calculate(file, options = {}) {
       const parts = await Promise.all(
         Array.from(
           { length: workers },
-          (_, workerIndex) =>
+          () =>
             new Promise((resolve, reject) => {
               const worker = new Worker(new URL(import.meta.url), {
-                workerData: { ...config, workerIndex },
+                workerData: config,
               });
               threads.push(worker);
               let result;

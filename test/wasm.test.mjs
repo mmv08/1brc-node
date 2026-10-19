@@ -9,62 +9,44 @@ import { calculate } from '../calculate.mjs';
 import { format } from '../lib/format.mjs';
 import { createKernel } from '../wasm/engine.mjs';
 
-test('Wasm binaries have no imports and SIMD is present only in the SIMD build', async () => {
-  const wabt = await wabtFactory();
+function fill(buffer, text) {
+  const length = buffer.write(text);
+  buffer.fill(0, length, length + 32);
+  buffer[length] = 10;
+  return length;
+}
+
+test('shipped kernel matches its source/build hashes, uses SIMD, and has no imports', async () => {
   const manifest = JSON.parse(readFileSync(new URL('../wasm/build.json', import.meta.url), 'utf8'));
   assert.equal(
     manifest.sourceSha256,
     createHash('sha256')
       .update(readFileSync(new URL('../wasm/kernel.c', import.meta.url)))
       .digest('hex'),
-    'rebuild after changing C source',
+    'rebuild C source',
   );
-  for (const [source, digest] of Object.entries(manifest.sources ?? {})) {
-    assert.equal(
-      createHash('sha256')
-        .update(readFileSync(new URL(`../${source}`, import.meta.url)))
-        .digest('hex'),
-      digest,
-      `rebuild after changing ${source}`,
-    );
-  }
-  for (const { variant } of manifest.modules) {
-    const bytes = readFileSync(new URL(`../wasm/kernel-${variant}.wasm`, import.meta.url));
-    assert.equal(
-      createHash('sha256').update(bytes).digest('hex'),
-      manifest.modules.find((module) => module.variant === variant).sha256,
-    );
-    assert.deepEqual(WebAssembly.Module.imports(new WebAssembly.Module(bytes)), []);
-    // wabt's Buffer handling differs on Node 26; normalize only the inspector's
-    // binary bytes. Runtime measurement buffers still alias Wasm memory directly.
-    const module = wabt.readWasm(Uint8Array.from(bytes), { readDebugNames: true });
-    try {
-      const wat = module.toText({ foldExprs: false });
-      if (variant.startsWith('scalar')) assert.doesNotMatch(wat, /\bv128\.|\bi8x16\./);
-      else {
-        assert.match(wat, /i8x16\.eq/);
-        assert.match(wat, /i8x16\.bitmask/);
-      }
-    } finally {
-      module.destroy();
-    }
+  const bytes = readFileSync(new URL('../wasm/kernel.wasm', import.meta.url));
+  assert.equal(manifest.sha256, createHash('sha256').update(bytes).digest('hex'));
+  assert.deepEqual(WebAssembly.Module.imports(new WebAssembly.Module(bytes)), []);
+  const wabt = await wabtFactory();
+  const module = wabt.readWasm(Uint8Array.from(bytes), { readDebugNames: true });
+  try {
+    const wat = module.toText({ foldExprs: false });
+    assert.match(wat, /i8x16\.eq/);
+    assert.match(wat, /i8x16\.bitmask/);
+  } finally {
+    module.destroy();
   }
 });
 
-test('input buffers alias Wasm memory, growth precedes all views, and reset clears state', async () => {
+test('input aliases grown Wasm memory and reset clears the previous aggregates', async () => {
   const size = 1024 * 1024;
-  const kernel = await createKernel(size, { variant: 'simd', slots: 2, streams: 2 });
-  const a = kernel.allocateBuffer(size + 256);
-  const b = kernel.allocateBuffer(size + 256);
-  assert.equal(a.buffer, kernel.memory);
-  assert.equal(b.buffer, kernel.memory);
-  assert.equal(b.byteOffset - a.byteOffset, size + 256);
-  assert.equal(kernel.api.simd_enabled(), 1);
-  const parse = kernel.makeParser(a);
-  const input = '東京;-99.9\r\nA;99.9\nA;0.1';
-  const length = a.write(input);
-  a.fill(0, length, length + 32);
-  a[length] = 10;
+  const kernel = await createKernel(size);
+  const buffer = kernel.allocateBuffer(size + 256);
+  assert.equal(buffer.buffer, kernel.memory);
+  assert.equal(kernel.memory, kernel.api.memory.buffer);
+  const parse = kernel.makeParser(buffer);
+  const length = fill(buffer, '東京;-99.9\r\nA;99.9\nA;0.1');
   parse(0, length);
   assert.equal(format(kernel.rows()), '{A=0.1/50.0/99.9, 東京=-99.9/-99.9/-99.9}\n');
   kernel.api.reset();
@@ -76,19 +58,16 @@ test('input buffers alias Wasm memory, growth precedes all views, and reset clea
   );
 });
 
-test('signed 64-bit sums handle the complete challenge bound', async () => {
+test('signed 64-bit sums handle the full challenge bound', async () => {
   for (const value of [-999, 999]) {
-    const kernel = await createKernel(128, { variant: 'simd', streams: 1 });
+    const kernel = await createKernel(128);
     const buffer = kernel.allocateBuffer(384);
-    const text = `A;${(value / 10).toFixed(1)}\n`;
-    const length = buffer.write(text);
-    buffer.fill(0, length, length + 32);
+    const length = fill(buffer, `A;${(value / 10).toFixed(1)}\n`);
     const parse = kernel.makeParser(buffer);
     parse(0, length);
     const view = new DataView(kernel.memory);
     const base = kernel.api.stations_base();
-    // Unit-test state construction, not a benchmark: simulate a valid prefix
-    // of 999,999,999 identical records, then process the final actual row.
+    // Unit-test prefix state, never used by a benchmark or the actual solver.
     view.setBigInt64(base, BigInt(value * 999999999), true);
     view.setUint32(base + 8, 999999999, true);
     parse(0, length);
@@ -96,11 +75,10 @@ test('signed 64-bit sums handle the complete challenge bound', async () => {
   }
 });
 
-test('SIMD/scalar, 1–4 cursors, sync/async/macro reads and memory growth agree exactly', async () => {
+test('10K keys, 100-byte/UTF-8/NUL names and chunk boundaries preserve exact aggregates', async () => {
   const directory = mkdtempSync(join(tmpdir(), '1brc-wasm-'));
   const file = join(directory, 'input.txt');
-  const rows = new Map();
-  let input = '';
+  const map = new Map();
   const short = [
     'A',
     'AB',
@@ -114,85 +92,77 @@ test('SIMD/scalar, 1–4 cursors, sync/async/macro reads and memory growth agree
     'é',
     '東京',
   ];
+  let input = '';
   for (let i = 0; i < 30000; i++) {
     const key = i % 10000;
     const name = short[key] ?? `${'a'.repeat(95)}${String(key).padStart(5, '0')}`;
     const value = ((i * 97) % 1999) - 999;
     input += `${name};${(value / 10).toFixed(1)}${i % 2 ? '\r\n' : '\n'}`;
-    const row = rows.get(name);
+    const row = map.get(name);
     if (row) {
       row[1] = Math.min(row[1], value);
       row[2] += value;
       row[3] = Math.max(row[3], value);
       row[4]++;
-    } else rows.set(name, [name, value, value, value, 1]);
+    } else map.set(name, [name, value, value, value, 1]);
   }
   writeFileSync(file, input.slice(0, -2));
-  const expectedRows = [...rows.values()];
+  const expectedRows = [...map.values()];
   const expected = format(expectedRows);
-  const names = ['WASM_VARIANT', 'WASM_STREAMS', 'IO', 'MACRO_BYTES'];
-  const saved = Object.fromEntries(names.map((name) => [name, process.env[name]]));
   try {
-    for (const variant of [
-      'simd',
-      'scalar',
-      'simd-pointers',
-      'scalar-pointers',
-      'simd-small',
-      'simd-pointers-small',
-    ]) {
-      for (const streams of [1, 2, 3, 4]) {
-        for (const io of ['sync', 'async', 'macro']) {
-          process.env.WASM_VARIANT = variant;
-          process.env.WASM_STREAMS = String(streams);
-          process.env.IO = io;
-          process.env.MACRO_BYTES = '4194304';
-          const actual = await calculate(file, {
-            engine: 'wasm',
-            workers: 3,
-            chunkSize: 1024 * 1024,
-          });
-          assert.equal(format(actual), expected, `${variant}, ${streams}, ${io}`);
-          assert.deepEqual(actual, expectedRows);
-        }
+    for (const chunkSize of [128, 129, 4096, 1048576]) {
+      for (const workers of [1, 3]) {
+        const actual = await calculate(file, { engine: 'wasm', workers, chunkSize });
+        assert.equal(format(actual), expected);
+        assert.deepEqual(actual, expectedRows);
       }
     }
   } finally {
-    for (const [name, value] of Object.entries(saved)) {
-      if (value === undefined) delete process.env[name];
-      else process.env[name] = value;
-    }
     rmSync(directory, { recursive: true });
   }
 });
 
-test('forced full-hash collisions verify every middle byte at SIMD boundaries', async () => {
-  for (const variant of ['collision', 'collision-pointers']) {
-    for (const streams of [1, 2, 3, 4]) {
-      const kernel = await createKernel(1024 * 1024, { variant, streams });
-      const buffer = kernel.allocateBuffer(1024 * 1024 + 256);
-      let input = '';
-      const expected = [];
-      for (const length of [17, 18, 23, 24, 25, 31, 32, 33, 47, 48, 49, 63, 64, 65, 99, 100]) {
-        for (const position of ['first', 'last']) {
-          for (let i = 0; i < 26; i++) {
-            const letter = String.fromCharCode(65 + i);
-            const padding = 'x'.repeat(length - 17);
-            const middle = position === 'first' ? letter + padding : padding + letter;
-            const name = `HEADSAME${middle}TAILSAME`;
-            input += `${name};${(i / 10).toFixed(1)}\n`;
-            // For length 17, first and last designate the same byte/name.
-            const row = expected.find((row) => row[0] === name);
-            if (row) {
-              row[2] += i;
-              row[4]++;
-            } else expected.push([name, i, i, i, 1]);
-          }
-        }
-      }
-      const length = buffer.write(input);
-      buffer.fill(0, length, length + 32);
-      kernel.makeParser(buffer)(0, length);
+function hashName(name) {
+  const bytes = Buffer.from(name);
+  let hash = 0n;
+  for (let p = 0; p < bytes.length; p += 8) {
+    let word = 0n;
+    for (let i = 0; i < Math.min(8, bytes.length - p); i++)
+      word |= BigInt(bytes[p + i]) << BigInt(i * 8);
+    hash = ((hash ^ word) * 0x9e3779b185ebca87n) & 0xffffffffffffffffn;
+  }
+  return Number((hash ^ (hash >> 32n)) & 0xffffffffn);
+}
+
+test('full-key verification checks every middle byte without a test-only kernel', async () => {
+  const kernel = await createKernel(128);
+  const buffer = kernel.allocateBuffer(384);
+  const parse = kernel.makeParser(buffer);
+  const view = new DataView(kernel.memory);
+  const base = kernel.api.stations_base();
+  const buckets = kernel.api.buckets_base();
+  for (const length of [17, 18, 23, 24, 25, 31, 32, 33, 47, 48, 49, 63, 64, 65, 99, 100]) {
+    for (let position = 8; position < length - 8; position++) {
+      kernel.api.reset();
+      const original = `HEADSAME${'x'.repeat(length - 16)}TAILSAME`;
+      const changed = `${original.slice(0, position)}Y${original.slice(position + 1)}`;
+      parse(0, fill(buffer, `${original};0.1\n`));
+      const oldHash = view.getUint32(base + 16, true);
+      assert.equal(oldHash, hashName(original));
+      const slot = (hash) => (hash ^ (hash >>> 16)) & 32767;
+      assert.equal(view.getUint32(buckets + slot(oldHash) * 4, true), base);
+      const hash = hashName(changed);
+      // Fault-inject a matching cached hash and bucket, leaving name bytes and
+      // cached head/tail unchanged. This exercises collisions in the ONE real
+      // kernel, without shipping an alternative constant-hash implementation.
+      view.setUint32(buckets + slot(oldHash) * 4, 0, true);
+      view.setUint32(buckets + slot(hash) * 4, base, true);
+      view.setUint32(base + 16, hash, true);
+      parse(0, fill(buffer, `${changed};0.2\n`));
+      const expected = [
+        [original, 1, 1, 1, 1],
+        [changed, 2, 2, 2, 1],
+      ];
       const actual = kernel.rows();
       assert.equal(format(actual), format(expected));
       assert.deepEqual(actual, expected);

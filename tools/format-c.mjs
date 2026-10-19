@@ -7,4 +7,4 @@ const tool =
     ? '/usr/lib64/rocm/llvm/bin/clang-format'
     : 'clang-format');
 const args = process.argv.includes('--check') ? ['--dry-run', '--Werror'] : ['-i'];
-execFileSync(tool, [...args, 'wasm/kernel.c', 'wasm/next.c'], { stdio: 'inherit' });
+execFileSync(tool, [...args, 'wasm/kernel.c'], { stdio: 'inherit' });
