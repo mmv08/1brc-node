@@ -231,9 +231,12 @@ INLINE ParsedRow scan_row(const uint8_t *p) { return lookup_row(scan_name(p)); }
 INLINE const uint8_t *update_row(ParsedRow row) {
   const uint8_t *p = row.temperature;
   uint32_t word = load32(p);
+  // The decimal is in byte 1, 2 or 3; preceding digits have ASCII bit 4 set.
+  // Locate it independently of sign normalization to advance the input lane.
+  uint32_t decimal = (uint32_t)__builtin_ctz(~word & UINT32_C(0x10101000)) >> 3;
+  uint32_t width = decimal + 3;
   uint32_t negative = (~word >> 4) & 1;
   uint32_t digits = word >> (negative * 8);
-  uint32_t width = 4 + negative + ((digits >> 12) & 1);
   int32_t value = temperatures[digits & 0x0f0f] + (p[width - 2] & 15);
   value = (value ^ -(int32_t)negative) + (int32_t)negative;
   const uint8_t *next = p + width + (p[width - 1] == '\r');
