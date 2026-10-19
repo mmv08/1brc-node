@@ -14,7 +14,7 @@ typedef struct {
   int64_t sum;
   uint32_t count;
   int16_t min;
-  int16_t max;
+  int16_t max_complement;
   uint32_t hash;
   uint32_t key;
   uint64_t head;
@@ -145,7 +145,7 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   station->sum = 0;
   station->count = 0;
   station->min = 999;
-  station->max = -999;
+  station->max_complement = 998;
   station->hash = hash;
   station->key = (length << 20) | name_used;
   if (length < 16) {
@@ -241,9 +241,9 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   v128_t stats = wasm_v128_load(station);
   v128_t added = wasm_i64x2_add(stats, wasm_i64x2_make(value, 1));
   v128_t values = wasm_i16x8_splat((int16_t)value);
-  // Fixed lane selections let the host compiler use immediate SIMD blends.
-  v128_t extrema = wasm_i16x8_shuffle(wasm_i16x8_min(stats, values), wasm_i16x8_max(stats, values),
-                                      0, 1, 2, 3, 4, 5, 6, 15);
+  // Complementing the maximum reverses its order, so one min updates both.
+  v128_t reversed = wasm_v128_xor(values, wasm_i16x8_make(0, 0, 0, 0, 0, 0, 0, -1));
+  v128_t extrema = wasm_i16x8_min(stats, reversed);
   wasm_v128_store(station, wasm_i16x8_shuffle(added, extrema, 0, 1, 2, 3, 4, 5, 14, 15));
   return next;
 }
@@ -275,25 +275,21 @@ typedef struct {
   const uint8_t *a;
   const uint8_t *b;
   const uint8_t *c;
-  const uint8_t *d;
 } RowPointers;
 
-__attribute__((noinline, cold)) static RowPointers process_four(const uint8_t *a, const uint8_t *b,
-                                                                const uint8_t *c,
-                                                                const uint8_t *d) {
+// Preserve the complete valid-input parser when any name needs another block.
+__attribute__((noinline, cold)) static RowPointers process_three(const uint8_t *a, const uint8_t *b,
+                                                                 const uint8_t *c) {
   NameRow name_a = scan_name(a);
   NameRow name_b = scan_name(b);
   NameRow name_c = scan_name(c);
-  NameRow name_d = scan_name(d);
   ParsedRow row_a = lookup_row(name_a);
   ParsedRow row_b = lookup_row(name_b);
   ParsedRow row_c = lookup_row(name_c);
-  ParsedRow row_d = lookup_row(name_d);
   const uint8_t *next_a = update_row(row_a);
   const uint8_t *next_b = update_row(row_b);
   const uint8_t *next_c = update_row(row_c);
-  const uint8_t *next_d = update_row(row_d);
-  return (RowPointers){next_a, next_b, next_c, next_d};
+  return (RowPointers){next_a, next_b, next_c};
 }
 
 EXPORT(reset) void reset(void) {
@@ -315,7 +311,7 @@ EXPORT(buckets_base) uint32_t buckets_base(void) { return (uint32_t)(uintptr_t)b
 EXPORT(station_count) uint32_t station_count(void) { return used; }
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
-  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 4;
+  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 3;
   if (p == begin) return p;
   while (p < end && p[-1] != '\n') p++;
   return p;
@@ -327,35 +323,28 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *limit = (const uint8_t *)(uintptr_t)end;
   const uint8_t *end_a = boundary(a, limit, 1);
   const uint8_t *end_b = boundary(a, limit, 2);
-  const uint8_t *end_c = boundary(a, limit, 3);
   const uint8_t *b = end_a;
   const uint8_t *c = end_b;
-  const uint8_t *d = end_c;
-  while (a < end_a && b < end_b && c < end_c && d < limit) {
+  while (a < end_a && b < end_b && c < limit) {
     const v128_t separator = wasm_i8x16_splat(';');
     v128_t bytes_a = wasm_v128_load(a);
     v128_t bytes_b = wasm_v128_load(b);
     v128_t bytes_c = wasm_v128_load(c);
-    v128_t bytes_d = wasm_v128_load(d);
     uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
     uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
     uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-    uint32_t matches_d = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_d, separator));
-    if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0) & (matches_d != 0)) {
+    if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
       a = process_short(a, matches_a, bytes_a);
       b = process_short(b, matches_b, bytes_b);
       c = process_short(c, matches_c, bytes_c);
-      d = process_short(d, matches_d, bytes_d);
     } else {
-      RowPointers next = process_four(a, b, c, d);
+      RowPointers next = process_three(a, b, c);
       a = next.a;
       b = next.b;
       c = next.c;
-      d = next.d;
     }
   }
   while (a < end_a) a = process_row(a);
   while (b < end_b) b = process_row(b);
-  while (c < end_c) c = process_row(c);
-  while (d < limit) d = process_row(d);
+  while (c < limit) c = process_row(c);
 }
