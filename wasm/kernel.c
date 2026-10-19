@@ -132,9 +132,9 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   return station;
 }
 
-INLINE Station *find_station(const uint8_t *start, uint32_t length, uint64_t hash, uint64_t head) {
-  // Bucket selection needs no folded fingerprint on the hot path.
-  uint32_t slot = (uint32_t)(hash >> 49);
+__attribute__((noinline, cold)) static Station *probe_station(const uint8_t *start, uint32_t length,
+                                                              uint64_t hash, uint64_t head,
+                                                              uint32_t slot) {
   for (;;) {
     uint32_t entry = buckets[slot];
     if (!entry) return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
@@ -142,6 +142,15 @@ INLINE Station *find_station(const uint8_t *start, uint32_t length, uint64_t has
     if (same_name(station, start, length, head)) return station;
     slot = (slot + 1) & (TABLE_SIZE - 1);
   }
+}
+
+INLINE Station *find_station(const uint8_t *start, uint32_t length, uint64_t hash, uint64_t head) {
+  uint32_t slot = (uint32_t)(hash >> 49);
+  uint32_t entry = buckets[slot];
+  if (!entry) return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
+  Station *station = (Station *)(uintptr_t)entry;
+  if (same_name(station, start, length, head)) return station;
+  return probe_station(start, length, hash, head, (slot + 1) & (TABLE_SIZE - 1));
 }
 
 typedef struct {
