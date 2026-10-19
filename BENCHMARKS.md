@@ -1,5 +1,62 @@
 # Benchmark and experiment log
 
+## Latest audit: previous winner retained, 2026-10-19
+
+The sixth round tested independent long-name fallback, overlapped bucket/key
+loads and chunk-size defaults. None produced a repeatable improvement.
+The production code and defaults are identical to `93e3372`; restoration
+checkpoint `0678e2f` retains the SIMD-key parser and **512 KiB** chunks.
+All attempt and restoration commits are unsigned.
+
+Same Core Ultra 7 258V, Node 26.12.0, performance mode, eight workers and
+billion-row input. Within each row below, scores are matched five-run trimmed
+means. Separate batches must not be combined.
+
+| Checkpoint | Attempt | Previous winner | Candidate | Decision |
+| --- | --- | ---: | ---: | --- |
+| `d192e4e` | Per-lane long-name fallback | 1.026 s | 1.072 s | Rejected |
+| `14d3ab9` | Stage bucket-pointer loads before updates | 1.026 s | 1.039 s | Rejected |
+| `6ceef78` | Also preload the cached SIMD keys | 1.034 s | 1.043 s | Rejected |
+| `19931bb` | Specialize short lanes only inside mixed triples | 1.034 s | 1.048 s | Rejected |
+
+The chunk sweep used the same winning parser, with only the default changed:
+
+| Checkpoint | Chunk size | Matched trimmed mean |
+| --- | --- | ---: |
+| `1e6456b` | 128 KiB | 1.073 s |
+| `d9a0525` | 256 KiB | 1.053 s |
+| `93e3372` | **512 KiB** | **1.043 s** |
+| `5b5b018` | 1 MiB | 1.056 s |
+| `3d1f8d5` | 2 MiB | 1.090 s |
+
+A seven-round follow-up was inconclusive: 1.050 s for 512 KiB versus 1.049 s
+for 256 KiB. A second seven-round check used the **same script path** for both,
+explicit chunk settings and reversed case order, after 16 full-file warm-ups:
+
+| Configuration | Trimmed mean | Best |
+| --- | ---: | ---: |
+| **512 KiB retained** | **1.038 s** | **1.029 s** |
+| 256 KiB challenger | 1.054 s | 1.047 s |
+
+The controlled check favors 512 KiB by 1.5%; the earlier 1 ms reversal was not
+repeatable. This audit retains the existing implementation and settings.
+The headline fifth-round result below still describes the selected program.
+
+Across this audit, all **139 full-file benchmark processes** produced complete
+expected stdout. All **83 measured runs** reported zero filesystem input.
+All **23 tests pass on Node 24 and Node 26**, and Biome/C-format checks pass.
+Exact-count verification confirms **1,000,000,000 measurements and 413 stations**;
+the default launcher's stdout matches byte-for-byte. The selected import-free
+SIMD module remains **7,741 bytes**. Its production source hash exactly matches
+the fifth round's selected winner.
+
+Final controlled report: `results/1792427697647-compare-r6-chunk-confirmation.json`.
+The earlier seven-round report is
+`results/1792427615807-compare-r6-final-verification.json`. Other attempt reports
+use `results/*-compare-r6-*.json`; the summary is
+`results/2026-10-19-round6-summary.json`. Temporary experiment worktrees are
+removed; all eight attempts remain in their checkpoint commits.
+
 ## Current result: delimiter-encoded SIMD keys, 2026-10-19
 
 The fifth round removes repeated short-name loads, masks and scalar comparisons.

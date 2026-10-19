@@ -6,7 +6,8 @@ On this Core Ultra 7 258V in performance mode, the cached billion-row benchmark
 averages **1.047 seconds**. A further optimization round reduced elapsed time
 by **14.0%** against the previous winner in a matched test.
 Only the selected solver is shipped. Optimization attempts are checkpointed in
-git, with measured results in [BENCHMARKS.md](BENCHMARKS.md).
+git, with measured results in [BENCHMARKS.md](BENCHMARKS.md). A later audit
+retained the same parser and 512 KiB default.
 
 ## Run
 
