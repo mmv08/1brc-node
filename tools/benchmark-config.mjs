@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { basename, dirname, resolve } from 'node:path';
 
 const inliningFlags = [
   '--max-inlined-bytecode-size=1000',
@@ -18,13 +18,14 @@ export function nodeFlags(env) {
 }
 
 export function sourceHash(engine = 'phased', script = 'calculate.mjs') {
-  const paths = [script];
-  if (script === 'calculate.mjs') {
+  const root = dirname(resolve(script));
+  const paths = [basename(script)];
+  if (basename(script) === 'calculate.mjs') {
     paths.push('lib/aggregate.mjs', 'lib/format.mjs', 'lib/parse-utils.mjs', 'lib/read.mjs');
     if (engine === 'wasm')
       paths.push('wasm/engine.mjs', 'wasm/kernel.c', 'wasm/kernel.wasm', 'wasm/build.json');
   }
   const hash = createHash('sha256');
-  for (const path of paths) hash.update(`${path}\0`).update(readFileSync(path));
+  for (const path of paths) hash.update(`${path}\0`).update(readFileSync(resolve(root, path)));
   return hash.digest('hex');
 }
