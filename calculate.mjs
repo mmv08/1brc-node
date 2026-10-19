@@ -9,7 +9,7 @@ export async function calculate(file, options = {}) {
   const fd = openSync(file, 'r');
   try {
     const size = fstatSync(fd).size;
-    const chunkSize = options.chunkSize ?? Number(process.env.CHUNK_BYTES ?? 256 * 1024);
+    const chunkSize = options.chunkSize ?? Number(process.env.CHUNK_BYTES ?? 1024 * 1024);
     const requested = options.workers ?? Number(process.env.WORKERS ?? availableParallelism());
     if (!Number.isSafeInteger(chunkSize) || chunkSize < 128 || chunkSize > 256 * 1024 * 1024) {
       throw new Error('CHUNK_BYTES must be an integer between 128 and 268435456');
