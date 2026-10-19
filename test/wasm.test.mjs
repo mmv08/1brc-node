@@ -196,13 +196,13 @@ test('full-key verification checks every middle byte without a test-only kernel'
       const oldHash = view.getUint32(base + 16, true);
       const originalHash = hashName(original);
       assert.equal(oldHash, originalHash.fingerprint);
-      assert.equal(view.getUint32(buckets + originalHash.slot * 4, true), base);
+      assert.equal(view.getUint16(buckets + originalHash.slot * 2, true), 1);
       const hash = hashName(changed);
       // Fault-inject a matching cached hash and bucket, leaving name bytes and
       // cached head/tail unchanged. This exercises collisions in the ONE real
       // kernel, without shipping an alternative constant-hash implementation.
-      view.setUint32(buckets + originalHash.slot * 4, 0, true);
-      view.setUint32(buckets + hash.slot * 4, base, true);
+      view.setUint16(buckets + originalHash.slot * 2, 0, true);
+      view.setUint16(buckets + hash.slot * 2, 1, true);
       view.setUint32(base + 16, hash.fingerprint, true);
       parse(0, fill(buffer, `${changed};0.2\n`));
       const expected = [
