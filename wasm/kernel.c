@@ -253,24 +253,59 @@ INLINE const uint8_t *update_row(ParsedRow row) {
 
 INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row(p)); }
 
-INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
+typedef struct {
+  const uint8_t *temperature;
+  Station *station;
+  v128_t key;
+} ShortRow;
+
+INLINE ShortRow prepare_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
   uint32_t length = (uint32_t)__builtin_ctz(matches);
   v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length + 1]));
-  uint64_t head = (uint64_t)wasm_i64x2_extract_lane(key, 0);
-  uint64_t high = (uint64_t)wasm_i64x2_extract_lane(key, 1);
-  uint64_t hash = mix_pair(0, head, high);
-  uint32_t slot = (uint32_t)(hash >> 49);
-  Station *station = (Station *)(uintptr_t)buckets[slot];
-  // An empty record is all zero; a key containing ';' can never match it.
-  if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key))) {
-    station = find_station(start, length, hash, head);
-  }
-  return update_row((ParsedRow){start + length + 1, station});
+  uint64_t hash = mix_pair(0, (uint64_t)wasm_i64x2_extract_lane(key, 0),
+                           (uint64_t)wasm_i64x2_extract_lane(key, 1));
+  Station *station = (Station *)(uintptr_t)buckets[(uint32_t)(hash >> 49)];
+  return (ShortRow){start + length + 1, station, key};
 }
 
-// Only a lane whose delimiter is outside the first vector needs the general parser.
-__attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *p) {
-  return process_row(p);
+// Recompute only on misses instead of carrying the hash through all three lookups.
+__attribute__((noinline, cold)) static Station *repair_short(const uint8_t *temperature,
+                                                             v128_t key) {
+  uint32_t length = (uint32_t)__builtin_ctz(
+      (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(key, wasm_i8x16_splat(';'))));
+  const uint8_t *start = temperature - length - 1;
+  uint64_t head = (uint64_t)wasm_i64x2_extract_lane(key, 0);
+  uint64_t hash = mix_pair(0, head, (uint64_t)wasm_i64x2_extract_lane(key, 1));
+  return find_station(start, length, hash, head);
+}
+
+INLINE const uint8_t *finish_short(ShortRow row) {
+  Station *station = row.station;
+  if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), row.key))) {
+    station = repair_short(row.temperature, row.key);
+  }
+  return update_row((ParsedRow){row.temperature, station});
+}
+
+typedef struct {
+  const uint8_t *a;
+  const uint8_t *b;
+  const uint8_t *c;
+} RowPointers;
+
+// Preserve the complete valid-input parser when any name needs another block.
+__attribute__((noinline, cold)) static RowPointers process_three(const uint8_t *a, const uint8_t *b,
+                                                                 const uint8_t *c) {
+  NameRow name_a = scan_name(a);
+  NameRow name_b = scan_name(b);
+  NameRow name_c = scan_name(c);
+  ParsedRow row_a = lookup_row(name_a);
+  ParsedRow row_b = lookup_row(name_b);
+  ParsedRow row_c = lookup_row(name_c);
+  const uint8_t *next_a = update_row(row_a);
+  const uint8_t *next_b = update_row(row_b);
+  const uint8_t *next_c = update_row(row_c);
+  return (RowPointers){next_a, next_b, next_c};
 }
 
 EXPORT(reset) void reset(void) {
@@ -318,9 +353,19 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
     uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
     uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
     uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-    a = matches_a ? process_short(a, matches_a, bytes_a) : process_long(a);
-    b = matches_b ? process_short(b, matches_b, bytes_b) : process_long(b);
-    c = matches_c ? process_short(c, matches_c, bytes_c) : process_long(c);
+    if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
+      ShortRow row_a = prepare_short(a, matches_a, bytes_a);
+      ShortRow row_b = prepare_short(b, matches_b, bytes_b);
+      ShortRow row_c = prepare_short(c, matches_c, bytes_c);
+      a = finish_short(row_a);
+      b = finish_short(row_b);
+      c = finish_short(row_c);
+    } else {
+      RowPointers next = process_three(a, b, c);
+      a = next.a;
+      b = next.b;
+      c = next.c;
+    }
   }
   while (a < end_a) a = process_row(a);
   while (b < end_b) b = process_row(b);
