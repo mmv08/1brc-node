@@ -16,12 +16,22 @@ and never during parsing.
 
 The freestanding kernel imports nothing: no libc, WASI or host callbacks.
 SIMD scans 16 bytes for delimiters and verifies the middle of long names.
-Three independent newline-aligned lanes run name scanning, station lookup and
-statistics updates in separate phases. Each lookup installs a complete new key
-before the next lookup; updates remain ordered even when lanes share a station.
-C outlines new-key insertion and collision probing into cold functions.
+Three independent newline-aligned lanes first scan for delimiters. When all
+three names end within the first 16-byte block (1–15 name bytes), the compact
+path hashes all three names, then resolves and updates each row immediately.
+This shortens the lifetime of lookup results between lanes.
+
+If any name needs another block, a C-outlined helper uses the complete general
+parser: scan all names, resolve all stations, then update statistics in order.
+It accepts every valid name up to 100 UTF-8 bytes. Remaining rows in each lane
+also use the general parser. Each lookup installs a complete new key before
+the next lookup; updates remain ordered even when lanes share a station.
+
+C also outlines new-key insertion and collision probing into cold functions.
 V8 uses its normal compilation and inlining settings. The selected binary is
-**5,798 bytes**.
+**7,328 bytes**. The inspected Node 26 optimized `parse_chunk` body is 8,960 bytes
+versus 10,624 bytes previously; the general scanning code also exists in its
+separate helper. The module has grown while the main native function is smaller.
 
 The 100-byte name limit fits the length into seven bits beside the full 32-bit
 input pointer. Scanning carries just that packed value and the hash into lookup;

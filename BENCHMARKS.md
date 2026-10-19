@@ -1,6 +1,73 @@
 # Benchmark and experiment log
 
-## Current result: bounded parser and paired hashing, 2026-10-19
+## Current result: short-name path and lookup scheduling, 2026-10-19
+
+The fourth round separates short-name scanning from the general parser and
+changes when lookup results are consumed. Same Core Ultra 7 258V, Node 26.12.0,
+performance mode, eight workers, 512 KiB chunks and billion-row input.
+The selected source checkpoint is `f7121b7`; `6ca6210` adds regression coverage.
+Only the fastest measured implementation is shipped. All commits are unsigned.
+
+After **16 full-file warm-up processes**, seven alternating rounds gave:
+
+| Solver | Trimmed mean | Best |
+| --- | ---: | ---: |
+| Previous winner, `a74fc22` | 1.266 s | 1.254 s |
+| Short-name path, staged lookups, `fb737ce` | 1.236 s | 1.211 s |
+| Short-name path, immediate updates, `c65e8c0` | 1.240 s | 1.218 s |
+| **Immediate updates with staged fallback, `f7121b7`** | **1.231 s** | **1.216 s** |
+
+**2.7% less elapsed time**, or **1.028× throughput**, against the previous winner
+in the same batch. Scores discard the fastest and slowest run and average the
+remaining five. All **44 full-file processes** produced complete expected stdout.
+All **28 measured runs** reported zero filesystem input: this is a cached
+**11.20 logical GB/s** result including startup, compilation, reads, parsing,
+aggregation, merging, sorting, output and shutdown. Peak RSS: 156,720 KiB.
+
+Each iteration scans all three first blocks. If every delimiter is present,
+names are 1–15 bytes long; a compact path hashes them together, then resolves
+and updates each row immediately. If any delimiter needs another block,
+a C-outlined helper uses the fully staged general parser, supporting arbitrary
+valid names up to 100 bytes. Keys are completely verified and shared-station
+updates remain ordered. The hash, exact sums, 40-byte record ABI, input handling
+and runtime settings are unchanged. No input dictionary is embedded.
+
+The inspected Node 26 optimized `parse_chunk` body shrank from 10,624 to
+8,960 bytes. It still uses stack slots, including around the fallback call.
+The Wasm module grew from 5,798 to 7,328 bytes because general parsing also
+exists in its separate helper.
+
+### Fourth-round attempt checkpoints
+
+Results within each row are matched five-round trimmed means unless marked
+as the final seven-round comparison. Separate batches must not be combined.
+
+| Commit | Attempt and matched result | Decision |
+| --- | --- | --- |
+| `e261689` | Consume each lookup immediately after scanning: 1.253 → 1.244 s | Refined in the short-name path |
+| `7d44ddb` | Revisit four compact lanes: 1.308 s versus 1.253 s previous winner | Rejected |
+| `fb737ce` | Three-row short-name path: 1.253 → 1.222 s | Retained |
+| `c65e8c0` | Add immediate updates: 1.215 s versus 1.222 s staged lookups | Refined below; isolated advantage varied |
+| `a4ea36e` | SIMD cached head/tail comparison: 1.238 s versus 1.222 s scalar checks | Rejected |
+| `f7121b7` | Fully stage the general fallback: 1.231 s versus 1.240 s immediate updates alone, final seven rounds | Selected |
+
+All **22 tests pass on Node 24 and Node 26**. The new differential test covers
+every name length from 1 to 100 bytes, short/long transitions, repeated keys,
+UTF-8, CRLF, missing final newline, chunk sizes and worker counts. Existing
+coverage includes every legal temperature, 10,000 stations, whole-key collision
+fault injection and the billion-row sum bound. Biome and C-format checks pass.
+Exact-count verification confirms **1,000,000,000 measurements and 413 stations**
+and complete expected stdout. The default launcher matches it byte-for-byte.
+The selected import-free SIMD module is **7,328 bytes**.
+
+Raw final report: `results/1792425763901-compare-r4-final-verification.json`.
+The baseline source hash exactly matches the third round's final winner.
+Per-attempt reports use `results/*-compare-r4-*.json`; the summary is
+`results/2026-10-19-round4-summary.json`. Native inspection is saved in
+`results/round4-final-assembly.txt`. Temporary experiment worktrees are removed;
+all attempts remain available through their checkpoint commits.
+
+## Previous round: bounded parser and paired hashing, 2026-10-19
 
 The third round uses the challenge's 100-byte name bound to reduce carried
 parser state and bound full-name verification. It also uses a cheaper hash
