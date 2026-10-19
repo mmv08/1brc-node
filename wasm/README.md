@@ -16,13 +16,18 @@ and never during parsing.
 
 The freestanding kernel imports nothing: no libc, WASI or host callbacks.
 SIMD scans 16 bytes for delimiters and verifies the middle of long names.
-Three independent newline-aligned lanes overlap work. New-key insertion is a
-cold, non-inlined function. The selected binary is **6,244 bytes**.
+Three independent newline-aligned lanes run name scanning, station lookup and
+statistics updates in separate phases. Each lookup installs a complete new key
+before the next lookup; updates remain ordered even when lanes share a station.
+New-key insertion is a
+cold, non-inlined function. The selected binary is **6,267 bytes**.
 
 Short-name matching loads and masks the head and tail unconditionally, avoiding
 branches whose outcomes vary with station-name length. Hashing similarly masks
 both parts of the last 16-byte block before selecting the rolling hash result.
-The hash algorithm is unchanged. A matching bucket always receives complete
+The rolling hash is unchanged. Its high 15 bits select a bucket directly;
+the folded fingerprint is computed only on insertion for inspection. A matching
+bucket always receives complete
 name verification; hash equality is not an additional hot-path requirement.
 
 Station records remain exactly **40 bytes**:
@@ -37,7 +42,9 @@ Station records remain exactly **40 bytes**:
 | 24, 32 | Uint64 head/tail filters |
 
 One 128-bit load/store updates the statistics. An `i64x2.add` updates the sum
-and count; signed `i16x8.min/max` and masks merge the extrema. Counts cannot
+and count; signed `i16x8.min/max` compute the extrema. Fixed lane shuffles merge
+the fields, lowering to two immediate SIMD blends in the inspected Node 26 code
+instead of six bitwise mask operations. Counts cannot
 reach 2^32 within the billion-row challenge, so incrementing the count cannot
 carry into its adjacent min/max fields. Sums are exact signed 64-bit integers.
 

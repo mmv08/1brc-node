@@ -1,6 +1,64 @@
 # Benchmark and experiment log
 
-## Current result: branchless solver, 2026-10-19
+## Current result: three-stage pipeline, 2026-10-19
+
+A second optimization round retained direct bucket indexing, staged processing,
+and fixed-lane SIMD shuffles. Same Core Ultra 7 258V, Node 26.12.0, performance
+profile, eight workers, 512 KiB chunks, billion-row file and complete output checks.
+The final source checkpoint is `df1abe9`; only this implementation is shipped.
+
+After **16 full-file warm-up processes**, seven alternating rounds gave:
+
+| Solver | Trimmed mean | Best |
+| --- | ---: | ---: |
+| Previous winner, `e535c54` | 1.446 s | 1.419 s |
+| **Selected three-stage parser** | **1.344 s** | **1.338 s** |
+
+**7.1% less elapsed time**, or **1.076× throughput**,
+versus the previous winner in the same batch. Each score drops the fastest and
+slowest run and averages the remaining five. All 30 full-file processes were
+correct; all 14 measured runs reported zero filesystem input. This is a cached
+**10.27 logical GB/s** result including startup, compilation, I/O,
+parsing, merging, sorting, output and shutdown. Peak RSS: 157,292 KiB.
+
+The rolling hash is unchanged, but its high 15 bits now select the bucket
+without two fingerprint folds. The inspection fingerprint is computed only on
+cold insertion. Each three-row iteration scans all names, resolves all station
+records, then applies temperature/statistics updates in order. Fixed shuffles
+merge the SIMD fields using two immediate blends rather than six bitwise mask
+operations in the inspected generated code. Full name verification, exact
+64-bit sums, record ABI and input handling are preserved.
+
+### Second-round attempt checkpoints
+
+All attempts were committed unsigned before measuring. Results within a row
+are matched five-round trimmed means; separate batches must not be combined.
+
+| Commit | Attempt and matched result | Decision |
+| --- | --- | --- |
+| `bcbf7c3` | Direct high-bit bucket index: 1.442 → 1.414 s | Retained |
+| `edfbcd4` | Lookups before temperature/statistics: 1.416 → 1.389 s | Retained, then further staged |
+| `dce10cc` | SIMD shuffles instead of masked merges: 1.372 → 1.355 s | Retained |
+| `f278519` | Separate scan / lookup / update phases: 1.348 s versus 1.365 s for two-stage processing | Retained |
+| `09b509d` | Two staged lanes: 1.465 s | Rejected |
+| `f47224f` | Four staged lanes: 1.355 s versus 1.348 s for three fully staged lanes | Rejected |
+| `df9d9f2` | Hoisted SIMD constants: 1.342816 s versus 1.342936 s inline | No measurable gain; rejected |
+| `df1abe9` | Selected three-stage implementation with no runtime variants | Final source checkpoint |
+
+All **20 production tests pass on Node 24 and Node 26**. Biome and C-format
+checks pass. Exact-count verification confirms **1,000,000,000 measurements and
+413 stations** and complete expected stdout; the default launcher is checked
+separately. The import-free kernel is **6,267 bytes**. The table mapping change
+is also covered by the production-kernel collision fault-injection tests.
+
+Raw final report: `results/1792423660307-compare-r2-final-verification.json`.
+The baseline source hash exactly matches the previous round's final report.
+Per-attempt reports use `results/*-compare-r2-*.json`; the summary is
+`results/2026-10-19-round2-summary.json`. Generated code inspection is saved in
+`results/round2-final-assembly.txt`. Recreate comparison worktrees from the
+checkpoint commits; temporary experiment checkouts are removed after verification.
+
+## Previous round: branchless solver, 2026-10-19
 
 The current tree ships only the selected Wasm solver. `./run.sh` uses it by
 default; the JavaScript solver and rejected alternatives remain in git history.

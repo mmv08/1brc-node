@@ -3,8 +3,8 @@
 One optimized implementation: Node handles workers, file reads and final output;
 a freestanding Wasm SIMD kernel parses and aggregates the measurements.
 On this Core Ultra 7 258V in performance mode, the cached billion-row benchmark
-averages **1.447 seconds**,
-**27.5% less time** than the previous Wasm implementation in a matched test.
+averages **1.344 seconds**. A further pipeline optimization round reduced
+elapsed time by **7.1%** against the previous winner in a matched test.
 Only the selected solver is shipped. Optimization attempts are checkpointed in
 git, with measured results in [BENCHMARKS.md](BENCHMARKS.md).
 
@@ -32,12 +32,12 @@ while processing. This is an optimized valid-input parser, not a CSV validator.
   range splits a name or temperature. The full file isn't loaded into the heap.
 - Input buffers alias Wasm memory directly. One host call processes a chunk;
   there are no per-row JS/Wasm calls or input copies.
-- Three independent parsing lanes overlap work. SIMD scans for delimiters;
-  masked hashing and name comparisons avoid unpredictable length branches.
-- A pointer table references compact 40-byte records. Cold insertion is outlined.
-  Names are verified completely, including every middle byte of long names.
-- One SIMD update combines exact signed 64-bit sums, counts and min/max values.
-  Names and result objects are allocated per station, never per measurement.
+- Three lanes scan names, resolve stations, then update statistics in separate
+  phases. SIMD scans delimiters; masked hashing and matching avoid length branches.
+- A pointer table references compact 40-byte records. Bucket indexes come directly
+  from the rolling hash. Names are verified completely; cold insertion is outlined.
+- SIMD updates exact signed 64-bit sums, counts and min/max values; fixed lane
+  shuffles merge the fields. Objects are allocated per station, never per measurement.
 - Final sorting uses UTF-16 order and Java-compatible rounding.
 
 Details: [wasm/README.md](wasm/README.md).
