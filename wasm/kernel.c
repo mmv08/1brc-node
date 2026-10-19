@@ -116,11 +116,11 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   return station;
 }
 
-INLINE Station *find_station(const uint8_t *start, uint32_t length, uint32_t hash, uint64_t head) {
-  uint32_t slot = (hash ^ (hash >> 16)) & (TABLE_SIZE - 1);
+INLINE Station *find_station(const uint8_t *start, uint32_t length, uint64_t hash, uint64_t head) {
+  uint32_t slot = (uint32_t)(hash >> 49);
   for (;;) {
     uint32_t entry = buckets[slot];
-    if (!entry) return insert_station(start, length, hash, head, slot);
+    if (!entry) return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
     Station *station = (Station *)(uintptr_t)entry;
     if (same_name(station, start, length, head)) return station;
     slot = (slot + 1) & (TABLE_SIZE - 1);
@@ -153,7 +153,6 @@ INLINE const uint8_t *process_row(const uint8_t *p) {
   }
   uint32_t length = (uint32_t)(p - start);
   uint64_t head = first & byte_masks[length < 8 ? length : 8];
-  uint32_t fingerprint = (uint32_t)(hash ^ (hash >> 32));
   p++;
   uint32_t word = load32(p);
   uint32_t negative = (~word >> 4) & 1;
@@ -163,7 +162,7 @@ INLINE const uint8_t *process_row(const uint8_t *p) {
   value = (value ^ -(int32_t)negative) + (int32_t)negative;
   const uint8_t *next = p + width + (p[width - 1] == '\r');
 
-  Station *station = find_station(start, length, fingerprint, head);
+  Station *station = find_station(start, length, hash, head);
   // Counts stay below 2^32, so adding one cannot carry into packed min/max.
   // Update the exact sum/count together and blend in signed 16-bit extrema.
   v128_t stats = wasm_v128_load(station);

@@ -131,7 +131,10 @@ function hashName(name) {
       word |= BigInt(bytes[p + i]) << BigInt(i * 8);
     hash = ((hash ^ word) * 0x9e3779b185ebca87n) & 0xffffffffffffffffn;
   }
-  return Number((hash ^ (hash >> 32n)) & 0xffffffffn);
+  return {
+    fingerprint: Number((hash ^ (hash >> 32n)) & 0xffffffffn),
+    slot: Number(hash >> 49n),
+  };
 }
 
 test('full-key verification checks every middle byte without a test-only kernel', async () => {
@@ -148,16 +151,16 @@ test('full-key verification checks every middle byte without a test-only kernel'
       const changed = `${original.slice(0, position)}Y${original.slice(position + 1)}`;
       parse(0, fill(buffer, `${original};0.1\n`));
       const oldHash = view.getUint32(base + 16, true);
-      assert.equal(oldHash, hashName(original));
-      const slot = (hash) => (hash ^ (hash >>> 16)) & 32767;
-      assert.equal(view.getUint32(buckets + slot(oldHash) * 4, true), base);
+      const originalHash = hashName(original);
+      assert.equal(oldHash, originalHash.fingerprint);
+      assert.equal(view.getUint32(buckets + originalHash.slot * 4, true), base);
       const hash = hashName(changed);
       // Fault-inject a matching cached hash and bucket, leaving name bytes and
       // cached head/tail unchanged. This exercises collisions in the ONE real
       // kernel, without shipping an alternative constant-hash implementation.
-      view.setUint32(buckets + slot(oldHash) * 4, 0, true);
-      view.setUint32(buckets + slot(hash) * 4, base, true);
-      view.setUint32(base + 16, hash, true);
+      view.setUint32(buckets + originalHash.slot * 4, 0, true);
+      view.setUint32(buckets + hash.slot * 4, base, true);
+      view.setUint32(base + 16, hash.fingerprint, true);
       parse(0, fill(buffer, `${changed};0.2\n`));
       const expected = [
         [original, 1, 1, 1, 1],
