@@ -243,8 +243,12 @@ INLINE NameRow scan_name(const uint8_t *p) {
   return (NameRow){((uint64_t)(uintptr_t)start << 7) | length, hash};
 }
 
-INLINE const uint8_t *update_row(ParsedRow row) {
-  const uint8_t *p = row.temperature;
+typedef struct {
+  const uint8_t *next;
+  int32_t value;
+} Reading;
+
+INLINE Reading read_temperature(const uint8_t *p) {
   uint32_t word = load32(p);
   // The decimal is in byte 1, 2 or 3; preceding digits have ASCII bit 4 set.
   // Locate it independently of sign normalization to advance the input lane.
@@ -256,7 +260,10 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   value = (value ^ -(int32_t)negative) + (int32_t)negative;
   const uint8_t *next = p + width + (p[width - 1] == '\r');
 
-  Stats *station = row.stats;
+  return (Reading){next, value};
+}
+
+INLINE void add_value(Stats *station, int32_t value) {
   // Counts stay below 2^32, so adding one cannot carry into packed min/max.
   // Update the exact sum/count together and blend in signed 16-bit extrema.
   v128_t stats = wasm_v128_load(station);
@@ -266,7 +273,12 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   v128_t extrema = wasm_i16x8_shuffle(wasm_i16x8_min(stats, values), wasm_i16x8_max(stats, values),
                                       0, 1, 2, 3, 4, 5, 6, 15);
   wasm_v128_store(station, wasm_i16x8_shuffle(added, extrema, 0, 1, 2, 3, 4, 5, 14, 15));
-  return next;
+}
+
+INLINE const uint8_t *update_row(ParsedRow row) {
+  Reading reading = read_temperature(row.temperature);
+  add_value(row.stats, reading.value);
+  return reading.next;
 }
 
 INLINE void clear_partial(CacheEntry *entry) {
@@ -397,9 +409,15 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
     if (cache_matches(entry_a, bytes_a) & cache_matches(entry_b, bytes_b) &
         cache_matches(entry_c, bytes_c)) {
       // Hits cannot replace a slot. Ordered updates also handle shared entries.
-      a = update_row((ParsedRow){a + entry_a->length + 1, &entry_a->stats});
-      b = update_row((ParsedRow){b + entry_b->length + 1, &entry_b->stats});
-      c = update_row((ParsedRow){c + entry_c->length + 1, &entry_c->stats});
+      Reading reading_a = read_temperature(a + entry_a->length + 1);
+      Reading reading_b = read_temperature(b + entry_b->length + 1);
+      Reading reading_c = read_temperature(c + entry_c->length + 1);
+      add_value(&entry_a->stats, reading_a.value);
+      add_value(&entry_b->stats, reading_b.value);
+      add_value(&entry_c->stats, reading_c.value);
+      a = reading_a.next;
+      b = reading_b.next;
+      c = reading_c.next;
     } else {
       RowPointers next = process_mixed(a, b, c);
       a = next.a;
