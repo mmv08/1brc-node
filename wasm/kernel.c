@@ -268,24 +268,24 @@ INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128
   return update_row((ParsedRow){start + length + 1, station});
 }
 
-INLINE const uint8_t *process_mixed(const uint8_t *p) {
-  v128_t bytes = wasm_v128_load(p);
-  uint32_t matches = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes, wasm_i8x16_splat(';')));
-  return matches ? process_short(p, matches, bytes) : process_row(p);
-}
-
 typedef struct {
   const uint8_t *a;
   const uint8_t *b;
   const uint8_t *c;
 } RowPointers;
 
-// Keep the common all-short branch unchanged; specialize only mixed triples.
+// Preserve the complete valid-input parser when any name needs another block.
 __attribute__((noinline, cold)) static RowPointers process_three(const uint8_t *a, const uint8_t *b,
                                                                  const uint8_t *c) {
-  const uint8_t *next_a = process_mixed(a);
-  const uint8_t *next_b = process_mixed(b);
-  const uint8_t *next_c = process_mixed(c);
+  NameRow name_a = scan_name(a);
+  NameRow name_b = scan_name(b);
+  NameRow name_c = scan_name(c);
+  ParsedRow row_a = lookup_row(name_a);
+  ParsedRow row_b = lookup_row(name_b);
+  ParsedRow row_c = lookup_row(name_c);
+  const uint8_t *next_a = update_row(row_a);
+  const uint8_t *next_b = update_row(row_b);
+  const uint8_t *next_c = update_row(row_c);
   return (RowPointers){next_a, next_b, next_c};
 }
 
