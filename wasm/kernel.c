@@ -274,16 +274,26 @@ INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128
 typedef struct {
   const uint8_t *a;
   const uint8_t *b;
+  const uint8_t *c;
+  const uint8_t *d;
 } RowPointers;
 
-__attribute__((noinline, cold)) static RowPointers process_two(const uint8_t *a, const uint8_t *b) {
+__attribute__((noinline, cold)) static RowPointers process_four(const uint8_t *a, const uint8_t *b,
+                                                                const uint8_t *c,
+                                                                const uint8_t *d) {
   NameRow name_a = scan_name(a);
   NameRow name_b = scan_name(b);
+  NameRow name_c = scan_name(c);
+  NameRow name_d = scan_name(d);
   ParsedRow row_a = lookup_row(name_a);
   ParsedRow row_b = lookup_row(name_b);
+  ParsedRow row_c = lookup_row(name_c);
+  ParsedRow row_d = lookup_row(name_d);
   const uint8_t *next_a = update_row(row_a);
   const uint8_t *next_b = update_row(row_b);
-  return (RowPointers){next_a, next_b};
+  const uint8_t *next_c = update_row(row_c);
+  const uint8_t *next_d = update_row(row_d);
+  return (RowPointers){next_a, next_b, next_c, next_d};
 }
 
 EXPORT(reset) void reset(void) {
@@ -305,7 +315,7 @@ EXPORT(buckets_base) uint32_t buckets_base(void) { return (uint32_t)(uintptr_t)b
 EXPORT(station_count) uint32_t station_count(void) { return used; }
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
-  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 2;
+  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 4;
   if (p == begin) return p;
   while (p < end && p[-1] != '\n') p++;
   return p;
@@ -316,22 +326,36 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *a = (const uint8_t *)(uintptr_t)begin;
   const uint8_t *limit = (const uint8_t *)(uintptr_t)end;
   const uint8_t *end_a = boundary(a, limit, 1);
+  const uint8_t *end_b = boundary(a, limit, 2);
+  const uint8_t *end_c = boundary(a, limit, 3);
   const uint8_t *b = end_a;
-  while (a < end_a && b < limit) {
+  const uint8_t *c = end_b;
+  const uint8_t *d = end_c;
+  while (a < end_a && b < end_b && c < end_c && d < limit) {
     const v128_t separator = wasm_i8x16_splat(';');
     v128_t bytes_a = wasm_v128_load(a);
     v128_t bytes_b = wasm_v128_load(b);
+    v128_t bytes_c = wasm_v128_load(c);
+    v128_t bytes_d = wasm_v128_load(d);
     uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
     uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
-    if ((matches_a != 0) & (matches_b != 0)) {
+    uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
+    uint32_t matches_d = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_d, separator));
+    if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0) & (matches_d != 0)) {
       a = process_short(a, matches_a, bytes_a);
       b = process_short(b, matches_b, bytes_b);
+      c = process_short(c, matches_c, bytes_c);
+      d = process_short(d, matches_d, bytes_d);
     } else {
-      RowPointers next = process_two(a, b);
+      RowPointers next = process_four(a, b, c, d);
       a = next.a;
       b = next.b;
+      c = next.c;
+      d = next.d;
     }
   }
   while (a < end_a) a = process_row(a);
-  while (b < limit) b = process_row(b);
+  while (b < end_b) b = process_row(b);
+  while (c < end_c) c = process_row(c);
+  while (d < limit) d = process_row(d);
 }
