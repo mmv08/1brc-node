@@ -132,7 +132,14 @@ typedef struct {
   Station *station;
 } ParsedRow;
 
-INLINE ParsedRow scan_row(const uint8_t *p) {
+typedef struct {
+  const uint8_t *start;
+  uint32_t length;
+  uint64_t hash;
+  uint64_t head;
+} NameRow;
+
+INLINE NameRow scan_name(const uint8_t *p) {
   const uint8_t *start = p;
   uint64_t hash = 0;
   uint64_t first = load64(start);
@@ -158,8 +165,15 @@ INLINE ParsedRow scan_row(const uint8_t *p) {
   }
   uint32_t length = (uint32_t)(p - start);
   uint64_t head = first & byte_masks[length < 8 ? length : 8];
-  return (ParsedRow){p + 1, find_station(start, length, hash, head)};
+  return (NameRow){start, length, hash, head};
 }
+
+INLINE ParsedRow lookup_row(NameRow row) {
+  return (ParsedRow){row.start + row.length + 1,
+                     find_station(row.start, row.length, row.hash, row.head)};
+}
+
+INLINE ParsedRow scan_row(const uint8_t *p) { return lookup_row(scan_name(p)); }
 
 INLINE const uint8_t *update_row(ParsedRow row) {
   const uint8_t *p = row.temperature;
@@ -219,9 +233,12 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *b = end_a;
   const uint8_t *c = end_b;
   while (a < end_a && b < end_b && c < limit) {
-    ParsedRow row_a = scan_row(a);
-    ParsedRow row_b = scan_row(b);
-    ParsedRow row_c = scan_row(c);
+    NameRow name_a = scan_name(a);
+    NameRow name_b = scan_name(b);
+    NameRow name_c = scan_name(c);
+    ParsedRow row_a = lookup_row(name_a);
+    ParsedRow row_b = lookup_row(name_b);
+    ParsedRow row_c = lookup_row(name_c);
     a = update_row(row_a);
     b = update_row(row_b);
     c = update_row(row_c);
