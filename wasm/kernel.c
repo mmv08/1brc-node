@@ -7,7 +7,7 @@
 #define MAX_STATIONS 10000
 #define TABLE_SIZE 32768
 #define OFFSET_MASK UINT32_C(0xfffff)
-#define CACHE_BITS 14
+#define CACHE_BITS 12
 #define CACHE_SIZE (1u << CACHE_BITS)
 
 // Fixed result ABI: integer tenths, an exact signed 64-bit sum, and a packed
