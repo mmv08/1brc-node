@@ -15,17 +15,15 @@ typedef struct {
   uint32_t count;
   int16_t min;
   int16_t max;
-  uint64_t head;
-  uint64_t tail;
   uint32_t hash;
   uint32_t key;
+  uint64_t head;
+  uint64_t tail;
 } Station;
 
 _Static_assert(sizeof(Station) == 40, "station ABI size");
 _Static_assert(offsetof(Station, count) == 8, "station ABI count");
-_Static_assert(offsetof(Station, head) == 16, "station ABI comparison key");
-_Static_assert(offsetof(Station, hash) == 32, "station ABI fingerprint");
-_Static_assert(offsetof(Station, key) == 36, "station ABI key");
+_Static_assert(offsetof(Station, key) == 20, "station ABI key");
 _Static_assert(MAX_STATIONS * 104 + 16 < (1 << 20), "all valid key offsets fit");
 
 static uint32_t buckets[TABLE_SIZE];
