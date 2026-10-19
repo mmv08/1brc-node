@@ -177,10 +177,9 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   v128_t stats = wasm_v128_load(station);
   v128_t added = wasm_i64x2_add(stats, wasm_i64x2_make(value, 1));
   v128_t values = wasm_i16x8_splat((int16_t)value);
-  v128_t extrema = wasm_v128_bitselect(wasm_i16x8_max(stats, values), wasm_i16x8_min(stats, values),
-                                       wasm_i16x8_make(0, 0, 0, 0, 0, 0, 0, -1));
-  wasm_v128_store(station,
-                  wasm_v128_bitselect(extrema, added, wasm_i16x8_make(0, 0, 0, 0, 0, 0, -1, -1)));
+  v128_t extrema = wasm_i16x8_shuffle(wasm_i16x8_min(stats, values), wasm_i16x8_max(stats, values),
+                                      0, 1, 2, 3, 4, 5, 6, 15);
+  wasm_v128_store(station, wasm_i16x8_shuffle(added, extrema, 0, 1, 2, 3, 4, 5, 14, 15));
   return next;
 }
 
