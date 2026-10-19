@@ -255,11 +255,7 @@ INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row
 
 INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
   uint32_t length = (uint32_t)__builtin_ctz(matches);
-  // Straddle zero at the longest short name to retain a signed comparison.
-  const v128_t positions =
-      wasm_i8x16_make(-16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1);
-  v128_t mask = wasm_i8x16_lt(positions, wasm_i8x16_splat((int8_t)((int32_t)length - 15)));
-  v128_t key = wasm_v128_and(bytes, mask);
+  v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length + 1]));
   v128_t mixed = wasm_v128_xor(
       key, wasm_i64x2_make(UINT64_C(0x9e3779b185ebca87), UINT64_C(0xc2b2ae3d27d4eb4f)));
   uint64_t hash =
