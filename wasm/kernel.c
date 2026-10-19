@@ -80,11 +80,22 @@ __attribute__((noinline, cold)) static int same_middle(const Station *station, c
                                                        uint32_t length) {
   const uint8_t *key = names + (station->key & OFFSET_MASK);
   const uint32_t last = length - 16;
-  for (uint32_t i = 8; i < last; i += 16) {
-    if (wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + i), wasm_v128_load(key + i))) !=
-        0xffff)
-      return 0;
-  }
+  // Names are at most 100 bytes: five fixed middle vectors suffice.
+  if (last > 8 && wasm_i8x16_bitmask(
+                      wasm_i8x16_eq(wasm_v128_load(start + 8), wasm_v128_load(key + 8))) != 0xffff)
+    return 0;
+  if (last > 24 && wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 24),
+                                                    wasm_v128_load(key + 24))) != 0xffff)
+    return 0;
+  if (last > 40 && wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 40),
+                                                    wasm_v128_load(key + 40))) != 0xffff)
+    return 0;
+  if (last > 56 && wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 56),
+                                                    wasm_v128_load(key + 56))) != 0xffff)
+    return 0;
+  if (last > 72 && wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 72),
+                                                    wasm_v128_load(key + 72))) != 0xffff)
+    return 0;
   // Overlap the last vector so every middle byte is checked without reading
   // beyond the actual name. Cached head/tail words alone are never sufficient.
   return wasm_i8x16_bitmask(
