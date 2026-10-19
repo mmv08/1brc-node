@@ -64,12 +64,25 @@ const report = {
   engine: process.env.ENGINE ?? 'phased',
   label: process.env.BENCH_LABEL ?? '',
   streams:
-    process.env.STREAMS ?? (process.env.ENGINE && process.env.ENGINE !== 'phased' ? '1' : '2'),
+    (process.env.ENGINE === 'wasm' ? (process.env.WASM_STREAMS ?? '4') : process.env.STREAMS) ??
+    (['phased', 'round3', 'hybrid', 'lean', 'direct'].includes(process.env.ENGINE ?? 'phased')
+      ? '2'
+      : '1'),
+  coreStreams: process.env.CORE_STREAMS ?? null,
+  wasmVariant: process.env.WASM_VARIANT ?? 'simd-pointers',
+  wasmStreams: process.env.WASM_STREAMS ?? '4',
   io: process.env.IO ?? 'sync',
   tableBits: process.env.TABLE_BITS ?? '15',
   temperature: process.env.TEMPERATURE ?? 'table',
   nameCompare: process.env.NAME_COMPARE ?? 'branchless',
   stats: process.env.STATS ?? 'arrays',
+  recordLayout: process.env.RECORD_LAYOUT ?? 'split',
+  recordBytes: process.env.RECORD_BYTES ?? '48',
+  pipeline: process.env.PIPELINE ?? 'phased',
+  hashMode: process.env.HASH_MODE ?? 'fnv',
+  scanBytes: process.env.SCAN_BYTES ?? '4',
+  batchSize: process.env.BATCH_SIZE ?? '32',
+  reduceWidth: process.env.REDUCE_WIDTH ?? '4',
   uvThreadpoolSize: process.env.UV_THREADPOOL_SIZE ?? 'default',
   privateFd: process.env.PRIVATE_FD ?? '0',
   cpuSet: process.env.CPU_SET ?? '',

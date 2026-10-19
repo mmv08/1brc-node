@@ -15,8 +15,13 @@ async function runEngine(config) {
     });
   }
   if (config.engine === 'phased') return aggregate(config);
+  if (config.engine === 'wasm') return (await import('./wasm/engine.mjs')).aggregate(config);
   if (config.engine === 'baseline') return (await import('./lib/baseline.mjs')).aggregate(config);
-  if (!['objects', 'flat', 'soa', 'masked'].includes(config.engine))
+  if (
+    !['objects', 'flat', 'soa', 'masked', 'round3', 'hybrid', 'lean', 'direct'].includes(
+      config.engine,
+    )
+  )
     throw new Error('Unknown ENGINE');
   const engine = await import(`./experiments/${config.engine}.mjs`);
   return engine.aggregate(config);

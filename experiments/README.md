@@ -1,5 +1,9 @@
 # Pure-JavaScript optimization experiments
 
+The [final JS-only pass](LAST-PASS.md) tested fused records, batched reduction,
+alternate hashes, scan unrolling and per-core kernels. None beat the current
+default repeatably; its hot path was retained unchanged.
+
 These engines deliberately remain separate from the winning parser so that
 failed experiments don't obscure the readable default. No WebAssembly, native
 addons, precomputed station names, or input-specific results are used.

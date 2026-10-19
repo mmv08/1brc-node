@@ -15,7 +15,9 @@ export function nodeRuntime() {
 
 export function nodeFlags(env) {
   if (env.FLAGS !== undefined) return env.FLAGS.split(/\s+/).filter(Boolean);
-  return (env.ENGINE ?? 'phased') === 'phased' ? inliningFlags : [];
+  return ['phased', 'round3', 'hybrid', 'lean', 'direct'].includes(env.ENGINE ?? 'phased')
+    ? inliningFlags
+    : [];
 }
 
 export function sourceHash(engine = 'phased', script = 'calculate.mjs') {
@@ -28,7 +30,18 @@ export function sourceHash(engine = 'phased', script = 'calculate.mjs') {
       'lib/parse-utils.mjs',
       'lib/read.mjs',
     );
-    if (!['phased', 'baseline'].includes(engine)) paths.push(`experiments/${engine}.mjs`);
+    if (engine === 'wasm') {
+      paths.push(
+        'wasm/engine.mjs',
+        'wasm/kernel.c',
+        'wasm/next.c',
+        'wasm/variants.mjs',
+        'tools/build-wasm.mjs',
+        'wasm/build.json',
+      );
+      const manifest = JSON.parse(readFileSync('wasm/build.json', 'utf8'));
+      for (const { variant } of manifest.modules) paths.push(`wasm/kernel-${variant}.wasm`);
+    } else if (!['phased', 'baseline'].includes(engine)) paths.push(`experiments/${engine}.mjs`);
     if (engine === 'masked') paths.push('experiments/flat.mjs');
   }
   const hash = createHash('sha256');

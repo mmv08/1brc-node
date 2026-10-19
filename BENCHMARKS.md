@@ -1,5 +1,68 @@
 # Local benchmark notes
 
+## Optional Node + WebAssembly SIMD backend
+
+This is a separate backend/category, not a new pure-JS score. It keeps the
+same file, Node 26.12.0, workers, positioned reads, chunk ownership and final
+formatting, but parsing and aggregation run inside an import-free Wasm module.
+Buffers alias Wasm memory directly; there is one host call per chunk, none per
+row. Module compilation/instantiation and result decoding are included.
+
+### Matched sustained comparison
+
+After **16 output-checked full-file JS warm-ups**, five alternating rounds,
+with order reversed every other round, dropping fastest/slowest per case:
+
+| Backend | Trimmed mean |
+| --- | ---: |
+| Existing optimized JavaScript | **5.670 s** |
+| Scalar 64-bit Wasm, three cursors | **3.734 s** |
+| SIMD Wasm, pointer buckets, four cursors | **3.773 s** |
+
+The SIMD backend is approximately **1.50× faster / 33.5% lower elapsed time**
+than JS under matched conditions. Scalar Wasm is nearly tied, so most of the
+gain is moving the kernel into Wasm; these data don't establish an additional
+SIMD-specific improvement for the weather dataset's short names.
+Raw report: `results/1792393877072-compare-wasm-confirm.json`.
+
+### Ordinary cached-input five-run score
+
+`ENGINE=wasm npm run bench -- measurements.txt`, default `simd-pointers`,
+four cursors, eight workers, 128 KiB chunks, no special V8 flags:
+
+| Run | Seconds |
+| --- | ---: |
+| 1 | 2.009 |
+| 2 | 2.017 |
+| 3 | 2.027 |
+| 4 | 2.058 |
+| 5 | 2.254 |
+| **Trimmed mean** | **2.034** |
+
+About **492 million rows/s** or **6.78 logical GB/s**, warm cache. This batch
+finishes mostly within the laptop's high-clock burst window; don't compare it
+against sustained-state numbers as if clock state were constant.
+Raw report: `results/1792394238895-local.json`.
+
+An independent full-file verification processed exactly **1,000,000,000 rows**,
+**413 stations**, matching the expected output, in **2.019 s** (2.04 s including
+Node startup, **159,444 KiB peak RSS**, about 156 MiB).
+
+The build uses existing Clang 22.1.8 and LLD 20.0.0, with no global installation.
+Small prebuilt binaries and full source/build commands are retained. Tests audit
+actual SIMD instructions and prove complete-key comparison under forced hash
+collisions, including 17-byte names whose first/last eight bytes match.
+See [wasm/README.md](wasm/README.md) for design, controls and reproduction.
+
+## Final JavaScript-only pass
+
+The [last pass](experiments/LAST-PASS.md) found no further repeatable gain, so
+the existing production kernel and defaults remain unchanged. Fused records,
+tiled reduction, alternative hashes, unrolled scanning and P/E-specific kernels
+were tested. After warm-up, the most promising apparent winner tied the current
+implementation at **5.845 s vs 5.845 s** on all billion rows. This doesn't replace
+the earlier results below; clock/power state explains the absolute-time change.
+
 ## Machine and method
 
 - Intel Core Ultra 7 258V: 4 performance + 4 efficiency cores, no SMT.

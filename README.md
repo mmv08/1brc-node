@@ -1,6 +1,23 @@
-# 1BRC, pure Node.js
+# 1BRC with Node.js: JavaScript and optional Wasm SIMD
 
-**Final default: 3.930 seconds for one billion rows**, five-run trimmed mean.
+**Node + WebAssembly SIMD: 2.034 seconds for one billion rows**, five-run
+trimmed mean; best **2.009 s**, roughly **492 million rows/s** on average.
+
+```sh
+ENGINE=wasm ./run.sh measurements.txt
+```
+
+The Wasm backend is optional; `./run.sh` alone still uses the pure-JS engine.
+A fully warmed, alternating comparison measured **5.670 s JS vs 3.773 s Wasm
+SIMD**—about **1.5× faster**. Scalar Wasm was nearly tied at 3.734 s, so the
+gain cannot be attributed to SIMD alone. Burst and sustained timings differ
+substantially on this laptop. See [Wasm implementation details](wasm/README.md)
+and [all benchmark results](BENCHMARKS.md).
+
+The [final JS-only optimization pass](experiments/LAST-PASS.md) found no further
+repeatable gain. That JS-only pass did not use Wasm; its kernel remains the JS default.
+
+**Pure-JS default: 3.930 seconds for one billion rows**, five-run trimmed mean.
 A matched old/new comparison showed **another 11% improvement**:
 **6.116 s → 5.467 s** under the same sustained conditions. The default's best
 paired run was **3.066 s**, about **326 million rows/s** or **4.50 GB/s**.
@@ -29,13 +46,14 @@ NODE_BIN=/path/to/node ./run.sh measurements.txt
 node calculate.mjs measurements.txt
 ```
 
-No runtime dependencies, native addons, or WebAssembly. The launcher supplies
+Neither backend needs native addons or npm runtime dependencies. The default
+JS path does not use WebAssembly. Its launcher supplies
 two measured V8 inlining-budget flags for the phased parser:
 `--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000`.
 Direct `node calculate.mjs` also works, but omits this tuning.
 Node 24.16.0 and 26.12.0 both support the implementation.
 
-## How it works
+## How the JS default works
 
 - **Dynamic work distribution.** Workers claim 128 KiB ranges using a shared
   atomic counter. Faster cores process more ranges—important on this hybrid CPU.
@@ -85,6 +103,12 @@ chunk boundaries, rounding, missing newlines, and sums exceeding both signed
 and unsigned 32-bit ranges.
 An additional differential test checks **60 combinations** of layouts, readers,
 cursor counts, table growth, temperature parsers, and statistics storage.
+
+Wasm tests additionally verify the compiled SIMD opcodes, absence of imports,
+zero-copy buffer aliasing, memory growth/reset, signed 64-bit sum bounds,
+all cursor counts and I/O modes, and forced full-hash collisions. `wabt` is a
+development-only inspector; the shipped kernels run without it.
+See [wasm/README.md](wasm/README.md) for optional C rebuild/formatting commands.
 
 ## Generate and benchmark
 

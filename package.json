@@ -4,6 +4,10 @@
   "type": "module",
   "scripts": {
     "start": "./run.sh",
+    "start:wasm": "ENGINE=wasm ./run.sh",
+    "build:wasm": "node tools/build-wasm.mjs",
+    "format:c": "node tools/format-c.mjs",
+    "check:c": "node tools/format-c.mjs --check",
     "test": "node --test test/*.test.mjs",
     "generate": "node tools/generate.mjs",
     "bench": "node tools/bench.mjs",
@@ -14,6 +18,7 @@
     "node": ">=22"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15"
+    "@biomejs/biome": "2.5.15",
+    "wabt": "1.0.39"
   }
 }
