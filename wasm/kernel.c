@@ -46,6 +46,27 @@ static const uint64_t byte_masks[9] = {
     UINT64_MAX,
 };
 
+// Canonical short names keep their padded bytes in SIMD registers.
+static const uint64_t short_masks[17][2] __attribute__((aligned(16))) = {
+    {UINT64_C(0x0), UINT64_C(0x0)},
+    {UINT64_C(0xff), UINT64_C(0x0)},
+    {UINT64_C(0xffff), UINT64_C(0x0)},
+    {UINT64_C(0xffffff), UINT64_C(0x0)},
+    {UINT64_C(0xffffffff), UINT64_C(0x0)},
+    {UINT64_C(0xffffffffff), UINT64_C(0x0)},
+    {UINT64_C(0xffffffffffff), UINT64_C(0x0)},
+    {UINT64_C(0xffffffffffffff), UINT64_C(0x0)},
+    {UINT64_C(0xffffffffffffffff), UINT64_C(0x0)},
+    {UINT64_C(0xffffffffffffffff), UINT64_C(0xff)},
+    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffff)},
+    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffff)},
+    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffff)},
+    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffff)},
+    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffff)},
+    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffff)},
+    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff)},
+};
+
 // Freestanding memory helpers: the module imports neither libc nor WASI.
 void *memcpy(void *destination, const void *source, size_t length) {
   uint8_t *out = destination;
@@ -103,11 +124,13 @@ __attribute__((noinline, cold)) static int same_middle(const Station *station, c
 }
 
 INLINE int same_name(const Station *station, const uint8_t *start, uint32_t length, uint64_t head) {
-  uint32_t width = length < 8 ? length : 8;
-  uint64_t tail = load64(start + length - width) & byte_masks[width];
-  if (((station->key >> 20) != length) | (station->head != head) | (station->tail != tail))
-    return 0;
-  if (length <= 16) return 1;
+  if ((station->key >> 20) != length) return 0;
+  if (length < 16) {
+    v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length]));
+    return !wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key));
+  }
+  if ((station->head != head) | (station->tail != load64(start + length - 8))) return 0;
+  if (length == 16) return 1;
   return same_middle(station, start, length);
 }
 
@@ -125,8 +148,13 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   station->max = -999;
   station->hash = hash;
   station->key = (length << 20) | name_used;
-  station->head = head;
-  station->tail = length > 8 ? load64(start + length - 8) : head;
+  if (length < 16) {
+    v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length]));
+    wasm_v128_store(&station->head, key);
+  } else {
+    station->head = head;
+    station->tail = load64(start + length - 8);
+  }
   memcpy(names + name_used, start, length);
   name_used = (name_used + length + 7) & ~7u;
   return station;
@@ -189,13 +217,6 @@ INLINE NameRow scan_name(const uint8_t *p) {
   return (NameRow){((uint64_t)(uintptr_t)start << 7) | length, hash};
 }
 
-INLINE NameRow scan_short_name(const uint8_t *start, uint32_t matches) {
-  uint32_t length = (uint32_t)__builtin_ctz(matches);
-  uint64_t low = load64(start) & byte_masks[length < 8 ? length : 8];
-  uint64_t high = load64(start + 8) & byte_masks[length > 8 ? length - 8 : 0];
-  return (NameRow){((uint64_t)(uintptr_t)start << 7) | length, mix_pair(0, low, high)};
-}
-
 INLINE ParsedRow lookup_row(NameRow row) {
   const uint8_t *start = (const uint8_t *)(uintptr_t)(row.location >> 7);
   uint32_t length = (uint32_t)row.location & 127;
@@ -229,6 +250,27 @@ INLINE const uint8_t *update_row(ParsedRow row) {
 }
 
 INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row(p)); }
+
+INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
+  uint32_t length = (uint32_t)__builtin_ctz(matches);
+  v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length]));
+  uint64_t head = (uint64_t)wasm_i64x2_extract_lane(key, 0);
+  uint64_t high = (uint64_t)wasm_i64x2_extract_lane(key, 1);
+  uint64_t hash = mix_pair(0, head, high);
+  uint32_t slot = (uint32_t)(hash >> 49);
+  uint32_t entry = buckets[slot];
+  Station *station;
+  if (!entry) {
+    station = insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
+  } else {
+    station = (Station *)(uintptr_t)entry;
+    if (((station->key >> 20) != length) |
+        wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key))) {
+      station = probe_station(start, length, hash, head, (slot + 1) & (TABLE_SIZE - 1));
+    }
+  }
+  return update_row((ParsedRow){start + length + 1, station});
+}
 
 typedef struct {
   const uint8_t *a;
@@ -286,16 +328,16 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *c = end_b;
   while (a < end_a && b < end_b && c < limit) {
     const v128_t separator = wasm_i8x16_splat(';');
-    uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(a), separator));
-    uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(b), separator));
-    uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(c), separator));
+    v128_t bytes_a = wasm_v128_load(a);
+    v128_t bytes_b = wasm_v128_load(b);
+    v128_t bytes_c = wasm_v128_load(c);
+    uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
+    uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
+    uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
     if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
-      NameRow name_a = scan_short_name(a, matches_a);
-      NameRow name_b = scan_short_name(b, matches_b);
-      NameRow name_c = scan_short_name(c, matches_c);
-      a = update_row(lookup_row(name_a));
-      b = update_row(lookup_row(name_b));
-      c = update_row(lookup_row(name_c));
+      a = process_short(a, matches_a, bytes_a);
+      b = process_short(b, matches_b, bytes_b);
+      c = process_short(c, matches_c, bytes_c);
     } else {
       RowPointers next = process_three(a, b, c);
       a = next.a;
