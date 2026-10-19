@@ -122,14 +122,57 @@ test('10K keys, 100-byte/UTF-8/NUL names and chunk boundaries preserve exact agg
   }
 });
 
+test('10K short UTF-8/NUL keys preserve all aggregates across lanes and chunks', async () => {
+  const directory = mkdtempSync(join(tmpdir(), '1brc-short-keys-'));
+  const file = join(directory, 'input.txt');
+  const names = Array.from(
+    { length: 10000 },
+    (_, i) => `é${i.toString(36).padStart(4, '0')}${'x'.repeat(i % 10)}\u0000`,
+  );
+  const expected = new Map();
+  let input = '';
+  for (let round = 0; round < 3; round++) {
+    for (let i = 0; i < names.length; i++) {
+      const name = names[i];
+      const value = ((i * 97 + round * 11) % 1999) - 999;
+      input += `${name};${(value / 10).toFixed(1)}${round % 2 ? '\r\n' : '\n'}`;
+      const row = expected.get(name);
+      if (row) {
+        row[1] = Math.min(row[1], value);
+        row[2] += value;
+        row[3] = Math.max(row[3], value);
+        row[4]++;
+      } else expected.set(name, [name, value, value, value, 1]);
+    }
+  }
+  writeFileSync(file, input.slice(0, -1));
+  try {
+    const rows = [...expected.values()];
+    const output = format(rows);
+    for (const chunkSize of [128, 4096]) {
+      for (const workers of [1, 3]) {
+        const actual = await calculate(file, { workers, chunkSize });
+        assert.equal(format(actual), output);
+        assert.deepEqual(actual, rows);
+      }
+    }
+  } finally {
+    rmSync(directory, { recursive: true });
+  }
+});
+
 function hashName(name) {
   const bytes = Buffer.from(name);
   let hash = 0n;
-  for (let p = 0; p < bytes.length; p += 8) {
-    let word = 0n;
+  for (let p = 0; p < bytes.length; p += 16) {
+    let low = 0n;
+    let high = 0n;
     for (let i = 0; i < Math.min(8, bytes.length - p); i++)
-      word |= BigInt(bytes[p + i]) << BigInt(i * 8);
-    hash = ((hash ^ word) * 0x9e3779b185ebca87n) & 0xffffffffffffffffn;
+      low |= BigInt(bytes[p + i]) << BigInt(i * 8);
+    for (let i = 0; i < Math.min(8, bytes.length - p - 8); i++)
+      high |= BigInt(bytes[p + 8 + i]) << BigInt(i * 8);
+    hash =
+      ((hash ^ low ^ 0x9e3779b185ebca87n) * (high ^ 0xc2b2ae3d27d4eb4fn)) & 0xffffffffffffffffn;
   }
   return {
     fingerprint: Number((hash ^ (hash >> 32n)) & 0xffffffffn),

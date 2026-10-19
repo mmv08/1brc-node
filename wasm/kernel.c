@@ -72,8 +72,8 @@ INLINE uint32_t load32(const uint8_t *p) {
   return value;
 }
 
-INLINE uint64_t mix(uint64_t hash, uint64_t word) {
-  return (hash ^ word) * UINT64_C(0x9e3779b185ebca87);
+INLINE uint64_t mix_pair(uint64_t hash, uint64_t low, uint64_t high) {
+  return (hash ^ low ^ UINT64_C(0x9e3779b185ebca87)) * (high ^ UINT64_C(0xc2b2ae3d27d4eb4f));
 }
 
 __attribute__((noinline, cold)) static int same_middle(const Station *station, const uint8_t *start,
@@ -132,9 +132,9 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   return station;
 }
 
-__attribute__((noinline, cold)) static Station *probe_station(const uint8_t *start, uint32_t length,
-                                                              uint64_t hash, uint64_t head,
-                                                              uint32_t slot) {
+INLINE Station *find_station(const uint8_t *start, uint32_t length, uint64_t hash, uint64_t head) {
+  // Bucket selection needs no folded fingerprint on the hot path.
+  uint32_t slot = (uint32_t)(hash >> 49);
   for (;;) {
     uint32_t entry = buckets[slot];
     if (!entry) return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
@@ -142,15 +142,6 @@ __attribute__((noinline, cold)) static Station *probe_station(const uint8_t *sta
     if (same_name(station, start, length, head)) return station;
     slot = (slot + 1) & (TABLE_SIZE - 1);
   }
-}
-
-INLINE Station *find_station(const uint8_t *start, uint32_t length, uint64_t hash, uint64_t head) {
-  uint32_t slot = (uint32_t)(hash >> 49);
-  uint32_t entry = buckets[slot];
-  if (!entry) return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
-  Station *station = (Station *)(uintptr_t)entry;
-  if (same_name(station, start, length, head)) return station;
-  return probe_station(start, length, hash, head, (slot + 1) & (TABLE_SIZE - 1));
 }
 
 typedef struct {
@@ -177,14 +168,12 @@ INLINE NameRow scan_name(const uint8_t *p) {
       uint32_t high_width = length > 8 ? length - 8 : 0;
       uint64_t low = load64(p) & byte_masks[low_width];
       uint64_t high = load64(p + 8) & byte_masks[high_width];
-      uint64_t one = mix(hash, low);
-      uint64_t two = mix(one, high);
-      hash = length == 0 ? hash : (length <= 8 ? one : two);
+      uint64_t mixed = mix_pair(hash, low, high);
+      hash = length == 0 ? hash : mixed;
       p += length;
       break;
     }
-    hash = mix(hash, load64(p));
-    hash = mix(hash, load64(p + 8));
+    hash = mix_pair(hash, load64(p), load64(p + 8));
     p += 16;
   }
   uint32_t length = (uint32_t)(p - start);
