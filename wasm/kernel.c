@@ -242,7 +242,7 @@ EXPORT(buckets_base) uint32_t buckets_base(void) { return (uint32_t)(uintptr_t)b
 EXPORT(station_count) uint32_t station_count(void) { return used; }
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
-  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 3;
+  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 4;
   if (p == begin) return p;
   while (p < end && p[-1] != '\n') p++;
   return p;
@@ -254,19 +254,26 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *limit = (const uint8_t *)(uintptr_t)end;
   const uint8_t *end_a = boundary(a, limit, 1);
   const uint8_t *end_b = boundary(a, limit, 2);
+  const uint8_t *end_c = boundary(a, limit, 3);
   const uint8_t *b = end_a;
   const uint8_t *c = end_b;
-  while (a < end_a && b < end_b && c < limit) {
-    // Finish independent scans before lookups, then apply each update in order.
+  const uint8_t *d = end_c;
+  while (a < end_a && b < end_b && c < end_c && d < limit) {
     NameRow name_a = scan_name(a);
     NameRow name_b = scan_name(b);
     NameRow name_c = scan_name(c);
-    // Consume each lookup immediately so its pointers need not stay live.
-    a = update_row(lookup_row(name_a));
-    b = update_row(lookup_row(name_b));
-    c = update_row(lookup_row(name_c));
+    NameRow name_d = scan_name(d);
+    ParsedRow row_a = lookup_row(name_a);
+    ParsedRow row_b = lookup_row(name_b);
+    ParsedRow row_c = lookup_row(name_c);
+    ParsedRow row_d = lookup_row(name_d);
+    a = update_row(row_a);
+    b = update_row(row_b);
+    c = update_row(row_c);
+    d = update_row(row_d);
   }
   while (a < end_a) a = process_row(a);
   while (b < end_b) b = process_row(b);
-  while (c < limit) c = process_row(c);
+  while (c < end_c) c = process_row(c);
+  while (d < limit) d = process_row(d);
 }
