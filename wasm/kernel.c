@@ -136,12 +136,13 @@ INLINE const uint8_t *process_row(const uint8_t *p) {
     uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(p), separator));
     if (matches) {
       uint32_t length = (uint32_t)__builtin_ctz(matches);
-      if (length >= 8) {
-        hash = mix(hash, load64(p));
-        p += 8;
-        length -= 8;
-      }
-      if (length) hash = mix(hash, load64(p) & byte_masks[length]);
+      uint32_t low_width = length < 8 ? length : 8;
+      uint32_t high_width = length > 8 ? length - 8 : 0;
+      uint64_t low = load64(p) & byte_masks[low_width];
+      uint64_t high = load64(p + 8) & byte_masks[high_width];
+      uint64_t one = mix(hash, low);
+      uint64_t two = mix(one, high);
+      hash = length == 0 ? hash : (length <= 8 ? one : two);
       p += length;
       break;
     }
