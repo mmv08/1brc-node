@@ -336,7 +336,9 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
     uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
     uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
     uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-    if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
+    // Each bitmask is 16 bits. Only zero underflows into bit 31 on subtraction.
+    uint32_t missing = (matches_a - 1) | (matches_b - 1) | (matches_c - 1);
+    if ((missing >> 31) == 0) {
       a = process_short(a, matches_a, bytes_a);
       b = process_short(b, matches_b, bytes_b);
       c = process_short(c, matches_c, bytes_c);
