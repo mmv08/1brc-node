@@ -161,6 +161,41 @@ test('10K short UTF-8/NUL keys preserve all aggregates across lanes and chunks',
   }
 });
 
+test('all temperature spellings preserve values and row boundaries', async () => {
+  const directory = mkdtempSync(join(tmpdir(), '1brc-temperature-formats-'));
+  const file = join(directory, 'input.txt');
+  const expected = new Map();
+  let input = '';
+  for (const negative of [false, true]) {
+    for (const width of [1, 2]) {
+      for (let whole = 0; whole < 10 ** width; whole++) {
+        for (let fraction = 0; fraction < 10; fraction++) {
+          const name = `T${expected.size.toString(36)}`;
+          const magnitude = whole * 10 + fraction;
+          const value = negative && magnitude ? -magnitude : magnitude;
+          const text = `${negative ? '-' : ''}${String(whole).padStart(width, '0')}.${fraction}`;
+          expected.set(name, [value, value * 6, value, 6]);
+          for (const eol of ['\n', '\r\n']) {
+            input += `${name};${text}${eol}`.repeat(3);
+          }
+        }
+      }
+    }
+  }
+  // Repeated short keys drive every parsing lane; omit the final CRLF too.
+  writeFileSync(file, input.slice(0, -2));
+  try {
+    for (const chunkSize of [128, 4096]) {
+      for (const workers of [1, 3]) {
+        const rows = await calculate(file, { workers, chunkSize });
+        assert.deepEqual(new Map(rows.map(([name, ...stats]) => [name, stats])), expected);
+      }
+    }
+  } finally {
+    rmSync(directory, { recursive: true });
+  }
+});
+
 test('every name length and repeated keys preserve aggregates across parser transitions', async () => {
   const directory = mkdtempSync(join(tmpdir(), '1brc-name-lengths-'));
   const file = join(directory, 'input.txt');
