@@ -121,7 +121,7 @@ INLINE Station *find_station(const uint8_t *start, uint32_t length, uint32_t has
     uint32_t entry = buckets[slot];
     if (!entry) return insert_station(start, length, hash, head, slot);
     Station *station = (Station *)(uintptr_t)entry;
-    if (station->hash == hash && same_name(station, start, length, head)) return station;
+    if (same_name(station, start, length, head)) return station;
     slot = (slot + 1) & (TABLE_SIZE - 1);
   }
 }
