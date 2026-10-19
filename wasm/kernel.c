@@ -26,8 +26,15 @@ _Static_assert(offsetof(Station, count) == 8, "station ABI count");
 _Static_assert(offsetof(Station, key) == 20, "station ABI key");
 _Static_assert(MAX_STATIONS * 104 + 16 < (1 << 20), "all valid key offsets fit");
 
-static uint32_t buckets[TABLE_SIZE];
-static Station stations[MAX_STATIONS];
+typedef struct {
+  Station station;
+  uint8_t padding[24];
+} Bucket;
+
+_Static_assert(sizeof(Bucket) == 64, "one bucket per cache line");
+
+static Bucket buckets[TABLE_SIZE] __attribute__((aligned(64)));
+static Station *stations[MAX_STATIONS];
 static uint8_t names[MAX_STATIONS * 104 + 16];
 static uint16_t temperatures[4096];
 static uint32_t used;
@@ -100,8 +107,8 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
                                                                uint32_t length, uint32_t hash,
                                                                uint64_t head, uint32_t slot) {
   if (used >= MAX_STATIONS || length == 0 || length > 100) __builtin_trap();
-  Station *station = &stations[used++];
-  buckets[slot] = (uint32_t)(uintptr_t)station;
+  Station *station = &buckets[slot].station;
+  stations[used++] = station;
   station->sum = 0;
   station->count = 0;
   station->min = 999;
@@ -118,9 +125,8 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
 INLINE Station *find_station(const uint8_t *start, uint32_t length, uint32_t hash, uint64_t head) {
   uint32_t slot = (hash ^ (hash >> 16)) & (TABLE_SIZE - 1);
   for (;;) {
-    uint32_t entry = buckets[slot];
-    if (!entry) return insert_station(start, length, hash, head, slot);
-    Station *station = (Station *)(uintptr_t)entry;
+    Station *station = &buckets[slot].station;
+    if (!station->count) return insert_station(start, length, hash, head, slot);
     if (same_name(station, start, length, head)) return station;
     slot = (slot + 1) & (TABLE_SIZE - 1);
   }
