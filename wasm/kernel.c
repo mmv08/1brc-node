@@ -26,6 +26,11 @@ _Static_assert(offsetof(Station, count) == 8, "station ABI count");
 _Static_assert(offsetof(Station, key) == 20, "station ABI key");
 _Static_assert(MAX_STATIONS * 104 + 16 < (1 << 20), "all valid key offsets fit");
 
+// Load invariant vectors once per chunk rather than materializing them in
+// every loop iteration. Volatile keeps Clang from folding loads into constants.
+static const volatile v128_t row_constants[2] = {{0x3b3b3b3b, 0x3b3b3b3b, 0x3b3b3b3b, 0x3b3b3b3b},
+                                                 {0, 0, 1, 0}};
+
 static uint32_t buckets[TABLE_SIZE];
 static Station stations[MAX_STATIONS];
 static uint8_t names[MAX_STATIONS * 104 + 16];
@@ -132,11 +137,17 @@ typedef struct {
   Station *station;
 } ParsedRow;
 
-INLINE ParsedRow scan_row(const uint8_t *p) {
+typedef struct {
+  const uint8_t *start;
+  uint32_t length;
+  uint64_t hash;
+  uint64_t head;
+} NameRow;
+
+INLINE NameRow scan_name(const uint8_t *p, v128_t separator) {
   const uint8_t *start = p;
   uint64_t hash = 0;
   uint64_t first = load64(start);
-  const v128_t separator = wasm_i8x16_splat(';');
   for (;;) {
     uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(p), separator));
     if (matches) {
@@ -158,10 +169,19 @@ INLINE ParsedRow scan_row(const uint8_t *p) {
   }
   uint32_t length = (uint32_t)(p - start);
   uint64_t head = first & byte_masks[length < 8 ? length : 8];
-  return (ParsedRow){p + 1, find_station(start, length, hash, head)};
+  return (NameRow){start, length, hash, head};
 }
 
-INLINE const uint8_t *update_row(ParsedRow row) {
+INLINE ParsedRow lookup_row(NameRow row) {
+  return (ParsedRow){row.start + row.length + 1,
+                     find_station(row.start, row.length, row.hash, row.head)};
+}
+
+INLINE ParsedRow scan_row(const uint8_t *p, v128_t separator) {
+  return lookup_row(scan_name(p, separator));
+}
+
+INLINE const uint8_t *update_row(ParsedRow row, v128_t increment) {
   const uint8_t *p = row.temperature;
   uint32_t word = load32(p);
   uint32_t negative = (~word >> 4) & 1;
@@ -175,7 +195,7 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   // Counts stay below 2^32, so adding one cannot carry into packed min/max.
   // Update the exact sum/count together and blend in signed 16-bit extrema.
   v128_t stats = wasm_v128_load(station);
-  v128_t added = wasm_i64x2_add(stats, wasm_i64x2_make(value, 1));
+  v128_t added = wasm_i64x2_add(stats, wasm_i64x2_replace_lane(increment, 0, value));
   v128_t values = wasm_i16x8_splat((int16_t)value);
   v128_t extrema = wasm_i16x8_shuffle(wasm_i16x8_min(stats, values), wasm_i16x8_max(stats, values),
                                       0, 1, 2, 3, 4, 5, 6, 15);
@@ -183,7 +203,9 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   return next;
 }
 
-INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row(p)); }
+INLINE const uint8_t *process_row(const uint8_t *p, v128_t separator, v128_t increment) {
+  return update_row(scan_row(p, separator), increment);
+}
 
 EXPORT(reset) void reset(void) {
   memset(buckets, 0, sizeof(buckets));
@@ -204,7 +226,7 @@ EXPORT(buckets_base) uint32_t buckets_base(void) { return (uint32_t)(uintptr_t)b
 EXPORT(station_count) uint32_t station_count(void) { return used; }
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
-  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 4;
+  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 3;
   if (p == begin) return p;
   while (p < end && p[-1] != '\n') p++;
   return p;
@@ -212,26 +234,26 @@ static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_
 
 EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   if (begin >= end) return;
+  const v128_t separator = row_constants[0];
+  const v128_t increment = row_constants[1];
   const uint8_t *a = (const uint8_t *)(uintptr_t)begin;
   const uint8_t *limit = (const uint8_t *)(uintptr_t)end;
   const uint8_t *end_a = boundary(a, limit, 1);
   const uint8_t *end_b = boundary(a, limit, 2);
-  const uint8_t *end_c = boundary(a, limit, 3);
   const uint8_t *b = end_a;
   const uint8_t *c = end_b;
-  const uint8_t *d = end_c;
-  while (a < end_a && b < end_b && c < end_c && d < limit) {
-    ParsedRow row_a = scan_row(a);
-    ParsedRow row_b = scan_row(b);
-    ParsedRow row_c = scan_row(c);
-    ParsedRow row_d = scan_row(d);
-    a = update_row(row_a);
-    b = update_row(row_b);
-    c = update_row(row_c);
-    d = update_row(row_d);
+  while (a < end_a && b < end_b && c < limit) {
+    NameRow name_a = scan_name(a, separator);
+    NameRow name_b = scan_name(b, separator);
+    NameRow name_c = scan_name(c, separator);
+    ParsedRow row_a = lookup_row(name_a);
+    ParsedRow row_b = lookup_row(name_b);
+    ParsedRow row_c = lookup_row(name_c);
+    a = update_row(row_a, increment);
+    b = update_row(row_b, increment);
+    c = update_row(row_c, increment);
   }
-  while (a < end_a) a = process_row(a);
-  while (b < end_b) b = process_row(b);
-  while (c < end_c) c = process_row(c);
-  while (d < limit) d = process_row(d);
+  while (a < end_a) a = process_row(a, separator, increment);
+  while (b < end_b) b = process_row(b, separator, increment);
+  while (c < limit) c = process_row(c, separator, increment);
 }
