@@ -257,6 +257,7 @@ typedef struct {
   const uint8_t *temperature;
   Station *station;
   v128_t key;
+  v128_t cached_key;
 } ShortRow;
 
 INLINE ShortRow prepare_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
@@ -265,7 +266,7 @@ INLINE ShortRow prepare_short(const uint8_t *start, uint32_t matches, v128_t byt
   uint64_t hash = mix_pair(0, (uint64_t)wasm_i64x2_extract_lane(key, 0),
                            (uint64_t)wasm_i64x2_extract_lane(key, 1));
   Station *station = (Station *)(uintptr_t)buckets[(uint32_t)(hash >> 49)];
-  return (ShortRow){start + length + 1, station, key};
+  return (ShortRow){start + length + 1, station, key, wasm_v128_load(&station->head)};
 }
 
 // Recompute only on misses instead of carrying the hash through all three lookups.
@@ -281,7 +282,7 @@ __attribute__((noinline, cold)) static Station *repair_short(const uint8_t *temp
 
 INLINE const uint8_t *finish_short(ShortRow row) {
   Station *station = row.station;
-  if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), row.key))) {
+  if (wasm_v128_any_true(wasm_v128_xor(row.cached_key, row.key))) {
     station = repair_short(row.temperature, row.key);
   }
   return update_row((ParsedRow){row.temperature, station});
