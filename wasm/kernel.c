@@ -7,7 +7,7 @@
 #define MAX_STATIONS 10000
 #define TABLE_SIZE 32768
 #define OFFSET_MASK UINT32_C(0xfffff)
-#define CACHE_BITS 12
+#define CACHE_BITS 14
 #define CACHE_SIZE (1u << CACHE_BITS)
 
 // Fixed result ABI: integer tenths, an exact signed 64-bit sum, and a packed
@@ -37,10 +37,9 @@ static uint32_t buckets[TABLE_SIZE];
 static Station stations[MAX_STATIONS];
 static Station empty_station;
 
-// A learned short-name record owns partial aggregates until eviction or the
-// end of a chunk. All fields needed by a hit occupy one cache line.
+// Cache parsing metadata while keeping statistics in the dense station table.
 typedef struct {
-  Stats stats;
+  uint64_t reserved[2];
   uint64_t head;
   uint64_t tail;
   uint64_t mask_low;
@@ -52,8 +51,6 @@ typedef struct {
 
 _Static_assert(sizeof(CacheEntry) == 64, "one learned record per cache line");
 static CacheEntry cache[CACHE_SIZE] __attribute__((aligned(64)));
-static CacheEntry *active_cache[CACHE_SIZE];
-static uint32_t active_used;
 static uint8_t names[MAX_STATIONS * 104 + 16];
 static uint16_t temperatures[4096];
 static uint32_t used;
@@ -270,26 +267,6 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   return next;
 }
 
-INLINE void clear_partial(CacheEntry *entry) {
-  wasm_v128_store(&entry->stats, wasm_i16x8_make(0, 0, 0, 0, 0, 0, 999, -999));
-}
-
-INLINE void merge_partial(CacheEntry *entry) {
-  if (!entry->stats.count) return;
-  Stats *destination = &entry->owner->stats;
-  v128_t partial = wasm_v128_load(&entry->stats);
-  v128_t total = wasm_v128_load(destination);
-  v128_t added = wasm_i64x2_add(total, partial);
-  v128_t extrema = wasm_i16x8_shuffle(wasm_i16x8_min(total, partial),
-                                      wasm_i16x8_max(total, partial), 0, 1, 2, 3, 4, 5, 6, 15);
-  wasm_v128_store(destination, wasm_i16x8_shuffle(added, extrema, 0, 1, 2, 3, 4, 5, 14, 15));
-  clear_partial(entry);
-}
-
-__attribute__((noinline, cold)) static void flush_cache(void) {
-  for (uint32_t i = 0; i < active_used; i++) merge_partial(active_cache[i]);
-}
-
 __attribute__((noinline, cold)) static ParsedRow cache_miss(const uint8_t *start,
                                                             CacheEntry *entry) {
   NameRow name = scan_name(start);
@@ -297,14 +274,11 @@ __attribute__((noinline, cold)) static ParsedRow cache_miss(const uint8_t *start
   uint64_t head = load64(start) & byte_masks[length < 8 ? length : 8];
   Station *station = find_station(start, length, name.hash, head);
   if (length >= 16) return (ParsedRow){start + length + 1, &station->stats};
-  merge_partial(entry);
-  if (!entry->owner) active_cache[active_used++] = entry;
   entry->owner = station;
   entry->length = length;
   wasm_v128_store(&entry->head, wasm_v128_load(&station->head));
   wasm_v128_store(&entry->mask_low, wasm_v128_load(short_masks[length + 1]));
-  clear_partial(entry);
-  return (ParsedRow){start + length + 1, &entry->stats};
+  return (ParsedRow){start + length + 1, &station->stats};
 }
 
 INLINE const uint8_t *process_cached(const uint8_t *start) {
@@ -314,8 +288,11 @@ INLINE const uint8_t *process_cached(const uint8_t *start) {
   v128_t difference =
       wasm_v128_and(wasm_v128_xor(wasm_v128_load(start), wasm_v128_load(&entry->head)),
                     wasm_v128_load(&entry->mask_low));
-  ParsedRow row = {start + entry->length + 1, &entry->stats};
-  if (wasm_v128_any_true(difference)) row = cache_miss(start, entry);
+  ParsedRow row;
+  if (wasm_v128_any_true(difference))
+    row = cache_miss(start, entry);
+  else
+    row = (ParsedRow){start + entry->length + 1, &entry->owner->stats};
   return update_row(row);
 }
 
@@ -324,14 +301,12 @@ EXPORT(reset) void reset(void) {
     buckets[slot] = (uint32_t)(uintptr_t)&empty_station;
   used = 0;
   name_used = 0;
-  active_used = 0;
   for (uint32_t i = 0; i < CACHE_SIZE; i++) {
     // The impossible empty name ";" rejects every valid nonempty name,
     // including one starting with NUL. No separate empty check is needed.
     wasm_v128_store(&cache[i].head, wasm_i64x2_make(';', 0));
     wasm_v128_store(&cache[i].mask_low, wasm_i64x2_make(255, 0));
     cache[i].owner = NULL;
-    cache[i].stats.count = 0;
     cache[i].length = 0;
   }
   for (uint32_t first = 0; first <= 9; first++) {
@@ -374,6 +349,4 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   while (a < end_a) a = process_cached(a);
   while (b < end_b) b = process_cached(b);
   while (c < limit) c = process_cached(c);
-  // Publish all partials before returning through the existing result ABI.
-  flush_cache();
 }
