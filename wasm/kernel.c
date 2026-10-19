@@ -77,9 +77,10 @@ INLINE uint64_t mix(uint64_t hash, uint64_t word) {
 }
 
 INLINE int same_name(const Station *station, const uint8_t *start, uint32_t length, uint64_t head) {
-  if ((station->key >> 20) != length || station->head != head) return 0;
-  if (length <= 8) return 1;
-  if (load64(start + length - 8) != station->tail) return 0;
+  uint32_t width = length < 8 ? length : 8;
+  uint64_t tail = load64(start + length - width) & byte_masks[width];
+  if (((station->key >> 20) != length) | (station->head != head) | (station->tail != tail))
+    return 0;
   if (length <= 16) return 1;
   const uint8_t *key = names + (station->key & OFFSET_MASK);
   const uint32_t last = length - 16;
@@ -149,7 +150,7 @@ INLINE const uint8_t *process_row(const uint8_t *p) {
     p += 16;
   }
   uint32_t length = (uint32_t)(p - start);
-  uint64_t head = length < 8 ? first & byte_masks[length] : first;
+  uint64_t head = first & byte_masks[length < 8 ? length : 8];
   uint32_t fingerprint = (uint32_t)(hash ^ (hash >> 32));
   p++;
   uint32_t word = load32(p);
