@@ -3,7 +3,8 @@
 ## Method
 
 - Core Ultra 7 258V, 4 P + 4 E cores, 30 GiB RAM, Linux, Node 26.12.0.
-- OS `powersave` / `balance_power` preference unchanged; desktop apps remain running.
+- Unless noted otherwise, OS `powersave` / `balance_power` preference unchanged;
+  desktop apps remain running.
 - Input: **1,000,000,000 rows**, **13,795,455,110 bytes**, 413 stations.
 - Custom seeded Node generator, upstream station names/Gaussian distributions,
   clamped to ±99.9. Independent generated rows, not repeated data blocks.
@@ -15,8 +16,9 @@
 
 Burst/sustained clocks are a major confounder. The identical JS program has
 measured around 3 s initially and 5.8–6 s under sustained load. Do not compare
-unrelated batches as if power state were fixed. No system power changes or
-system-wide cache drops were used.
+unrelated batches as if power state were fixed. Historical optimization batches
+used no system power changes or system-wide cache drops. The user-selected
+performance-mode rerun is recorded separately below.
 
 ## Recorded milestones
 
@@ -87,6 +89,44 @@ matching the complete expected output, in 1.949 s (1.98 s including Node startup
 **156,552 KiB peak RSS**, about 153 MiB). All **20 production tests** pass on
 Node 24/26, and Biome and C-format checks pass. The current Wasm binary is only
 **7,868 bytes**, with no imports.
+
+## Performance-mode rerun, 2026-10-19
+
+The user selected performance mode. Read-only sysfs checks confirmed
+`performance` for the ACPI platform profile, all eight CPU governors and all
+eight energy-performance preferences. Same billion-row file, Node 26.12.0,
+eight workers and 128 KiB chunks; no implementation changes. The Wasm source
+hash matches both historical baselines exactly.
+
+An initial full-file Wasm pass populated the file cache (4.803 s, excluded from
+scores). The ordinary batch then used five fresh processes. The sustained
+comparison used 16 full-file JavaScript warm-ups followed by five alternating
+rounds of JavaScript and Wasm. Every score discards its fastest and slowest run.
+
+| Measurement | Historical powersave / balance_power | Performance | Less elapsed time |
+| --- | ---: | ---: | ---: |
+| Wasm, ordinary cached batch | 2.038 s | 1.933 s | 5.2% |
+| Wasm, sustained comparison | 3.874 s | 2.017 s | 47.9% |
+| JavaScript, sustained comparison | 5.670 s | 3.014 s | 46.9% |
+
+Ordinary Wasm runs: 1.901, 1.928, 1.902, 2.005, 1.968 s.
+Sustained Wasm runs: 2.186, 2.043, 2.004, 1.989, 2.004 s.
+Sustained JavaScript runs: 3.022, 3.027, 3.002, 3.017, 2.998 s.
+All 32 full-file processes, including warm-ups, matched complete expected stdout.
+All ten measured sustained runs reported zero filesystem input, confirming
+cached input. Wasm peaked at 155,068 KiB RSS in the sustained batch.
+
+The results are consistent with performance mode maintaining much more of the
+initial burst performance under sustained load. These are historical comparisons,
+not a same-session alternating power-profile experiment; other machine-state
+differences cannot be isolated. The Wasm comparison uses identical source;
+the JavaScript baseline predates the documented framework cleanup.
+
+Local raw reports: `results/1792420870152-bench.json` and
+`results/1792420876035-compare-performance-sustained.json`. The environment
+snapshot and baseline references are in
+`results/2026-10-19-performance-environment.json` and
+`results/2026-10-19-performance-summary.json`.
 
 ## Rejected experiments
 
