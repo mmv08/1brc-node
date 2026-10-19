@@ -105,8 +105,9 @@ __attribute__((noinline, cold)) static int same_middle(const Station *station, c
 INLINE int same_name(const Station *station, const uint8_t *start, uint32_t length, uint64_t head) {
   uint32_t width = length < 8 ? length : 8;
   uint64_t tail = load64(start + length - width) & byte_masks[width];
-  if (((station->key >> 20) != length) | (station->head != head) | (station->tail != tail))
-    return 0;
+  v128_t expected = wasm_i64x2_make((int64_t)head, (int64_t)tail);
+  v128_t different = wasm_v128_xor(wasm_v128_load(&station->head), expected);
+  if (((station->key >> 20) != length) | wasm_v128_any_true(different)) return 0;
   if (length <= 16) return 1;
   return same_middle(station, start, length);
 }
@@ -287,9 +288,12 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       NameRow name_a = scan_short_name(a, matches_a);
       NameRow name_b = scan_short_name(b, matches_b);
       NameRow name_c = scan_short_name(c, matches_c);
-      a = update_row(lookup_row(name_a));
-      b = update_row(lookup_row(name_b));
-      c = update_row(lookup_row(name_c));
+      ParsedRow row_a = lookup_row(name_a);
+      ParsedRow row_b = lookup_row(name_b);
+      ParsedRow row_c = lookup_row(name_c);
+      a = update_row(row_a);
+      b = update_row(row_b);
+      c = update_row(row_c);
     } else {
       RowPointers next = process_three(a, b, c);
       a = next.a;
