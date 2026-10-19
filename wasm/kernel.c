@@ -311,15 +311,33 @@ INLINE CacheEntry *route_cache(const uint8_t *start) {
   return &cache[hash >> (64 - CACHE_BITS)];
 }
 
-INLINE const uint8_t *process_cached_entry(const uint8_t *start, CacheEntry *entry, v128_t bytes) {
+INLINE int cache_matches(CacheEntry *entry, v128_t bytes) {
   uint32_t equal = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes, wasm_v128_load(&entry->head)));
+  return (equal & entry->match_bits) == entry->match_bits;
+}
+
+INLINE const uint8_t *process_cached_entry(const uint8_t *start, CacheEntry *entry, v128_t bytes) {
   ParsedRow row = {start + entry->length + 1, &entry->stats};
-  if ((equal & entry->match_bits) != entry->match_bits) row = cache_miss(start, entry);
+  if (!cache_matches(entry, bytes)) row = cache_miss(start, entry);
   return update_row(row);
 }
 
 INLINE const uint8_t *process_cached(const uint8_t *start) {
   return process_cached_entry(start, route_cache(start), wasm_v128_load(start));
+}
+
+typedef struct {
+  const uint8_t *a;
+  const uint8_t *b;
+  const uint8_t *c;
+} RowPointers;
+
+__attribute__((noinline, cold)) static RowPointers process_mixed(const uint8_t *a, const uint8_t *b,
+                                                                 const uint8_t *c) {
+  const uint8_t *next_a = process_cached(a);
+  const uint8_t *next_b = process_cached(b);
+  const uint8_t *next_c = process_cached(c);
+  return (RowPointers){next_a, next_b, next_c};
 }
 
 EXPORT(reset) void reset(void) {
@@ -376,10 +394,18 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
     v128_t bytes_a = wasm_v128_load(a);
     v128_t bytes_b = wasm_v128_load(b);
     v128_t bytes_c = wasm_v128_load(c);
-    // Validate each record after preceding misses can replace an aliased slot.
-    a = process_cached_entry(a, entry_a, bytes_a);
-    b = process_cached_entry(b, entry_b, bytes_b);
-    c = process_cached_entry(c, entry_c, bytes_c);
+    if (cache_matches(entry_a, bytes_a) & cache_matches(entry_b, bytes_b) &
+        cache_matches(entry_c, bytes_c)) {
+      // Hits cannot replace a slot. Ordered updates also handle shared entries.
+      a = update_row((ParsedRow){a + entry_a->length + 1, &entry_a->stats});
+      b = update_row((ParsedRow){b + entry_b->length + 1, &entry_b->stats});
+      c = update_row((ParsedRow){c + entry_c->length + 1, &entry_c->stats});
+    } else {
+      RowPointers next = process_mixed(a, b, c);
+      a = next.a;
+      b = next.b;
+      c = next.c;
+    }
   }
   while (a < end_a) a = process_cached(a);
   while (b < end_b) b = process_cached(b);
