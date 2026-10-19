@@ -3,8 +3,8 @@
 One optimized implementation: Node handles workers, file reads and final output;
 a freestanding Wasm SIMD kernel parses and aggregates the measurements.
 On this Core Ultra 7 258V in performance mode, the cached billion-row benchmark
-averages **1.231 seconds**. A further optimization round reduced elapsed time
-by **2.7%** against the previous winner in a matched test.
+averages **1.047 seconds**. A further optimization round reduced elapsed time
+by **14.0%** against the previous winner in a matched test.
 Only the selected solver is shipped. Optimization attempts are checkpointed in
 git, with measured results in [BENCHMARKS.md](BENCHMARKS.md).
 
@@ -32,14 +32,15 @@ while processing. This is an optimized valid-input parser, not a CSV validator.
   range splits a name or temperature. The full file isn't loaded into the heap.
 - Input buffers alias Wasm memory directly. One host call processes a chunk;
   there are no per-row JS/Wasm calls or input copies.
-- Three lanes scan delimiters together. When all three names end in the first
-  16-byte block, a compact path hashes them, then resolves and updates each row
-  immediately. Longer names use a fully staged general parser.
-- The 100-byte name limit packs each scanned name pointer and length into one
-  value. Head words are loaded during lookup, keeping less state between phases.
-- A pointer table references compact 40-byte records. Hashing mixes each pair of
-  words with one multiplication; its high bits select buckets. Full name checks
-  use bounded SIMD comparisons, with insertion and collision probing outlined.
+- Three lanes scan delimiters together. Short names stay in SIMD registers for
+  hashing and matching, then each row updates its statistics immediately. Longer
+  names use a fully staged general parser supporting names up to 100 bytes.
+- Short keys include the delimiter, encoding the complete name and its length in
+  one vector. An empty record cannot match them, so empty buckets can reference
+  a shared zero record without a separate empty check on the hot path.
+- A pointer table references compact 40-byte records. Hashing includes the
+  delimiter and mixes each word pair with one multiplication. Complete name
+  verification remains mandatory; insertion and collision probing are outlined.
 - SIMD updates exact signed 64-bit sums, counts and min/max values; fixed lane
   shuffles merge the fields. Objects are allocated per station, never per measurement.
 - Final sorting uses UTF-16 order and Java-compatible rounding.
@@ -61,7 +62,7 @@ npm run check:c
 Tests cover official fixtures, every legal temperature, Unicode/NUL/100-byte
 names, every name length, repeated-key transitions, 10,000 keys, exact sums/counts,
 chunk boundaries, missing newlines, sum bounds, zero-copy memory growth/reset,
-SIMD opcodes and whole-key collisions.
+SIMD opcodes, whole-key collisions and names differing only by trailing NUL bytes.
 Collision tests fault-inject cached metadata in the production kernel.
 
 Biome and `wabt` are pinned development-only dependencies. The prebuilt

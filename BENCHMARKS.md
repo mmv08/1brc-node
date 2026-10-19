@@ -1,6 +1,76 @@
 # Benchmark and experiment log
 
-## Current result: short-name path and lookup scheduling, 2026-10-19
+## Current result: delimiter-encoded SIMD keys, 2026-10-19
+
+The fifth round removes repeated short-name loads, masks and scalar comparisons.
+Same Core Ultra 7 258V, Node 26.12.0, performance mode, eight workers, 512 KiB
+chunks and billion-row input. The selected source checkpoint is `bbf5de2`.
+Only the fastest measured implementation is shipped. All commits are unsigned.
+
+After **16 full-file warm-up processes**, seven alternating rounds gave:
+
+| Solver | Trimmed mean | Best |
+| --- | ---: | ---: |
+| Previous winner, `ea198f0` | 1.217 s | 1.197 s |
+| Delimiter-encoded SIMD keys, `d02123f` | 1.056 s | 1.046 s |
+| **SIMD keys with shared empty record, `bbf5de2`** | **1.047 s** | **1.028 s** |
+
+**14.0% less elapsed time**, or **1.163× throughput**, against the previous
+winner in the same batch. Scores discard the fastest and slowest run and
+average the remaining five. All **37 full-file processes** produced complete
+expected stdout. All **21 measured runs** reported zero filesystem input:
+this is a cached **13.18 logical GB/s** result including startup, compilation,
+reads, parsing, aggregation, merging, sorting, output and shutdown.
+Peak RSS: 156,596 KiB.
+
+The short-name path retains each first-block vector from the delimiter scan,
+masks it once and reuses it for hashing and full-key comparison. Short records
+store the name, its delimiter and zero padding as a canonical 16-byte key.
+The delimiter encodes length, including trailing NUL bytes, removing the
+separate length comparison from the hot lookup. Hashing includes the delimiter
+for all names and extracts short-name words from the same vector.
+
+Empty buckets point to a shared zero record. A valid canonical short key always
+contains the delimiter, so it cannot equal an empty record. The same vector
+comparison handles the common match and routes misses to the complete insertion
+and probe path, without a separate empty-bucket branch. The general parser
+continues to support arbitrary valid names up to 100 UTF-8 bytes. Full name
+verification, exact sums, the 40-byte record layout, input handling and runtime
+settings are preserved. No station dictionary or precomputed answers are used.
+
+### Fifth-round attempt checkpoints
+
+Matched five-round trimmed means within each row; separate batches must not
+be combined. Final selection uses the seven-round comparison above.
+
+| Commit | Attempt and matched result | Decision |
+| --- | --- | --- |
+| `3039a16` | Reuse SIMD name bytes: 1.213 → 1.072 s | Retained and refined |
+| `d02123f` | Encode the delimiter in the SIMD key: 1.044 s versus 1.072 s vector reuse alone | Retained |
+| `583395f` | Direct 32-byte hash slots with separate metadata: 1.067 s versus 1.046 s pointer table | Rejected |
+| `612f268` | Two SIMD-key lanes: 1.144 s versus 1.056 s three lanes | Rejected |
+| `3d43317` | Four SIMD-key lanes: 1.094 s versus 1.056 s three lanes | Rejected |
+| `ef9afe7` | Complemented maxima for one SIMD min: 1.054 s versus 1.049 s ordinary extrema | Rejected |
+| `bbf5de2` | Shared empty record: 1.045 s versus 1.049 s ordinary empty checks; confirmed 1.047 versus 1.056 s in final seven rounds | Selected |
+
+All **23 tests pass on Node 24 and Node 26**. New production-kernel collision
+fault injection checks short names differing only by trailing NUL bytes, the
+15/16-byte boundary, and collisions with long records. Twelve equal rows drive
+the short path in every lane. Existing tests cover all legal temperatures,
+every name length, 10,000 stations, complete long-name comparison, exact sums,
+chunk boundaries, reset and memory growth. Biome and C-format checks pass.
+Exact-count verification confirms **1,000,000,000 measurements and 413 stations**
+and complete expected stdout. The default launcher matches it byte-for-byte.
+The selected import-free SIMD module is **7,741 bytes**.
+
+Raw final report: `results/1792426803442-compare-r5-final-verification.json`.
+Its baseline source hash matches the fourth round's final winner exactly.
+Per-attempt reports use `results/*-compare-r5-*.json`; the summary is
+`results/2026-10-19-round5-summary.json`. Native inspection and WAT are saved in
+`results/round5-final-assembly.txt` and `results/round5-final.wat`. Temporary
+experiment worktrees are removed; all attempts remain in their checkpoint commits.
+
+## Previous round: short-name path and lookup scheduling, 2026-10-19
 
 The fourth round separates short-name scanning from the general parser and
 changes when lookup results are consumed. Same Core Ultra 7 258V, Node 26.12.0,

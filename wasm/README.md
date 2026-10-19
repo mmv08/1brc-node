@@ -15,11 +15,19 @@ filesystem writes there directly. Memory grows before any views are created
 and never during parsing.
 
 The freestanding kernel imports nothing: no libc, WASI or host callbacks.
-SIMD scans 16 bytes for delimiters and verifies the middle of long names.
-Three independent newline-aligned lanes first scan for delimiters. When all
-three names end within the first 16-byte block (1–15 name bytes), the compact
-path hashes all three names, then resolves and updates each row immediately.
-This shortens the lifetime of lookup results between lanes.
+SIMD scans 16 bytes for delimiters. Three independent newline-aligned lanes
+load their first vectors together. When all three delimiters are present
+(1–15 name bytes), each row reuses its vector for hashing and matching, then
+updates statistics immediately. It does not reload and mask separate head/tail
+words after hashing.
+
+A short key contains the complete name, its semicolon delimiter and zero padding
+to 16 bytes. The delimiter encodes the length even when names end in NUL bytes.
+One vector comparison verifies both the bytes and the length. Long records cache
+raw head/tail words without a delimiter, so they cannot falsely match a short
+key. Empty buckets point to a shared zero record, which also cannot match a key
+containing the delimiter. The hot lookup needs only the vector comparison;
+misses use the complete insertion and collision-probing path.
 
 If any name needs another block, a C-outlined helper uses the complete general
 parser: scan all names, resolve all stations, then update statistics in order.
@@ -29,26 +37,22 @@ the next lookup; updates remain ordered even when lanes share a station.
 
 C also outlines new-key insertion and collision probing into cold functions.
 V8 uses its normal compilation and inlining settings. The selected binary is
-**7,328 bytes**. The inspected Node 26 optimized `parse_chunk` body is 8,960 bytes
-versus 10,624 bytes previously; the general scanning code also exists in its
-separate helper. The module has grown while the main native function is smaller.
+**7,741 bytes**. No alternate table layouts or lane strategies are shipped.
 
-The 100-byte name limit fits the length into seven bits beside the full 32-bit
-input pointer. Scanning carries just that packed value and the hash into lookup;
-lookup then loads the head word. Short-name matching loads and masks the head
-and tail unconditionally, avoiding branches that vary with name length.
-
-Hashing mixes each 16-byte block with one 64-bit multiplication, masking both
-words in the final partial block. The high 15 bits select a bucket directly;
-the folded fingerprint is computed only on insertion for inspection. Lookup
-checks the first bucket directly and probes further on a name mismatch. A
-matching bucket always receives complete name verification; hash equality is
-not an additional hot-path requirement.
+The general scanner packs the name's length into seven bits beside its full
+32-bit pointer and carries that descriptor plus the hash into lookup. Hashing
+includes the semicolon and mixes each 16-byte block with one 64-bit
+multiplication, masking the final partial block. Short-name hashing extracts
+both words directly from the already masked SIMD key. The high 15 hash bits
+select a bucket; a folded fingerprint is computed only on insertion for
+inspection. A matching bucket always receives complete name verification;
+hash equality is not an additional hot-path requirement.
 
 For names longer than 16 bytes, the 100-byte limit permits at most five fixed
 middle-vector comparisons plus an overlapping final vector. These reads stay
-inside the actual name and check every byte. Head/tail filters fully cover
-shorter names. Arbitrary valid station names and distributions are supported.
+inside the actual name and check every byte. A 16-byte name is covered by its
+head and tail; shorter names use the delimiter-terminated SIMD key. Arbitrary
+valid station names and distributions are supported.
 
 Station records remain exactly **40 bytes**:
 
@@ -59,7 +63,7 @@ Station records remain exactly **40 bytes**:
 | 12, 14 | Int16 min/max |
 | 16 | Uint32 fingerprint, retained for inspection |
 | 20 | key offset (low 20 bits) and byte length (upper bits) |
-| 24, 32 | Uint64 head/tail filters |
+| 24–39 | 16-byte delimiter-terminated key for names below 16 bytes; raw head/tail words otherwise |
 
 One 128-bit load/store updates the statistics. An `i64x2.add` updates the sum
 and count; signed `i16x8.min/max` compute the extrema. Fixed lane shuffles merge
