@@ -161,10 +161,13 @@ INLINE const uint8_t *process_row(const uint8_t *p) {
   const uint8_t *next = p + width + (p[width - 1] == '\r');
 
   Station *station = find_station(start, length, fingerprint, head);
-  station->sum += value;
-  station->count++;
-  if (value < station->min) station->min = (int16_t)value;
-  if (value > station->max) station->max = (int16_t)value;
+  v128_t stats = wasm_v128_load(station);
+  v128_t added = wasm_i64x2_add(stats, wasm_i64x2_make(value, 1));
+  v128_t values = wasm_i16x8_splat((int16_t)value);
+  v128_t extrema = wasm_v128_bitselect(wasm_i16x8_max(stats, values), wasm_i16x8_min(stats, values),
+                                       wasm_i16x8_make(0, 0, 0, 0, 0, 0, 0, -1));
+  wasm_v128_store(station,
+                  wasm_v128_bitselect(extrema, added, wasm_i16x8_make(0, 0, 0, 0, 0, 0, -1, -1)));
   return next;
 }
 
