@@ -66,7 +66,7 @@ test('signed 64-bit sums handle the full challenge bound', async () => {
     const parse = kernel.makeParser(buffer);
     parse(0, length);
     const view = new DataView(kernel.memory);
-    const base = view.getUint32(kernel.api.stations_base(), true);
+    const base = kernel.api.stations_base();
     // Unit-test prefix state, never used by a benchmark or the actual solver.
     view.setBigInt64(base, BigInt(value * 999999999), true);
     view.setUint32(base + 8, 999999999, true);
@@ -139,7 +139,7 @@ test('full-key verification checks every middle byte without a test-only kernel'
   const buffer = kernel.allocateBuffer(384);
   const parse = kernel.makeParser(buffer);
   const view = new DataView(kernel.memory);
-  const addresses = kernel.api.stations_base();
+  const base = kernel.api.stations_base();
   const buckets = kernel.api.buckets_base();
   for (const length of [17, 18, 23, 24, 25, 31, 32, 33, 47, 48, 49, 63, 64, 65, 99, 100]) {
     for (let position = 8; position < length - 8; position++) {
@@ -147,23 +147,17 @@ test('full-key verification checks every middle byte without a test-only kernel'
       const original = `HEADSAME${'x'.repeat(length - 16)}TAILSAME`;
       const changed = `${original.slice(0, position)}Y${original.slice(position + 1)}`;
       parse(0, fill(buffer, `${original};0.1\n`));
-      const base = view.getUint32(addresses, true);
       const oldHash = view.getUint32(base + 16, true);
       assert.equal(oldHash, hashName(original));
       const slot = (hash) => (hash ^ (hash >>> 16)) & 32767;
-      assert.equal(buckets + slot(oldHash) * 64, base);
+      assert.equal(view.getUint32(buckets + slot(oldHash) * 4, true), base);
       const hash = hashName(changed);
       // Fault-inject a matching cached hash and bucket, leaving name bytes and
       // cached head/tail unchanged. This exercises collisions in the ONE real
       // kernel, without shipping an alternative constant-hash implementation.
-      const target = buckets + slot(hash) * 64;
-      if (target !== base) {
-        const bytes = new Uint8Array(kernel.memory);
-        bytes.copyWithin(target, base, base + 40);
-        bytes.fill(0, base, base + 40);
-        view.setUint32(addresses, target, true);
-      }
-      view.setUint32(target + 16, hash, true);
+      view.setUint32(buckets + slot(oldHash) * 4, 0, true);
+      view.setUint32(buckets + slot(hash) * 4, base, true);
+      view.setUint32(base + 16, hash, true);
       parse(0, fill(buffer, `${changed};0.2\n`));
       const expected = [
         [original, 1, 1, 1, 1],

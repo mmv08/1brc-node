@@ -29,7 +29,7 @@ const link = [
   '--no-entry',
   '--export-memory',
   '--strip-all',
-  '--initial-memory=4194304',
+  '--initial-memory=2097152',
   '--max-memory=1073741824',
   '-z',
   'stack-size=65536',
