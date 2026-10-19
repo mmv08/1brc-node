@@ -26,10 +26,7 @@ _Static_assert(offsetof(Station, count) == 8, "station ABI count");
 _Static_assert(offsetof(Station, key) == 20, "station ABI key");
 _Static_assert(MAX_STATIONS * 104 + 16 < (1 << 20), "all valid key offsets fit");
 
-// Ten thousand 40-byte records fit in a 16-bit, eight-byte-scaled offset.
-_Static_assert((MAX_STATIONS - 1) * (sizeof(Station) / 8) + 1 <= UINT16_MAX,
-               "all valid station references fit");
-static uint16_t buckets[TABLE_SIZE];
+static uint32_t buckets[TABLE_SIZE];
 static Station stations[MAX_STATIONS];
 static uint8_t names[MAX_STATIONS * 104 + 16];
 static uint16_t temperatures[4096];
@@ -121,7 +118,7 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
                                                                uint64_t head, uint32_t slot) {
   if (used >= MAX_STATIONS || length == 0 || length > 100) __builtin_trap();
   Station *station = &stations[used++];
-  buckets[slot] = (uint16_t)(((uint8_t *)station - (uint8_t *)stations) / 8 + 1);
+  buckets[slot] = (uint32_t)(uintptr_t)station;
   station->sum = 0;
   station->count = 0;
   station->min = 999;
@@ -141,7 +138,7 @@ __attribute__((noinline, cold)) static Station *probe_station(const uint8_t *sta
   for (;;) {
     uint32_t entry = buckets[slot];
     if (!entry) return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
-    Station *station = (Station *)((uint8_t *)stations + (entry - 1) * 8);
+    Station *station = (Station *)(uintptr_t)entry;
     if (same_name(station, start, length, head)) return station;
     slot = (slot + 1) & (TABLE_SIZE - 1);
   }
@@ -151,7 +148,7 @@ INLINE Station *find_station(const uint8_t *start, uint32_t length, uint64_t has
   uint32_t slot = (uint32_t)(hash >> 49);
   uint32_t entry = buckets[slot];
   if (!entry) return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
-  Station *station = (Station *)((uint8_t *)stations + (entry - 1) * 8);
+  Station *station = (Station *)(uintptr_t)entry;
   if (same_name(station, start, length, head)) return station;
   return probe_station(start, length, hash, head, (slot + 1) & (TABLE_SIZE - 1));
 }
