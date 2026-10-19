@@ -37,9 +37,10 @@ static uint32_t buckets[TABLE_SIZE];
 static Station stations[MAX_STATIONS];
 static Station empty_station;
 
-// Cache parsing metadata while keeping statistics in the dense station table.
+// A learned short-name record owns partial aggregates until eviction or the
+// end of a chunk. All fields needed by a hit occupy one cache line.
 typedef struct {
-  uint64_t reserved[2];
+  Stats stats;
   uint64_t head;
   uint64_t tail;
   uint64_t mask_low;
@@ -51,6 +52,8 @@ typedef struct {
 
 _Static_assert(sizeof(CacheEntry) == 64, "one learned record per cache line");
 static CacheEntry cache[CACHE_SIZE] __attribute__((aligned(64)));
+static CacheEntry *active_cache[CACHE_SIZE];
+static uint32_t active_used;
 static uint8_t names[MAX_STATIONS * 104 + 16];
 static uint16_t temperatures[4096];
 static uint32_t used;
@@ -267,6 +270,26 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   return next;
 }
 
+INLINE void clear_partial(CacheEntry *entry) {
+  wasm_v128_store(&entry->stats, wasm_i16x8_make(0, 0, 0, 0, 0, 0, 999, -999));
+}
+
+INLINE void merge_partial(CacheEntry *entry) {
+  if (!entry->stats.count) return;
+  Stats *destination = &entry->owner->stats;
+  v128_t partial = wasm_v128_load(&entry->stats);
+  v128_t total = wasm_v128_load(destination);
+  v128_t added = wasm_i64x2_add(total, partial);
+  v128_t extrema = wasm_i16x8_shuffle(wasm_i16x8_min(total, partial),
+                                      wasm_i16x8_max(total, partial), 0, 1, 2, 3, 4, 5, 6, 15);
+  wasm_v128_store(destination, wasm_i16x8_shuffle(added, extrema, 0, 1, 2, 3, 4, 5, 14, 15));
+  clear_partial(entry);
+}
+
+__attribute__((noinline, cold)) static void flush_cache(void) {
+  for (uint32_t i = 0; i < active_used; i++) merge_partial(active_cache[i]);
+}
+
 __attribute__((noinline, cold)) static ParsedRow cache_miss(const uint8_t *start,
                                                             CacheEntry *entry) {
   NameRow name = scan_name(start);
@@ -274,26 +297,31 @@ __attribute__((noinline, cold)) static ParsedRow cache_miss(const uint8_t *start
   uint64_t head = load64(start) & byte_masks[length < 8 ? length : 8];
   Station *station = find_station(start, length, name.hash, head);
   if (length >= 16) return (ParsedRow){start + length + 1, &station->stats};
+  merge_partial(entry);
+  if (!entry->owner) active_cache[active_used++] = entry;
   entry->owner = station;
   entry->length = length;
   wasm_v128_store(&entry->head, wasm_v128_load(&station->head));
   wasm_v128_store(&entry->mask_low, wasm_v128_load(short_masks[length + 1]));
-  return (ParsedRow){start + length + 1, &station->stats};
+  clear_partial(entry);
+  return (ParsedRow){start + length + 1, &entry->stats};
+}
+
+INLINE CacheEntry *route_cache(const uint8_t *start) {
+  uint64_t hash = (load64(start) << 24) * UINT64_C(0x9e3779b185ebca87);
+  return &cache[hash >> (64 - CACHE_BITS)];
+}
+
+INLINE const uint8_t *process_cached_entry(const uint8_t *start, CacheEntry *entry, v128_t bytes) {
+  v128_t difference = wasm_v128_and(wasm_v128_xor(bytes, wasm_v128_load(&entry->head)),
+                                    wasm_v128_load(&entry->mask_low));
+  ParsedRow row = {start + entry->length + 1, &entry->stats};
+  if (wasm_v128_any_true(difference)) row = cache_miss(start, entry);
+  return update_row(row);
 }
 
 INLINE const uint8_t *process_cached(const uint8_t *start) {
-  // Route by five raw bytes; a complete masked key still verifies every hit.
-  uint64_t hash = (load64(start) << 24) * UINT64_C(0x9e3779b185ebca87);
-  CacheEntry *entry = &cache[hash >> (64 - CACHE_BITS)];
-  v128_t difference =
-      wasm_v128_and(wasm_v128_xor(wasm_v128_load(start), wasm_v128_load(&entry->head)),
-                    wasm_v128_load(&entry->mask_low));
-  ParsedRow row;
-  if (wasm_v128_any_true(difference))
-    row = cache_miss(start, entry);
-  else
-    row = (ParsedRow){start + entry->length + 1, &entry->owner->stats};
-  return update_row(row);
+  return process_cached_entry(start, route_cache(start), wasm_v128_load(start));
 }
 
 EXPORT(reset) void reset(void) {
@@ -301,12 +329,14 @@ EXPORT(reset) void reset(void) {
     buckets[slot] = (uint32_t)(uintptr_t)&empty_station;
   used = 0;
   name_used = 0;
+  active_used = 0;
   for (uint32_t i = 0; i < CACHE_SIZE; i++) {
     // The impossible empty name ";" rejects every valid nonempty name,
     // including one starting with NUL. No separate empty check is needed.
     wasm_v128_store(&cache[i].head, wasm_i64x2_make(';', 0));
     wasm_v128_store(&cache[i].mask_low, wasm_i64x2_make(255, 0));
     cache[i].owner = NULL;
+    cache[i].stats.count = 0;
     cache[i].length = 0;
   }
   for (uint32_t first = 0; first <= 9; first++) {
@@ -342,11 +372,20 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *b = end_a;
   const uint8_t *c = end_b;
   while (a < end_a && b < end_b && c < limit) {
-    a = process_cached(a);
-    b = process_cached(b);
-    c = process_cached(c);
+    CacheEntry *entry_a = route_cache(a);
+    CacheEntry *entry_b = route_cache(b);
+    CacheEntry *entry_c = route_cache(c);
+    v128_t bytes_a = wasm_v128_load(a);
+    v128_t bytes_b = wasm_v128_load(b);
+    v128_t bytes_c = wasm_v128_load(c);
+    // Validate each record after preceding misses can replace an aliased slot.
+    a = process_cached_entry(a, entry_a, bytes_a);
+    b = process_cached_entry(b, entry_b, bytes_b);
+    c = process_cached_entry(c, entry_c, bytes_c);
   }
   while (a < end_a) a = process_cached(a);
   while (b < end_b) b = process_cached(b);
   while (c < limit) c = process_cached(c);
+  // Publish all partials before returning through the existing result ABI.
+  flush_cache();
 }
