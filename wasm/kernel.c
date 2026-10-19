@@ -287,12 +287,9 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       NameRow name_a = scan_short_name(a, matches_a);
       NameRow name_b = scan_short_name(b, matches_b);
       NameRow name_c = scan_short_name(c, matches_c);
-      ParsedRow row_a = lookup_row(name_a);
-      ParsedRow row_b = lookup_row(name_b);
-      ParsedRow row_c = lookup_row(name_c);
-      a = update_row(row_a);
-      b = update_row(row_b);
-      c = update_row(row_c);
+      a = update_row(lookup_row(name_a));
+      b = update_row(lookup_row(name_b));
+      c = update_row(lookup_row(name_c));
     } else {
       RowPointers next = process_three(a, b, c);
       a = next.a;
