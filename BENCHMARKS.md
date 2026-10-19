@@ -1,5 +1,57 @@
 # Benchmark and experiment log
 
+## Latest audit: delimiter checks and SIMD masks, 2026-10-19
+
+The eighth round tested a combined delimiter-presence check and generated
+short-name masks. Neither improved the complete program. The production source,
+binary and defaults are identical to `6ed6938`; restoration checkpoint `6a614e2`
+retains SIMD hash mixing, three parsing lanes and 512 KiB chunks.
+All attempt and restoration commits are unsigned.
+
+Same Core Ultra 7 258V, Node 26.12.0, performance mode, eight workers and
+billion-row input. The first batch used 12 warm-ups and seven alternating rounds;
+the repeat used 16 warm-ups, nine rounds and reversed case order. Each score is
+a trimmed mean, discarding the fastest and slowest run. Separate batches must
+not be combined.
+
+| Checkpoint | Attempt | First comparison | Repeat comparison | Decision |
+| --- | --- | ---: | ---: | --- |
+| `6ed6938` | Previous winner | **1.030 s** | **1.028 s** | Retained |
+| `cf4823e` | Combine three bounded delimiter checks | 1.068 s | 1.062 s | Rejected |
+| `2a2ef3d` | Generate short-name masks in SIMD | 1.078 s | — | Rejected |
+| `3805465` | Combine both changes | 1.104 s | — | Rejected |
+| `3a51989` | Refine masks to one signed SIMD comparison | — | 1.065 s | Rejected |
+
+The delimiter check uses the 16-bit bitmask bounds: subtracting one sets bit 31
+only for a zero mask, allowing one OR reduction and a single branch for the
+three lanes. Native inspection confirms the branch reduction, but the repeat
+still takes **3.4% more elapsed time** than its matched baseline.
+
+Mask generation compares byte positions against the name length, replacing
+the indexed mask-table load on the hot short-name path. Clang initially selects
+an unsigned comparison that takes several native vector operations. Shifting
+the positions negative preserves a signed comparison and produces one native
+`vpcmpgtb`. The refinement still takes **3.7% more elapsed time** than its
+matched baseline. These trials do not justify changing the selected parser.
+
+All four candidates passed the kernel correctness tests before benchmarking.
+Across the two batches, all **83 full-file benchmark processes** produced
+complete expected stdout. All **55 measured runs** reported zero filesystem
+input. After restoration, all **23 tests pass on Node 24 and Node 26**, and
+Biome/C-format checks pass. Exact-count verification confirms
+**1,000,000,000 measurements and 413 stations**; the default launcher's stdout
+matches byte-for-byte. The selected import-free Wasm module remains
+**7,729 bytes**. The seventh-round headline below remains unchanged.
+
+Reports: `results/1792428645684-compare-r8-delimiters-and-masks.json` and
+`results/1792428734864-compare-r8-signed-mask-confirmation.json`.
+Summary: `results/2026-10-19-round8-summary.json`. Inspected native code is in
+`results/round8-combined-assembly.txt` and
+`results/round8-signed-mask-assembly.txt`. Temporary experiment worktrees are
+removed; all four attempts remain in their checkpoint commits. The selected
+production source hash is unchanged:
+`44bd983a2ad21923217190e6abc809155afc5cec52c6ba7421da2897219e4622`.
+
 ## Current result: SIMD hash mixing, 2026-10-19
 
 The seventh round keeps the canonical short-name key in SIMD for the hash's

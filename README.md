@@ -3,10 +3,11 @@
 One optimized implementation: Node handles workers, file reads and final output;
 a freestanding Wasm SIMD kernel parses and aggregates the measurements.
 On this Core Ultra 7 258V in performance mode, the cached billion-row benchmark
-averages **1.027 seconds**. The latest optimization round reduced elapsed time
+averages **1.027 seconds**. The selected optimization reduced elapsed time
 by **2.6%** against the previous winner in a matched test.
 Only the selected solver is shipped. Optimization attempts are checkpointed in
-git, with measured results in [BENCHMARKS.md](BENCHMARKS.md).
+git, with measured results in [BENCHMARKS.md](BENCHMARKS.md). A later audit
+retained the same implementation after delimiter-check and SIMD-mask trials.
 
 ## Run
 
