@@ -6,7 +6,8 @@ On this Core Ultra 7 258V in performance mode, the cached billion-row benchmark
 averages **1.002 seconds**. The selected optimization reduced elapsed time
 by **2.4%** against the previous winner in a matched test.
 Only the selected solver is shipped. Optimization attempts are checkpointed in
-git, with measured results in [BENCHMARKS.md](BENCHMARKS.md).
+git, with measured results in [BENCHMARKS.md](BENCHMARKS.md). A subsequent
+learned-cache audit retained this implementation after all nine variants regressed.
 
 ## Run
 

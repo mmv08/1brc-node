@@ -1,5 +1,71 @@
 # Benchmark and experiment log
 
+## Latest audit: learned station caches rejected, 2026-10-19
+
+The tenth round implemented a learned short-name cache with complete key
+verification and partial aggregates. The approximately 94% routing hit rate
+from the earlier offline simulation did **not** translate into a speedup.
+All nine measured variants regressed. The production source, binary and defaults
+are identical to `4483611`; restoration checkpoint `ee83ccd` retains the
+decimal-point parser. All attempt and restoration commits are unsigned.
+
+Same Core Ultra 7 258V, Node 26.12.0, performance mode, eight workers,
+512 KiB chunks and billion-row input. Each batch used 12 full-file warm-ups
+and alternating case order. The first used nine rounds; the other three used
+seven. Scores discard the fastest and slowest run. Each row below compares
+within its own batch; separate batches must not be combined.
+
+| Checkpoint | Attempt | Previous winner | Candidate | More elapsed time |
+| --- | --- | ---: | ---: | ---: |
+| `f087a84` | 16K learned records with partial aggregates | 1.011 s | 1.081 s | 6.9% |
+| `06c9ab2` | Reduce partial cache to 4K records | 1.010 s | 1.129 s | 11.8% |
+| `d33000f` | Cache metadata, update dense station statistics directly | 1.010 s | 1.088 s | 7.8% |
+| `730b55d` | Stage three independent cache routes | 1.010 s | 1.080 s | 7.0% |
+| `b57edfa` | Verify keys with scalar equality bitmasks | 1.006 s | 1.077 s | 7.1% |
+| `fa6008b` | Group complete cache hits into one fast path | 1.006 s | 1.095 s | 8.9% |
+| `c2678fb` | Decode three temperatures before updating statistics | 1.006 s | 1.114 s | 10.8% |
+| `67b5435` | Find temperature addresses independently of cached length | 0.997 s | 1.089 s | 9.2% |
+| `3509a7d` | Preload input-derived temperatures before grouped validation | 0.997 s | 1.094 s | 9.7% |
+
+The first design routes on five raw input bytes. Each 64-byte record contains
+the complete short-name key, its comparison mask, name length, owner pointer
+and exact partial statistics. Hits verify the entire name and delimiter;
+misses use the complete existing parser. Partial aggregates merge on eviction
+and before every chunk returns, preserving the ordinary result ABI and
+supporting shared entries across lanes. Long names use the general parser.
+
+Native inspection and a pinned-core profile showed that fewer instructions
+did not produce higher throughput. The initial cache profile recorded more
+branch misses and lower IPC than the earlier baseline diagnostic. The cache
+also puts its metadata load on the temperature-address dependency path.
+The subsequent variants tested footprint, aggregation overhead, comparison
+cost and execution overlap; none justified keeping the redesign.
+
+All candidates passed the kernel correctness tests before measurement.
+All **143 full-file processes** in the four valid benchmark batches produced
+complete expected stdout; all **95 measured runs** reported zero filesystem
+input. One interrupted pilot after a build failure used a stale binary for a
+case; that entire report is marked invalid and excluded from all results.
+
+The restored solver passes all **25 tests on Node 24 and Node 26** and
+Biome/C-format checks. A retained regression test covers shared-prefix
+replacements, short names with changing routing bytes, mixed short/long/NUL
+names, reset and exact totals after each chunk. Exact-count verification
+confirms **1,000,000,000 measurements and 413 stations**, and the default
+launcher's output matches byte-for-byte. The selected import-free module
+remains **7,693 bytes**, with the original memory and runtime defaults.
+
+Reports:
+`results/1792430223286-compare-r10-learned-cache.json`,
+`results/1792430431647-compare-r10-cache-refinements-validated.json`,
+`results/1792430567323-compare-r10-cache-hit-pipeline.json`, and
+`results/1792430702353-compare-r10-independent-temperatures.json`.
+Summary: `results/2026-10-19-round10-summary.json`. Initial native code and
+counters are in `results/round10-partial-cache-assembly.txt` and
+`results/round10-partial-cache-counters.txt`. All temporary worktrees are
+removed. The selected production source hash remains
+`b1b71b79679a57c282982078416336c21ab0d34460986546e02f7f7aaf5ccdf8`.
+
 ## Current result: direct decimal-point row advancement, 2026-10-19
 
 The ninth round determines the temperature's decimal position directly from
