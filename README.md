@@ -3,11 +3,10 @@
 One optimized implementation: Node handles workers, file reads and final output;
 a freestanding Wasm SIMD kernel parses and aggregates the measurements.
 On this Core Ultra 7 258V in performance mode, the cached billion-row benchmark
-averages **1.047 seconds**. A further optimization round reduced elapsed time
-by **14.0%** against the previous winner in a matched test.
+averages **1.027 seconds**. The latest optimization round reduced elapsed time
+by **2.6%** against the previous winner in a matched test.
 Only the selected solver is shipped. Optimization attempts are checkpointed in
-git, with measured results in [BENCHMARKS.md](BENCHMARKS.md). A later audit
-retained the same parser and 512 KiB default.
+git, with measured results in [BENCHMARKS.md](BENCHMARKS.md).
 
 ## Run
 
@@ -39,6 +38,8 @@ while processing. This is an optimized valid-input parser, not a CSV validator.
 - Short keys include the delimiter, encoding the complete name and its length in
   one vector. An empty record cannot match them, so empty buckets can reference
   a shared zero record without a separate empty check on the hot path.
+- Short-name hash mixing XORs both words with their constants in SIMD before
+  extracting them for the multiplication.
 - A pointer table references compact 40-byte records. Hashing includes the
   delimiter and mixes each word pair with one multiplication. Complete name
   verification remains mandatory; insertion and collision probing are outlined.

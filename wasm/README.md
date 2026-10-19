@@ -37,13 +37,16 @@ the next lookup; updates remain ordered even when lanes share a station.
 
 C also outlines new-key insertion and collision probing into cold functions.
 V8 uses its normal compilation and inlining settings. The selected binary is
-**7,741 bytes**. No alternate table layouts or lane strategies are shipped.
+**7,729 bytes**. No alternate table layouts or lane strategies are shipped.
 
 The general scanner packs the name's length into seven bits beside its full
 32-bit pointer and carries that descriptor plus the hash into lookup. Hashing
 includes the semicolon and mixes each 16-byte block with one 64-bit
-multiplication, masking the final partial block. Short-name hashing extracts
-both words directly from the already masked SIMD key. The high 15 hash bits
+multiplication, masking the final partial block. Short-name hashing XORs the
+already masked SIMD key with both mixing constants in one vector operation,
+then extracts the two words for multiplication. The original key remains
+available for comparison; its low word is extracted only on a lookup miss.
+This preserves the hash exactly. The high 15 hash bits
 select a bucket; a folded fingerprint is computed only on insertion for
 inspection. A matching bucket always receives complete name verification;
 hash equality is not an additional hot-path requirement.

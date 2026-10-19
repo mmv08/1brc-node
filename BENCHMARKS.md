@@ -1,6 +1,70 @@
 # Benchmark and experiment log
 
-## Latest audit: previous winner retained, 2026-10-19
+## Current result: SIMD hash mixing, 2026-10-19
+
+The seventh round keeps the canonical short-name key in SIMD for the hash's
+two XOR operations, then extracts both mixed words for multiplication.
+The original key remains available for comparison; its low word is extracted
+only on a lookup miss. The hash and valid-input behavior are unchanged.
+Inspection confirms one native vector XOR replaces the two scalar XORs.
+The optimized `parse_chunk` body shrinks from 11,328 to 11,228 native bytes;
+the import-free Wasm module shrinks from 7,741 to **7,729 bytes**.
+
+Same Core Ultra 7 258V, Node 26.12.0, performance mode, eight workers,
+512 KiB chunks and billion-row input. Source checkpoint `9eee974` selects
+the SIMD hash change with the original 40-byte station layout.
+All attempt and selection commits are unsigned. Only the selected solver
+is shipped; discarded alternatives remain in git history.
+
+After **16 full-file warm-up processes**, nine alternating rounds gave:
+
+| Solver | Trimmed mean | Best |
+| --- | ---: | ---: |
+| Previous winner, `8a269ca` | 1.054 s | 1.035 s |
+| **SIMD hash mixing, `9eee974`** | **1.027 s** | **1.003 s** |
+
+**2.6% less elapsed time**, or **1.027× throughput**, in the matched comparison.
+Scores discard the fastest and slowest run and average the remaining seven.
+This is a cached **13.44 logical GB/s** result including startup, compilation,
+reads, parsing, aggregation, merging, sorting, output and shutdown.
+Selected peak RSS: 156,680 KiB. Separate batches below must not be combined.
+
+### Seventh-round attempt checkpoints
+
+The first comparison used 12 warm-ups and seven alternating rounds. A second
+used 16 warm-ups, nine rounds and reversed case order. Each score is a trimmed
+mean within its batch.
+
+| Checkpoint | Attempt | First comparison | Second comparison | Decision |
+| --- | --- | ---: | ---: | --- |
+| `8a269ca` | Previous winner | 1.056 s | 1.047 s | Baseline |
+| `19c2645` | SIMD short-name hash mixing | **1.034 s** | **1.027 s** | Selected |
+| `80c5511` | Place the cached key beside statistics in each 40-byte record | 1.052 s | — | Rejected: no clear gain |
+| `af7f5c3` | Combine hash mixing and adjacent keys | 1.035 s | 1.029 s | Rejected: no improvement over hash mixing alone |
+
+The field reorder moved the cached key from offset 24 to 16 and inspection
+metadata to the end, retaining the same dense records and pointer table.
+It did not add a clear improvement; the final selection restores the original
+layout, host decoding and collision-test offsets. Defaults remain unchanged.
+
+Across all three batches, **117 full-file benchmark processes** produced
+complete expected stdout. All **73 measured runs** reported zero filesystem
+input. All **23 tests pass on Node 24 and Node 26**, and Biome/C-format checks
+pass. Exact-count verification confirms **1,000,000,000 measurements and
+413 stations**; the default launcher's stdout also matches byte-for-byte.
+Coverage includes forced hash collisions, trailing NUL bytes, all name lengths,
+10,000 stations, temperature bounds and exact sums/counts.
+
+Final report: `results/1792428389395-compare-r7-final-verification.json`.
+The initial and confirmation reports are
+`results/1792428252033-compare-r7-hash-and-layout.json` and
+`results/1792428314477-compare-r7-hash-confirmation.json`.
+The summary is `results/2026-10-19-round7-summary.json`; final native code
+is in `results/round7-final-assembly.txt`. Temporary experiment worktrees
+are removed. The selected production source hash is
+`44bd983a2ad21923217190e6abc809155afc5cec52c6ba7421da2897219e4622`.
+
+## Previous audit: previous winner retained, 2026-10-19
 
 The sixth round tested independent long-name fallback, overlapped bucket/key
 loads and chunk-size defaults. None produced a repeatable improvement.
@@ -57,7 +121,7 @@ use `results/*-compare-r6-*.json`; the summary is
 `results/2026-10-19-round6-summary.json`. Temporary experiment worktrees are
 removed; all eight attempts remain in their checkpoint commits.
 
-## Current result: delimiter-encoded SIMD keys, 2026-10-19
+## Previous result: delimiter-encoded SIMD keys, 2026-10-19
 
 The fifth round removes repeated short-name loads, masks and scalar comparisons.
 Same Core Ultra 7 258V, Node 26.12.0, performance mode, eight workers, 512 KiB
