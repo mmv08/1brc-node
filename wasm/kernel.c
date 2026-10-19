@@ -268,25 +268,9 @@ INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128
   return update_row((ParsedRow){start + length + 1, station});
 }
 
-typedef struct {
-  const uint8_t *a;
-  const uint8_t *b;
-  const uint8_t *c;
-} RowPointers;
-
-// Preserve the complete valid-input parser when any name needs another block.
-__attribute__((noinline, cold)) static RowPointers process_three(const uint8_t *a, const uint8_t *b,
-                                                                 const uint8_t *c) {
-  NameRow name_a = scan_name(a);
-  NameRow name_b = scan_name(b);
-  NameRow name_c = scan_name(c);
-  ParsedRow row_a = lookup_row(name_a);
-  ParsedRow row_b = lookup_row(name_b);
-  ParsedRow row_c = lookup_row(name_c);
-  const uint8_t *next_a = update_row(row_a);
-  const uint8_t *next_b = update_row(row_b);
-  const uint8_t *next_c = update_row(row_c);
-  return (RowPointers){next_a, next_b, next_c};
+// Only a lane whose delimiter is outside the first vector needs the general parser.
+__attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *p) {
+  return process_row(p);
 }
 
 EXPORT(reset) void reset(void) {
@@ -334,16 +318,9 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
     uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
     uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
     uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-    if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
-      a = process_short(a, matches_a, bytes_a);
-      b = process_short(b, matches_b, bytes_b);
-      c = process_short(c, matches_c, bytes_c);
-    } else {
-      RowPointers next = process_three(a, b, c);
-      a = next.a;
-      b = next.b;
-      c = next.c;
-    }
+    a = matches_a ? process_short(a, matches_a, bytes_a) : process_long(a);
+    b = matches_b ? process_short(b, matches_b, bytes_b) : process_long(b);
+    c = matches_c ? process_short(c, matches_c, bytes_c) : process_long(c);
   }
   while (a < end_a) a = process_row(a);
   while (b < end_b) b = process_row(b);
