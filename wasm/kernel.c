@@ -15,15 +15,17 @@ typedef struct {
   uint32_t count;
   int16_t min;
   int16_t max;
-  uint32_t hash;
-  uint32_t key;
   uint64_t head;
   uint64_t tail;
+  uint32_t hash;
+  uint32_t key;
 } Station;
 
 _Static_assert(sizeof(Station) == 40, "station ABI size");
 _Static_assert(offsetof(Station, count) == 8, "station ABI count");
-_Static_assert(offsetof(Station, key) == 20, "station ABI key");
+_Static_assert(offsetof(Station, head) == 16, "station ABI comparison key");
+_Static_assert(offsetof(Station, hash) == 32, "station ABI fingerprint");
+_Static_assert(offsetof(Station, key) == 36, "station ABI key");
 _Static_assert(MAX_STATIONS * 104 + 16 < (1 << 20), "all valid key offsets fit");
 
 static uint32_t buckets[TABLE_SIZE];
@@ -256,15 +258,13 @@ INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row
 INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
   uint32_t length = (uint32_t)__builtin_ctz(matches);
   v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length + 1]));
-  v128_t mixed = wasm_v128_xor(
-      key, wasm_i64x2_make(UINT64_C(0x9e3779b185ebca87), UINT64_C(0xc2b2ae3d27d4eb4f)));
-  uint64_t hash =
-      (uint64_t)wasm_i64x2_extract_lane(mixed, 0) * (uint64_t)wasm_i64x2_extract_lane(mixed, 1);
+  uint64_t head = (uint64_t)wasm_i64x2_extract_lane(key, 0);
+  uint64_t high = (uint64_t)wasm_i64x2_extract_lane(key, 1);
+  uint64_t hash = mix_pair(0, head, high);
   uint32_t slot = (uint32_t)(hash >> 49);
   Station *station = (Station *)(uintptr_t)buckets[slot];
   // An empty record is all zero; a key containing ';' can never match it.
   if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key))) {
-    uint64_t head = (uint64_t)wasm_i64x2_extract_lane(key, 0);
     station = find_station(start, length, hash, head);
   }
   return update_row((ParsedRow){start + length + 1, station});

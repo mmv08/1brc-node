@@ -228,7 +228,7 @@ test('full-key verification checks every middle byte without a test-only kernel'
       const original = `HEADSAME${'x'.repeat(length - 16)}TAILSAME`;
       const changed = `${original.slice(0, position)}Y${original.slice(position + 1)}`;
       parse(0, fill(buffer, `${original};0.1\n`));
-      const oldHash = view.getUint32(base + 16, true);
+      const oldHash = view.getUint32(base + 32, true);
       const originalHash = hashName(original);
       assert.equal(oldHash, originalHash.fingerprint);
       assert.equal(view.getUint32(buckets + originalHash.slot * 4, true), base);
@@ -238,7 +238,7 @@ test('full-key verification checks every middle byte without a test-only kernel'
       // kernel, without shipping an alternative constant-hash implementation.
       view.setUint32(buckets + originalHash.slot * 4, kernel.api.empty_station_base(), true);
       view.setUint32(buckets + hash.slot * 4, base, true);
-      view.setUint32(base + 16, hash.fingerprint, true);
+      view.setUint32(base + 32, hash.fingerprint, true);
       parse(0, fill(buffer, `${changed};0.2\n`));
       const expected = [
         [original, 1, 1, 1, 1],
@@ -274,7 +274,7 @@ test('short-name collisions preserve length and every byte across independent la
     assert.equal(view.getUint32(buckets + before.slot * 4, true), base);
     view.setUint32(buckets + before.slot * 4, kernel.api.empty_station_base(), true);
     view.setUint32(buckets + after.slot * 4, base, true);
-    view.setUint32(base + 16, after.fingerprint, true);
+    view.setUint32(base + 32, after.fingerprint, true);
     // Twelve equal rows exercise the short-name path with two, three or four lanes.
     parse(0, fill(buffer, `${changed};0.2\n`.repeat(12)));
     assert.deepEqual(kernel.rows(), [
