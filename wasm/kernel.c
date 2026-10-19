@@ -43,11 +43,10 @@ typedef struct {
   Stats stats;
   uint64_t head;
   uint64_t tail;
-  uint64_t mask_low;
-  uint64_t mask_high;
+  uint32_t match_bits;
   Station *owner;
   uint32_t length;
-  uint32_t padding[2];
+  uint32_t padding[5];
 } CacheEntry;
 
 _Static_assert(sizeof(CacheEntry) == 64, "one learned record per cache line");
@@ -302,7 +301,7 @@ __attribute__((noinline, cold)) static ParsedRow cache_miss(const uint8_t *start
   entry->owner = station;
   entry->length = length;
   wasm_v128_store(&entry->head, wasm_v128_load(&station->head));
-  wasm_v128_store(&entry->mask_low, wasm_v128_load(short_masks[length + 1]));
+  entry->match_bits = (1u << (length + 1)) - 1;
   clear_partial(entry);
   return (ParsedRow){start + length + 1, &entry->stats};
 }
@@ -313,10 +312,9 @@ INLINE CacheEntry *route_cache(const uint8_t *start) {
 }
 
 INLINE const uint8_t *process_cached_entry(const uint8_t *start, CacheEntry *entry, v128_t bytes) {
-  v128_t difference = wasm_v128_and(wasm_v128_xor(bytes, wasm_v128_load(&entry->head)),
-                                    wasm_v128_load(&entry->mask_low));
+  uint32_t equal = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes, wasm_v128_load(&entry->head)));
   ParsedRow row = {start + entry->length + 1, &entry->stats};
-  if (wasm_v128_any_true(difference)) row = cache_miss(start, entry);
+  if ((equal & entry->match_bits) != entry->match_bits) row = cache_miss(start, entry);
   return update_row(row);
 }
 
@@ -334,7 +332,7 @@ EXPORT(reset) void reset(void) {
     // The impossible empty name ";" rejects every valid nonempty name,
     // including one starting with NUL. No separate empty check is needed.
     wasm_v128_store(&cache[i].head, wasm_i64x2_make(';', 0));
-    wasm_v128_store(&cache[i].mask_low, wasm_i64x2_make(255, 0));
+    cache[i].match_bits = 1;
     cache[i].owner = NULL;
     cache[i].stats.count = 0;
     cache[i].length = 0;
