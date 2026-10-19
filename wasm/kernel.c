@@ -66,6 +66,12 @@ INLINE uint64_t load64(const uint8_t *p) {
   return value;
 }
 
+INLINE uint32_t load32(const uint8_t *p) {
+  uint32_t value;
+  __builtin_memcpy(&value, p, sizeof(value));
+  return value;
+}
+
 INLINE uint64_t mix(uint64_t hash, uint64_t word) {
   return (hash ^ word) * UINT64_C(0x9e3779b185ebca87);
 }
@@ -148,15 +154,11 @@ INLINE const uint8_t *process_row(const uint8_t *p) {
   uint64_t head = first & byte_masks[length < 8 ? length : 8];
   uint32_t fingerprint = (uint32_t)(hash ^ (hash >> 32));
   p++;
-  uint64_t word = load64(p);
-  uint32_t negative = (uint32_t)(~word >> 4) & 1;
-  uint32_t digits = (uint32_t)(word >> (negative * 8));
-  uint32_t two_digits = (digits >> 12) & 1;
-  uint32_t width = 4 + negative + two_digits;
-  uint32_t normalized = digits << (8 - two_digits * 8);
-  int32_t value =
-      (int32_t)((((uint64_t)(normalized & UINT32_C(0x0f000f0f))) * UINT64_C(0x640a000100)) >> 32) &
-      1023;
+  uint32_t word = load32(p);
+  uint32_t negative = (~word >> 4) & 1;
+  uint32_t digits = word >> (negative * 8);
+  uint32_t width = 4 + negative + ((digits >> 12) & 1);
+  int32_t value = temperatures[digits & 0x0f0f] + (p[width - 2] & 15);
   value = (value ^ -(int32_t)negative) + (int32_t)negative;
   const uint8_t *next = p + width + (p[width - 1] == '\r');
 
