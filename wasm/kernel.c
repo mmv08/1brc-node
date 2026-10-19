@@ -127,7 +127,12 @@ INLINE Station *find_station(const uint8_t *start, uint32_t length, uint64_t has
   }
 }
 
-INLINE const uint8_t *process_row(const uint8_t *p) {
+typedef struct {
+  const uint8_t *temperature;
+  Station *station;
+} ParsedRow;
+
+INLINE ParsedRow scan_row(const uint8_t *p) {
   const uint8_t *start = p;
   uint64_t hash = 0;
   uint64_t first = load64(start);
@@ -153,7 +158,11 @@ INLINE const uint8_t *process_row(const uint8_t *p) {
   }
   uint32_t length = (uint32_t)(p - start);
   uint64_t head = first & byte_masks[length < 8 ? length : 8];
-  p++;
+  return (ParsedRow){p + 1, find_station(start, length, hash, head)};
+}
+
+INLINE const uint8_t *update_row(ParsedRow row) {
+  const uint8_t *p = row.temperature;
   uint32_t word = load32(p);
   uint32_t negative = (~word >> 4) & 1;
   uint32_t digits = word >> (negative * 8);
@@ -162,7 +171,7 @@ INLINE const uint8_t *process_row(const uint8_t *p) {
   value = (value ^ -(int32_t)negative) + (int32_t)negative;
   const uint8_t *next = p + width + (p[width - 1] == '\r');
 
-  Station *station = find_station(start, length, hash, head);
+  Station *station = row.station;
   // Counts stay below 2^32, so adding one cannot carry into packed min/max.
   // Update the exact sum/count together and blend in signed 16-bit extrema.
   v128_t stats = wasm_v128_load(station);
@@ -174,6 +183,8 @@ INLINE const uint8_t *process_row(const uint8_t *p) {
                   wasm_v128_bitselect(extrema, added, wasm_i16x8_make(0, 0, 0, 0, 0, 0, -1, -1)));
   return next;
 }
+
+INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row(p)); }
 
 EXPORT(reset) void reset(void) {
   memset(buckets, 0, sizeof(buckets));
@@ -209,9 +220,12 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *b = end_a;
   const uint8_t *c = end_b;
   while (a < end_a && b < end_b && c < limit) {
-    a = process_row(a);
-    b = process_row(b);
-    c = process_row(c);
+    ParsedRow row_a = scan_row(a);
+    ParsedRow row_b = scan_row(b);
+    ParsedRow row_c = scan_row(c);
+    a = update_row(row_a);
+    b = update_row(row_b);
+    c = update_row(row_c);
   }
   while (a < end_a) a = process_row(a);
   while (b < end_b) b = process_row(b);
