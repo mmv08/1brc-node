@@ -197,7 +197,7 @@ test('every name length and repeated keys preserve aggregates across parser tran
 });
 
 function hashName(name) {
-  const bytes = Buffer.from(name);
+  const bytes = Buffer.from(`${name};`);
   let hash = 0n;
   for (let p = 0; p < bytes.length; p += 16) {
     let low = 0n;
@@ -248,5 +248,38 @@ test('full-key verification checks every middle byte without a test-only kernel'
       assert.equal(format(actual), format(expected));
       assert.deepEqual(actual, expected);
     }
+  }
+});
+
+test('short-name collisions preserve length and every byte across three lanes', async () => {
+  const kernel = await createKernel(1024);
+  const buffer = kernel.allocateBuffer(1280);
+  const parse = kernel.makeParser(buffer);
+  const view = new DataView(kernel.memory);
+  const base = kernel.api.stations_base();
+  const buckets = kernel.api.buckets_base();
+  for (const [original, changed] of [
+    ['A', 'A\u0000'],
+    ['A\u0000', 'A\u0000\u0000'],
+    ['AB', 'AB\u0000'],
+    ['x'.repeat(14), `${'x'.repeat(14)}\u0000`],
+    ['x'.repeat(15), 'x'.repeat(16)],
+    ['HEADSAMExTAILSAME', 'HEADSAME'],
+    ['\u0000'.repeat(100), '\u0000'],
+  ]) {
+    kernel.api.reset();
+    parse(0, fill(buffer, `${original};0.1\n`));
+    const before = hashName(original);
+    const after = hashName(changed);
+    assert.equal(view.getUint32(buckets + before.slot * 4, true), base);
+    view.setUint32(buckets + before.slot * 4, 0, true);
+    view.setUint32(buckets + after.slot * 4, base, true);
+    view.setUint32(base + 16, after.fingerprint, true);
+    // Equal row sizes put one row in each lane, including the short-name path.
+    parse(0, fill(buffer, `${changed};0.2\n`.repeat(3)));
+    assert.deepEqual(kernel.rows(), [
+      [original, 1, 1, 1, 1],
+      [changed, 2, 6, 2, 3],
+    ]);
   }
 });

@@ -46,7 +46,7 @@ static const uint64_t byte_masks[9] = {
     UINT64_MAX,
 };
 
-// Canonical short names keep their padded bytes in SIMD registers.
+// Include the delimiter in short keys so their length is part of the SIMD key.
 static const uint64_t short_masks[17][2] __attribute__((aligned(16))) = {
     {UINT64_C(0x0), UINT64_C(0x0)},
     {UINT64_C(0xff), UINT64_C(0x0)},
@@ -126,7 +126,7 @@ __attribute__((noinline, cold)) static int same_middle(const Station *station, c
 INLINE int same_name(const Station *station, const uint8_t *start, uint32_t length, uint64_t head) {
   if ((station->key >> 20) != length) return 0;
   if (length < 16) {
-    v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length]));
+    v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length + 1]));
     return !wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key));
   }
   if ((station->head != head) | (station->tail != load64(start + length - 8))) return 0;
@@ -149,7 +149,7 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   station->hash = hash;
   station->key = (length << 20) | name_used;
   if (length < 16) {
-    v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length]));
+    v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length + 1]));
     wasm_v128_store(&station->head, key);
   } else {
     station->head = head;
@@ -201,12 +201,11 @@ INLINE NameRow scan_name(const uint8_t *p) {
     if (matches) {
       uint32_t length = (uint32_t)__builtin_ctz(matches);
       // Mask both words before selecting: name lengths vary unpredictably.
-      uint32_t low_width = length < 8 ? length : 8;
-      uint32_t high_width = length > 8 ? length - 8 : 0;
+      uint32_t low_width = length < 8 ? length + 1 : 8;
+      uint32_t high_width = length >= 8 ? length - 7 : 0;
       uint64_t low = load64(p) & byte_masks[low_width];
       uint64_t high = load64(p + 8) & byte_masks[high_width];
-      uint64_t mixed = mix_pair(hash, low, high);
-      hash = length == 0 ? hash : mixed;
+      hash = mix_pair(hash, low, high);
       p += length;
       break;
     }
@@ -253,7 +252,7 @@ INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row
 
 INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
   uint32_t length = (uint32_t)__builtin_ctz(matches);
-  v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length]));
+  v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length + 1]));
   uint64_t head = (uint64_t)wasm_i64x2_extract_lane(key, 0);
   uint64_t high = (uint64_t)wasm_i64x2_extract_lane(key, 1);
   uint64_t hash = mix_pair(0, head, high);
@@ -264,8 +263,8 @@ INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128
     station = insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
   } else {
     station = (Station *)(uintptr_t)entry;
-    if (((station->key >> 20) != length) |
-        wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key))) {
+    // The delimiter distinguishes lengths, including names ending in NUL.
+    if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key))) {
       station = probe_station(start, length, hash, head, (slot + 1) & (TABLE_SIZE - 1));
     }
   }
