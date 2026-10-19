@@ -255,8 +255,10 @@ INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row
 
 INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
   uint32_t length = (uint32_t)__builtin_ctz(matches);
-  const v128_t positions = wasm_i8x16_make(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-  v128_t mask = wasm_i8x16_lt(positions, wasm_i8x16_splat((int8_t)(length + 1)));
+  // Straddle zero at the longest short name to retain a signed comparison.
+  const v128_t positions =
+      wasm_i8x16_make(-16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1);
+  v128_t mask = wasm_i8x16_lt(positions, wasm_i8x16_splat((int8_t)((int32_t)length - 15)));
   v128_t key = wasm_v128_and(bytes, mask);
   v128_t mixed = wasm_v128_xor(
       key, wasm_i64x2_make(UINT64_C(0x9e3779b185ebca87), UINT64_C(0xc2b2ae3d27d4eb4f)));
@@ -338,9 +340,7 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
     uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
     uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
     uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-    // Each bitmask is 16 bits. Only zero underflows into bit 31 on subtraction.
-    uint32_t missing = (matches_a - 1) | (matches_b - 1) | (matches_c - 1);
-    if ((missing >> 31) == 0) {
+    if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
       a = process_short(a, matches_a, bytes_a);
       b = process_short(b, matches_b, bytes_b);
       c = process_short(c, matches_c, bytes_c);
