@@ -76,39 +76,23 @@ INLINE uint64_t mix(uint64_t hash, uint64_t word) {
   return (hash ^ word) * UINT64_C(0x9e3779b185ebca87);
 }
 
-__attribute__((noinline, cold)) static int same_middle(const Station *station, const uint8_t *start,
-                                                       uint32_t length) {
-  const uint8_t *key = names + (station->key & OFFSET_MASK);
-  const uint32_t last = length - 16;
-  // Names are at most 100 bytes: five fixed middle vectors suffice.
-  if (last > 8 && wasm_i8x16_bitmask(
-                      wasm_i8x16_eq(wasm_v128_load(start + 8), wasm_v128_load(key + 8))) != 0xffff)
-    return 0;
-  if (last > 24 && wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 24),
-                                                    wasm_v128_load(key + 24))) != 0xffff)
-    return 0;
-  if (last > 40 && wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 40),
-                                                    wasm_v128_load(key + 40))) != 0xffff)
-    return 0;
-  if (last > 56 && wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 56),
-                                                    wasm_v128_load(key + 56))) != 0xffff)
-    return 0;
-  if (last > 72 && wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 72),
-                                                    wasm_v128_load(key + 72))) != 0xffff)
-    return 0;
-  // Overlap the last vector so every middle byte is checked without reading
-  // beyond the actual name. Cached head/tail words alone are never sufficient.
-  return wasm_i8x16_bitmask(
-             wasm_i8x16_eq(wasm_v128_load(start + last), wasm_v128_load(key + last))) == 0xffff;
-}
-
 INLINE int same_name(const Station *station, const uint8_t *start, uint32_t length, uint64_t head) {
   uint32_t width = length < 8 ? length : 8;
   uint64_t tail = load64(start + length - width) & byte_masks[width];
   if (((station->key >> 20) != length) | (station->head != head) | (station->tail != tail))
     return 0;
   if (length <= 16) return 1;
-  return same_middle(station, start, length);
+  const uint8_t *key = names + (station->key & OFFSET_MASK);
+  const uint32_t last = length - 16;
+  for (uint32_t i = 8; i < last; i += 16) {
+    if (wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + i), wasm_v128_load(key + i))) !=
+        0xffff)
+      return 0;
+  }
+  // Overlap the last vector so every middle byte is checked without reading
+  // beyond the actual name. Cached head/tail words alone are never sufficient.
+  return wasm_i8x16_bitmask(
+             wasm_i8x16_eq(wasm_v128_load(start + last), wasm_v128_load(key + last))) == 0xffff;
 }
 
 // At most 10K insertions versus 1B measurements: don't duplicate this cold
@@ -150,8 +134,8 @@ typedef struct {
 } ParsedRow;
 
 typedef struct {
-  const uint8_t *start;
-  uint32_t length;
+  // The 100-byte name limit fits in seven bits beside a full 32-bit pointer.
+  uint64_t location;
   uint64_t hash;
   uint64_t head;
 } NameRow;
@@ -182,12 +166,13 @@ INLINE NameRow scan_name(const uint8_t *p) {
   }
   uint32_t length = (uint32_t)(p - start);
   uint64_t head = first & byte_masks[length < 8 ? length : 8];
-  return (NameRow){start, length, hash, head};
+  return (NameRow){((uint64_t)(uintptr_t)start << 7) | length, hash, head};
 }
 
 INLINE ParsedRow lookup_row(NameRow row) {
-  return (ParsedRow){row.start + row.length + 1,
-                     find_station(row.start, row.length, row.hash, row.head)};
+  const uint8_t *start = (const uint8_t *)(uintptr_t)(row.location >> 7);
+  uint32_t length = (uint32_t)row.location & 127;
+  return (ParsedRow){start + length + 1, find_station(start, length, row.hash, row.head)};
 }
 
 INLINE ParsedRow scan_row(const uint8_t *p) { return lookup_row(scan_name(p)); }
