@@ -12,11 +12,4 @@ else
   runtime=node
 fi
 
-if [ "${ENGINE:-phased}" = "phased" ]; then
-  exec "$runtime" \
-    --max-inlined-bytecode-size=1000 \
-    --max-inlined-bytecode-size-cumulative=4000 \
-    "$root/calculate.mjs" "$@"
-fi
-
 exec "$runtime" "$root/calculate.mjs" "$@"

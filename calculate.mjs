@@ -2,20 +2,14 @@ import { closeSync, fstatSync, openSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
 import { pathToFileURL } from 'node:url';
 import { isMainThread, parentPort, Worker, workerData } from 'node:worker_threads';
-import { aggregate } from './lib/aggregate.mjs';
 import { format } from './lib/format.mjs';
-
-async function runEngine(config) {
-  if (config.engine === 'phased') return aggregate(config);
-  if (config.engine === 'wasm') return (await import('./wasm/engine.mjs')).aggregate(config);
-  throw new Error('ENGINE must be phased (JavaScript) or wasm');
-}
+import { aggregate } from './wasm/engine.mjs';
 
 export async function calculate(file, options = {}) {
   const fd = openSync(file, 'r');
   try {
     const size = fstatSync(fd).size;
-    const chunkSize = options.chunkSize ?? Number(process.env.CHUNK_BYTES ?? 128 * 1024);
+    const chunkSize = options.chunkSize ?? Number(process.env.CHUNK_BYTES ?? 512 * 1024);
     const requested = options.workers ?? Number(process.env.WORKERS ?? availableParallelism());
     if (!Number.isSafeInteger(chunkSize) || chunkSize < 128 || chunkSize > 256 * 1024 * 1024) {
       throw new Error('CHUNK_BYTES must be an integer between 128 and 268435456');
@@ -30,9 +24,8 @@ export async function calculate(file, options = {}) {
       size,
       chunkSize,
       queue,
-      engine: options.engine ?? process.env.ENGINE ?? 'phased',
     };
-    if (workers === 1) return await runEngine(config);
+    if (workers === 1) return await aggregate(config);
     const threads = [];
     try {
       const parts = await Promise.all(
@@ -78,7 +71,7 @@ export async function calculate(file, options = {}) {
 }
 
 if (!isMainThread) {
-  parentPort.postMessage(await runEngine(workerData));
+  parentPort.postMessage(await aggregate(workerData));
 } else if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
     process.stdout.write(format(await calculate(process.argv[2] ?? 'measurements.txt')));

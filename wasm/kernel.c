@@ -96,7 +96,7 @@ INLINE int same_name(const Station *station, const uint8_t *start, uint32_t leng
 }
 
 // At most 10K insertions versus 1B measurements: don't duplicate this cold
-// initialization/copy path inside each of the four hot parsing lanes.
+// initialization/copy path inside each hot parsing lane.
 __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *start,
                                                                uint32_t length, uint32_t hash,
                                                                uint64_t head, uint32_t slot) {
@@ -136,6 +136,7 @@ INLINE const uint8_t *process_row(const uint8_t *p) {
     uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(p), separator));
     if (matches) {
       uint32_t length = (uint32_t)__builtin_ctz(matches);
+      // Mask both words before selecting: name lengths vary unpredictably.
       uint32_t low_width = length < 8 ? length : 8;
       uint32_t high_width = length > 8 ? length - 8 : 0;
       uint64_t low = load64(p) & byte_masks[low_width];
@@ -163,10 +164,15 @@ INLINE const uint8_t *process_row(const uint8_t *p) {
   const uint8_t *next = p + width + (p[width - 1] == '\r');
 
   Station *station = find_station(start, length, fingerprint, head);
-  station->sum += value;
-  station->count++;
-  if (value < station->min) station->min = (int16_t)value;
-  if (value > station->max) station->max = (int16_t)value;
+  // Counts stay below 2^32, so adding one cannot carry into packed min/max.
+  // Update the exact sum/count together and blend in signed 16-bit extrema.
+  v128_t stats = wasm_v128_load(station);
+  v128_t added = wasm_i64x2_add(stats, wasm_i64x2_make(value, 1));
+  v128_t values = wasm_i16x8_splat((int16_t)value);
+  v128_t extrema = wasm_v128_bitselect(wasm_i16x8_max(stats, values), wasm_i16x8_min(stats, values),
+                                       wasm_i16x8_make(0, 0, 0, 0, 0, 0, 0, -1));
+  wasm_v128_store(station,
+                  wasm_v128_bitselect(extrema, added, wasm_i16x8_make(0, 0, 0, 0, 0, 0, -1, -1)));
   return next;
 }
 
@@ -189,7 +195,7 @@ EXPORT(buckets_base) uint32_t buckets_base(void) { return (uint32_t)(uintptr_t)b
 EXPORT(station_count) uint32_t station_count(void) { return used; }
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
-  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 6;
+  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 3;
   if (p == begin) return p;
   while (p < end && p[-1] != '\n') p++;
   return p;
@@ -201,26 +207,14 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *limit = (const uint8_t *)(uintptr_t)end;
   const uint8_t *end_a = boundary(a, limit, 1);
   const uint8_t *end_b = boundary(a, limit, 2);
-  const uint8_t *end_c = boundary(a, limit, 3);
-  const uint8_t *end_d = boundary(a, limit, 4);
-  const uint8_t *end_e = boundary(a, limit, 5);
   const uint8_t *b = end_a;
   const uint8_t *c = end_b;
-  const uint8_t *d = end_c;
-  const uint8_t *e = end_d;
-  const uint8_t *f = end_e;
-  while (a < end_a && b < end_b && c < end_c && d < end_d && e < end_e && f < limit) {
+  while (a < end_a && b < end_b && c < limit) {
     a = process_row(a);
     b = process_row(b);
     c = process_row(c);
-    d = process_row(d);
-    e = process_row(e);
-    f = process_row(f);
   }
   while (a < end_a) a = process_row(a);
   while (b < end_b) b = process_row(b);
-  while (c < end_c) c = process_row(c);
-  while (d < end_d) d = process_row(d);
-  while (e < end_e) e = process_row(e);
-  while (f < limit) f = process_row(f);
+  while (c < limit) c = process_row(c);
 }

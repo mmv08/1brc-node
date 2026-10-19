@@ -4,7 +4,6 @@
   "type": "module",
   "scripts": {
     "start": "./run.sh",
-    "start:wasm": "ENGINE=wasm ./run.sh",
     "build:wasm": "node tools/build-wasm.mjs",
     "format:c": "node tools/format-c.mjs",
     "check:c": "node tools/format-c.mjs --check",

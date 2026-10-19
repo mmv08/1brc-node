@@ -5,7 +5,7 @@ import { nodeFlags, nodeRuntime, sourceHash } from './benchmark-config.mjs';
 
 // Cases may point at scripts in different git worktrees. This is a generic
 // process benchmark, not a runtime registry of discarded parser variants.
-const label = process.argv[2] ?? 'backends';
+const label = process.argv[2] ?? 'current';
 const file = process.argv[3] ?? 'measurements.txt';
 const runs = Number(process.env.RUNS ?? 5);
 const warmups = Number(process.env.WARMUP ?? 0);
@@ -15,10 +15,7 @@ const runtime = nodeRuntime();
 const expected = readFileSync(`${file}.out`, 'utf8');
 const cases = process.env.CASES
   ? JSON.parse(process.env.CASES)
-  : [
-      { name: 'JavaScript', env: { ENGINE: 'phased' } },
-      { name: 'Wasm SIMD', env: { ENGINE: 'wasm' } },
-    ];
+  : [{ name: 'Wasm SIMD', env: { ENGINE: 'wasm' } }];
 mkdirSync('results', { recursive: true });
 const stamp = Date.now();
 const report = {
@@ -37,7 +34,7 @@ const report = {
   })),
 };
 for (let i = 0; i < warmups; i++) {
-  const env = { ...process.env, ENGINE: 'phased' };
+  const env = { ...process.env };
   const start = performance.now();
   const output = execFileSync(runtime, [...nodeFlags(env), 'calculate.mjs', file], {
     env,

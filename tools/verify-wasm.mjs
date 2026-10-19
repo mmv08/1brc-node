@@ -6,7 +6,7 @@ import { format } from '../lib/format.mjs';
 const file = process.argv[2] ?? 'measurements.txt';
 const expectedCount = Number(process.argv[3] ?? 1_000_000_000);
 const start = performance.now();
-const rows = await calculate(file, { engine: 'wasm' });
+const rows = await calculate(file);
 const count = rows.reduce((sum, row) => sum + row[4], 0);
 assert.equal(count, expectedCount, 'exact total measurement count');
 assert.equal(format(rows), readFileSync(`${file}.out`, 'utf8'), 'complete formatted result');

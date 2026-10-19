@@ -9,7 +9,7 @@ const runs = Number(process.env.RUNS ?? 5);
 if (!Number.isInteger(runs) || runs < 1) throw new Error('RUNS must be a positive integer');
 const runtime = nodeRuntime();
 const script = process.env.SCRIPT ?? 'calculate.mjs';
-const engine = process.env.ENGINE ?? 'phased';
+const engine = 'wasm';
 const flags =
   script === 'calculate.mjs'
     ? nodeFlags(process.env)
@@ -53,7 +53,7 @@ writeFileSync(
       engine,
       flags,
       workers: process.env.WORKERS ?? 'auto',
-      chunkBytes: process.env.CHUNK_BYTES ?? '131072',
+      chunkBytes: process.env.CHUNK_BYTES ?? '524288',
       cpu: cpus()[0].model,
       file,
       bytes: statSync(file).size,

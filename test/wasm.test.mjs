@@ -112,7 +112,7 @@ test('10K keys, 100-byte/UTF-8/NUL names and chunk boundaries preserve exact agg
   try {
     for (const chunkSize of [128, 129, 4096, 1048576]) {
       for (const workers of [1, 3]) {
-        const actual = await calculate(file, { engine: 'wasm', workers, chunkSize });
+        const actual = await calculate(file, { workers, chunkSize });
         assert.equal(format(actual), expected);
         assert.deepEqual(actual, expectedRows);
       }
