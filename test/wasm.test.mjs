@@ -161,6 +161,44 @@ test('10K short UTF-8/NUL keys preserve all aggregates across lanes and chunks',
   }
 });
 
+test('shared-prefix replacements and repeated short keys publish exact chunk totals', async () => {
+  const kernel = await createKernel(65536);
+  const buffer = kernel.allocateBuffer(65536 + 256);
+  const parse = kernel.makeParser(buffer);
+  const names = [
+    'same-A',
+    'same-B',
+    'same-A\u0000',
+    `same-${'x'.repeat(95)}`,
+    'A',
+    'A\u0000',
+    '\u0000',
+    '\u0000'.repeat(100),
+  ];
+  const expected = new Map();
+  for (let phase = 0; phase < 4; phase++) {
+    if (phase === 2) {
+      kernel.api.reset();
+      expected.clear();
+    }
+    let text = '';
+    for (let i = 0; i < 600; i++) {
+      const name = names[(i * 5 + phase) % names.length];
+      const value = ((i * 97 + phase * 733) % 1999) - 999;
+      text += `${name};${(value / 10).toFixed(1)}${i % 3 ? '\n' : '\r\n'}`;
+      const row = expected.get(name);
+      if (row) {
+        row[0] = Math.min(row[0], value);
+        row[1] += value;
+        row[2] = Math.max(row[2], value);
+        row[3]++;
+      } else expected.set(name, [value, value, value, 1]);
+    }
+    parse(0, fill(buffer, text.replace(/\r?\n$/, '')));
+    assert.deepEqual(new Map(kernel.rows().map(([name, ...stats]) => [name, stats])), expected);
+  }
+});
+
 test('all temperature spellings preserve values and row boundaries', async () => {
   const directory = mkdtempSync(join(tmpdir(), '1brc-temperature-formats-'));
   const file = join(directory, 'input.txt');

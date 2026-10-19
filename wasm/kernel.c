@@ -7,6 +7,8 @@
 #define MAX_STATIONS 10000
 #define TABLE_SIZE 32768
 #define OFFSET_MASK UINT32_C(0xfffff)
+#define CACHE_BITS 14
+#define CACHE_SIZE (1u << CACHE_BITS)
 
 // Fixed result ABI: integer tenths, an exact signed 64-bit sum, and a packed
 // key descriptor. The entire valid arena fits in 20 bits; length needs only 7.
@@ -15,6 +17,10 @@ typedef struct {
   uint32_t count;
   int16_t min;
   int16_t max;
+} Stats;
+
+typedef struct {
+  Stats stats;
   uint32_t hash;
   uint32_t key;
   uint64_t head;
@@ -22,13 +28,32 @@ typedef struct {
 } Station;
 
 _Static_assert(sizeof(Station) == 40, "station ABI size");
-_Static_assert(offsetof(Station, count) == 8, "station ABI count");
+_Static_assert(sizeof(Stats) == 16, "SIMD statistics size");
+_Static_assert(offsetof(Station, stats.count) == 8, "station ABI count");
 _Static_assert(offsetof(Station, key) == 20, "station ABI key");
 _Static_assert(MAX_STATIONS * 104 + 16 < (1 << 20), "all valid key offsets fit");
 
 static uint32_t buckets[TABLE_SIZE];
 static Station stations[MAX_STATIONS];
 static Station empty_station;
+
+// A learned short-name record owns partial aggregates until eviction or the
+// end of a chunk. All fields needed by a hit occupy one cache line.
+typedef struct {
+  Stats stats;
+  uint64_t head;
+  uint64_t tail;
+  uint64_t mask_low;
+  uint64_t mask_high;
+  Station *owner;
+  uint32_t length;
+  uint32_t padding[2];
+} CacheEntry;
+
+_Static_assert(sizeof(CacheEntry) == 64, "one learned record per cache line");
+static CacheEntry cache[CACHE_SIZE] __attribute__((aligned(64)));
+static CacheEntry *active_cache[CACHE_SIZE];
+static uint32_t active_used;
 static uint8_t names[MAX_STATIONS * 104 + 16];
 static uint16_t temperatures[4096];
 static uint32_t used;
@@ -143,10 +168,10 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   if (used >= MAX_STATIONS || length == 0 || length > 100) __builtin_trap();
   Station *station = &stations[used++];
   buckets[slot] = (uint32_t)(uintptr_t)station;
-  station->sum = 0;
-  station->count = 0;
-  station->min = 999;
-  station->max = -999;
+  station->stats.sum = 0;
+  station->stats.count = 0;
+  station->stats.min = 999;
+  station->stats.max = -999;
   station->hash = hash;
   station->key = (length << 20) | name_used;
   if (length < 16) {
@@ -186,7 +211,7 @@ INLINE Station *find_station(const uint8_t *start, uint32_t length, uint64_t has
 
 typedef struct {
   const uint8_t *temperature;
-  Station *station;
+  Stats *stats;
 } ParsedRow;
 
 typedef struct {
@@ -219,15 +244,6 @@ INLINE NameRow scan_name(const uint8_t *p) {
   return (NameRow){((uint64_t)(uintptr_t)start << 7) | length, hash};
 }
 
-INLINE ParsedRow lookup_row(NameRow row) {
-  const uint8_t *start = (const uint8_t *)(uintptr_t)(row.location >> 7);
-  uint32_t length = (uint32_t)row.location & 127;
-  uint64_t head = load64(start) & byte_masks[length < 8 ? length : 8];
-  return (ParsedRow){start + length + 1, find_station(start, length, row.hash, head)};
-}
-
-INLINE ParsedRow scan_row(const uint8_t *p) { return lookup_row(scan_name(p)); }
-
 INLINE const uint8_t *update_row(ParsedRow row) {
   const uint8_t *p = row.temperature;
   uint32_t word = load32(p);
@@ -241,7 +257,7 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   value = (value ^ -(int32_t)negative) + (int32_t)negative;
   const uint8_t *next = p + width + (p[width - 1] == '\r');
 
-  Station *station = row.station;
+  Stats *station = row.stats;
   // Counts stay below 2^32, so adding one cannot carry into packed min/max.
   // Update the exact sum/count together and blend in signed 16-bit extrema.
   v128_t stats = wasm_v128_load(station);
@@ -254,44 +270,53 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   return next;
 }
 
-INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row(p)); }
-
-INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
-  uint32_t length = (uint32_t)__builtin_ctz(matches);
-  v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length + 1]));
-  v128_t mixed = wasm_v128_xor(
-      key, wasm_i64x2_make(UINT64_C(0x9e3779b185ebca87), UINT64_C(0xc2b2ae3d27d4eb4f)));
-  uint64_t hash =
-      (uint64_t)wasm_i64x2_extract_lane(mixed, 0) * (uint64_t)wasm_i64x2_extract_lane(mixed, 1);
-  uint32_t slot = (uint32_t)(hash >> 49);
-  Station *station = (Station *)(uintptr_t)buckets[slot];
-  // An empty record is all zero; a key containing ';' can never match it.
-  if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key))) {
-    uint64_t head = (uint64_t)wasm_i64x2_extract_lane(key, 0);
-    station = find_station(start, length, hash, head);
-  }
-  return update_row((ParsedRow){start + length + 1, station});
+INLINE void clear_partial(CacheEntry *entry) {
+  wasm_v128_store(&entry->stats, wasm_i16x8_make(0, 0, 0, 0, 0, 0, 999, -999));
 }
 
-typedef struct {
-  const uint8_t *a;
-  const uint8_t *b;
-  const uint8_t *c;
-} RowPointers;
+INLINE void merge_partial(CacheEntry *entry) {
+  if (!entry->stats.count) return;
+  Stats *destination = &entry->owner->stats;
+  v128_t partial = wasm_v128_load(&entry->stats);
+  v128_t total = wasm_v128_load(destination);
+  v128_t added = wasm_i64x2_add(total, partial);
+  v128_t extrema = wasm_i16x8_shuffle(wasm_i16x8_min(total, partial),
+                                      wasm_i16x8_max(total, partial), 0, 1, 2, 3, 4, 5, 6, 15);
+  wasm_v128_store(destination, wasm_i16x8_shuffle(added, extrema, 0, 1, 2, 3, 4, 5, 14, 15));
+  clear_partial(entry);
+}
 
-// Preserve the complete valid-input parser when any name needs another block.
-__attribute__((noinline, cold)) static RowPointers process_three(const uint8_t *a, const uint8_t *b,
-                                                                 const uint8_t *c) {
-  NameRow name_a = scan_name(a);
-  NameRow name_b = scan_name(b);
-  NameRow name_c = scan_name(c);
-  ParsedRow row_a = lookup_row(name_a);
-  ParsedRow row_b = lookup_row(name_b);
-  ParsedRow row_c = lookup_row(name_c);
-  const uint8_t *next_a = update_row(row_a);
-  const uint8_t *next_b = update_row(row_b);
-  const uint8_t *next_c = update_row(row_c);
-  return (RowPointers){next_a, next_b, next_c};
+__attribute__((noinline, cold)) static void flush_cache(void) {
+  for (uint32_t i = 0; i < active_used; i++) merge_partial(active_cache[i]);
+}
+
+__attribute__((noinline, cold)) static ParsedRow cache_miss(const uint8_t *start,
+                                                            CacheEntry *entry) {
+  NameRow name = scan_name(start);
+  uint32_t length = (uint32_t)name.location & 127;
+  uint64_t head = load64(start) & byte_masks[length < 8 ? length : 8];
+  Station *station = find_station(start, length, name.hash, head);
+  if (length >= 16) return (ParsedRow){start + length + 1, &station->stats};
+  merge_partial(entry);
+  if (!entry->owner) active_cache[active_used++] = entry;
+  entry->owner = station;
+  entry->length = length;
+  wasm_v128_store(&entry->head, wasm_v128_load(&station->head));
+  wasm_v128_store(&entry->mask_low, wasm_v128_load(short_masks[length + 1]));
+  clear_partial(entry);
+  return (ParsedRow){start + length + 1, &entry->stats};
+}
+
+INLINE const uint8_t *process_cached(const uint8_t *start) {
+  // Route by five raw bytes; a complete masked key still verifies every hit.
+  uint64_t hash = (load64(start) << 24) * UINT64_C(0x9e3779b185ebca87);
+  CacheEntry *entry = &cache[hash >> (64 - CACHE_BITS)];
+  v128_t difference =
+      wasm_v128_and(wasm_v128_xor(wasm_v128_load(start), wasm_v128_load(&entry->head)),
+                    wasm_v128_load(&entry->mask_low));
+  ParsedRow row = {start + entry->length + 1, &entry->stats};
+  if (wasm_v128_any_true(difference)) row = cache_miss(start, entry);
+  return update_row(row);
 }
 
 EXPORT(reset) void reset(void) {
@@ -299,6 +324,16 @@ EXPORT(reset) void reset(void) {
     buckets[slot] = (uint32_t)(uintptr_t)&empty_station;
   used = 0;
   name_used = 0;
+  active_used = 0;
+  for (uint32_t i = 0; i < CACHE_SIZE; i++) {
+    // The impossible empty name ";" rejects every valid nonempty name,
+    // including one starting with NUL. No separate empty check is needed.
+    wasm_v128_store(&cache[i].head, wasm_i64x2_make(';', 0));
+    wasm_v128_store(&cache[i].mask_low, wasm_i64x2_make(255, 0));
+    cache[i].owner = NULL;
+    cache[i].stats.count = 0;
+    cache[i].length = 0;
+  }
   for (uint32_t first = 0; first <= 9; first++) {
     temperatures[0xe00 | first] = (uint16_t)(first * 10);
     for (uint32_t second = 0; second <= 9; second++) {
@@ -332,25 +367,13 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *b = end_a;
   const uint8_t *c = end_b;
   while (a < end_a && b < end_b && c < limit) {
-    const v128_t separator = wasm_i8x16_splat(';');
-    v128_t bytes_a = wasm_v128_load(a);
-    v128_t bytes_b = wasm_v128_load(b);
-    v128_t bytes_c = wasm_v128_load(c);
-    uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
-    uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
-    uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-    if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
-      a = process_short(a, matches_a, bytes_a);
-      b = process_short(b, matches_b, bytes_b);
-      c = process_short(c, matches_c, bytes_c);
-    } else {
-      RowPointers next = process_three(a, b, c);
-      a = next.a;
-      b = next.b;
-      c = next.c;
-    }
+    a = process_cached(a);
+    b = process_cached(b);
+    c = process_cached(c);
   }
-  while (a < end_a) a = process_row(a);
-  while (b < end_b) b = process_row(b);
-  while (c < limit) c = process_row(c);
+  while (a < end_a) a = process_cached(a);
+  while (b < end_b) b = process_cached(b);
+  while (c < limit) c = process_cached(c);
+  // Publish all partials before returning through the existing result ABI.
+  flush_cache();
 }
