@@ -40,7 +40,7 @@ test('shipped kernel matches its source/build hashes, uses SIMD, and has no impo
 });
 
 test('input aliases grown Wasm memory and reset clears the previous aggregates', async () => {
-  const size = 1024 * 1024;
+  const size = 8 * 1024 * 1024;
   const kernel = await createKernel(size);
   const buffer = kernel.allocateBuffer(size + 256);
   assert.equal(buffer.buffer, kernel.memory);
@@ -66,7 +66,7 @@ test('signed 64-bit sums handle the full challenge bound', async () => {
     const parse = kernel.makeParser(buffer);
     parse(0, length);
     const view = new DataView(kernel.memory);
-    const base = kernel.api.stations_base();
+    const base = stationOffset(kernel);
     // Unit-test prefix state, never used by a benchmark or the actual solver.
     view.setBigInt64(base, BigInt(value * 999999999), true);
     view.setUint32(base + 8, 999999999, true);
@@ -215,30 +215,48 @@ function hashName(name) {
   };
 }
 
+function stationOffset(kernel, id = 0) {
+  const view = new DataView(kernel.memory);
+  const slot = view.getUint32(kernel.api.indices_base() + id * 4, true);
+  return kernel.api.stations_base() + slot * 32;
+}
+
+function forceCollision(kernel, original, changed) {
+  const view = new DataView(kernel.memory);
+  const bytes = new Uint8Array(kernel.memory);
+  const before = hashName(original);
+  const after = hashName(changed);
+  const base = kernel.api.stations_base();
+  const metadata = kernel.api.metadata_base();
+  assert.equal(view.getUint32(kernel.api.indices_base(), true), before.slot);
+  assert.equal(view.getUint32(metadata + before.slot * 8, true), before.fingerprint);
+  // Relocate the first record and its metadata to the incoming name's slot,
+  // leaving its stored name bytes unchanged. There is no test-only kernel.
+  if (before.slot !== after.slot) {
+    bytes.copyWithin(base + after.slot * 32, base + before.slot * 32, base + before.slot * 32 + 32);
+    bytes.copyWithin(
+      metadata + after.slot * 8,
+      metadata + before.slot * 8,
+      metadata + before.slot * 8 + 8,
+    );
+    bytes.fill(0, base + before.slot * 32, base + before.slot * 32 + 32);
+    bytes.fill(0, metadata + before.slot * 8, metadata + before.slot * 8 + 8);
+  }
+  view.setUint32(metadata + after.slot * 8, after.fingerprint, true);
+  view.setUint32(kernel.api.indices_base(), after.slot, true);
+}
+
 test('full-key verification checks every middle byte without a test-only kernel', async () => {
   const kernel = await createKernel(128);
   const buffer = kernel.allocateBuffer(384);
   const parse = kernel.makeParser(buffer);
-  const view = new DataView(kernel.memory);
-  const base = kernel.api.stations_base();
-  const buckets = kernel.api.buckets_base();
   for (const length of [17, 18, 23, 24, 25, 31, 32, 33, 47, 48, 49, 63, 64, 65, 99, 100]) {
     for (let position = 8; position < length - 8; position++) {
       kernel.api.reset();
       const original = `HEADSAME${'x'.repeat(length - 16)}TAILSAME`;
       const changed = `${original.slice(0, position)}Y${original.slice(position + 1)}`;
       parse(0, fill(buffer, `${original};0.1\n`));
-      const oldHash = view.getUint32(base + 16, true);
-      const originalHash = hashName(original);
-      assert.equal(oldHash, originalHash.fingerprint);
-      assert.equal(view.getUint32(buckets + originalHash.slot * 4, true), base);
-      const hash = hashName(changed);
-      // Fault-inject a matching cached hash and bucket, leaving name bytes and
-      // cached head/tail unchanged. This exercises collisions in the ONE real
-      // kernel, without shipping an alternative constant-hash implementation.
-      view.setUint32(buckets + originalHash.slot * 4, 0, true);
-      view.setUint32(buckets + hash.slot * 4, base, true);
-      view.setUint32(base + 16, hash.fingerprint, true);
+      forceCollision(kernel, original, changed);
       parse(0, fill(buffer, `${changed};0.2\n`));
       const expected = [
         [original, 1, 1, 1, 1],
@@ -255,9 +273,6 @@ test('short-name collisions preserve length and every byte across three lanes', 
   const kernel = await createKernel(1024);
   const buffer = kernel.allocateBuffer(1280);
   const parse = kernel.makeParser(buffer);
-  const view = new DataView(kernel.memory);
-  const base = kernel.api.stations_base();
-  const buckets = kernel.api.buckets_base();
   for (const [original, changed] of [
     ['A', 'A\u0000'],
     ['A\u0000', 'A\u0000\u0000'],
@@ -269,12 +284,7 @@ test('short-name collisions preserve length and every byte across three lanes', 
   ]) {
     kernel.api.reset();
     parse(0, fill(buffer, `${original};0.1\n`));
-    const before = hashName(original);
-    const after = hashName(changed);
-    assert.equal(view.getUint32(buckets + before.slot * 4, true), base);
-    view.setUint32(buckets + before.slot * 4, 0, true);
-    view.setUint32(buckets + after.slot * 4, base, true);
-    view.setUint32(base + 16, after.fingerprint, true);
+    forceCollision(kernel, original, changed);
     // Equal row sizes put one row in each lane, including the short-name path.
     parse(0, fill(buffer, `${changed};0.2\n`.repeat(3)));
     assert.deepEqual(kernel.rows(), [

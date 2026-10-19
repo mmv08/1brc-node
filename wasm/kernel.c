@@ -8,26 +8,31 @@
 #define TABLE_SIZE 32768
 #define OFFSET_MASK UINT32_C(0xfffff)
 
-// Fixed result ABI: integer tenths, an exact signed 64-bit sum, and a packed
-// key descriptor. The entire valid arena fits in 20 bits; length needs only 7.
+// A direct slot contains only statistics and the SIMD key. Name descriptors
+// and insertion order stay in separate arrays used by cold paths and output.
 typedef struct {
   int64_t sum;
   uint32_t count;
   int16_t min;
   int16_t max;
-  uint32_t hash;
-  uint32_t key;
   uint64_t head;
   uint64_t tail;
 } Station;
 
-_Static_assert(sizeof(Station) == 40, "station ABI size");
+typedef struct {
+  uint32_t hash;
+  uint32_t key;
+} KeyMeta;
+
+_Static_assert(sizeof(Station) == 32, "direct station ABI size");
 _Static_assert(offsetof(Station, count) == 8, "station ABI count");
-_Static_assert(offsetof(Station, key) == 20, "station ABI key");
+_Static_assert(offsetof(Station, head) == 16, "station ABI SIMD key");
+_Static_assert(sizeof(KeyMeta) == 8, "key metadata ABI size");
 _Static_assert(MAX_STATIONS * 104 + 16 < (1 << 20), "all valid key offsets fit");
 
-static uint32_t buckets[TABLE_SIZE];
-static Station stations[MAX_STATIONS];
+static Station stations[TABLE_SIZE] __attribute__((aligned(64)));
+static KeyMeta metadata[TABLE_SIZE];
+static uint32_t indices[MAX_STATIONS];
 static uint8_t names[MAX_STATIONS * 104 + 16];
 static uint16_t temperatures[4096];
 static uint32_t used;
@@ -97,9 +102,9 @@ INLINE uint64_t mix_pair(uint64_t hash, uint64_t low, uint64_t high) {
   return (hash ^ low ^ UINT64_C(0x9e3779b185ebca87)) * (high ^ UINT64_C(0xc2b2ae3d27d4eb4f));
 }
 
-__attribute__((noinline, cold)) static int same_middle(const Station *station, const uint8_t *start,
+__attribute__((noinline, cold)) static int same_middle(uint32_t descriptor, const uint8_t *start,
                                                        uint32_t length) {
-  const uint8_t *key = names + (station->key & OFFSET_MASK);
+  const uint8_t *key = names + (descriptor & OFFSET_MASK);
   const uint32_t last = length - 16;
   // Names are at most 100 bytes: five fixed middle vectors suffice.
   if (last > 8 && wasm_i8x16_bitmask(
@@ -123,15 +128,16 @@ __attribute__((noinline, cold)) static int same_middle(const Station *station, c
              wasm_i8x16_eq(wasm_v128_load(start + last), wasm_v128_load(key + last))) == 0xffff;
 }
 
-INLINE int same_name(const Station *station, const uint8_t *start, uint32_t length, uint64_t head) {
-  if ((station->key >> 20) != length) return 0;
+INLINE int same_name(const Station *station, uint32_t descriptor, const uint8_t *start,
+                     uint32_t length, uint64_t head) {
+  if ((descriptor >> 20) != length) return 0;
   if (length < 16) {
     v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length + 1]));
     return !wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key));
   }
   if ((station->head != head) | (station->tail != load64(start + length - 8))) return 0;
   if (length == 16) return 1;
-  return same_middle(station, start, length);
+  return same_middle(descriptor, start, length);
 }
 
 // At most 10K insertions versus 1B measurements: don't duplicate this cold
@@ -140,14 +146,14 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
                                                                uint32_t length, uint32_t hash,
                                                                uint64_t head, uint32_t slot) {
   if (used >= MAX_STATIONS || length == 0 || length > 100) __builtin_trap();
-  Station *station = &stations[used++];
-  buckets[slot] = (uint32_t)(uintptr_t)station;
+  Station *station = &stations[slot];
+  indices[used++] = slot;
   station->sum = 0;
   station->count = 0;
   station->min = 999;
   station->max = -999;
-  station->hash = hash;
-  station->key = (length << 20) | name_used;
+  metadata[slot].hash = hash;
+  metadata[slot].key = (length << 20) | name_used;
   if (length < 16) {
     v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length + 1]));
     wasm_v128_store(&station->head, key);
@@ -160,25 +166,17 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   return station;
 }
 
-__attribute__((noinline, cold)) static Station *probe_station(const uint8_t *start, uint32_t length,
-                                                              uint64_t hash, uint64_t head,
-                                                              uint32_t slot) {
+__attribute__((noinline, cold)) static Station *find_station(const uint8_t *start, uint32_t length,
+                                                             uint64_t hash, uint64_t head) {
+  uint32_t slot = (uint32_t)(hash >> 49);
   for (;;) {
-    uint32_t entry = buckets[slot];
-    if (!entry) return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
-    Station *station = (Station *)(uintptr_t)entry;
-    if (same_name(station, start, length, head)) return station;
+    uint32_t descriptor = metadata[slot].key;
+    if (!descriptor)
+      return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
+    Station *station = &stations[slot];
+    if (same_name(station, descriptor, start, length, head)) return station;
     slot = (slot + 1) & (TABLE_SIZE - 1);
   }
-}
-
-INLINE Station *find_station(const uint8_t *start, uint32_t length, uint64_t hash, uint64_t head) {
-  uint32_t slot = (uint32_t)(hash >> 49);
-  uint32_t entry = buckets[slot];
-  if (!entry) return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
-  Station *station = (Station *)(uintptr_t)entry;
-  if (same_name(station, start, length, head)) return station;
-  return probe_station(start, length, hash, head, (slot + 1) & (TABLE_SIZE - 1));
 }
 
 typedef struct {
@@ -257,16 +255,10 @@ INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128
   uint64_t high = (uint64_t)wasm_i64x2_extract_lane(key, 1);
   uint64_t hash = mix_pair(0, head, high);
   uint32_t slot = (uint32_t)(hash >> 49);
-  uint32_t entry = buckets[slot];
-  Station *station;
-  if (!entry) {
-    station = insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
-  } else {
-    station = (Station *)(uintptr_t)entry;
-    // The delimiter distinguishes lengths, including names ending in NUL.
-    if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key))) {
-      station = probe_station(start, length, hash, head, (slot + 1) & (TABLE_SIZE - 1));
-    }
+  Station *station = &stations[slot];
+  // A zeroed empty slot cannot match a key containing the delimiter.
+  if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key))) {
+    station = find_station(start, length, hash, head);
   }
   return update_row((ParsedRow){start + length + 1, station});
 }
@@ -293,7 +285,8 @@ __attribute__((noinline, cold)) static RowPointers process_three(const uint8_t *
 }
 
 EXPORT(reset) void reset(void) {
-  memset(buckets, 0, sizeof(buckets));
+  memset(stations, 0, sizeof(stations));
+  memset(metadata, 0, sizeof(metadata));
   used = 0;
   name_used = 0;
   for (uint32_t first = 0; first <= 9; first++) {
@@ -307,7 +300,8 @@ EXPORT(reset) void reset(void) {
 EXPORT(input_base) uint32_t input_base(void) { return (uint32_t)(uintptr_t)&__heap_base; }
 EXPORT(stations_base) uint32_t stations_base(void) { return (uint32_t)(uintptr_t)stations; }
 EXPORT(keys_base) uint32_t keys_base(void) { return (uint32_t)(uintptr_t)names; }
-EXPORT(buckets_base) uint32_t buckets_base(void) { return (uint32_t)(uintptr_t)buckets; }
+EXPORT(metadata_base) uint32_t metadata_base(void) { return (uint32_t)(uintptr_t)metadata; }
+EXPORT(indices_base) uint32_t indices_base(void) { return (uint32_t)(uintptr_t)indices; }
 EXPORT(station_count) uint32_t station_count(void) { return used; }
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
