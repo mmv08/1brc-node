@@ -243,12 +243,8 @@ INLINE NameRow scan_name(const uint8_t *p) {
   return (NameRow){((uint64_t)(uintptr_t)start << 7) | length, hash};
 }
 
-typedef struct {
-  const uint8_t *next;
-  int32_t value;
-} Reading;
-
-INLINE Reading read_temperature(const uint8_t *p) {
+INLINE const uint8_t *update_row(ParsedRow row) {
+  const uint8_t *p = row.temperature;
   uint32_t word = load32(p);
   // The decimal is in byte 1, 2 or 3; preceding digits have ASCII bit 4 set.
   // Locate it independently of sign normalization to advance the input lane.
@@ -260,10 +256,7 @@ INLINE Reading read_temperature(const uint8_t *p) {
   value = (value ^ -(int32_t)negative) + (int32_t)negative;
   const uint8_t *next = p + width + (p[width - 1] == '\r');
 
-  return (Reading){next, value};
-}
-
-INLINE void add_value(Stats *station, int32_t value) {
+  Stats *station = row.stats;
   // Counts stay below 2^32, so adding one cannot carry into packed min/max.
   // Update the exact sum/count together and blend in signed 16-bit extrema.
   v128_t stats = wasm_v128_load(station);
@@ -273,12 +266,7 @@ INLINE void add_value(Stats *station, int32_t value) {
   v128_t extrema = wasm_i16x8_shuffle(wasm_i16x8_min(stats, values), wasm_i16x8_max(stats, values),
                                       0, 1, 2, 3, 4, 5, 6, 15);
   wasm_v128_store(station, wasm_i16x8_shuffle(added, extrema, 0, 1, 2, 3, 4, 5, 14, 15));
-}
-
-INLINE const uint8_t *update_row(ParsedRow row) {
-  Reading reading = read_temperature(row.temperature);
-  add_value(row.stats, reading.value);
-  return reading.next;
+  return next;
 }
 
 INLINE void clear_partial(CacheEntry *entry) {
@@ -323,33 +311,20 @@ INLINE CacheEntry *route_cache(const uint8_t *start) {
   return &cache[hash >> (64 - CACHE_BITS)];
 }
 
-INLINE int cache_matches(CacheEntry *entry, v128_t bytes) {
-  uint32_t equal = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes, wasm_v128_load(&entry->head)));
-  return (equal & entry->match_bits) == entry->match_bits;
-}
-
 INLINE const uint8_t *process_cached_entry(const uint8_t *start, CacheEntry *entry, v128_t bytes) {
-  ParsedRow row = {start + entry->length + 1, &entry->stats};
-  if (!cache_matches(entry, bytes)) row = cache_miss(start, entry);
+  uint32_t equal = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes, wasm_v128_load(&entry->head)));
+  ParsedRow row;
+  if ((equal & entry->match_bits) != entry->match_bits)
+    row = cache_miss(start, entry);
+  else {
+    uint32_t matches = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes, wasm_i8x16_splat(';')));
+    row = (ParsedRow){start + (uint32_t)__builtin_ctz(matches) + 1, &entry->stats};
+  }
   return update_row(row);
 }
 
 INLINE const uint8_t *process_cached(const uint8_t *start) {
   return process_cached_entry(start, route_cache(start), wasm_v128_load(start));
-}
-
-typedef struct {
-  const uint8_t *a;
-  const uint8_t *b;
-  const uint8_t *c;
-} RowPointers;
-
-__attribute__((noinline, cold)) static RowPointers process_mixed(const uint8_t *a, const uint8_t *b,
-                                                                 const uint8_t *c) {
-  const uint8_t *next_a = process_cached(a);
-  const uint8_t *next_b = process_cached(b);
-  const uint8_t *next_c = process_cached(c);
-  return (RowPointers){next_a, next_b, next_c};
 }
 
 EXPORT(reset) void reset(void) {
@@ -406,24 +381,10 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
     v128_t bytes_a = wasm_v128_load(a);
     v128_t bytes_b = wasm_v128_load(b);
     v128_t bytes_c = wasm_v128_load(c);
-    if (cache_matches(entry_a, bytes_a) & cache_matches(entry_b, bytes_b) &
-        cache_matches(entry_c, bytes_c)) {
-      // Hits cannot replace a slot. Ordered updates also handle shared entries.
-      Reading reading_a = read_temperature(a + entry_a->length + 1);
-      Reading reading_b = read_temperature(b + entry_b->length + 1);
-      Reading reading_c = read_temperature(c + entry_c->length + 1);
-      add_value(&entry_a->stats, reading_a.value);
-      add_value(&entry_b->stats, reading_b.value);
-      add_value(&entry_c->stats, reading_c.value);
-      a = reading_a.next;
-      b = reading_b.next;
-      c = reading_c.next;
-    } else {
-      RowPointers next = process_mixed(a, b, c);
-      a = next.a;
-      b = next.b;
-      c = next.c;
-    }
+    // Validate each record after preceding misses can replace an aliased slot.
+    a = process_cached_entry(a, entry_a, bytes_a);
+    b = process_cached_entry(b, entry_b, bytes_b);
+    c = process_cached_entry(c, entry_c, bytes_c);
   }
   while (a < end_a) a = process_cached(a);
   while (b < end_b) b = process_cached(b);
