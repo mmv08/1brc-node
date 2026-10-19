@@ -14,7 +14,7 @@ typedef struct {
   int64_t sum;
   uint32_t count;
   int16_t min;
-  int16_t max_complement;
+  int16_t max;
   uint32_t hash;
   uint32_t key;
   uint64_t head;
@@ -28,6 +28,7 @@ _Static_assert(MAX_STATIONS * 104 + 16 < (1 << 20), "all valid key offsets fit")
 
 static uint32_t buckets[TABLE_SIZE];
 static Station stations[MAX_STATIONS];
+static Station empty_station;
 static uint8_t names[MAX_STATIONS * 104 + 16];
 static uint16_t temperatures[4096];
 static uint32_t used;
@@ -145,7 +146,7 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   station->sum = 0;
   station->count = 0;
   station->min = 999;
-  station->max_complement = 998;
+  station->max = -999;
   station->hash = hash;
   station->key = (length << 20) | name_used;
   if (length < 16) {
@@ -165,7 +166,8 @@ __attribute__((noinline, cold)) static Station *probe_station(const uint8_t *sta
                                                               uint32_t slot) {
   for (;;) {
     uint32_t entry = buckets[slot];
-    if (!entry) return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
+    if (entry == (uint32_t)(uintptr_t)&empty_station)
+      return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
     Station *station = (Station *)(uintptr_t)entry;
     if (same_name(station, start, length, head)) return station;
     slot = (slot + 1) & (TABLE_SIZE - 1);
@@ -175,7 +177,8 @@ __attribute__((noinline, cold)) static Station *probe_station(const uint8_t *sta
 INLINE Station *find_station(const uint8_t *start, uint32_t length, uint64_t hash, uint64_t head) {
   uint32_t slot = (uint32_t)(hash >> 49);
   uint32_t entry = buckets[slot];
-  if (!entry) return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
+  if (entry == (uint32_t)(uintptr_t)&empty_station)
+    return insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
   Station *station = (Station *)(uintptr_t)entry;
   if (same_name(station, start, length, head)) return station;
   return probe_station(start, length, hash, head, (slot + 1) & (TABLE_SIZE - 1));
@@ -241,9 +244,9 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   v128_t stats = wasm_v128_load(station);
   v128_t added = wasm_i64x2_add(stats, wasm_i64x2_make(value, 1));
   v128_t values = wasm_i16x8_splat((int16_t)value);
-  // Complementing the maximum reverses its order, so one min updates both.
-  v128_t reversed = wasm_v128_xor(values, wasm_i16x8_make(0, 0, 0, 0, 0, 0, 0, -1));
-  v128_t extrema = wasm_i16x8_min(stats, reversed);
+  // Fixed lane selections let the host compiler use immediate SIMD blends.
+  v128_t extrema = wasm_i16x8_shuffle(wasm_i16x8_min(stats, values), wasm_i16x8_max(stats, values),
+                                      0, 1, 2, 3, 4, 5, 6, 15);
   wasm_v128_store(station, wasm_i16x8_shuffle(added, extrema, 0, 1, 2, 3, 4, 5, 14, 15));
   return next;
 }
@@ -257,16 +260,10 @@ INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128
   uint64_t high = (uint64_t)wasm_i64x2_extract_lane(key, 1);
   uint64_t hash = mix_pair(0, head, high);
   uint32_t slot = (uint32_t)(hash >> 49);
-  uint32_t entry = buckets[slot];
-  Station *station;
-  if (!entry) {
-    station = insert_station(start, length, (uint32_t)(hash ^ (hash >> 32)), head, slot);
-  } else {
-    station = (Station *)(uintptr_t)entry;
-    // The delimiter distinguishes lengths, including names ending in NUL.
-    if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key))) {
-      station = probe_station(start, length, hash, head, (slot + 1) & (TABLE_SIZE - 1));
-    }
+  Station *station = (Station *)(uintptr_t)buckets[slot];
+  // An empty record is all zero; a key containing ';' can never match it.
+  if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key))) {
+    station = find_station(start, length, hash, head);
   }
   return update_row((ParsedRow){start + length + 1, station});
 }
@@ -293,7 +290,8 @@ __attribute__((noinline, cold)) static RowPointers process_three(const uint8_t *
 }
 
 EXPORT(reset) void reset(void) {
-  memset(buckets, 0, sizeof(buckets));
+  for (uint32_t slot = 0; slot < TABLE_SIZE; slot++)
+    buckets[slot] = (uint32_t)(uintptr_t)&empty_station;
   used = 0;
   name_used = 0;
   for (uint32_t first = 0; first <= 9; first++) {
@@ -309,6 +307,9 @@ EXPORT(stations_base) uint32_t stations_base(void) { return (uint32_t)(uintptr_t
 EXPORT(keys_base) uint32_t keys_base(void) { return (uint32_t)(uintptr_t)names; }
 EXPORT(buckets_base) uint32_t buckets_base(void) { return (uint32_t)(uintptr_t)buckets; }
 EXPORT(station_count) uint32_t station_count(void) { return used; }
+EXPORT(empty_station_base) uint32_t empty_station_base(void) {
+  return (uint32_t)(uintptr_t)&empty_station;
+}
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
   const uint8_t *p = begin + (uint32_t)(end - begin) * part / 3;

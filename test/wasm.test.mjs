@@ -236,7 +236,7 @@ test('full-key verification checks every middle byte without a test-only kernel'
       // Fault-inject a matching cached hash and bucket, leaving name bytes and
       // cached head/tail unchanged. This exercises collisions in the ONE real
       // kernel, without shipping an alternative constant-hash implementation.
-      view.setUint32(buckets + originalHash.slot * 4, 0, true);
+      view.setUint32(buckets + originalHash.slot * 4, kernel.api.empty_station_base(), true);
       view.setUint32(buckets + hash.slot * 4, base, true);
       view.setUint32(base + 16, hash.fingerprint, true);
       parse(0, fill(buffer, `${changed};0.2\n`));
@@ -272,7 +272,7 @@ test('short-name collisions preserve length and every byte across independent la
     const before = hashName(original);
     const after = hashName(changed);
     assert.equal(view.getUint32(buckets + before.slot * 4, true), base);
-    view.setUint32(buckets + before.slot * 4, 0, true);
+    view.setUint32(buckets + before.slot * 4, kernel.api.empty_station_base(), true);
     view.setUint32(buckets + after.slot * 4, base, true);
     view.setUint32(base + 16, after.fingerprint, true);
     // Twelve equal rows exercise the short-name path with two, three or four lanes.
