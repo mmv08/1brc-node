@@ -16,7 +16,7 @@ typedef struct {
   int64_t sum;
   uint32_t count;
   int16_t min;
-  int16_t max;
+  int16_t negative_max;
   uint32_t hash;
   uint32_t key;
   uint64_t head;
@@ -39,7 +39,7 @@ static uint8_t names[MAX_STATIONS * 104 + 48];
 // the byte offset of that temperature's statistics delta.
 static uint16_t temperatures[1 << 16];
 // One statistics delta per legal temperature: the signed sum increment, a
-// count increment, then the value again in the min/max lanes.
+// count increment, then value and -value in the min/negative-max lanes.
 static v128_t deltas[1999];
 static uint32_t used;
 // The mixing words start fixed. While the table is sparse, an insertion that
@@ -206,7 +206,7 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   station->sum = 0;
   station->count = 0;
   station->min = 999;
-  station->max = -999;
+  station->negative_max = 999;
   station->hash = hash;
   station->key = (length << 20) | name_used;
   if (length < 16) {
@@ -352,13 +352,12 @@ INLINE const uint8_t *update_row(ParsedRow row) {
 
   Station *station = row.station;
   // Counts stay below 2^32, so adding one cannot carry into packed min/max.
-  // Update the exact sum/count together and blend in signed 16-bit extrema.
+  // Store -maximum beside minimum, so one signed min updates both extrema.
   v128_t stats = wasm_v128_load(station);
   v128_t delta = wasm_v128_load((const uint8_t *)deltas + offset);
   v128_t added = wasm_i64x2_add(stats, delta);
   // Fixed lane selections let the host compiler use immediate SIMD blends.
-  v128_t extrema = wasm_i16x8_shuffle(wasm_i16x8_min(stats, delta), wasm_i16x8_max(stats, delta), 0,
-                                      1, 2, 3, 4, 5, 6, 15);
+  v128_t extrema = wasm_i16x8_min(stats, delta);
   wasm_v128_store(station, wasm_i16x8_shuffle(added, extrema, 0, 1, 2, 3, 4, 5, 14, 15));
   return next;
 }
@@ -469,8 +468,10 @@ EXPORT(reset) void reset(void) {
   wasm_v128_store(names + 16, wasm_i64x2_const(-1, -1));
   name_used = 32;
   for (int32_t value = -999; value <= 999; value++) {
-    uint64_t extreme = (uint16_t)value;
-    deltas[value + 999] = wasm_i64x2_make(value, (int64_t)(1 | extreme << 32 | extreme << 48));
+    uint64_t minimum = (uint16_t)value;
+    uint64_t negative_maximum = (uint16_t)-value;
+    deltas[value + 999] =
+        wasm_i64x2_make(value, (int64_t)(1 | minimum << 32 | negative_maximum << 48));
   }
   for (uint32_t tenths = 0; tenths <= 9; tenths++) {
     for (uint32_t units = 0; units <= 9; units++) {
