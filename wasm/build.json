@@ -1,9 +1,9 @@
 {
   "compiler": "Ubuntu clang version 21.1.8 (6ubuntu1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /usr/lib/llvm-21/bin",
   "linker": "Ubuntu LLD 21.1.8",
-  "sourceSha256": "4fa54fd27fe1d9d79c65a215d44b44d5aab72a22c4fad923bba85e6146569f5e",
-  "sha256": "6cf3aed41a8a7ab3b1a7d940d35571aa9e148d6fa60593fe35286c1f18895cfe",
-  "bytes": 9130,
+  "sourceSha256": "e7d364e3f74298fce047de9ada880f00c3bcfdc2cd60d89172b1033667bdffbf",
+  "sha256": "0d30758af68501bcc5354447b6a23933183a024112a86ff6e4bdbbacfaca1afc",
+  "bytes": 9027,
   "compile": [
     "--target=wasm32",
     "-std=c11",

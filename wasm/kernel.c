@@ -47,7 +47,6 @@ static uint32_t used;
 static uint64_t mixers[2] __attribute__((aligned(16)));
 // Delimiter splats for the hot loop, loaded rather than rebuilt each iteration.
 static v128_t separators;
-static v128_t newlines;
 static uint64_t mixer_seed;
 static uint32_t retunes_left;
 static uint32_t claimed[TABLE_SIZE / 32];
@@ -399,17 +398,6 @@ INLINE const uint8_t *process_wide(const uint8_t *start, uint32_t matches, v128_
   return update_row((ParsedRow){start + length + 1, station});
 }
 
-// Rows with short names end within 32 bytes. Locating the newline directly
-// keeps the next row off the temperature dependency chain.
-INLINE const uint8_t *advance_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
-  const v128_t newline = wasm_v128_load(&newlines);
-  uint32_t lines = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(bytes, newline)) |
-                   (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 16), newline))
-                       << 16;
-  process_short(start, matches, bytes);
-  return start + __builtin_ctz(lines) + 1;
-}
-
 // Keep short rows in their fast path even when another lane has a long name.
 __attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *start,
                                                                    v128_t low) {
@@ -427,7 +415,6 @@ EXPORT(reset) void reset(void) {
   mixers[1] = UINT64_C(0xc2b2ae3d27d4eb4f);
   mixer_seed = 0;
   separators = wasm_i8x16_splat(';');
-  newlines = wasm_i8x16_splat('\n');
   retunes_left = 256;
   wasm_v128_store(names, wasm_i64x2_const(-1, -1));
   wasm_v128_store(names + 16, wasm_i64x2_const(-1, -1));
@@ -495,9 +482,9 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
       uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
       uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-      a = matches_a ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
-      b = matches_b ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
-      c = matches_c ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
+      a = matches_a ? process_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
+      b = matches_b ? process_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
+      c = matches_c ? process_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
     } while (--rounds);
   }
   while (a < end_a) a = process_row(a);
