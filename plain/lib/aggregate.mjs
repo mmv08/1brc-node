@@ -45,11 +45,11 @@ export async function aggregate(config) {
     return id;
   }
 
-  function equal(view, start, end, r, head) {
-    const length = end - start;
-    if (records[r + 4] !== length || records[r + 1] !== head) return false;
+  // Cache predictions supply the stored length; hash lookups validate it first.
+  function equal(view, start, length, r, head) {
+    if (records[r + 1] !== head) return false;
     if (length <= 4) return true;
-    if (view.getInt32(end - 4, true) !== records[r + 2]) return false;
+    if (view.getInt32(start + length - 4, true) !== records[r + 2]) return false;
     if (branchlessNames) {
       if (view.getInt32(start + Math.min(4, length - 4), true) !== records[r + 3]) return false;
     } else if (length > 8 && view.getInt32(start + 4, true) !== records[r + 3]) return false;
@@ -71,7 +71,10 @@ export async function aggregate(config) {
       for (;;) {
         const id = table[slot] - 1;
         if (id < 0) return insert(buffer, view, start, end, hash, head, slot);
-        if (records[id * 8] === hash && equal(view, start, end, id * 8, head)) return id;
+        const r = id * 8;
+        const length = end - start;
+        if (records[r] === hash && records[r + 4] === length && equal(view, start, length, r, head))
+          return id;
         slot = (slot + 1) & (tableSize - 1);
       }
     }
@@ -86,12 +89,13 @@ export async function aggregate(config) {
       const predicted = prefixCache[prefixSlot] - 1;
       if (predicted >= 0) {
         const r = predicted * 8;
-        const end = start + records[r + 4];
+        const length = records[r + 4];
+        const end = start + length;
         // The largest prediction is 100 bytes; the reader reserves 256 bytes of
         // lookahead. Full equality plus the delimiter rejects a wrong length,
         // another row, stale padding, or a short name whose first word includes
         // its delimiter. Only names of at least four bytes enter this cache.
-        if (buffer[end] === 59 && equal(view, start, end, r, head)) {
+        if (buffer[end] === 59 && equal(view, start, length, r, head)) {
           temperatures[lane] = end + 1;
           return predicted;
         }
