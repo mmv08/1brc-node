@@ -13,10 +13,10 @@ export async function aggregate(config) {
   // Worker-local, direct-mapped predictions; the hash table remains authoritative.
   const prefixCache = new Uint16Array(32768);
   // Dense station IDs. Each 32-byte record holds hash, head, tail, middle,
-  // byte length, arena offset, minimum, maximum, in that order.
+  // byte length, arena offset, and two reserved slots, in that order.
   const records = new Int32Array(MAX_STATIONS * 8);
-  const sums = new Float64Array(MAX_STATIONS);
-  const counts = new Uint32Array(MAX_STATIONS);
+  // Exact Number arithmetic fits the challenge bounds for all four fields.
+  const stats = new Float64Array(MAX_STATIONS * 4);
   const arena = Buffer.allocUnsafe(MAX_STATIONS * 104 + 16);
   const keys = new DataView(arena.buffer, arena.byteOffset, arena.byteLength);
   const temperatureBase = chooseTemperatureParser();
@@ -39,8 +39,8 @@ export async function aggregate(config) {
     records[r + 3] = length > 4 ? view.getInt32(start + Math.min(4, length - 4), true) : 0;
     records[r + 4] = length;
     records[r + 5] = keyOffset;
-    records[r + 6] = 999;
-    records[r + 7] = -999;
+    stats[id * 4 + 2] = 999;
+    stats[id * 4 + 3] = -999;
     keyOffset = (keyOffset + length + 3) & ~3;
     return id;
   }
@@ -63,7 +63,6 @@ export async function aggregate(config) {
   function makeParser(buffer) {
     const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
     const temperatures = new Int32Array(4);
-    const values = new Int32Array(4);
     const streams = Number(process.env.STREAMS ?? 2);
     if (![1, 2, 3, 4].includes(streams)) throw new Error('STREAMS must be 1..4');
 
@@ -123,9 +122,7 @@ export async function aggregate(config) {
       return id;
     }
 
-    // Decode every lane before touching statistics so independent temperature
-    // loads can overlap instead of waiting for another lane's extrema branches.
-    function decode(p, lane) {
+    function update(p, id) {
       const word = view.getUint32(p, true);
       const negative = (~word & 0x10) >>> 4;
       const digits = word >>> (negative * 8);
@@ -134,21 +131,11 @@ export async function aggregate(config) {
       if (negative) value = -value;
       p += width;
       if (buffer[p - 1] === 13) p++;
-      values[lane] = value;
-      return p;
-    }
-
-    function accumulate(id, value) {
-      const r = id * 8;
-      if (value < records[r + 6]) records[r + 6] = value;
-      if (value > records[r + 7]) records[r + 7] = value;
-      sums[id] += value;
-      counts[id]++;
-    }
-
-    function update(p, id) {
-      p = decode(p, 0);
-      accumulate(id, values[0]);
+      const s = id * 4;
+      if (value < stats[s + 2]) stats[s + 2] = value;
+      if (value > stats[s + 3]) stats[s + 3] = value;
+      stats[s] += value;
+      stats[s + 1]++;
       return p;
     }
 
@@ -171,106 +158,31 @@ export async function aggregate(config) {
       let c = endB;
       let d = endC;
       if (streams === 2) {
-        if (a < endA && b < end) {
-          let idA = scan(a, 0);
-          let idB = scan(b, 1);
-          a = decode(temperatures[0], 0);
-          b = decode(temperatures[1], 1);
-          let valueA = values[0];
-          let valueB = values[1];
-          while (a < endA && b < end) {
-            // Resolve the following names and temperatures while the prior
-            // measurements remain in local registers awaiting their updates.
-            const followingA = scan(a, 0);
-            const followingB = scan(b, 1);
-            a = decode(temperatures[0], 0);
-            b = decode(temperatures[1], 1);
-            accumulate(idA, valueA);
-            accumulate(idB, valueB);
-            idA = followingA;
-            valueA = values[0];
-            idB = followingB;
-            valueB = values[1];
-          }
-          accumulate(idA, valueA);
-          accumulate(idB, valueB);
+        while (a < endA && b < end) {
+          const idA = scan(a, 0);
+          const idB = scan(b, 1);
+          a = update(temperatures[0], idA);
+          b = update(temperatures[1], idB);
         }
       } else if (streams === 3) {
-        if (a < endA && b < endB && c < end) {
-          let idA = scan(a, 0);
-          let idB = scan(b, 1);
-          let idC = scan(c, 2);
-          a = decode(temperatures[0], 0);
-          b = decode(temperatures[1], 1);
-          c = decode(temperatures[2], 2);
-          let valueA = values[0];
-          let valueB = values[1];
-          let valueC = values[2];
-          while (a < endA && b < endB && c < end) {
-            // Resolve the following names and temperatures while the prior
-            // measurements remain in local registers awaiting their updates.
-            const followingA = scan(a, 0);
-            const followingB = scan(b, 1);
-            const followingC = scan(c, 2);
-            a = decode(temperatures[0], 0);
-            b = decode(temperatures[1], 1);
-            c = decode(temperatures[2], 2);
-            accumulate(idA, valueA);
-            accumulate(idB, valueB);
-            accumulate(idC, valueC);
-            idA = followingA;
-            valueA = values[0];
-            idB = followingB;
-            valueB = values[1];
-            idC = followingC;
-            valueC = values[2];
-          }
-          accumulate(idA, valueA);
-          accumulate(idB, valueB);
-          accumulate(idC, valueC);
+        while (a < endA && b < endB && c < end) {
+          const idA = scan(a, 0);
+          const idB = scan(b, 1);
+          const idC = scan(c, 2);
+          a = update(temperatures[0], idA);
+          b = update(temperatures[1], idB);
+          c = update(temperatures[2], idC);
         }
       } else {
-        if (a < endA && b < endB && c < endC && d < end) {
-          let idA = scan(a, 0);
-          let idB = scan(b, 1);
-          let idC = scan(c, 2);
-          let idD = scan(d, 3);
-          a = decode(temperatures[0], 0);
-          b = decode(temperatures[1], 1);
-          c = decode(temperatures[2], 2);
-          d = decode(temperatures[3], 3);
-          let valueA = values[0];
-          let valueB = values[1];
-          let valueC = values[2];
-          let valueD = values[3];
-          while (a < endA && b < endB && c < endC && d < end) {
-            // Resolve the following names and temperatures while the prior
-            // measurements remain in local registers awaiting their updates.
-            const followingA = scan(a, 0);
-            const followingB = scan(b, 1);
-            const followingC = scan(c, 2);
-            const followingD = scan(d, 3);
-            a = decode(temperatures[0], 0);
-            b = decode(temperatures[1], 1);
-            c = decode(temperatures[2], 2);
-            d = decode(temperatures[3], 3);
-            accumulate(idA, valueA);
-            accumulate(idB, valueB);
-            accumulate(idC, valueC);
-            accumulate(idD, valueD);
-            idA = followingA;
-            valueA = values[0];
-            idB = followingB;
-            valueB = values[1];
-            idC = followingC;
-            valueC = values[2];
-            idD = followingD;
-            valueD = values[3];
-          }
-          accumulate(idA, valueA);
-          accumulate(idB, valueB);
-          accumulate(idC, valueC);
-          accumulate(idD, valueD);
+        while (a < endA && b < endB && c < endC && d < end) {
+          const idA = scan(a, 0);
+          const idB = scan(b, 1);
+          const idC = scan(c, 2);
+          const idD = scan(d, 3);
+          a = update(temperatures[0], idA);
+          b = update(temperatures[1], idB);
+          c = update(temperatures[2], idC);
+          d = update(temperatures[3], idD);
         }
       }
       remainder(a, endA);
@@ -286,10 +198,10 @@ export async function aggregate(config) {
     const offset = records[r + 5];
     return [
       arena.toString('utf8', offset, offset + records[r + 4]),
-      records[r + 6],
-      sums[id],
-      records[r + 7],
-      counts[id],
+      stats[id * 4 + 2],
+      stats[id * 4],
+      stats[id * 4 + 3],
+      stats[id * 4 + 1],
     ];
   });
 }
