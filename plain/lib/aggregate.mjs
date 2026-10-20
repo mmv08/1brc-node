@@ -171,40 +171,106 @@ export async function aggregate(config) {
       let c = endB;
       let d = endC;
       if (streams === 2) {
-        while (a < endA && b < end) {
-          const idA = scan(a, 0);
-          const idB = scan(b, 1);
+        if (a < endA && b < end) {
+          let idA = scan(a, 0);
+          let idB = scan(b, 1);
           a = decode(temperatures[0], 0);
           b = decode(temperatures[1], 1);
-          accumulate(idA, values[0]);
-          accumulate(idB, values[1]);
+          let valueA = values[0];
+          let valueB = values[1];
+          while (a < endA && b < end) {
+            // Resolve the following names and temperatures while the prior
+            // measurements remain in local registers awaiting their updates.
+            const followingA = scan(a, 0);
+            const followingB = scan(b, 1);
+            a = decode(temperatures[0], 0);
+            b = decode(temperatures[1], 1);
+            accumulate(idA, valueA);
+            accumulate(idB, valueB);
+            idA = followingA;
+            valueA = values[0];
+            idB = followingB;
+            valueB = values[1];
+          }
+          accumulate(idA, valueA);
+          accumulate(idB, valueB);
         }
       } else if (streams === 3) {
-        while (a < endA && b < endB && c < end) {
-          const idA = scan(a, 0);
-          const idB = scan(b, 1);
-          const idC = scan(c, 2);
+        if (a < endA && b < endB && c < end) {
+          let idA = scan(a, 0);
+          let idB = scan(b, 1);
+          let idC = scan(c, 2);
           a = decode(temperatures[0], 0);
           b = decode(temperatures[1], 1);
           c = decode(temperatures[2], 2);
-          accumulate(idA, values[0]);
-          accumulate(idB, values[1]);
-          accumulate(idC, values[2]);
+          let valueA = values[0];
+          let valueB = values[1];
+          let valueC = values[2];
+          while (a < endA && b < endB && c < end) {
+            // Resolve the following names and temperatures while the prior
+            // measurements remain in local registers awaiting their updates.
+            const followingA = scan(a, 0);
+            const followingB = scan(b, 1);
+            const followingC = scan(c, 2);
+            a = decode(temperatures[0], 0);
+            b = decode(temperatures[1], 1);
+            c = decode(temperatures[2], 2);
+            accumulate(idA, valueA);
+            accumulate(idB, valueB);
+            accumulate(idC, valueC);
+            idA = followingA;
+            valueA = values[0];
+            idB = followingB;
+            valueB = values[1];
+            idC = followingC;
+            valueC = values[2];
+          }
+          accumulate(idA, valueA);
+          accumulate(idB, valueB);
+          accumulate(idC, valueC);
         }
       } else {
-        while (a < endA && b < endB && c < endC && d < end) {
-          const idA = scan(a, 0);
-          const idB = scan(b, 1);
-          const idC = scan(c, 2);
-          const idD = scan(d, 3);
+        if (a < endA && b < endB && c < endC && d < end) {
+          let idA = scan(a, 0);
+          let idB = scan(b, 1);
+          let idC = scan(c, 2);
+          let idD = scan(d, 3);
           a = decode(temperatures[0], 0);
           b = decode(temperatures[1], 1);
           c = decode(temperatures[2], 2);
           d = decode(temperatures[3], 3);
-          accumulate(idA, values[0]);
-          accumulate(idB, values[1]);
-          accumulate(idC, values[2]);
-          accumulate(idD, values[3]);
+          let valueA = values[0];
+          let valueB = values[1];
+          let valueC = values[2];
+          let valueD = values[3];
+          while (a < endA && b < endB && c < endC && d < end) {
+            // Resolve the following names and temperatures while the prior
+            // measurements remain in local registers awaiting their updates.
+            const followingA = scan(a, 0);
+            const followingB = scan(b, 1);
+            const followingC = scan(c, 2);
+            const followingD = scan(d, 3);
+            a = decode(temperatures[0], 0);
+            b = decode(temperatures[1], 1);
+            c = decode(temperatures[2], 2);
+            d = decode(temperatures[3], 3);
+            accumulate(idA, valueA);
+            accumulate(idB, valueB);
+            accumulate(idC, valueC);
+            accumulate(idD, valueD);
+            idA = followingA;
+            valueA = values[0];
+            idB = followingB;
+            valueB = values[1];
+            idC = followingC;
+            valueC = values[2];
+            idD = followingD;
+            valueD = values[3];
+          }
+          accumulate(idA, valueA);
+          accumulate(idB, valueB);
+          accumulate(idC, valueC);
+          accumulate(idD, valueD);
         }
       }
       remainder(a, endA);
