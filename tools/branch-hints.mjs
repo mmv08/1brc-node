@@ -200,7 +200,7 @@ function hintsFor(instructions, cold) {
       // A label past every open construct exits the function: leave it unhinted.
       const target = open[open.length - 1 - instruction.label];
       if (target === undefined) return;
-      if (instructions[target].opcode === 0x03) return;
+      if (instructions[target].opcode === 0x03) hints.push([instruction.offset, 1]);
       else if (reachesCold(instructions, ends.get(target) + 1, cold))
         hints.push([instruction.offset, 0]);
       else if (reachesCold(instructions, index + 1, cold)) hints.push([instruction.offset, 1]);
@@ -229,7 +229,7 @@ export function addBranchHints(bytes, coldNames) {
   for (let index = 0, count = input.u32(); index < count; index++) {
     const size = input.u32();
     const hints = hintsFor(decode(bytes, input.offset, input.offset + size), cold);
-    if (hints.length) functions.push({ index, hints });
+    if (hints.length && index === names.get('parse_chunk')) functions.push({ index, hints });
     input.skip(size);
   }
   const payload = [...leb(functions.length)];
