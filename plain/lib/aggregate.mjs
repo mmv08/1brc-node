@@ -15,7 +15,6 @@ export async function aggregate(config) {
   // Dense station IDs. Each 32-byte record holds hash, head, tail, middle,
   // byte length, arena offset, minimum, maximum, in that order.
   const records = new Int32Array(MAX_STATIONS * 8);
-  const wideNames = new Float64Array(MAX_STATIONS * 2);
   const sums = new Float64Array(MAX_STATIONS);
   const counts = new Uint32Array(MAX_STATIONS);
   const arena = Buffer.allocUnsafe(MAX_STATIONS * 104 + 16);
@@ -42,30 +41,12 @@ export async function aggregate(config) {
     records[r + 5] = keyOffset;
     records[r + 6] = 999;
     records[r + 7] = -999;
-    if (length >= 8) {
-      wideNames[id * 2] = view.getFloat64(start, true);
-      wideNames[id * 2 + 1] = view.getFloat64(end - 8, true);
-    }
     keyOffset = (keyOffset + length + 3) & ~3;
     return id;
   }
 
   // Cache predictions supply the stored length; hash lookups validate it first.
   function equal(view, start, length, r, head) {
-    if (length >= 8) {
-      // Any eight adjacent bytes within valid UTF-8 exclude IEEE NaN/infinity:
-      // those require FF or F0..FF followed by 7F. Negative zero would require
-      // seven NULs followed by an unpaired 80 continuation byte. Thus numeric
-      // equality compares the complete bits, including positive zero.
-      const w = r >>> 2;
-      if (view.getFloat64(start, true) !== wideNames[w]) return false;
-      if (view.getFloat64(start + length - 8, true) !== wideNames[w + 1]) return false;
-      const offset = records[r + 5];
-      for (let i = 8; i < length - 8; i += 8) {
-        if (view.getFloat64(start + i, true) !== keys.getFloat64(offset + i, true)) return false;
-      }
-      return true;
-    }
     if (records[r + 1] !== head) return false;
     if (length <= 4) return true;
     if (view.getInt32(start + length - 4, true) !== records[r + 2]) return false;
@@ -103,7 +84,7 @@ export async function aggregate(config) {
       let head = view.getInt32(p, true);
       // A fifth byte is stable even for four-byte names: it is their delimiter.
       // It distinguishes common four-byte prefixes without scanning the name.
-      const prefixSlot = Math.imul(head ^ (head >>> 16) ^ (buffer[p + 4] << 24), 0x9e3779b1) >>> 17;
+      const prefixSlot = Math.imul(head ^ buffer[p + 4], 0x9e3779b1) >>> 17;
       const predicted = prefixCache[prefixSlot] - 1;
       if (predicted >= 0) {
         const r = predicted * 8;
