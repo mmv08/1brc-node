@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Existing hints",
+    "script": "results/hints-baseline/calculate.mjs",
+    "revision": "e7d1d1a",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Ignore branch hints",
+    "script": "results/hints-baseline/calculate.mjs",
+    "revision": "e7d1d1a",
+    "env": {
+      "ENGINE": "wasm",
+      "FLAGS": "--no-experimental-wasm-branch-hinting"
+    }
+  },
+  {
+    "name": "Disable V8 Wasm inlining",
+    "script": "results/hints-baseline/calculate.mjs",
+    "revision": "e7d1d1a",
+    "env": {
+      "ENGINE": "wasm",
+      "FLAGS": "--no-wasm-inlining"
+    }
+  },
+  {
+    "name": "Larger V8 inline limit",
+    "script": "results/hints-baseline/calculate.mjs",
+    "revision": "e7d1d1a",
+    "env": {
+      "ENGINE": "wasm",
+      "FLAGS": "--wasm-inlining-max-size=2000"
+    }
+  }
+]
