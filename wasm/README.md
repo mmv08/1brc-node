@@ -20,7 +20,9 @@ The freestanding kernel imports nothing: no libc, WASI or host callbacks.
 SIMD scans 16 bytes for delimiters. Three independent newline-aligned lanes
 load their first vectors together. A valid row is at most 108 bytes, so a
 counted inner loop runs as many iterations as the shortest lane allows without
-checking each lane's end.
+checking each lane's end. `#pragma clang loop unroll_count(4)` asks Clang to
+unroll four logical iterations of this loop, preserving the iteration count
+and handling any remainder. The number of independent parsing lanes stays three.
 
 Each lane whose first vector contains the delimiter (1–15 name bytes) reuses
 that vector for hashing and matching. Such a row ends within 32 bytes: two
@@ -117,7 +119,13 @@ Every name byte is checked, including the middle of names sharing identical
 heads and tails. No input dictionary or precomputed results are embedded.
 BigInt conversion happens once per result station, never per measurement.
 All challenge sums fit exactly in a JS Number after conversion.
-The selected binary is **9,442 bytes**.
+The selected binary is **13,175 bytes**. Four-way unrolling increased it from
+9,442 bytes; the latest 21-round comparison measured about 0.6% less elapsed
+time, a small gain relative to run-to-run variation. The existing `cold`,
+`noinline`, `always_inline` attributes and branch-hint policy remain. Extra
+`hot` and `__builtin_expect` annotations produced identical Wasm with this
+toolchain, and other tested hint policies did not improve the matched results.
+See [BENCHMARKS.md](../BENCHMARKS.md) for the full experiment record.
 
 Build and inspect:
 

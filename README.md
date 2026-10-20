@@ -43,35 +43,40 @@ its optimized parsing loop:
 On an **AMD Ryzen 9 7900, 12 cores / 24 threads, 60 GiB RAM**, using Node
 **26.12.0**, the full **1,000,000,000-row / 13,795,455,110-byte** input measured:
 
-| Implementation | Nine-run trimmed mean | Best |
+| Latest Wasm comparison | 21-run trimmed mean | Best |
 | --- | ---: | ---: |
-| Previous plain Node, `5769105` | 1.174 s | 1.155 s |
-| **Optimized plain Node** | **1.168 s** | **1.151 s** |
-| Previous Wasm, `5769105` | 0.511 s | 0.499 s |
-| **Optimized Wasm SIMD** | **0.490 s** | **0.480 s** |
+| Previous Wasm, `e7d1d1a` | 0.488 s | 0.479 s |
+| **Wasm with four-way loop hint** | **0.485 s** | **0.470 s** |
 
-Wasm took **4.1% less elapsed time** in this same-session comparison.
-The smaller Node improvement was **0.5%** and remains sensitive to run-to-run
-noise; an earlier dedicated nine-round confirmation measured 1.0% and won eight
-rounds. These are warm-filesystem-cache, end-to-end measurements: startup,
-compilation, reads, parsing, aggregation, merging, sorting, output and shutdown
-all count. Three full-file warm-ups per case were excluded; then nine alternating
-rounds discarded each case's fastest and slowest run. All outputs were checked,
-and measured filesystem-input counters were zero. Both default cases used 24
-workers. Throughput was **11.81 GB/s** for Node and **28.13 GB/s** for Wasm.
+The added Clang loop-unrolling hint measured **0.6% less elapsed time**, winning
+14 of 21 paired rounds. Earlier screens and a nine-round confirmation also
+favored it, but the gain is small compared with timing variation. The larger
+kernel is 13,175 bytes, versus 9,442 bytes before the hint. Other tested
+attributes and branch-hint policies did not show a useful repeatable gain.
+Ignoring the existing Wasm branch hints made a separate matched screen about
+4.6% slower, so those hints remain.
 
-A 16-worker Wasm control measured 0.489 s, effectively tied with the default,
-with lower peak RSS on this machine. A read-only diagnostic took roughly
-0.34–0.36 s using the current reader. That is an empirical comparison without
-parsing, **not a theoretical limit**, and cannot be subtracted from solver time
-to estimate parsing cost. The new measured gains show that optimization was not
-exhausted; no theoretical optimum is claimed.
+These are warm-filesystem-cache, end-to-end timings: startup, compilation, reads,
+parsing, aggregation, merging, sorting, complete output and shutdown all count.
+Three full-file warm-ups per case were excluded; 21 alternating rounds then
+discarded each case's fastest and slowest run. All outputs matched expectations,
+and filesystem-input counters were zero. Both cases used 24 workers, 512 KiB
+chunks and no extra V8 flags. Selected Wasm throughput was **28.42 GB/s**.
 
-Earlier laptop and loaded-machine results are separate batches. See
-[BENCHMARKS.md](BENCHMARKS.md) and the
-[recorded comparison](benchmarks/2026-10-20-round2-optimization.json) for evidence,
-all experiment checkpoints and caveats. These are local results, not official
-leaderboard scores.
+The **plain Node implementation is unchanged** in this hint round. Its latest
+separate nine-round comparison measured **1.168 s**, versus 1.174 s before its
+last hash change, using 24 workers and 128 KiB chunks. See the
+[preceding matched results](benchmarks/2026-10-20-round2-optimization.json).
+Do not combine separate batches to calculate incremental gains.
+
+A read-only diagnostic previously measured roughly 0.34–0.36 s using the current
+reader. That is an empirical comparison without parsing, **not a theoretical
+limit**, and cannot be subtracted from solver time to estimate parsing cost.
+No theoretical optimum is claimed.
+
+See [BENCHMARKS.md](BENCHMARKS.md) for all experiment checkpoints and caveats,
+and the [latest raw timings](benchmarks/2026-10-20-wasm-hints.json).
+These are local results, not official leaderboard scores.
 
 ## Input and design
 
@@ -114,7 +119,8 @@ Wasm memory. The kernel uses three parsing lanes with complete name verification
 and exact signed 64-bit sums. A direct table maps each temperature spelling to
 its complete SIMD update vector, removing a dependent lookup. Storing a negated
 maximum lets one SIMD minimum operation update both extrema; long-name fallback
-is independent per lane.
+is independent per lane. A Clang loop hint unrolls the bounded inner loop four
+times while preserving its three independent parsing lanes.
 Details and build instructions: [wasm/README.md](wasm/README.md).
 
 ## Test and develop

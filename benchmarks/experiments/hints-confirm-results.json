@@ -1,0 +1,375 @@
+{
+  "date": "2026-10-20T20:20:07.005Z",
+  "label": "hints-confirm",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Previous Wasm",
+      "round": 1,
+      "seconds": 0.502399862
+    },
+    {
+      "name": "Unroll twice",
+      "round": 1,
+      "seconds": 0.4921659870000001
+    },
+    {
+      "name": "Unroll four times",
+      "round": 1,
+      "seconds": 0.49281387500000007
+    },
+    {
+      "name": "Unroll eight times",
+      "round": 1,
+      "seconds": 0.48841955299999995
+    },
+    {
+      "name": "Unroll eight times",
+      "round": 2,
+      "seconds": 0.4804005289999998
+    },
+    {
+      "name": "Unroll four times",
+      "round": 2,
+      "seconds": 0.4887576350000004
+    },
+    {
+      "name": "Unroll twice",
+      "round": 2,
+      "seconds": 0.48855440899999986
+    },
+    {
+      "name": "Previous Wasm",
+      "round": 2,
+      "seconds": 0.49450915000000034
+    },
+    {
+      "name": "Previous Wasm",
+      "round": 3,
+      "seconds": 0.4753320669999998
+    },
+    {
+      "name": "Unroll twice",
+      "round": 3,
+      "seconds": 0.4907133229999999
+    },
+    {
+      "name": "Unroll four times",
+      "round": 3,
+      "seconds": 0.4820220829999998
+    },
+    {
+      "name": "Unroll eight times",
+      "round": 3,
+      "seconds": 0.4848906719999995
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Previous Wasm",
+      "script": "results/hints-baseline/calculate.mjs",
+      "revision": "e7d1d1a",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "4e852f5d8cd7a037ca354c91e2e48fad0c1541f4ac2bc7d88c540d985f0d3fc5",
+      "times": [
+        0.49366324600000006, 0.49194321500000115, 0.494067473000001, 0.4912161670000005,
+        0.4817127869999986, 0.4947915350000003, 0.4949449659999991, 0.49806640499999777,
+        0.49990564200000154
+      ],
+      "usage": [
+        {
+          "user": 8.07,
+          "system": 1.69,
+          "maxRssKiB": 325612,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.22,
+          "system": 1.66,
+          "maxRssKiB": 326324,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.09,
+          "system": 1.68,
+          "maxRssKiB": 323872,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.17,
+          "system": 1.64,
+          "maxRssKiB": 323844,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.09,
+          "system": 1.69,
+          "maxRssKiB": 325972,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.13,
+          "system": 1.62,
+          "maxRssKiB": 324616,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.09,
+          "system": 1.73,
+          "maxRssKiB": 324252,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.15,
+          "system": 1.7,
+          "maxRssKiB": 323116,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.19,
+          "system": 1.64,
+          "maxRssKiB": 324400,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4940990009999999,
+      "best": 0.4817127869999986
+    },
+    {
+      "name": "Unroll twice",
+      "script": "results/hints-unroll-two/calculate.mjs",
+      "revision": "97b8845",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "1c0efa18f4003b41e813b6e2df3efa1edcd72cee10cb0429933a2bca5526f873",
+      "times": [
+        0.49053722900000046, 0.49033129799999914, 0.4952107500000002, 0.4878130230000006,
+        0.4897025360000007, 0.49010529999999924, 0.505297136000001, 0.49648163999999817,
+        0.5020243799999989
+      ],
+      "usage": [
+        {
+          "user": 8.06,
+          "system": 1.67,
+          "maxRssKiB": 326712,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.06,
+          "system": 1.74,
+          "maxRssKiB": 325680,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.04,
+          "system": 1.69,
+          "maxRssKiB": 325996,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.06,
+          "system": 1.72,
+          "maxRssKiB": 326196,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.11,
+          "system": 1.7,
+          "maxRssKiB": 323776,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.07,
+          "system": 1.74,
+          "maxRssKiB": 325024,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.12,
+          "system": 1.72,
+          "maxRssKiB": 326792,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.15,
+          "system": 1.68,
+          "maxRssKiB": 326704,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.08,
+          "system": 1.75,
+          "maxRssKiB": 325284,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.49348473328571385,
+      "best": 0.4878130230000006
+    },
+    {
+      "name": "Unroll four times",
+      "script": "results/hints-unroll-four/calculate.mjs",
+      "revision": "bbef50b",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce",
+      "times": [
+        0.484641259, 0.48871814000000086, 0.4934239720000005, 0.4947435749999986,
+        0.4850008310000012, 0.4930892469999999, 0.49713561000000117, 0.4827500020000007,
+        0.49456754999999974
+      ],
+      "usage": [
+        {
+          "user": 8.02,
+          "system": 1.69,
+          "maxRssKiB": 326700,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.03,
+          "system": 1.73,
+          "maxRssKiB": 325288,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.95,
+          "system": 1.74,
+          "maxRssKiB": 326508,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.13,
+          "system": 1.65,
+          "maxRssKiB": 324368,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.96,
+          "system": 1.78,
+          "maxRssKiB": 324180,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.04,
+          "system": 1.72,
+          "maxRssKiB": 326432,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.99,
+          "system": 1.72,
+          "maxRssKiB": 324368,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.07,
+          "system": 1.67,
+          "maxRssKiB": 326816,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.09,
+          "system": 1.65,
+          "maxRssKiB": 325748,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.49059779628571437,
+      "best": 0.4827500020000007
+    },
+    {
+      "name": "Unroll eight times",
+      "script": "results/hints-unroll-eight/calculate.mjs",
+      "revision": "c41ba08",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "adc4e97eac95f70d4821ee28677a9746ecb204aa843200e950de0db9b2007bf7",
+      "times": [
+        0.4861152240000001, 0.48883267699999944, 0.4799699120000005, 0.4993211740000006,
+        0.4904004590000004, 0.5008906209999986, 0.49321585799999956, 0.49707607700000156,
+        0.49463515899999766
+      ],
+      "usage": [
+        {
+          "user": 8.04,
+          "system": 1.68,
+          "maxRssKiB": 326808,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.09,
+          "system": 1.67,
+          "maxRssKiB": 324572,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.09,
+          "system": 1.67,
+          "maxRssKiB": 323784,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.09,
+          "system": 1.66,
+          "maxRssKiB": 325784,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.09,
+          "system": 1.75,
+          "maxRssKiB": 325544,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.1,
+          "system": 1.67,
+          "maxRssKiB": 324964,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.05,
+          "system": 1.7,
+          "maxRssKiB": 324016,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.04,
+          "system": 1.74,
+          "maxRssKiB": 324912,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.11,
+          "system": 1.68,
+          "maxRssKiB": 326464,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4927995182857142,
+      "best": 0.4799699120000005
+    }
+  ]
+}

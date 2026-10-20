@@ -1,0 +1,144 @@
+{
+  "date": "2026-10-20T20:14:53.137Z",
+  "label": "hints-screen",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Existing hints",
+      "round": 1,
+      "seconds": 0.503768583
+    },
+    {
+      "name": "Cold paths only",
+      "round": 1,
+      "seconds": 0.487793633
+    },
+    {
+      "name": "Parser hints only",
+      "round": 1,
+      "seconds": 0.507136876
+    },
+    {
+      "name": "Neutral long-name calls",
+      "round": 1,
+      "seconds": 0.5036954409999999
+    },
+    {
+      "name": "Force-inline long-name path",
+      "round": 1,
+      "seconds": 0.4947882040000002
+    },
+    {
+      "name": "Unroll parser twice",
+      "round": 1,
+      "seconds": 0.46708757700000025
+    },
+    {
+      "name": "Eagerly optimize parser",
+      "round": 1,
+      "seconds": 0.47531441300000005
+    }
+  ],
+  "complete": false,
+  "cases": [
+    {
+      "name": "Existing hints",
+      "script": "results/hints-baseline/calculate.mjs",
+      "revision": "e7d1d1a",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "4e852f5d8cd7a037ca354c91e2e48fad0c1541f4ac2bc7d88c540d985f0d3fc5",
+      "times": [],
+      "usage": []
+    },
+    {
+      "name": "Cold paths only",
+      "script": "results/hints-cold-only/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "bd110eec5146c3981cbe6f4dfd5fdbc9869630bf1e5802e4ffb70a63dc4177fc",
+      "times": [],
+      "usage": []
+    },
+    {
+      "name": "Parser hints only",
+      "script": "results/hints-parser-only/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "cd34bb4f27f5bf2838df29b0bd6f0974c06ba10c070f579d4342316fb7399800",
+      "times": [],
+      "usage": []
+    },
+    {
+      "name": "Neutral long-name calls",
+      "script": "results/hints-long-neutral/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "24b2c8845eca3ab00db4039b598a07055c58c4307caaf20b12d07f204143802e",
+      "times": [],
+      "usage": []
+    },
+    {
+      "name": "Force-inline long-name path",
+      "script": "results/hints-inline-long/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "055db4107095060f417881bccc7d4ef50f1bf10aee49c1a2843795e215df68b5",
+      "times": [],
+      "usage": []
+    },
+    {
+      "name": "Unroll parser twice",
+      "script": "results/hints-unroll-two/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "1c0efa18f4003b41e813b6e2df3efa1edcd72cee10cb0429933a2bca5526f873",
+      "times": [],
+      "usage": []
+    },
+    {
+      "name": "Eagerly optimize parser",
+      "script": "results/hints-baseline/calculate.mjs",
+      "revision": "e7d1d1a",
+      "env": {
+        "ENGINE": "wasm",
+        "FLAGS": "--wasm-eager-tier-up-function=8"
+      },
+      "flags": ["--wasm-eager-tier-up-function=8"],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "4e852f5d8cd7a037ca354c91e2e48fad0c1541f4ac2bc7d88c540d985f0d3fc5",
+      "times": [],
+      "usage": []
+    }
+  ]
+}

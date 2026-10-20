@@ -1,0 +1,428 @@
+{
+  "date": "2026-10-20T20:17:23.249Z",
+  "label": "hints-refine",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Existing hints",
+      "round": 1,
+      "seconds": 0.486411736
+    },
+    {
+      "name": "Force-inline long-name path",
+      "round": 1,
+      "seconds": 0.49748208699999996
+    },
+    {
+      "name": "Unroll parser twice",
+      "round": 1,
+      "seconds": 0.48625575000000004
+    },
+    {
+      "name": "Minimize cold helpers",
+      "round": 1,
+      "seconds": 0.48592388099999995
+    },
+    {
+      "name": "Compiler-chosen inlining",
+      "round": 1,
+      "seconds": 0.4803268490000003
+    },
+    {
+      "name": "Unroll parser four times",
+      "round": 1,
+      "seconds": 0.48028140299999994
+    },
+    {
+      "name": "Inline long path and unroll twice",
+      "round": 1,
+      "seconds": 0.4741777689999999
+    },
+    {
+      "name": "Inline long path and unroll twice",
+      "round": 2,
+      "seconds": 0.4871128050000002
+    },
+    {
+      "name": "Unroll parser four times",
+      "round": 2,
+      "seconds": 0.4775178119999996
+    },
+    {
+      "name": "Compiler-chosen inlining",
+      "round": 2,
+      "seconds": 0.4688129360000003
+    },
+    {
+      "name": "Minimize cold helpers",
+      "round": 2,
+      "seconds": 0.4811486359999999
+    },
+    {
+      "name": "Unroll parser twice",
+      "round": 2,
+      "seconds": 0.47707955200000013
+    },
+    {
+      "name": "Force-inline long-name path",
+      "round": 2,
+      "seconds": 0.4938757599999999
+    },
+    {
+      "name": "Existing hints",
+      "round": 2,
+      "seconds": 0.5015029510000004
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Existing hints",
+      "script": "results/hints-baseline/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "4e852f5d8cd7a037ca354c91e2e48fad0c1541f4ac2bc7d88c540d985f0d3fc5",
+      "times": [
+        0.4965888329999998, 0.4771027350000004, 0.48916134000000056, 0.486329690999999,
+        0.48741813399999956
+      ],
+      "usage": [
+        {
+          "user": 8.14,
+          "system": 1.67,
+          "maxRssKiB": 322908,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.99,
+          "system": 1.69,
+          "maxRssKiB": 325408,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.92,
+          "system": 1.71,
+          "maxRssKiB": 325368,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.06,
+          "system": 1.7,
+          "maxRssKiB": 325036,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.07,
+          "system": 1.69,
+          "maxRssKiB": 325256,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.48763638833333306,
+      "best": 0.4771027350000004
+    },
+    {
+      "name": "Force-inline long-name path",
+      "script": "results/hints-inline-long/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "055db4107095060f417881bccc7d4ef50f1bf10aee49c1a2843795e215df68b5",
+      "times": [
+        0.4797368500000002, 0.4940915690000002, 0.48778967899999953, 0.5027518490000003,
+        0.4835772509999988
+      ],
+      "usage": [
+        {
+          "user": 8.16,
+          "system": 1.7,
+          "maxRssKiB": 325788,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.18,
+          "system": 1.64,
+          "maxRssKiB": 325620,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.19,
+          "system": 1.67,
+          "maxRssKiB": 325084,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.12,
+          "system": 1.73,
+          "maxRssKiB": 323312,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.17,
+          "system": 1.71,
+          "maxRssKiB": 324424,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.48848616633333286,
+      "best": 0.4797368500000002
+    },
+    {
+      "name": "Unroll parser twice",
+      "script": "results/hints-unroll-two/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "1c0efa18f4003b41e813b6e2df3efa1edcd72cee10cb0429933a2bca5526f873",
+      "times": [
+        0.488529180999999, 0.4828931339999999, 0.48013144800000007, 0.48585932899999895,
+        0.4922665179999967
+      ],
+      "usage": [
+        {
+          "user": 7.99,
+          "system": 1.69,
+          "maxRssKiB": 323948,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.94,
+          "system": 1.69,
+          "maxRssKiB": 325896,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.97,
+          "system": 1.69,
+          "maxRssKiB": 324372,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.07,
+          "system": 1.68,
+          "maxRssKiB": 324156,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.11,
+          "system": 1.69,
+          "maxRssKiB": 326180,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4857605479999993,
+      "best": 0.48013144800000007
+    },
+    {
+      "name": "Minimize cold helpers",
+      "script": "results/hints-minsize-cold/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "1551e45daa5d6777972ab06b42d8c77efdca664644e2abda6fb07b43e9f13c9d",
+      "times": [
+        0.49753469699999914, 0.48750380700000095, 0.497902243999999, 0.48649650699999986,
+        0.4822119930000008
+      ],
+      "usage": [
+        {
+          "user": 8.13,
+          "system": 1.68,
+          "maxRssKiB": 325932,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.11,
+          "system": 1.74,
+          "maxRssKiB": 325148,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.07,
+          "system": 1.69,
+          "maxRssKiB": 323976,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.14,
+          "system": 1.72,
+          "maxRssKiB": 323688,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.12,
+          "system": 1.7,
+          "maxRssKiB": 325664,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.49051167033333337,
+      "best": 0.4822119930000008
+    },
+    {
+      "name": "Compiler-chosen inlining",
+      "script": "results/hints-compiler-inline/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "0f35da7db343d3af1c65e28ec59ef6cb6027f2a66ed6ac800a8eb4a1e7efcc2a",
+      "times": [
+        0.49250885800000105, 0.48635569000000034, 0.48538431800000037, 0.49600752400000053,
+        0.48943286400000213
+      ],
+      "usage": [
+        {
+          "user": 7.92,
+          "system": 1.64,
+          "maxRssKiB": 326480,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.99,
+          "system": 1.68,
+          "maxRssKiB": 325980,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8,
+          "system": 1.72,
+          "maxRssKiB": 326924,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.73,
+          "system": 1.8,
+          "maxRssKiB": 323276,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.92,
+          "system": 1.75,
+          "maxRssKiB": 325436,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4894324706666678,
+      "best": 0.48538431800000037
+    },
+    {
+      "name": "Unroll parser four times",
+      "script": "results/hints-unroll-four/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce",
+      "times": [
+        0.48341675699999903, 0.47501824300000045, 0.4854133939999992, 0.4749769439999982,
+        0.5136507760000022
+      ],
+      "usage": [
+        {
+          "user": 7.96,
+          "system": 1.71,
+          "maxRssKiB": 324832,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.88,
+          "system": 1.74,
+          "maxRssKiB": 324388,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.94,
+          "system": 1.67,
+          "maxRssKiB": 325940,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.97,
+          "system": 1.7,
+          "maxRssKiB": 324200,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.15,
+          "system": 1.63,
+          "maxRssKiB": 324708,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.48128279799999957,
+      "best": 0.4749769439999982
+    },
+    {
+      "name": "Inline long path and unroll twice",
+      "script": "results/hints-inline-unroll-two/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "b0e38bfdc324a5604e6b79e52a39432ffc2ffad3785f2b307cd0b9361510e9c8",
+      "times": [
+        0.48243513600000004, 0.500462117000001, 0.48292424299999764, 0.4771699919999992,
+        0.4947689919999975
+      ],
+      "usage": [
+        {
+          "user": 8.1,
+          "system": 1.65,
+          "maxRssKiB": 325228,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.07,
+          "system": 1.7,
+          "maxRssKiB": 324140,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.09,
+          "system": 1.67,
+          "maxRssKiB": 324396,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.05,
+          "system": 1.64,
+          "maxRssKiB": 324004,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.03,
+          "system": 1.67,
+          "maxRssKiB": 325920,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4867094569999984,
+      "best": 0.4771699919999992
+    }
+  ]
+}

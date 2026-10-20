@@ -1,6 +1,140 @@
 # Benchmark and experiment log
 
-## Current: direct Wasm deltas and simpler Node prediction, 2026-10-20
+## Current: Wasm hint and attribute experiments, 2026-10-20
+
+Selected runtime: **`801ecc5`**, equivalent to the four-way experiment `bbef50b`.
+The sole C change from **`e7d1d1a`** is
+`#pragma clang loop unroll_count(4)` before the existing bounded three-lane loop.
+The binary and build manifest were regenerated. Plain Node, the reader, host
+code and branch-hint generator are unchanged. Both production solvers remain.
+Every experiment below has an **unsigned checkpoint commit**.
+
+### Final paired comparison
+
+Same Ryzen 9 7900 machine, Node **26.12.0**, 24 workers, 512 KiB chunks, and the
+existing **one-billion-row / 13,795,455,110-byte / 413-station** dataset. Power
+settings are unchanged (`powersave`, `balance_performance`). Both binaries use
+Clang/LLD **21.1.8**; rebuilding the baseline reproduced its binary exactly.
+
+Three excluded full-file warm-ups per case precede **21 alternating rounds**.
+Scores discard the fastest and slowest run, averaging the remaining 19. Fresh
+process timings include startup, compilation, IO, parsing, merging, output and
+shutdown. All 42 measured processes matched expected stdout and reported zero
+filesystem inputs. There are no extra V8 flags in either final case.
+
+| Implementation | Trimmed mean | Best | Throughput | Peak RSS |
+| --- | ---: | ---: | ---: | ---: |
+| Previous Wasm | 0.488 s | 0.479 s | 28.25 GB/s | 326,732 KiB |
+| Four-way loop hint | 0.485 s | 0.470 s | 28.42 GB/s | 326,600 KiB |
+
+The hint took **0.62% less elapsed time**, winning **14 of 21** paired rounds.
+The preceding nine-round batch measured 0.491 vs 0.494 s; an earlier five-run
+screen measured 0.481 vs 0.488 s. This is a small, workload-specific trend:
+the final untrimmed paired saving averaged 3.42 ms with a 2.50 ms standard error,
+so this paired batch alone does not establish a statistically clear speedup.
+Retention follows the repeated small positive averages and trades them for **13,175 bytes of Wasm versus 9,442 bytes** before.
+Compiler, engine and input changes warrant remeasurement.
+
+A diagnostic pinned to CPU 0 with one worker measured means of 4.248 s for the
+baseline, 4.188 s with two-way unrolling, 4.134 s with four-way unrolling and
+4.160 s with eight-way unrolling. It used one warm-up and three alternating
+rounds, without trimming. This supports investigating the loop change but is
+not the full-machine score; the baseline's first measured run was noticeably
+slower than its next two.
+
+Raw final results:
+[`2026-10-20-wasm-hints.json`](benchmarks/2026-10-20-wasm-hints.json).
+Exact verification:
+[`2026-10-20-wasm-hints-verification.json`](benchmarks/2026-10-20-wasm-hints-verification.json).
+These are local cached-file results, not official leaderboard scores.
+
+### What the experiments established
+
+The existing branch metadata already helps. Ignoring it with
+`--no-experimental-wasm-branch-hinting` increased a matched five-run trimmed mean
+from **0.491 to 0.513 s**, about **4.6% more time**. Disabling V8 Wasm inlining
+or raising its inline-size limit also regressed that screen. Metadata-only
+variants preserved every non-custom section byte, isolating their hint changes.
+
+Adding `hot` to the parser, adding likely/unlikely `__builtin_expect` annotations,
+or explicitly disabling inner-loop unrolling produced **byte-for-byte identical
+Wasm** with this toolchain. Those additions were rejected without redundant
+timing. Marking cold helpers `minsize`, relaxing forced C inlining, inlining the
+long-name path, and changing branch-hint coverage did not give a useful repeated
+win. Combining long-name inlining and loop unrolling also failed to improve on
+the simpler hint. Eight-way unrolling increased the binary to 16,859 bytes and
+was slower than four-way unrolling in the final multi-case confirmation.
+
+The experimental `--wasm-eager-tier-up-function=8` flag completed one warm-up,
+then stalled on the second. That process was terminated after more than 50
+seconds and the flag was rejected. Its incomplete report is saved separately
+and contributes to no timing score. Normal comparisons resumed without it.
+
+All **53 tests pass on Node 24.15.0 and Node 26.12.0** for the selected artifact.
+Exact station-name/minimum/sum/maximum/count tuples match the plain Node engine
+across all one billion measurements, including complete expected stdout.
+Biome, clang-format and source/build hash checks pass. A separate code review
+confirmed that the pragma leaves full-name checks, the 108-byte row bound,
+remainder handling, tail loops and host ABI intact.
+
+### Unsigned checkpoints and evidence
+
+Times in each row belong to that experiment's matched batch. Different rows
+must not be combined to calculate incremental speedups. Screening uses five
+runs and two warm-ups, with fastest/slowest removed, unless noted otherwise.
+
+| Checkpoint | Experiment | Result and decision |
+| --- | --- | --- |
+| `4fa66a4` | Existing hints, V8 inlining controls | Baseline 0.491 s; ignore hints 0.513, disable inlining 0.498, larger inline limit 0.506. Retain defaults. [R] |
+| `423f1f7` | Hint cold paths only, leave loop backedges neutral | 0.488 vs 0.486 s; reject. [S] |
+| `b635eb8` | Emit hints only for `parse_chunk` | 0.491 vs 0.486 s; reject. [S] |
+| `c1a197d` | Leave long-name calls neutral in branch metadata | 0.507 vs 0.486 s; reject. [S] |
+| `6c1ed11`, `69fa2eb` | Explicit likely/unlikely branches; `hot` parser attribute | Exact same Wasm as baseline; reject ineffective additions. [B] |
+| `b95aa4b` | Force-inline long-name handler | 0.484 vs 0.486 s initially, then 0.488 vs 0.488 s; reject. [S, F] |
+| `97b8845` | Two-way loop unrolling | 0.482 vs 0.486 s initially; later 0.493 vs 0.494 s. Four-way is the stronger candidate. [S, C] |
+| `57925d2`, `a760ba8` | Targeted eager optimization of parser | Stalled on second warm-up; terminated and excluded. Remaining hint screen rerun. [E] |
+| `dc8d14f` | `minsize` on cold helpers | 0.491 vs 0.488 s; reject. [F] |
+| `3e1af90` | Let Clang choose helper inlining | 0.489 vs 0.488 s; reject despite smaller 7,615-byte module. [F] |
+| `50f9ebc` | Explicitly disable inner-loop unrolling | Exact same Wasm as baseline; reject ineffective addition. [B] |
+| `bbef50b` | Four-way loop unrolling | 0.481 vs 0.488 s screen; 0.491 vs 0.494 s nine-run confirmation; 0.485 vs 0.488 s final paired repeat. Retain with small-gain caveat. [F, C, P] |
+| `27f8619` | Combine inlined long path and two-way unrolling | 0.487 vs 0.488 s, 19,462-byte module; reject. [F] |
+| `c41ba08` | Eight-way loop unrolling | 0.493 vs 0.494 s in confirmation; reject in favor of four-way's smaller/faster module. [C] |
+| `152eb0f`, `5e0f5cf`, `e5d5358`, `5268948` | Refinement, pinned-core diagnostic, nine-round and 21-round confirmations | Preserve each comparison configuration. [F, O, C, P] |
+
+Evidence (all under `benchmarks/experiments/` except P):
+
+- R: [runtime controls](benchmarks/experiments/hints-runtime-controls-results.json).
+- S: [first attribute screen](benchmarks/experiments/hints-screen-results.json).
+- F: [refinement screen](benchmarks/experiments/hints-refine-results.json).
+- B: [binary/core comparisons](benchmarks/experiments/hints-bytecode-comparison.json).
+- E: [failed eager-tier-up record](benchmarks/experiments/hints-eager-tier-up-failure.json),
+  [incomplete warm-up report](benchmarks/experiments/hints-eager-tier-up-partial-results.json).
+- O: [one-core diagnostic](benchmarks/experiments/hints-single-core-results.json).
+- C: [nine-round confirmation](benchmarks/experiments/hints-confirm-results.json).
+- P: [21-round paired confirmation](benchmarks/2026-10-20-wasm-hints.json).
+
+The hints are compiler guidance, not added input assumptions. References:
+[Clang loop hints](https://releases.llvm.org/21.1.0/tools/clang/docs/LanguageExtensions.html#extensions-for-loop-hint-optimizations),
+[Clang attributes](https://clang.llvm.org/docs/AttributeReference.html),
+and the [WebAssembly branch-hint format](https://github.com/WebAssembly/branch-hinting/blob/main/proposals/branch-hinting/Overview.md).
+No global tools, power settings or runtime flags were changed.
+
+To reproduce the final pair in a fresh checkout (the source snapshots used
+locally occupy these ignored paths):
+
+```sh
+git worktree add --detach results/hints-baseline e7d1d1a
+git worktree add --detach results/hints-unroll-four bbef50b
+CASES="$(cat benchmarks/experiments/hints-paired-confirm.json)" \
+  RUNS=21 WARMUP=3 node tools/compare.mjs hints-paired-confirm measurements.txt
+node tools/verify-engines.mjs measurements.txt 1000000000
+```
+
+The one-core diagnostic used `WORKERS=1` cases from `hints-single-core.json`
+and `taskset -c 0`, with `RUNS=3 WARMUP=1`. All benchmark inputs and local
+runtimes remain ignored. The earlier plain-Node and Wasm results follow.
+
+## Previous: direct Wasm deltas and simpler Node prediction, 2026-10-20
 
 Further experiments improved both selected implementations. The clearest gain is
 Wasm: **4.1% less elapsed time** in the final matched batch. Node's simpler
