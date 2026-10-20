@@ -29,6 +29,7 @@ _Static_assert(offsetof(Station, key) == 20, "station ABI key");
 _Static_assert(MAX_STATIONS * 104 + 48 < (1 << 20), "all valid key offsets fit");
 
 static uint32_t buckets[TABLE_SIZE];
+static uint32_t prefixes[8192];
 static Station stations[MAX_STATIONS];
 static Station empty_station;
 // Canonical keys: the name, its delimiter and zero padding to at least 32 bytes.
@@ -368,14 +369,13 @@ INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row
 INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
   uint32_t length = (uint32_t)__builtin_ctz(matches);
   v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length + 1]));
-  v128_t mixed = wasm_v128_xor(key, wasm_v128_load(mixers));
-  uint64_t hash =
-      (uint64_t)wasm_i64x2_extract_lane(mixed, 0) * (uint64_t)wasm_i64x2_extract_lane(mixed, 1);
-  uint32_t slot = (uint32_t)(hash >> 49);
-  Station *station = (Station *)(uintptr_t)buckets[slot];
-  // An empty record is all zero; a key containing ';' can never match it.
-  if (wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(&station->head), key)) != 0xffff)
+  uint32_t slot = (load32(start) * UINT32_C(0x9e3779b1)) >> 19;
+  Station *station = (Station *)(uintptr_t)prefixes[slot];
+  // Prefixes predict a station; the complete delimiter-terminated key verifies it.
+  if (wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(&station->head), key)) != 0xffff) {
     station = find_name(start);
+    prefixes[slot] = (uint32_t)(uintptr_t)station;
+  }
   return update_row((ParsedRow){start + length + 1, station});
 }
 
@@ -417,7 +417,6 @@ typedef struct {
   const uint8_t *a;
   const uint8_t *b;
   const uint8_t *c;
-  const uint8_t *d;
 } RowPointers;
 
 // An empty cold call marks the start of an unlikely path for the derived
@@ -426,45 +425,38 @@ __attribute__((noinline, cold)) static void cold_path(void) { __asm__ volatile("
 
 // Rows whose names need another vector: every name below 32 bytes takes the
 // two-vector path; longer names keep the complete general parser.
-INLINE RowPointers process_four(const uint8_t *a, const uint8_t *b, const uint8_t *c,
-                                const uint8_t *d) {
+INLINE RowPointers process_three(const uint8_t *a, const uint8_t *b, const uint8_t *c) {
   const v128_t separator = wasm_i8x16_splat(';');
   v128_t low_a = wasm_v128_load(a);
   v128_t low_b = wasm_v128_load(b);
   v128_t low_c = wasm_v128_load(c);
-  v128_t low_d = wasm_v128_load(d);
   v128_t high_a = wasm_v128_load(a + 16);
   v128_t high_b = wasm_v128_load(b + 16);
   v128_t high_c = wasm_v128_load(c + 16);
-  v128_t high_d = wasm_v128_load(d + 16);
   uint32_t matches_a = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(low_a, separator)) |
                        (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high_a, separator)) << 16;
   uint32_t matches_b = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(low_b, separator)) |
                        (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high_b, separator)) << 16;
   uint32_t matches_c = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(low_c, separator)) |
                        (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high_c, separator)) << 16;
-  uint32_t matches_d = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(low_d, separator)) |
-                       (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high_d, separator)) << 16;
-  if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0) & (matches_d != 0)) {
+  if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
     const uint8_t *next_a = process_wide(a, matches_a, low_a, high_a);
     const uint8_t *next_b = process_wide(b, matches_b, low_b, high_b);
     const uint8_t *next_c = process_wide(c, matches_c, low_c, high_c);
-    const uint8_t *next_d = process_wide(d, matches_d, low_d, high_d);
-    return (RowPointers){next_a, next_b, next_c, next_d};
+    return (RowPointers){next_a, next_b, next_c};
   }
   // Hash each name just before its lookup: an insertion may retune the mixers.
   ParsedRow row_a = scan_row(a);
   ParsedRow row_b = scan_row(b);
   ParsedRow row_c = scan_row(c);
-  ParsedRow row_d = scan_row(d);
   const uint8_t *next_a = update_row(row_a);
   const uint8_t *next_b = update_row(row_b);
   const uint8_t *next_c = update_row(row_c);
-  const uint8_t *next_d = update_row(row_d);
-  return (RowPointers){next_a, next_b, next_c, next_d};
+  return (RowPointers){next_a, next_b, next_c};
 }
 
 EXPORT(reset) void reset(void) {
+  for (uint32_t slot = 0; slot < 8192; slot++) prefixes[slot] = (uint32_t)(uintptr_t)&empty_station;
   for (uint32_t slot = 0; slot < TABLE_SIZE; slot++)
     buckets[slot] = (uint32_t)(uintptr_t)&empty_station;
   used = 0;
@@ -506,7 +498,7 @@ EXPORT(empty_station_base) uint32_t empty_station_base(void) {
 EXPORT(mixers_base) uint32_t mixers_base(void) { return (uint32_t)(uintptr_t)mixers; }
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
-  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 4;
+  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 3;
   if (p == begin) return p;
   while (p < end && p[-1] != '\n') p++;
   return p;
@@ -518,20 +510,16 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *limit = (const uint8_t *)(uintptr_t)end;
   const uint8_t *end_a = boundary(a, limit, 1);
   const uint8_t *end_b = boundary(a, limit, 2);
-  const uint8_t *end_c = boundary(a, limit, 3);
   const uint8_t *b = end_a;
   const uint8_t *c = end_b;
-  const uint8_t *d = end_c;
   for (;;) {
     // A row is at most 108 bytes, so this many iterations stay inside all
-    // four lanes without checking each pointer.
+    // three lanes without checking each pointer.
     uint32_t left_a = (uint32_t)(end_a - a);
     uint32_t left_b = (uint32_t)(end_b - b);
-    uint32_t left_c = (uint32_t)(end_c - c);
-    uint32_t left_d = (uint32_t)(limit - d);
+    uint32_t left_c = (uint32_t)(limit - c);
     uint32_t left = left_a < left_b ? left_a : left_b;
     left = left < left_c ? left : left_c;
-    left = left < left_d ? left : left_d;
     uint32_t rounds = left / 108;
     if (!rounds) break;
     do {
@@ -539,28 +527,23 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       v128_t bytes_a = wasm_v128_load(a);
       v128_t bytes_b = wasm_v128_load(b);
       v128_t bytes_c = wasm_v128_load(c);
-      v128_t bytes_d = wasm_v128_load(d);
       uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
       uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
       uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-      uint32_t matches_d = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_d, separator));
-      if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0) & (matches_d != 0)) {
+      if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
         a = advance_short(a, matches_a, bytes_a);
         b = advance_short(b, matches_b, bytes_b);
         c = advance_short(c, matches_c, bytes_c);
-        d = advance_short(d, matches_d, bytes_d);
       } else {
         cold_path();
-        RowPointers next = process_four(a, b, c, d);
+        RowPointers next = process_three(a, b, c);
         a = next.a;
         b = next.b;
         c = next.c;
-        d = next.d;
       }
     } while (--rounds);
   }
   while (a < end_a) a = process_row(a);
   while (b < end_b) b = process_row(b);
-  while (c < end_c) c = process_row(c);
-  while (d < limit) d = process_row(d);
+  while (c < limit) c = process_row(c);
 }
