@@ -36,8 +36,8 @@ static Station empty_station;
 static uint8_t names[MAX_STATIONS * 104 + 48];
 // Indexed by the low nibbles of the two bytes before the decimal (';', '-' or
 // tens, then units) and of the tenths digit, plus the sign bit. Each entry is
-// the byte offset of that temperature's statistics delta.
-static uint16_t temperatures[1 << 16];
+// a complete statistics delta, avoiding a dependent offset-table lookup.
+static v128_t temperatures[1 << 16];
 // One statistics delta per legal temperature: the signed sum increment, a
 // count increment, then value and -value in the min/negative-max lanes.
 static v128_t deltas[1999];
@@ -47,6 +47,7 @@ static uint32_t used;
 static uint64_t mixers[2] __attribute__((aligned(16)));
 // Delimiter splats for the hot loop, loaded rather than rebuilt each iteration.
 static v128_t separators;
+static v128_t newlines;
 static uint64_t mixer_seed;
 static uint32_t retunes_left;
 static uint32_t claimed[TABLE_SIZE / 32];
@@ -343,7 +344,7 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   // The two bytes before the decimal are ';' or '-' or tens, then units.
   uint32_t digits = load32(dot - 2) & UINT32_C(0x0f000f0f);
   // Pack both nibbles, tenths and the sign: a minus lacks ASCII bit 4.
-  uint32_t offset = temperatures[((digits | (digits >> 12)) & 0xffff) | (inverse & 0x10)];
+  uint32_t index = ((digits | (digits >> 12)) & 0xffff) | (inverse & 0x10);
   // LF is even and CR is odd.
   const uint8_t *next = dot + 3 + (dot[2] & 1);
 
@@ -351,7 +352,7 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   // Counts stay below 2^32, so adding one cannot carry into packed min/max.
   // Store -maximum beside minimum, so one signed min updates both extrema.
   v128_t stats = wasm_v128_load(station);
-  v128_t delta = wasm_v128_load((const uint8_t *)deltas + offset);
+  v128_t delta = wasm_v128_load(&temperatures[index]);
   v128_t added = wasm_i64x2_add(stats, delta);
   // Fixed lane selections let the host compiler use immediate SIMD blends.
   v128_t extrema = wasm_i16x8_min(stats, delta);
@@ -398,6 +399,17 @@ INLINE const uint8_t *process_wide(const uint8_t *start, uint32_t matches, v128_
   return update_row((ParsedRow){start + length + 1, station});
 }
 
+// Rows with short names end within 32 bytes. Locating the newline directly
+// keeps the next row off the temperature dependency chain.
+INLINE const uint8_t *advance_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
+  const v128_t newline = wasm_v128_load(&newlines);
+  uint32_t lines = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(bytes, newline)) |
+                   (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 16), newline))
+                       << 16;
+  process_short(start, matches, bytes);
+  return start + __builtin_ctz(lines) + 1;
+}
+
 // Keep short rows in their fast path even when another lane has a long name.
 __attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *start,
                                                                    v128_t low) {
@@ -415,6 +427,7 @@ EXPORT(reset) void reset(void) {
   mixers[1] = UINT64_C(0xc2b2ae3d27d4eb4f);
   mixer_seed = 0;
   separators = wasm_i8x16_splat(';');
+  newlines = wasm_i8x16_splat('\n');
   retunes_left = 256;
   wasm_v128_store(names, wasm_i64x2_const(-1, -1));
   wasm_v128_store(names + 16, wasm_i64x2_const(-1, -1));
@@ -429,11 +442,11 @@ EXPORT(reset) void reset(void) {
     for (uint32_t units = 0; units <= 9; units++) {
       uint32_t index = (units << 8) | (tenths << 12);
       int32_t value = (int32_t)(units * 10 + tenths);
-      temperatures[index | (';' & 15)] = (uint16_t)((999 + value) * 16);
-      temperatures[index | 0x10 | ('-' & 15)] = (uint16_t)((999 - value) * 16);
+      temperatures[index | (';' & 15)] = deltas[999 + value];
+      temperatures[index | 0x10 | ('-' & 15)] = deltas[999 - value];
       for (int32_t tens = 0; tens <= 9; tens++) {
-        temperatures[index | (uint32_t)tens] = (uint16_t)((999 + tens * 100 + value) * 16);
-        temperatures[index | 0x10 | (uint32_t)tens] = (uint16_t)((999 - tens * 100 - value) * 16);
+        temperatures[index | (uint32_t)tens] = deltas[999 + tens * 100 + value];
+        temperatures[index | 0x10 | (uint32_t)tens] = deltas[999 - tens * 100 - value];
       }
     }
   }
@@ -482,9 +495,9 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
       uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
       uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-      a = matches_a ? process_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
-      b = matches_b ? process_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
-      c = matches_c ? process_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
+      a = matches_a ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
+      b = matches_b ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
+      c = matches_c ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
     } while (--rounds);
   }
   while (a < end_a) a = process_row(a);

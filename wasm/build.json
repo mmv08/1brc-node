@@ -1,9 +1,9 @@
 {
   "compiler": "Ubuntu clang version 21.1.8 (6ubuntu1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /usr/lib/llvm-21/bin",
   "linker": "Ubuntu LLD 21.1.8",
-  "sourceSha256": "e7d364e3f74298fce047de9ada880f00c3bcfdc2cd60d89172b1033667bdffbf",
-  "sha256": "0d30758af68501bcc5354447b6a23933183a024112a86ff6e4bdbbacfaca1afc",
-  "bytes": 9027,
+  "sourceSha256": "3e2f802628eff42d22b2afaeff4ffda3ca750ea35cc1d91b5d7b5915716bea8e",
+  "sha256": "2f18483f7b388ac0f7e21bfa344f1b0b73669eea77bc579ecd03a05e9944c8ab",
+  "bytes": 9442,
   "compile": [
     "--target=wasm32",
     "-std=c11",
@@ -25,7 +25,7 @@
     "wasm",
     "--no-entry",
     "--export-memory",
-    "--initial-memory=2097152",
+    "--initial-memory=4194304",
     "--max-memory=1073741824",
     "-z",
     "stack-size=65536",
