@@ -47,12 +47,15 @@ export async function aggregate(config) {
 
   // Cache predictions supply the stored length; hash lookups validate it first.
   function equal(view, start, length, r, head) {
-    if (records[r + 1] !== head) return false;
-    if (length <= 4) return true;
-    if (view.getInt32(start + length - 4, true) !== records[r + 2]) return false;
+    // Validate independent name words together before taking the miss branch.
+    // OR preserves every differing bit, including high UTF-8 and embedded NULs.
+    let mismatch = records[r + 1] ^ head;
+    if (length <= 4) return mismatch === 0;
+    mismatch |= view.getInt32(start + length - 4, true) ^ records[r + 2];
     if (branchlessNames) {
-      if (view.getInt32(start + Math.min(4, length - 4), true) !== records[r + 3]) return false;
-    } else if (length > 8 && view.getInt32(start + 4, true) !== records[r + 3]) return false;
+      mismatch |= view.getInt32(start + Math.min(4, length - 4), true) ^ records[r + 3];
+    } else if (length > 8) mismatch |= view.getInt32(start + 4, true) ^ records[r + 3];
+    if (mismatch !== 0) return false;
     const offset = records[r + 5];
     for (let i = 8; i < length - 4; i += 4) {
       if (view.getInt32(start + i, true) !== keys.getInt32(offset + i, true)) return false;
