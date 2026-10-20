@@ -411,8 +411,7 @@ INLINE const uint8_t *advance_short(const uint8_t *start, uint32_t matches, v128
 }
 
 // Keep short rows in their fast path even when another lane has a long name.
-__attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *start,
-                                                                   v128_t low) {
+INLINE const uint8_t *process_long(const uint8_t *start, v128_t low) {
   v128_t high = wasm_v128_load(start + 16);
   uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high, wasm_v128_load(&separators)))
                      << 16;
@@ -469,7 +468,7 @@ static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_
   return p;
 }
 
-EXPORT(parse_chunk) __attribute__((hot)) void parse_chunk(uint32_t begin, uint32_t end) {
+EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   if (begin >= end) return;
   const uint8_t *a = (const uint8_t *)(uintptr_t)begin;
   const uint8_t *limit = (const uint8_t *)(uintptr_t)end;

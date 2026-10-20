@@ -1,9 +1,9 @@
 {
   "compiler": "Ubuntu clang version 21.1.8 (6ubuntu1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /usr/lib/llvm-21/bin",
   "linker": "Ubuntu LLD 21.1.8",
-  "sourceSha256": "d9edf187157eb9150e67b40d0bcc08c48db446d453a910ed0acb04aae9911906",
-  "sha256": "2f18483f7b388ac0f7e21bfa344f1b0b73669eea77bc579ecd03a05e9944c8ab",
-  "bytes": 9442,
+  "sourceSha256": "889d4a06f224e79972818a9d4f1417f3add18d1ef97f2d0802b8eb79b956ccad",
+  "sha256": "c6f78af3f268cd54f92d20b0f29d81ca731821f546494f5e6718124fe3756dc8",
+  "bytes": 11540,
   "compile": [
     "--target=wasm32",
     "-std=c11",
@@ -33,7 +33,7 @@
     "-o",
     "results/build/kernel-linked.wasm"
   ],
-  "cold": ["same_middle", "insert_station", "retune", "probe_station", "find_name", "process_long"],
+  "cold": ["same_middle", "insert_station", "retune", "probe_station", "find_name"],
   "branchHints": [
     {
       "function": "reset",
@@ -42,18 +42,13 @@
     },
     {
       "function": "parse_chunk",
-      "likely": 16,
-      "unlikely": 15
+      "likely": 25,
+      "unlikely": 24
     },
     {
       "function": "find_name",
       "likely": 3,
       "unlikely": 3
-    },
-    {
-      "function": "process_long",
-      "likely": 3,
-      "unlikely": 4
     },
     {
       "function": "insert_station",
