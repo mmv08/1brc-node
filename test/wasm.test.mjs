@@ -407,3 +407,34 @@ test('first-bucket collisions retune the mixers so every station hits directly',
     assert.equal(view.getUint32(base + id * 40 + 16, true), fingerprint, name);
   });
 });
+
+
+test('negated maximum lane decodes signed extrema and positive zero', async () => {
+  const kernel = await createKernel(65536);
+  const buffer = kernel.allocateBuffer(65536 + 256);
+  const cases = [
+    ['NegativeOnly', [-999, -500, -1]],
+    ['PositiveOnly', [999, 500, 1]],
+    ['CrossesZero', [-999, 0, 999]],
+    ['PositiveZero', [0, 0, 0]],
+    ['LongName'.repeat(10), [999, -999, 0]],
+  ];
+  const text = Array.from({ length: 100 }, (_, round) =>
+    cases.map(([name, values]) => `${name};${(values[round % 3] / 10).toFixed(1)}\n`).join(''),
+  ).join('');
+  kernel.makeParser(buffer)(0, fill(buffer, text));
+  const view = new DataView(kernel.memory);
+  const base = kernel.api.stations_base();
+  const rows = kernel.rows();
+  for (let id = 0; id < rows.length; id++) {
+    const row = rows[id];
+    const [, values] = cases.find(([name]) => name === row[0]);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    assert.equal(view.getInt16(base + id * 40 + 12, true), min);
+    assert.equal(view.getInt16(base + id * 40 + 14, true), 0 - max);
+    assert.equal(row[1], min);
+    assert.equal(row[3], max);
+    assert.equal(Object.is(row[3], -0), false);
+  }
+});
