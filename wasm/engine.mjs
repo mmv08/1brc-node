@@ -35,8 +35,8 @@ export async function createKernel(chunkSize) {
       const base = api.stations_base() >>> 0;
       const keys = api.keys_base() >>> 0;
       return Array.from({ length: api.station_count() }, (_, id) => {
-        const p = base + id * 64;
-        const key = view.getUint32(p + 36, true);
+        const p = base + id * 40;
+        const key = view.getUint32(p + 20, true);
         const name = Buffer.from(memory, keys + (key & 0xfffff), key >>> 20).toString('utf8');
         // One BigInt conversion per result station, never per measurement.
         // The challenge's maximum integer sum fits exactly in a JS Number.
@@ -44,7 +44,7 @@ export async function createKernel(chunkSize) {
           name,
           view.getInt16(p + 12, true),
           Number(view.getBigInt64(p, true)),
-          view.getInt16(p + 14, true),
+          0 - view.getInt16(p + 14, true),
           view.getUint32(p + 8, true),
         ];
       });
