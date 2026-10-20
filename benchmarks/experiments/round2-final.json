@@ -1,0 +1,40 @@
+[
+  {
+    "name": "Previous plain Node",
+    "script": "results/round2-baseline/plain/calculate.mjs",
+    "revision": "5769105",
+    "env": {
+      "ENGINE": "node"
+    }
+  },
+  {
+    "name": "Optimized plain Node",
+    "revision": "7969ca6",
+    "env": {
+      "ENGINE": "node"
+    }
+  },
+  {
+    "name": "Previous Wasm",
+    "script": "results/round2-baseline/calculate.mjs",
+    "revision": "5769105",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Optimized Wasm",
+    "revision": "7969ca6",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Optimized Wasm 16 workers",
+    "revision": "7969ca6",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "16"
+    }
+  }
+]
