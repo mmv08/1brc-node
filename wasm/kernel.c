@@ -37,7 +37,7 @@ static uint8_t names[MAX_STATIONS * 104 + 48];
 // Indexed by the low nibbles of the two bytes before the decimal (';', '-' or
 // tens, then units) and of the tenths digit, plus the sign bit. Each entry is
 // a complete statistics delta, avoiding a dependent offset-table lookup.
-static v128_t temperatures[1 << 16];
+static v128_t temperatures[1 << 13];
 // One statistics delta per legal temperature: the signed sum increment, a
 // count increment, then value and -value in the min/negative-max lanes.
 static v128_t deltas[1999];
@@ -344,7 +344,8 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   // The two bytes before the decimal are ';' or '-' or tens, then units.
   uint32_t digits = load32(dot - 2) & UINT32_C(0x0f000f0f);
   // Pack both nibbles, tenths and the sign: a minus lacks ASCII bit 4.
-  uint32_t index = ((digits | (digits >> 12)) & 0xffff) | (inverse & 0x10);
+  uint32_t index =
+      (digits & 15) | ((digits >> 3) & 0x1e0) | ((digits >> 15) & 0x1e00) | (inverse & 0x10);
   // LF is even and CR is odd.
   const uint8_t *next = dot + 3 + (dot[2] & 1);
 
@@ -440,7 +441,7 @@ EXPORT(reset) void reset(void) {
   }
   for (uint32_t tenths = 0; tenths <= 9; tenths++) {
     for (uint32_t units = 0; units <= 9; units++) {
-      uint32_t index = (units << 8) | (tenths << 12);
+      uint32_t index = (units << 5) | (tenths << 9);
       int32_t value = (int32_t)(units * 10 + tenths);
       temperatures[index | (';' & 15)] = deltas[999 + value];
       temperatures[index | 0x10 | ('-' & 15)] = deltas[999 - value];
