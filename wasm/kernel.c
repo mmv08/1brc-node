@@ -371,7 +371,7 @@ INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128
   uint32_t slot = (uint32_t)(hash >> 49);
   Station *station = (Station *)(uintptr_t)buckets[slot];
   // An empty record is all zero; a key containing ';' can never match it.
-  if (wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(&station->head), key)) != 0xffff)
+  if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key)))
     station = find_name(start);
   return update_row((ParsedRow){start + length + 1, station});
 }

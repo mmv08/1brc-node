@@ -1,0 +1,20 @@
+{
+  "baseline": "bd04b60",
+  "experiment": "short-key-xor-zero",
+  "evidence": {
+    "profile": "wasm-ticks-1",
+    "totalTicks": 13949,
+    "parseTicks": 9444,
+    "hotRegion": "bucket pointer -> station.head load -> byte equality -> movemask -> compare 0xffff -> branch",
+    "fourUnrolledEqualityRegionsTicks": 2273,
+    "scope": "Hot key equality, not evidence of collisions or cache misses."
+  },
+  "change": "Use v128.any_true(v128.xor(stored,key)) instead of i8x16.bitmask(i8x16.eq(stored,key)) != 0xffff for short keys.",
+  "hypothesis": "A vector zero test can shorten the sampled equality sequence. Inspect native output before benchmarking.",
+  "validation": [
+    "Existing Wasm tests",
+    "Same-process raw tick/native assembly mapping",
+    "Full-file alternating fresh-process timing and exact stdout"
+  ],
+  "historicalContext": "Bitmask equality previously reduced instruction count on a different CPU/kernel. Current CPU/compiler/hot-loop profile motivates re-evaluation; no speedup assumed."
+}
