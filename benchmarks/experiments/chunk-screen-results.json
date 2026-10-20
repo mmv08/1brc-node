@@ -1,0 +1,467 @@
+{
+  "date": "2026-10-20T19:30:47.855Z",
+  "label": "chunk-screen",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "node chunk 65536",
+      "round": 1,
+      "seconds": 1.2511764830000003
+    },
+    {
+      "name": "node chunk 262144",
+      "round": 1,
+      "seconds": 1.235272282
+    },
+    {
+      "name": "node chunk 524288",
+      "round": 1,
+      "seconds": 1.2783636550000002
+    },
+    {
+      "name": "wasm chunk 131072",
+      "round": 1,
+      "seconds": 0.5169047480000004
+    },
+    {
+      "name": "wasm chunk 262144",
+      "round": 1,
+      "seconds": 0.5023614959999996
+    },
+    {
+      "name": "wasm chunk 1048576",
+      "round": 1,
+      "seconds": 0.4950385329999999
+    },
+    {
+      "name": "wasm chunk 2097152",
+      "round": 1,
+      "seconds": 0.4988675720000001
+    },
+    {
+      "name": "Node default",
+      "round": 1,
+      "seconds": 1.233960876
+    },
+    {
+      "name": "Wasm default",
+      "round": 1,
+      "seconds": 0.4852597639999994
+    },
+    {
+      "name": "Wasm TurboFan immediately",
+      "round": 1,
+      "seconds": 0.5450713869999999
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "node chunk 65536",
+      "script": "results/baseline/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "CHUNK_BYTES": "65536"
+      },
+      "flags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000"
+      ],
+      "requestedWorkers": 24,
+      "chunkBytes": 65536,
+      "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
+      "times": [
+        1.221264014999999,
+        1.2991798490000002,
+        1.2740554470000025
+      ],
+      "usage": [
+        {
+          "user": 25.62,
+          "system": 1.53,
+          "maxRssKiB": 342396,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 26.28,
+          "system": 1.5,
+          "maxRssKiB": 346012,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.73,
+          "system": 1.54,
+          "maxRssKiB": 344272,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.2648331036666671,
+      "best": 1.221264014999999
+    },
+    {
+      "name": "node chunk 262144",
+      "script": "results/baseline/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "CHUNK_BYTES": "262144"
+      },
+      "flags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000"
+      ],
+      "requestedWorkers": 24,
+      "chunkBytes": 262144,
+      "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
+      "times": [
+        1.270149782999999,
+        1.2969675339999995,
+        1.3770213919999987
+      ],
+      "usage": [
+        {
+          "user": 26.53,
+          "system": 1.24,
+          "maxRssKiB": 344500,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 26.58,
+          "system": 1.37,
+          "maxRssKiB": 342060,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.62,
+          "system": 1.41,
+          "maxRssKiB": 343700,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.314712902999999,
+      "best": 1.270149782999999
+    },
+    {
+      "name": "node chunk 524288",
+      "script": "results/baseline/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "CHUNK_BYTES": "524288"
+      },
+      "flags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000"
+      ],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
+      "times": [
+        1.338136434,
+        1.2856190209999987,
+        1.2818172129999985
+      ],
+      "usage": [
+        {
+          "user": 26.83,
+          "system": 1.54,
+          "maxRssKiB": 349772,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 26.64,
+          "system": 1.56,
+          "maxRssKiB": 346860,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.54,
+          "system": 1.6,
+          "maxRssKiB": 348652,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.301857555999999,
+      "best": 1.2818172129999985
+    },
+    {
+      "name": "wasm chunk 131072",
+      "script": "results/baseline/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "CHUNK_BYTES": "131072"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
+      "times": [
+        0.5066049210000001,
+        0.505375591,
+        0.507758098000002
+      ],
+      "usage": [
+        {
+          "user": 8.57,
+          "system": 1.64,
+          "maxRssKiB": 326040,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.64,
+          "system": 1.55,
+          "maxRssKiB": 325496,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.65,
+          "system": 1.59,
+          "maxRssKiB": 324656,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5065795366666673,
+      "best": 0.505375591
+    },
+    {
+      "name": "wasm chunk 262144",
+      "script": "results/baseline/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "CHUNK_BYTES": "262144"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 262144,
+      "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
+      "times": [
+        0.5195809810000009,
+        0.500855141,
+        0.4999528900000005
+      ],
+      "usage": [
+        {
+          "user": 8.73,
+          "system": 1.48,
+          "maxRssKiB": 327588,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.6,
+          "system": 1.56,
+          "maxRssKiB": 327880,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.69,
+          "system": 1.5,
+          "maxRssKiB": 327404,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5067963373333338,
+      "best": 0.4999528900000005
+    },
+    {
+      "name": "wasm chunk 1048576",
+      "script": "results/baseline/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "CHUNK_BYTES": "1048576"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 1048576,
+      "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
+      "times": [
+        0.5058723919999993,
+        0.5046255679999995,
+        0.5115110520000017
+      ],
+      "usage": [
+        {
+          "user": 8.55,
+          "system": 1.43,
+          "maxRssKiB": 321080,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.57,
+          "system": 1.4,
+          "maxRssKiB": 322024,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.56,
+          "system": 1.48,
+          "maxRssKiB": 321388,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5073363373333335,
+      "best": 0.5046255679999995
+    },
+    {
+      "name": "wasm chunk 2097152",
+      "script": "results/baseline/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "CHUNK_BYTES": "2097152"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 2097152,
+      "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
+      "times": [
+        0.5199699280000004,
+        0.5073195960000012,
+        0.5083567120000007
+      ],
+      "usage": [
+        {
+          "user": 8.56,
+          "system": 1.68,
+          "maxRssKiB": 338276,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.58,
+          "system": 1.65,
+          "maxRssKiB": 338336,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.51,
+          "system": 1.75,
+          "maxRssKiB": 333556,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5118820786666675,
+      "best": 0.5073195960000012
+    },
+    {
+      "name": "Node default",
+      "script": "results/baseline/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node"
+      },
+      "flags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000"
+      ],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
+      "times": [
+        1.2657193939999998,
+        1.2386952209999982,
+        1.2594709980000007
+      ],
+      "usage": [
+        {
+          "user": 26.71,
+          "system": 1.39,
+          "maxRssKiB": 341920,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.85,
+          "system": 1.34,
+          "maxRssKiB": 343796,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 26.07,
+          "system": 1.4,
+          "maxRssKiB": 340664,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.2546285376666662,
+      "best": 1.2386952209999982
+    },
+    {
+      "name": "Wasm default",
+      "script": "results/baseline/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
+      "times": [
+        0.5060166649999992,
+        0.49473172200000043,
+        0.5212094880000004
+      ],
+      "usage": [
+        {
+          "user": 8.71,
+          "system": 1.48,
+          "maxRssKiB": 317644,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.64,
+          "system": 1.49,
+          "maxRssKiB": 317848,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.75,
+          "system": 1.45,
+          "maxRssKiB": 317976,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5073192916666667,
+      "best": 0.49473172200000043
+    },
+    {
+      "name": "Wasm TurboFan immediately",
+      "script": "results/baseline/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "FLAGS": "--no-liftoff"
+      },
+      "flags": [
+        "--no-liftoff"
+      ],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
+      "times": [
+        0.5092588319999996,
+        0.546280388000001,
+        0.5360953699999991
+      ],
+      "usage": [
+        {
+          "user": 8.9,
+          "system": 1.5,
+          "maxRssKiB": 356552,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 9.09,
+          "system": 1.53,
+          "maxRssKiB": 415124,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 9,
+          "system": 1.57,
+          "maxRssKiB": 409216,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5305448633333332,
+      "best": 0.5092588319999996
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import { execFileSync, spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { availableParallelism, cpus } from 'node:os';
-import { entryScript, nodeFlags, nodeRuntime, sourceHash } from './benchmark-config.mjs';
+import { benchmarkEnv, entryScript, nodeFlags, nodeRuntime, sourceHash } from './benchmark-config.mjs';
 
 // Generic external-process comparisons also accept scripts from git worktrees.
 const label = process.argv[2] ?? 'node-vs-wasm';
@@ -42,7 +42,7 @@ const report = {
     return {
       ...entry,
       script,
-      env: { ...entry.env, ENGINE: engine },
+      env: { ...benchmarkEnv(env), ...entry.env, ENGINE: engine },
       flags: nodeFlags(env),
       requestedWorkers: Number(env.WORKERS ?? availableParallelism()),
       chunkBytes: Number(env.CHUNK_BYTES ?? (engine === 'wasm' ? 524288 : 131072)),
@@ -54,9 +54,14 @@ const report = {
 };
 const save = () =>
   writeFileSync(`results/${stamp}-compare-${label}.json`, `${JSON.stringify(report, null, 2)}\n`);
+const verifySource = (entry) => {
+  if (sourceHash(entry.env.ENGINE, entry.script) !== entry.sourceSha256)
+    throw new Error(`Source changed during comparison: ${entry.name}`);
+};
 save();
 for (let round = 0; round < warmups; round++) {
   for (const entry of round % 2 ? report.cases.toReversed() : report.cases) {
+    verifySource(entry);
     const env = { ...process.env, ...entry.env };
     const start = performance.now();
     const output = execFileSync(runtime, [...entry.flags, entry.script, file], {
@@ -64,8 +69,9 @@ for (let round = 0; round < warmups; round++) {
       encoding: 'utf8',
       maxBuffer: 16 * 1024 * 1024,
     });
-    if (output !== expected) throw new Error(`Incorrect warm-up output: ${entry.name}`);
     const seconds = (performance.now() - start) / 1000;
+    verifySource(entry);
+    if (output !== expected) throw new Error(`Incorrect warm-up output: ${entry.name}`);
     report.warmups.push({ name: entry.name, round: round + 1, seconds });
     save();
     console.log(`Warm-up ${round + 1}: ${entry.name}: ${seconds.toFixed(3)}s, correct`);
@@ -73,8 +79,7 @@ for (let round = 0; round < warmups; round++) {
 }
 for (let round = 0; round < runs; round++) {
   for (const entry of round % 2 ? report.cases.toReversed() : report.cases) {
-    if (sourceHash(entry.env.ENGINE, entry.script) !== entry.sourceSha256)
-      throw new Error(`Source changed during comparison: ${entry.name}`);
+    verifySource(entry);
     const env = { ...process.env, ...entry.env };
     const usageFile = `results/${stamp}-usage.json`;
     const start = performance.now();
@@ -104,6 +109,7 @@ for (let round = 0; round < runs; round++) {
       );
     });
     const seconds = (performance.now() - start) / 1000;
+    verifySource(entry);
     if (output !== expected) throw new Error(`Incorrect output: ${entry.name}`);
     entry.times.push(seconds);
     entry.usage.push(JSON.parse(readFileSync(usageFile, 'utf8')));

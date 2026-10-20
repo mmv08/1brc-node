@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { availableParallelism, cpus } from 'node:os';
 import { basename } from 'node:path';
-import { entryScript, nodeFlags, nodeRuntime, sourceHash } from './benchmark-config.mjs';
+import { benchmarkEnv, entryScript, nodeFlags, nodeRuntime, sourceHash } from './benchmark-config.mjs';
 
 const file = process.argv[2] ?? 'measurements.txt';
 const runs = Number(process.env.RUNS ?? 5);
@@ -16,8 +16,13 @@ const flags =
     ? nodeFlags({ ...process.env, ENGINE: engine })
     : (process.env.FLAGS ?? '').split(/\s+/).filter(Boolean);
 const expected = readFileSync(`${file}.out`, 'utf8');
+const sourceSha256 = sourceHash(engine, script);
+const verifySource = () => {
+  if (sourceHash(engine, script) !== sourceSha256) throw new Error('Source changed during benchmark');
+};
 const results = [];
 for (let i = 0; i < runs; i++) {
+  verifySource();
   const start = performance.now();
   const child = spawn(runtime, [...flags, script, file], { stdio: ['ignore', 'pipe', 'inherit'] });
   let output = '';
@@ -30,6 +35,7 @@ for (let i = 0; i < runs; i++) {
     child.once('close', (code) => (code === 0 ? resolve() : reject(new Error(`Exit ${code}`))));
   });
   const seconds = (performance.now() - start) / 1000;
+  verifySource();
   if (output !== expected) throw new Error('Incorrect output');
   results.push(seconds);
   console.log(
@@ -52,6 +58,7 @@ writeFileSync(
       version: execFileSync(runtime, ['--version'], { encoding: 'utf8' }).trim(),
       script,
       engine,
+      env: benchmarkEnv({ ...process.env, ENGINE: engine }),
       flags,
       workers: Number(process.env.WORKERS ?? availableParallelism()),
       chunkBytes: Number(process.env.CHUNK_BYTES ?? (engine === 'node' ? 131072 : 524288)),
@@ -59,7 +66,7 @@ writeFileSync(
       file,
       bytes: statSync(file).size,
       outputSha256: createHash('sha256').update(expected).digest('hex'),
-      sourceSha256: sourceHash(engine, script),
+      sourceSha256,
       results,
       average,
     },

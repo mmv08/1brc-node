@@ -21,14 +21,41 @@ export function nodeFlags(env) {
     : [];
 }
 
+// Preserve inherited runtime/parser controls as well as per-case overrides.
+// Omitted keys use the defaults of the measured source, including older checkouts.
+export function benchmarkEnv(env) {
+  const keys = [
+    'ENGINE',
+    'WORKERS',
+    'CHUNK_BYTES',
+    'FLAGS',
+    'STREAMS',
+    'TABLE_BITS',
+    'TEMPERATURE',
+    'NAME_COMPARE',
+    'IO',
+    'PRIVATE_FD',
+    'MACRO_BYTES',
+    'NODE_OPTIONS',
+    'NODE_COMPILE_CACHE',
+    'NODE_DISABLE_COMPILE_CACHE',
+    'UV_THREADPOOL_SIZE',
+  ];
+  return Object.fromEntries(keys.filter((key) => env[key] !== undefined).map((key) => [key, env[key]]));
+}
+
 export function sourceHash(engine = 'wasm', script = entryScript(engine)) {
   const root = dirname(resolve(script));
   const paths = [basename(script)];
   if (basename(script) === 'calculate.mjs') {
     paths.push(
-      ...['lib/aggregate.mjs', 'lib/format.mjs', 'lib/parse-utils.mjs', 'lib/read.mjs'].filter(
-        (path) => existsSync(resolve(root, path)),
-      ),
+      ...[
+        'lib/aggregate.mjs',
+        'lib/format.mjs',
+        'lib/parse-utils.mjs',
+        'lib/read.mjs',
+        'worker.mjs',
+      ].filter((path) => existsSync(resolve(root, path))),
     );
     if (engine === 'wasm') {
       paths.push(

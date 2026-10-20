@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { calculate as wasm } from '../calculate.mjs';
 import { format } from '../lib/format.mjs';
 import { calculate as plain } from '../plain/calculate.mjs';
-import { entryScript, nodeFlags, sourceHash } from '../tools/benchmark-config.mjs';
+import { benchmarkEnv, entryScript, nodeFlags, sourceHash } from '../tools/benchmark-config.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const cleanEnv = () => {
@@ -93,6 +93,10 @@ test('benchmark config selects the right flags and hashes the shared formatter',
   assert.deepEqual(nodeFlags({ ENGINE: 'wasm' }), []);
   assert.equal(nodeFlags({ ENGINE: 'node' }).length, 2);
   assert.deepEqual(nodeFlags({ ENGINE: 'node', FLAGS: '' }), []);
+  assert.deepEqual(
+    benchmarkEnv({ ENGINE: 'node', STREAMS: '3', IO: 'macro', NODE_OPTIONS: '', OTHER: 'ignored' }),
+    { ENGINE: 'node', STREAMS: '3', IO: 'macro', NODE_OPTIONS: '' },
+  );
   await fixture(async ({ directory }) => {
     const fake = join(directory, 'plain');
     mkdirSync(join(fake, 'lib'), { recursive: true });
@@ -104,12 +108,15 @@ test('benchmark config selects the right flags and hashes the shared formatter',
     const first = sourceHash('node', join(fake, 'calculate.mjs'));
     writeFileSync(formatter, '// changed\n');
     assert.notEqual(sourceHash('node', join(fake, 'calculate.mjs')), first);
+    const withoutWorker = sourceHash('node', join(fake, 'calculate.mjs'));
+    writeFileSync(join(fake, 'worker.mjs'), '// worker\n');
+    assert.notEqual(sourceHash('node', join(fake, 'calculate.mjs')), withoutWorker);
   });
 });
 
 test('comparison warms up both versions and records engine-specific defaults', async () => {
   await fixture(async ({ file }) => {
-    const env = { ...cleanEnv(), RUNS: '1', WARMUP: '1' };
+    const env = { ...cleanEnv(), RUNS: '1', WARMUP: '1', STREAMS: '3' };
     delete env.CHUNK_BYTES;
     const child = spawnSync(process.execPath, ['tools/compare.mjs', 'integration', file], {
       cwd: root,
@@ -133,6 +140,7 @@ test('comparison warms up both versions and records engine-specific defaults', a
         [131072, 524288],
       );
       for (const entry of report.cases) {
+        assert.equal(entry.env.STREAMS, '3');
         assert.equal(entry.times.length, 1);
         assert.equal(entry.usage.length, 1);
         assert.equal(entry.sourceSha256, sourceHash(entry.env.ENGINE, entry.script));
