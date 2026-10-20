@@ -11,9 +11,7 @@ export async function aggregate(config) {
     throw new Error('TABLE_BITS must be 14, 15, or 16');
   const table = new Uint16Array(tableSize);
   // Worker-local, direct-mapped predictions; the hash table remains authoritative.
-  // Pack the station's byte length above its ID so the next temperature address
-  // does not depend on a second load from the station record.
-  const prefixCache = new Uint32Array(65536);
+  const prefixCache = new Uint16Array(65536);
   // Dense station IDs. Each 32-byte record holds hash, head, tail, middle,
   // byte length, arena offset, minimum, maximum, in that order.
   const records = new Int32Array(MAX_STATIONS * 8);
@@ -82,11 +80,10 @@ export async function aggregate(config) {
       const start = p;
       let head = view.getInt32(p, true);
       const prefixSlot = Math.imul(head ^ (head >>> 16), 0x9e3779b1) >>> 16;
-      const prediction = prefixCache[prefixSlot];
-      const predicted = (prediction & 0xffff) - 1;
+      const predicted = prefixCache[prefixSlot] - 1;
       if (predicted >= 0) {
         const r = predicted * 8;
-        const end = start + (prediction >>> 16);
+        const end = start + records[r + 4];
         // The largest prediction is 100 bytes; the reader reserves 256 bytes of
         // lookahead. Full equality plus the delimiter rejects a wrong length,
         // another row, stale padding, or a short name whose first word includes
@@ -115,7 +112,7 @@ export async function aggregate(config) {
       temperatures[lane] = p + 1;
       const id = find(start, p, hash, head);
       // Never cache a short name: its initial word includes temperature bytes.
-      if (p - start >= 4) prefixCache[prefixSlot] = ((p - start) << 16) | (id + 1);
+      if (p - start >= 4) prefixCache[prefixSlot] = id + 1;
       return id;
     }
 
@@ -123,7 +120,11 @@ export async function aggregate(config) {
       const word = view.getUint32(p, true);
       const negative = (~word & 0x10) >>> 4;
       const digits = word >>> (negative * 8);
-      const width = 4 + negative + ((digits >>> 12) & 1);
+      // The decimal is the first byte after byte zero without ASCII bit 4.
+      // Deriving its position directly lets row advancement and the fractional
+      // digit load proceed independently of sign normalization.
+      const decimal = ~word & 0x10101000;
+      const width = 6 - (Math.clz32(decimal & -decimal) >>> 3);
       let value = temperatureBase(digits) + (buffer[p + width - 2] & 15);
       if (negative) value = -value;
       p += width;
