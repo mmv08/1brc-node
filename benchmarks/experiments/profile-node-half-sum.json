@@ -1,0 +1,12 @@
+{
+  "baseline": "bd04b60",
+  "change": "Initialize each inserted station sum to0.5, preserve integer tenths updates, subtract0.5 once at worker export.",
+  "proof": "With <=1B rows and |value|<=999, |sum|<2^40. Half-integers at this magnitude are exactly representable in binary64; each update and final subtraction is exact. Worker exports recover unbiased sums before merging.",
+  "hypothesis": "Noninteger feedback removes profiled additive-safe-integer conversion and range checks. Confirm emitted native code before benchmarking.",
+  "tests": [
+    "Existing exact-sum and differential tests",
+    "Native profile confirms changed mechanism",
+    "Full1B exact station tuple equality",
+    "Alternating baseline/control/source benchmarks"
+  ]
+}

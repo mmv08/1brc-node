@@ -30,6 +30,10 @@ export async function aggregate(config) {
     const r = id * 8;
     const length = end - start;
     table[slot] = id + 1;
+    // Keep sums half-integral so V8 uses direct Float64 addition instead of
+    // speculative integer conversions and range checks. The challenge bound
+    // is below 2^40 tenths, so this bias and every update remain exact.
+    sums[id] = 0.5;
     buffer.copy(arena, keyOffset, start, end);
     records[r] = hash;
     records[r + 1] = head;
@@ -199,7 +203,7 @@ export async function aggregate(config) {
     return [
       arena.toString('utf8', offset, offset + records[r + 4]),
       records[r + 6],
-      sums[id],
+      sums[id] - 0.5,
       records[r + 7],
       counts[id],
     ];
