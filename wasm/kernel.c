@@ -411,7 +411,8 @@ INLINE const uint8_t *advance_short(const uint8_t *start, uint32_t matches, v128
 }
 
 // Keep short rows in their fast path even when another lane has a long name.
-INLINE const uint8_t *process_long(const uint8_t *start, v128_t low) {
+__attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *start,
+                                                                   v128_t low) {
   v128_t high = wasm_v128_load(start + 16);
   uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high, wasm_v128_load(&separators)))
                      << 16;
@@ -486,6 +487,7 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
     left = left < left_c ? left : left_c;
     uint32_t rounds = left / 108;
     if (!rounds) break;
+#pragma clang loop unroll_count(2)
     do {
       const v128_t separator = wasm_v128_load(&separators);
       v128_t bytes_a = wasm_v128_load(a);
