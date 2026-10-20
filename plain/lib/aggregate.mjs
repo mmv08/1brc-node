@@ -84,7 +84,7 @@ export async function aggregate(config) {
       let head = view.getInt32(p, true);
       // A fifth byte is stable even for four-byte names: it is their delimiter.
       // It distinguishes common four-byte prefixes without scanning the name.
-      const prefixSlot = Math.imul(head ^ (buffer[p + 4] << 16), 0x9e3779b1) >>> 17;
+      const prefixSlot = Math.imul(head ^ (head >>> 16) ^ (buffer[p + 4] << 24), 0x9e3779b1) >>> 17;
       const predicted = prefixCache[prefixSlot] - 1;
       if (predicted >= 0) {
         const r = predicted * 8;
