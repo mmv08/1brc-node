@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Existing hints",
+    "script": "results/hints-baseline/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "1"
+    }
+  },
+  {
+    "name": "Unroll twice",
+    "script": "results/hints-unroll-two/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "1"
+    }
+  },
+  {
+    "name": "Unroll four times",
+    "script": "results/hints-unroll-four/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "1"
+    }
+  },
+  {
+    "name": "Unroll eight times",
+    "script": "results/hints-unroll-eight/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "1"
+    }
+  }
+]
