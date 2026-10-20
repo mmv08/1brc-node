@@ -3,7 +3,7 @@
 #include <wasm_simd128.h>
 
 #define EXPORT(name) __attribute__((export_name(#name)))
-#define INLINE static inline __attribute__((always_inline))
+#define INLINE static inline
 #define MAX_STATIONS 10000
 #define TABLE_SIZE 32768
 #define OFFSET_MASK UINT32_C(0xfffff)
@@ -170,8 +170,8 @@ INLINE uint32_t same_vector(const uint8_t *a, const uint8_t *b) {
 }
 
 // Names are at most 100 bytes: five fixed middle vectors suffice.
-__attribute__((minsize)) __attribute__((noinline, cold)) static int same_middle(
-    const uint8_t *key, const uint8_t *start, uint32_t last) {
+__attribute__((noinline, cold)) static int same_middle(const uint8_t *key, const uint8_t *start,
+                                                       uint32_t last) {
   if (last > 16 && same_vector(start + 16, key + 16) != 0xffff) return 0;
   if (last > 32 && same_vector(start + 32, key + 32) != 0xffff) return 0;
   if (last > 48 && same_vector(start + 48, key + 48) != 0xffff) return 0;
@@ -195,8 +195,9 @@ INLINE int same_name(const Station *station, const uint8_t *start, uint32_t leng
 
 // At most 10K insertions versus 1B measurements: don't duplicate this cold
 // initialization/copy path inside each hot parsing lane.
-__attribute__((minsize)) __attribute__((noinline, cold)) static Station *insert_station(
-    const uint8_t *start, uint32_t length, uint32_t hash, uint64_t head, uint32_t slot) {
+__attribute__((noinline, cold)) static Station *insert_station(const uint8_t *start,
+                                                               uint32_t length, uint32_t hash,
+                                                               uint64_t head, uint32_t slot) {
   if (used >= MAX_STATIONS || length == 0 || length > 100) __builtin_trap();
   Station *station = &stations[used++];
   buckets[slot] = (uint32_t)(uintptr_t)station;
@@ -262,7 +263,7 @@ INLINE uint64_t next_mixer(void) {
 
 // Search a few deterministic mixer pairs for one that gives every station its
 // own first bucket, then rebuild the table. Dense tables keep linear probing.
-__attribute__((minsize)) __attribute__((noinline, cold)) static void retune(void) {
+__attribute__((noinline, cold)) static void retune(void) {
   if (used > TABLE_SIZE / 32) return;
   for (uint32_t attempt = 0; attempt < 64 && retunes_left; attempt++) {
     retunes_left--;
@@ -289,8 +290,9 @@ __attribute__((minsize)) __attribute__((noinline, cold)) static void retune(void
   }
 }
 
-__attribute__((minsize)) __attribute__((noinline, cold)) static Station *probe_station(
-    const uint8_t *start, uint32_t length, uint64_t hash, uint64_t head, uint32_t slot) {
+__attribute__((noinline, cold)) static Station *probe_station(const uint8_t *start, uint32_t length,
+                                                              uint64_t hash, uint64_t head,
+                                                              uint32_t slot) {
   for (;;) {
     uint32_t entry = buckets[slot];
     if (entry == (uint32_t)(uintptr_t)&empty_station) {
@@ -328,8 +330,7 @@ INLINE ParsedRow lookup_row(NameRow row) {
 
 // Misses recompute the hash from the name, so the hot paths need not keep it
 // alive across this call.
-__attribute__((minsize)) __attribute__((noinline, cold)) static Station *find_name(
-    const uint8_t *start) {
+__attribute__((noinline, cold)) static Station *find_name(const uint8_t *start) {
   return lookup_row(scan_name(start, mixers)).station;
 }
 
@@ -410,8 +411,8 @@ INLINE const uint8_t *advance_short(const uint8_t *start, uint32_t matches, v128
 }
 
 // Keep short rows in their fast path even when another lane has a long name.
-__attribute__((minsize)) __attribute__((noinline, cold)) static const uint8_t *process_long(
-    const uint8_t *start, v128_t low) {
+__attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *start,
+                                                                   v128_t low) {
   v128_t high = wasm_v128_load(start + 16);
   uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high, wasm_v128_load(&separators)))
                      << 16;
