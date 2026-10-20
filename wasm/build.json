@@ -1,9 +1,9 @@
 {
-  "compiler": "clang version 22.1.8 (Fedora 22.1.8-4.fc44)\nTarget: x86_64-redhat-linux-gnu\nThread model: posix\nInstalledDir: /usr/bin\nConfiguration file: /etc/clang/x86_64-redhat-linux-gnu-clang.cfg",
-  "linker": "LLD 20.0.0",
-  "sourceSha256": "051ac2c9bac84658f1d0a344fa45cb2038788644a26b1eef6b351695c3e4df89",
-  "sha256": "914115f49dd74e9b129009569cc24ce026efd75e15d42887c636e90e6ba13518",
-  "bytes": 11499,
+  "compiler": "Ubuntu clang version 21.1.8 (6ubuntu1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /usr/lib/llvm-21/bin",
+  "linker": "Ubuntu LLD 21.1.8",
+  "sourceSha256": "4cc28e207f08cb76aea61e17643656ba2380258782f225ac8ad566cd59770d60",
+  "sha256": "49a942552148737ce3e0e8c25589909e9aafa6f9a7a50c9f46b1c61237c5817d",
+  "bytes": 13870,
   "compile": [
     "--target=wasm32",
     "-std=c11",
@@ -33,7 +33,14 @@
     "-o",
     "results/build/kernel-linked.wasm"
   ],
-  "cold": ["same_middle", "insert_station", "retune", "probe_station", "find_name", "cold_path"],
+  "cold": [
+    "same_middle",
+    "insert_station",
+    "retune",
+    "probe_station",
+    "find_name",
+    "cold_path"
+  ],
   "branchHints": [
     {
       "function": "reset",
@@ -42,8 +49,8 @@
     },
     {
       "function": "parse_chunk",
-      "likely": 25,
-      "unlikely": 27
+      "likely": 33,
+      "unlikely": 36
     },
     {
       "function": "find_name",
