@@ -12,20 +12,23 @@
 // key descriptor. The entire valid arena fits in 20 bits; length needs only 7.
 // Names below 16 bytes cache their delimiter-terminated key in head/tail;
 // longer names cache raw words without a delimiter, so they never match one.
-typedef struct {
+typedef struct __attribute__((aligned(16))) {
   int64_t sum;
   uint32_t count;
   int16_t min;
   int16_t max;
-  uint32_t hash;
-  uint32_t key;
   uint64_t head;
   uint64_t tail;
+  uint32_t hash;
+  uint32_t key;
 } Station;
 
-_Static_assert(sizeof(Station) == 40, "station ABI size");
+_Static_assert(sizeof(Station) == 48, "station ABI size");
+_Static_assert(_Alignof(Station) == 16, "station ABI alignment");
+_Static_assert(offsetof(Station, head) == 16, "station ABI short key");
+_Static_assert(offsetof(Station, hash) == 32, "station ABI hash");
 _Static_assert(offsetof(Station, count) == 8, "station ABI count");
-_Static_assert(offsetof(Station, key) == 20, "station ABI key");
+_Static_assert(offsetof(Station, key) == 36, "station ABI key");
 _Static_assert(MAX_STATIONS * 104 + 48 < (1 << 20), "all valid key offsets fit");
 
 static uint32_t buckets[TABLE_SIZE];
@@ -529,8 +532,7 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
       uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
       uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-      // Every mask fits in 16 bits, so only zero becomes negative after subtracting one.
-      if (((matches_a - 1) | (matches_b - 1) | (matches_c - 1)) < UINT32_C(0x80000000)) {
+      if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
         a = advance_short(a, matches_a, bytes_a);
         b = advance_short(b, matches_b, bytes_b);
         c = advance_short(c, matches_c, bytes_c);

@@ -308,7 +308,7 @@ test('full-key verification checks every middle byte without a test-only kernel'
       const original = `HEADSAME${'x'.repeat(length - 16)}TAILSAME`;
       const changed = `${original.slice(0, position)}Y${original.slice(position + 1)}`;
       parse(0, fill(buffer, `${original};0.1\n`));
-      const oldHash = view.getUint32(base + 16, true);
+      const oldHash = view.getUint32(base + 32, true);
       const originalHash = hashName(original);
       assert.equal(oldHash, originalHash.fingerprint);
       assert.equal(view.getUint32(buckets + originalHash.slot * 4, true), base);
@@ -318,7 +318,7 @@ test('full-key verification checks every middle byte without a test-only kernel'
       // kernel, without shipping an alternative constant-hash implementation.
       view.setUint32(buckets + originalHash.slot * 4, kernel.api.empty_station_base(), true);
       view.setUint32(buckets + hash.slot * 4, base, true);
-      view.setUint32(base + 16, hash.fingerprint, true);
+      view.setUint32(base + 32, hash.fingerprint, true);
       parse(0, fill(buffer, `${changed};0.2\n`));
       const expected = [
         [original, 1, 1, 1, 1],
@@ -354,7 +354,7 @@ test('short-name collisions preserve length and every byte across independent la
     assert.equal(view.getUint32(buckets + before.slot * 4, true), base);
     view.setUint32(buckets + before.slot * 4, kernel.api.empty_station_base(), true);
     view.setUint32(buckets + after.slot * 4, base, true);
-    view.setUint32(base + 16, after.fingerprint, true);
+    view.setUint32(base + 32, after.fingerprint, true);
     // Twelve equal rows exercise the short-name path with two, three or four lanes.
     parse(0, fill(buffer, `${changed};0.2\n`.repeat(12)));
     assert.deepEqual(kernel.rows(), [
@@ -403,7 +403,35 @@ test('first-bucket collisions retune the mixers so every station hits directly',
   assert.notDeepEqual(mix, initialMixers);
   rows.forEach(([name], id) => {
     const { slot, fingerprint } = hashName(name, mix);
-    assert.equal(view.getUint32(buckets + slot * 4, true), base + id * 40, name);
-    assert.equal(view.getUint32(base + id * 40 + 16, true), fingerprint, name);
+    assert.equal(view.getUint32(buckets + slot * 4, true), base + id * 48, name);
+    assert.equal(view.getUint32(base + id * 48 + 32, true), fingerprint, name);
   });
+});
+
+
+test('aligned station records preserve statistics and short-key ABI', async () => {
+  const kernel = await createKernel(1024);
+  const buffer = kernel.allocateBuffer(1280);
+  const length = fill(buffer, Array.from({ length: 9 }, (_, i) => `row${i};${i}.1\n`).join(''));
+  kernel.makeParser(buffer)(0, length);
+  const base = kernel.api.stations_base();
+  const keys = kernel.api.keys_base();
+  const view = new DataView(kernel.memory);
+  assert.equal(base % 16, 0);
+  assert.equal(kernel.api.empty_station_base() % 16, 0);
+  for (let i = 0; i < 9; i++) {
+    const p = base + i * 48;
+    assert.equal(p % 16, 0);
+    assert.equal((p + 16) % 16, 0);
+    assert.equal(view.getBigInt64(p, true), BigInt(i * 10 + 1));
+    assert.equal(view.getUint32(p + 8, true), 1);
+    assert.equal(view.getInt16(p + 12, true), i * 10 + 1);
+    assert.equal(view.getInt16(p + 14, true), i * 10 + 1);
+    const key = view.getUint32(p + 36, true);
+    assert.equal(key >>> 20, 4);
+    assert.equal(Buffer.from(kernel.memory, keys + (key & 0xfffff), 4).toString(), `row${i}`);
+    const expectedKey = Buffer.alloc(16);
+    expectedKey.write(`row${i};`);
+    assert.deepEqual(Buffer.from(kernel.memory, p + 16, 16), expectedKey);
+  }
 });
