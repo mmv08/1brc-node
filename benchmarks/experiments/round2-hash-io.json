@@ -1,0 +1,69 @@
+[
+  {
+    "name": "Node baseline",
+    "script": "results/round2-baseline/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node"
+    }
+  },
+  {
+    "name": "Node simple hash",
+    "script": "results/round2-node-hash0/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node"
+    }
+  },
+  {
+    "name": "Node simple hash16",
+    "script": "results/round2-node-hash16/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node"
+    }
+  },
+  {
+    "name": "Node IO=macro",
+    "script": "results/round2-baseline/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "IO": "macro"
+    }
+  },
+  {
+    "name": "Node IO=async",
+    "script": "results/round2-baseline/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "IO": "async"
+    }
+  },
+  {
+    "name": "Node PRIVATE_FD=1",
+    "script": "results/round2-baseline/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "PRIVATE_FD": "1"
+    }
+  },
+  {
+    "name": "Wasm baseline",
+    "script": "results/round2-baseline/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Wasm combined",
+    "script": "results/round2-wasm/negated-per-lane/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Wasm combined 12 workers",
+    "script": "results/round2-wasm/negated-per-lane/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "12"
+    }
+  }
+]
