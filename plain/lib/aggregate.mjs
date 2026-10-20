@@ -79,7 +79,10 @@ export async function aggregate(config) {
     function scan(p, lane) {
       const start = p;
       let head = view.getInt32(p, true);
-      const prefixSlot = Math.imul(head ^ (head >>> 16), 0x9e3779b1) >>> 16;
+      // A fifth byte is stable even for four-byte names: it is their delimiter.
+      // It distinguishes common four-byte prefixes without scanning the name.
+      const prefixSlot =
+        Math.imul(head ^ (head >>> 16) ^ (buffer[p + 4] << 24), 0x9e3779b1) >>> 16;
       const predicted = prefixCache[prefixSlot] - 1;
       if (predicted >= 0) {
         const r = predicted * 8;
@@ -120,11 +123,7 @@ export async function aggregate(config) {
       const word = view.getUint32(p, true);
       const negative = (~word & 0x10) >>> 4;
       const digits = word >>> (negative * 8);
-      // The decimal is the first byte after byte zero without ASCII bit 4.
-      // Deriving its position directly lets row advancement and the fractional
-      // digit load proceed independently of sign normalization.
-      const decimal = ~word & 0x10101000;
-      const width = 6 - (Math.clz32(decimal & -decimal) >>> 3);
+      const width = 4 + negative + ((digits >>> 12) & 1);
       let value = temperatureBase(digits) + (buffer[p + width - 2] & 15);
       if (negative) value = -value;
       p += width;
