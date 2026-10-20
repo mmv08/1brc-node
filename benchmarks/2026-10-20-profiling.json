@@ -1,0 +1,2786 @@
+{
+  "baseline": "bd04b60",
+  "inputBytes": 13795455110,
+  "rows": 1000000000,
+  "cpuProfiles": {
+    "wasm-cpu-24": {
+      "capture": {
+        "label": "wasm-cpu-24",
+        "engine": "wasm",
+        "workers": 24,
+        "mode": "cpu",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/wasm-cpu-24/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--cpu-prof",
+          "--cpu-prof-interval=1000",
+          "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24",
+          "calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 0.5676610269583762,
+        "usage": {
+          "user": 8.49,
+          "system": 1.95,
+          "maxRssKiB": 401648,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": [
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.0.001.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.1.007.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.10.012.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.11.008.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.12.014.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.13.013.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.14.016.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.15.025.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.16.015.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.17.017.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.18.024.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.19.018.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.2.002.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.20.023.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.21.021.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.22.022.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.23.019.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.24.020.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.3.004.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.4.003.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.5.006.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.6.005.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.7.009.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.8.010.cpuprofile",
+          "results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.9.011.cpuprofile"
+        ]
+      },
+      "interpretation": [
+        "samples are raw statistical samples; sampledIntervalUs weights them by observed timeDeltas",
+        "summed worker intervals overlap and cannot be interpreted as process elapsed time",
+        "timeDeltas include scheduling and profiler delays; interval sums are not CPU counters",
+        "negative deltas, when supplied by V8, are retained as reported and counted per thread; prefer sample counts when intervals are irregular",
+        "inclusive frame rows overlap with one another and must not be added",
+        "Wasm callFrame columns are retained as reported; they may identify function entry rather than sampled instruction",
+        "positionTicks are preserved separately if V8 supplied per-line samples"
+      ],
+      "profiles": 25,
+      "samples": 9243,
+      "self": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/4f5e6066",
+          "zeroBasedLine": 0,
+          "samples": 6460,
+          "sampledIntervalUs": 7202504,
+          "percentSamples": 69.89072811857622,
+          "percentIntervals": 65.94485813508686
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 1358,
+          "sampledIntervalUs": 1673047,
+          "percentSamples": 14.692199502326085,
+          "percentIntervals": 15.318123678700166
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/4f5e6066",
+          "zeroBasedLine": 0,
+          "samples": 571,
+          "sampledIntervalUs": 638219,
+          "percentSamples": 6.177647949799849,
+          "percentIntervals": 5.843420762295585
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 426,
+          "sampledIntervalUs": 882422,
+          "percentSamples": 4.608893216488153,
+          "percentIntervals": 8.079300421808806
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "zeroBasedLine": 2,
+          "samples": 59,
+          "sampledIntervalUs": 58677,
+          "percentSamples": 0.6383208914854485,
+          "percentIntervals": 0.5372362779378521
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 58,
+          "sampledIntervalUs": 81241,
+          "percentSamples": 0.6275018933246781,
+          "percentIntervals": 0.7438282880165831
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "zeroBasedLine": 424,
+          "samples": 38,
+          "sampledIntervalUs": 51059,
+          "percentSamples": 0.4111219301092719,
+          "percentIntervals": 0.4674872116029925
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "zeroBasedLine": 97,
+          "samples": 25,
+          "sampledIntervalUs": 17961,
+          "percentSamples": 0.2704749540192578,
+          "percentIntervals": 0.1644477527488072
+        },
+        {
+          "functionName": "(program)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 19,
+          "sampledIntervalUs": 24028,
+          "percentSamples": 0.20556096505463595,
+          "percentIntervals": 0.2199961362423217
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "zeroBasedLine": 54,
+          "samples": 16,
+          "sampledIntervalUs": 19159,
+          "percentSamples": 0.173103970572325,
+          "percentIntervals": 0.1754164297597237
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/worker.mjs",
+          "zeroBasedLine": 0,
+          "samples": 16,
+          "sampledIntervalUs": 25039,
+          "percentSamples": 0.173103970572325,
+          "percentIntervals": 0.2292526741872604
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "zeroBasedLine": 541,
+          "samples": 15,
+          "sampledIntervalUs": 15951,
+          "percentSamples": 0.16228497241155468,
+          "percentIntervals": 0.14604454674551662
+        },
+        {
+          "functionName": "readSync",
+          "url": "node:fs",
+          "zeroBasedLine": 957,
+          "samples": 10,
+          "sampledIntervalUs": 11074,
+          "percentSamples": 0.10818998160770313,
+          "percentIntervals": 0.10139159367186076
+        },
+        {
+          "functionName": "calculate",
+          "url": "file:///home/mmv/projects/1brc-node/calculate.mjs",
+          "zeroBasedLine": 5,
+          "samples": 9,
+          "sampledIntervalUs": 2012,
+          "percentSamples": 0.09737098344693282,
+          "percentIntervals": 0.018421517651055073
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "zeroBasedLine": 36,
+          "samples": 9,
+          "sampledIntervalUs": 10086,
+          "percentSamples": 0.09737098344693282,
+          "percentIntervals": 0.09234563967621344
+        },
+        {
+          "functionName": "compileSourceTextModule",
+          "url": "node:internal/modules/esm/utils",
+          "zeroBasedLine": 337,
+          "samples": 8,
+          "sampledIntervalUs": 12102,
+          "percentSamples": 0.0865519852861625,
+          "percentIntervals": 0.11080378062279746
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/4f5e6066",
+          "lineOneBased": 1,
+          "ticks": 6460,
+          "percentSamples": 69.89072811857622
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1358,
+          "percentSamples": 14.692199502326085
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/4f5e6066",
+          "lineOneBased": 1,
+          "ticks": 571,
+          "percentSamples": 6.177647949799849
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "lineOneBased": 437,
+          "ticks": 38,
+          "percentSamples": 0.4111219301092719
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/worker.mjs",
+          "lineOneBased": 4,
+          "ticks": 16,
+          "percentSamples": 0.173103970572325
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "lineOneBased": 20,
+          "ticks": 14,
+          "percentSamples": 0.15146597425078437
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "lineOneBased": 57,
+          "ticks": 12,
+          "percentSamples": 0.12982797792924375
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "lineOneBased": 542,
+          "ticks": 10,
+          "percentSamples": 0.10818998160770313
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "lineOneBased": 12,
+          "ticks": 8,
+          "percentSamples": 0.0865519852861625
+        },
+        {
+          "functionName": "compileSourceTextModule",
+          "url": "node:internal/modules/esm/utils",
+          "lineOneBased": 355,
+          "ticks": 7,
+          "percentSamples": 0.07573298712539218
+        },
+        {
+          "functionName": "Instance",
+          "url": "",
+          "lineOneBased": 8,
+          "ticks": 6,
+          "percentSamples": 0.06491398896462187
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "lineOneBased": 544,
+          "ticks": 5,
+          "percentSamples": 0.054094990803851564
+        },
+        {
+          "functionName": "createUnsafeAlignedBuffer",
+          "url": "node:internal/buffer",
+          "lineOneBased": 1137,
+          "ticks": 4,
+          "percentSamples": 0.04327599264308125
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "",
+          "lineOneBased": 1135,
+          "ticks": 4,
+          "percentSamples": 0.04327599264308125
+        },
+        {
+          "functionName": "fill",
+          "url": "node:buffer",
+          "lineOneBased": 1195,
+          "ticks": 4,
+          "percentSamples": 0.04327599264308125
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "lineOneBased": 40,
+          "ticks": 4,
+          "percentSamples": 0.04327599264308125
+        },
+        {
+          "functionName": "_fill",
+          "url": "node:buffer",
+          "lineOneBased": 1258,
+          "ticks": 4,
+          "percentSamples": 0.04327599264308125
+        },
+        {
+          "functionName": "internalBinding",
+          "url": "node:internal/bootstrap/realm",
+          "lineOneBased": 172,
+          "ticks": 3,
+          "percentSamples": 0.03245699448231094
+        },
+        {
+          "functionName": "open",
+          "url": "",
+          "lineOneBased": 783,
+          "ticks": 3,
+          "percentSamples": 0.03245699448231094
+        },
+        {
+          "functionName": "normalizeString",
+          "url": "node:path",
+          "lineOneBased": 106,
+          "ticks": 3,
+          "percentSamples": 0.03245699448231094
+        }
+      ],
+      "intervalDiagnostics": [
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.0.001.cpuprofile",
+          "samples": 442,
+          "medianIntervalUs": 1068,
+          "maxIntervalUs": 8675,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.1.007.cpuprofile",
+          "samples": 367,
+          "medianIntervalUs": 1064,
+          "maxIntervalUs": 20314,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.10.012.cpuprofile",
+          "samples": 368,
+          "medianIntervalUs": 1066,
+          "maxIntervalUs": 22250,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.11.008.cpuprofile",
+          "samples": 359,
+          "medianIntervalUs": 1065,
+          "maxIntervalUs": 17342,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.12.014.cpuprofile",
+          "samples": 359,
+          "medianIntervalUs": 1066,
+          "maxIntervalUs": 18915,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.13.013.cpuprofile",
+          "samples": 364,
+          "medianIntervalUs": 1069,
+          "maxIntervalUs": 18684,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.14.016.cpuprofile",
+          "samples": 369,
+          "medianIntervalUs": 1066,
+          "maxIntervalUs": 16413,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.15.025.cpuprofile",
+          "samples": 354,
+          "medianIntervalUs": 1072,
+          "maxIntervalUs": 21281,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.16.015.cpuprofile",
+          "samples": 358,
+          "medianIntervalUs": 1068,
+          "maxIntervalUs": 17648,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.17.017.cpuprofile",
+          "samples": 353,
+          "medianIntervalUs": 1068,
+          "maxIntervalUs": 23027,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.18.024.cpuprofile",
+          "samples": 346,
+          "medianIntervalUs": 1067,
+          "maxIntervalUs": 21566,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.19.018.cpuprofile",
+          "samples": 346,
+          "medianIntervalUs": 1068,
+          "maxIntervalUs": 25837,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.2.002.cpuprofile",
+          "samples": 398,
+          "medianIntervalUs": 1067,
+          "maxIntervalUs": 9690,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.20.023.cpuprofile",
+          "samples": 344,
+          "medianIntervalUs": 1068,
+          "maxIntervalUs": 21023,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.21.021.cpuprofile",
+          "samples": 360,
+          "medianIntervalUs": 1066,
+          "maxIntervalUs": 16559,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.22.022.cpuprofile",
+          "samples": 354,
+          "medianIntervalUs": 1070,
+          "maxIntervalUs": 25648,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.23.019.cpuprofile",
+          "samples": 361,
+          "medianIntervalUs": 1067,
+          "maxIntervalUs": 18946,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.24.020.cpuprofile",
+          "samples": 352,
+          "medianIntervalUs": 1064,
+          "maxIntervalUs": 18628,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.3.004.cpuprofile",
+          "samples": 403,
+          "medianIntervalUs": 1062,
+          "maxIntervalUs": 9913,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.4.003.cpuprofile",
+          "samples": 401,
+          "medianIntervalUs": 1066,
+          "maxIntervalUs": 9573,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.5.006.cpuprofile",
+          "samples": 399,
+          "medianIntervalUs": 1064,
+          "maxIntervalUs": 9885,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.6.005.cpuprofile",
+          "samples": 401,
+          "medianIntervalUs": 1066,
+          "maxIntervalUs": 9761,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.7.009.cpuprofile",
+          "samples": 360,
+          "medianIntervalUs": 1069,
+          "maxIntervalUs": 24995,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.8.010.cpuprofile",
+          "samples": 354,
+          "medianIntervalUs": 1067,
+          "maxIntervalUs": 17378,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-24/CPU.20261020.202646.1876676.9.011.cpuprofile",
+          "samples": 371,
+          "medianIntervalUs": 1063,
+          "maxIntervalUs": 19252,
+          "negativeIntervals": 0
+        }
+      ]
+    },
+    "wasm-cpu-1": {
+      "capture": {
+        "label": "wasm-cpu-1",
+        "engine": "wasm",
+        "workers": 1,
+        "mode": "cpu",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/wasm-cpu-1/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--cpu-prof",
+          "--cpu-prof-interval=1000",
+          "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-1",
+          "calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 4.220851838123053,
+        "usage": {
+          "user": 3.28,
+          "system": 0.92,
+          "maxRssKiB": 70120,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": ["results/profiles/wasm-cpu-1/CPU.20261020.202648.1876871.0.001.cpuprofile"]
+      },
+      "interpretation": [
+        "samples are raw statistical samples; sampledIntervalUs weights them by observed timeDeltas",
+        "summed worker intervals overlap and cannot be interpreted as process elapsed time",
+        "timeDeltas include scheduling and profiler delays; interval sums are not CPU counters",
+        "negative deltas, when supplied by V8, are retained as reported and counted per thread; prefer sample counts when intervals are irregular",
+        "inclusive frame rows overlap with one another and must not be added",
+        "Wasm callFrame columns are retained as reported; they may identify function entry rather than sampled instruction",
+        "positionTicks are preserved separately if V8 supplied per-line samples"
+      ],
+      "profiles": 1,
+      "samples": 3939,
+      "self": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/4f5e6066",
+          "zeroBasedLine": 0,
+          "samples": 2802,
+          "sampledIntervalUs": 2942568,
+          "percentSamples": 71.13480578827114,
+          "percentIntervals": 70.809361779951
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 826,
+          "sampledIntervalUs": 883675,
+          "percentSamples": 20.96978928662097,
+          "percentIntervals": 21.264576645602823
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/4f5e6066",
+          "zeroBasedLine": 0,
+          "samples": 283,
+          "sampledIntervalUs": 297295,
+          "percentSamples": 7.184564610307184,
+          "percentIntervals": 7.154046808899755
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "zeroBasedLine": 2,
+          "samples": 6,
+          "sampledIntervalUs": 4190,
+          "percentSamples": 0.15232292460015232,
+          "percentIntervals": 0.10082731337321507
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 4,
+          "sampledIntervalUs": 4233,
+          "percentSamples": 0.10154861640010154,
+          "percentIntervals": 0.10186205668468243
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "zeroBasedLine": 97,
+          "samples": 3,
+          "sampledIntervalUs": 2269,
+          "percentSamples": 0.07616146230007616,
+          "percentIntervals": 0.05460075752835918
+        },
+        {
+          "functionName": "readSync",
+          "url": "node:fs",
+          "zeroBasedLine": 957,
+          "samples": 3,
+          "sampledIntervalUs": 3162,
+          "percentSamples": 0.07616146230007616,
+          "percentIntervals": 0.07608972908976278
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 2,
+          "sampledIntervalUs": 7584,
+          "percentSamples": 0.05077430820005077,
+          "percentIntervals": 0.18249984358531338
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "zeroBasedLine": 54,
+          "samples": 2,
+          "sampledIntervalUs": 2086,
+          "percentSamples": 0.05077430820005077,
+          "percentIntervals": 0.05019708250513762
+        },
+        {
+          "functionName": "_fill",
+          "url": "node:buffer",
+          "zeroBasedLine": 1197,
+          "samples": 2,
+          "sampledIntervalUs": 2099,
+          "percentSamples": 0.05077430820005077,
+          "percentIntervals": 0.05050991187837194
+        },
+        {
+          "functionName": "syncLink",
+          "url": "node:internal/modules/esm/module_job",
+          "zeroBasedLine": 311,
+          "samples": 1,
+          "sampledIntervalUs": 1137,
+          "percentSamples": 0.025387154100025386,
+          "percentIntervals": 0.027360538259032348
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/readline/interface",
+          "zeroBasedLine": 0,
+          "samples": 1,
+          "sampledIntervalUs": 1070,
+          "percentSamples": 0.025387154100025386,
+          "percentIntervals": 0.02574826379697855
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "zeroBasedLine": 424,
+          "samples": 1,
+          "sampledIntervalUs": 1067,
+          "percentSamples": 0.025387154100025386,
+          "percentIntervals": 0.025676072403155246
+        },
+        {
+          "functionName": "compileSourceTextModule",
+          "url": "node:internal/modules/esm/utils",
+          "zeroBasedLine": 337,
+          "samples": 1,
+          "sampledIntervalUs": 1070,
+          "percentSamples": 0.025387154100025386,
+          "percentIntervals": 0.02574826379697855
+        },
+        {
+          "functionName": "fill",
+          "url": "node:buffer",
+          "zeroBasedLine": 1193,
+          "samples": 1,
+          "sampledIntervalUs": 1057,
+          "percentSamples": 0.025387154100025386,
+          "percentIntervals": 0.02543543442374423
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/lib/format.mjs",
+          "zeroBasedLine": 6,
+          "samples": 1,
+          "sampledIntervalUs": 1058,
+          "percentSamples": 0.025387154100025386,
+          "percentIntervals": 0.025459498221685334
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/4f5e6066",
+          "lineOneBased": 1,
+          "ticks": 2802,
+          "percentSamples": 71.13480578827114
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 826,
+          "percentSamples": 20.96978928662097
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/4f5e6066",
+          "lineOneBased": 1,
+          "ticks": 283,
+          "percentSamples": 7.184564610307184
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "lineOneBased": 20,
+          "ticks": 2,
+          "percentSamples": 0.05077430820005077
+        },
+        {
+          "functionName": "readSync",
+          "url": "node:fs",
+          "lineOneBased": 1005,
+          "ticks": 2,
+          "percentSamples": 0.05077430820005077
+        },
+        {
+          "functionName": "_fill",
+          "url": "node:buffer",
+          "lineOneBased": 1258,
+          "ticks": 2,
+          "percentSamples": 0.05077430820005077
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "lineOneBased": 103,
+          "ticks": 2,
+          "percentSamples": 0.05077430820005077
+        },
+        {
+          "functionName": "syncLink",
+          "url": "node:internal/modules/esm/module_job",
+          "lineOneBased": 316,
+          "ticks": 1,
+          "percentSamples": 0.025387154100025386
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/readline/interface",
+          "lineOneBased": 1622,
+          "ticks": 1,
+          "percentSamples": 0.025387154100025386
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "lineOneBased": 437,
+          "ticks": 1,
+          "percentSamples": 0.025387154100025386
+        },
+        {
+          "functionName": "compileSourceTextModule",
+          "url": "node:internal/modules/esm/utils",
+          "lineOneBased": 355,
+          "ticks": 1,
+          "percentSamples": 0.025387154100025386
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "lineOneBased": 58,
+          "ticks": 1,
+          "percentSamples": 0.025387154100025386
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "lineOneBased": 57,
+          "ticks": 1,
+          "percentSamples": 0.025387154100025386
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "lineOneBased": 22,
+          "ticks": 1,
+          "percentSamples": 0.025387154100025386
+        },
+        {
+          "functionName": "readSync",
+          "url": "node:fs",
+          "lineOneBased": 992,
+          "ticks": 1,
+          "percentSamples": 0.025387154100025386
+        },
+        {
+          "functionName": "fill",
+          "url": "node:buffer",
+          "lineOneBased": 1195,
+          "ticks": 1,
+          "percentSamples": 0.025387154100025386
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/lib/format.mjs",
+          "lineOneBased": 8,
+          "ticks": 1,
+          "percentSamples": 0.025387154100025386
+        }
+      ],
+      "intervalDiagnostics": [
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/wasm-cpu-1/CPU.20261020.202648.1876871.0.001.cpuprofile",
+          "samples": 3939,
+          "medianIntervalUs": 1055,
+          "maxIntervalUs": 7030,
+          "negativeIntervals": 0
+        }
+      ]
+    },
+    "node-cpu-24": {
+      "capture": {
+        "label": "node-cpu-24",
+        "engine": "node",
+        "workers": 24,
+        "mode": "cpu",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/node-cpu-24/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--max-inlined-bytecode-size=1000",
+          "--max-inlined-bytecode-size-cumulative=4000",
+          "--cpu-prof",
+          "--cpu-prof-interval=1000",
+          "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/node-cpu-24",
+          "plain/calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 1.2166367559693754,
+        "usage": {
+          "user": 24.76,
+          "system": 1.78,
+          "maxRssKiB": 420676,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "91601f14f5d31e5611369346252558ef0562e0ccaaf573e121eedf6ed625fc81",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": [
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.0.001.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.1.002.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.10.010.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.11.012.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.12.013.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.13.015.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.14.014.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.15.017.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.16.016.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.17.019.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.18.018.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.19.020.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.2.003.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.20.023.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.21.024.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.22.021.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.23.025.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.24.022.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.3.007.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.4.005.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.5.004.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.6.006.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.7.009.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.8.008.cpuprofile",
+          "results/profiles/node-cpu-24/CPU.20261020.202646.1876782.9.011.cpuprofile"
+        ]
+      },
+      "interpretation": [
+        "samples are raw statistical samples; sampledIntervalUs weights them by observed timeDeltas",
+        "summed worker intervals overlap and cannot be interpreted as process elapsed time",
+        "timeDeltas include scheduling and profiler delays; interval sums are not CPU counters",
+        "negative deltas, when supplied by V8, are retained as reported and counted per thread; prefer sample counts when intervals are irregular",
+        "inclusive frame rows overlap with one another and must not be added",
+        "Wasm callFrame columns are retained as reported; they may identify function entry rather than sampled instruction",
+        "positionTicks are preserved separately if V8 supplied per-line samples"
+      ],
+      "profiles": 25,
+      "samples": 24205,
+      "self": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 81,
+          "samples": 8573,
+          "sampledIntervalUs": 9622399,
+          "percentSamples": 35.41830200371824,
+          "percentIntervals": 34.735493614323715
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 124,
+          "samples": 8320,
+          "sampledIntervalUs": 9347774,
+          "percentSamples": 34.37306341664945,
+          "percentIntervals": 33.744136372347604
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 48,
+          "samples": 1845,
+          "sampledIntervalUs": 2124289,
+          "percentSamples": 7.622392067754596,
+          "percentIntervals": 7.6683815537557845
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 148,
+          "samples": 1511,
+          "sampledIntervalUs": 1571302,
+          "percentSamples": 6.242511877711217,
+          "percentIntervals": 5.672177030610982
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 1062,
+          "sampledIntervalUs": 1327170,
+          "percentSamples": 4.387523239000206,
+          "percentIntervals": 4.790895187377077
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 1015,
+          "sampledIntervalUs": 1521947,
+          "percentSamples": 4.193348481718653,
+          "percentIntervals": 5.494012491047101
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "zeroBasedLine": 18,
+          "samples": 1002,
+          "sampledIntervalUs": 1123483,
+          "percentSamples": 4.139640570130139,
+          "percentIntervals": 4.055614049292827
+        },
+        {
+          "functionName": "find",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 68,
+          "samples": 277,
+          "sampledIntervalUs": 304062,
+          "percentSamples": 1.1443916546168147,
+          "percentIntervals": 1.0976206307136607
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 115,
+          "sampledIntervalUs": 182734,
+          "percentSamples": 0.47510844866763063,
+          "percentIntervals": 0.6596437842704121
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "zeroBasedLine": 7,
+          "samples": 83,
+          "sampledIntervalUs": 97947,
+          "percentSamples": 0.3429043586035943,
+          "percentIntervals": 0.3535747575050842
+        },
+        {
+          "functionName": "parse",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "zeroBasedLine": 36,
+          "samples": 39,
+          "sampledIntervalUs": 49547,
+          "percentSamples": 0.1611237347655443,
+          "percentIntervals": 0.1788576322919988
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "zeroBasedLine": 424,
+          "samples": 38,
+          "sampledIntervalUs": 41223,
+          "percentSamples": 0.15699235695104316,
+          "percentIntervals": 0.14880917464171528
+        },
+        {
+          "functionName": "claim",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "zeroBasedLine": 25,
+          "samples": 35,
+          "sampledIntervalUs": 30439,
+          "percentSamples": 0.14459822350753976,
+          "percentIntervals": 0.10988046641241955
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 7,
+          "samples": 30,
+          "sampledIntervalUs": 35801,
+          "percentSamples": 0.12394133443503408,
+          "percentIntervals": 0.12923652478829897
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "zeroBasedLine": 97,
+          "samples": 29,
+          "sampledIntervalUs": 9292,
+          "percentSamples": 0.11980995662053295,
+          "percentIntervals": 0.03354280015454524
+        },
+        {
+          "functionName": "remainder",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 141,
+          "samples": 17,
+          "sampledIntervalUs": 18489,
+          "percentSamples": 0.07023342284651932,
+          "percentIntervals": 0.06674266380299042
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 137,
+          "ticks": 4423,
+          "percentSamples": 18.273084073538524
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 91,
+          "ticks": 2414,
+          "percentSamples": 9.973146044205743
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 88,
+          "ticks": 1867,
+          "percentSamples": 7.713282379673621
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 97,
+          "ticks": 1452,
+          "percentSamples": 5.998760586655649
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1062,
+          "percentSamples": 4.387523239000206
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 161,
+          "ticks": 1035,
+          "percentSamples": 4.275976038008676
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "lineOneBased": 20,
+          "ticks": 1002,
+          "percentSamples": 4.139640570130139
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 135,
+          "ticks": 702,
+          "percentSamples": 2.9002272257797976
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 54,
+          "ticks": 678,
+          "percentSamples": 2.80107415823177
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 98,
+          "ticks": 669,
+          "percentSamples": 2.76389175790126
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 130,
+          "ticks": 620,
+          "percentSamples": 2.5614542449907045
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 90,
+          "ticks": 563,
+          "percentSamples": 2.3259657095641395
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 87,
+          "ticks": 525,
+          "percentSamples": 2.1689733526130963
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 52,
+          "ticks": 441,
+          "percentSamples": 1.821937616195001
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 129,
+          "ticks": 435,
+          "percentSamples": 1.7971493493079942
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 126,
+          "ticks": 427,
+          "percentSamples": 1.7640983267919852
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 58,
+          "ticks": 386,
+          "percentSamples": 1.5947118363974386
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 84,
+          "ticks": 377,
+          "percentSamples": 1.5575294360669283
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 134,
+          "ticks": 335,
+          "percentSamples": 1.3840115678578806
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 138,
+          "ticks": 286,
+          "percentSamples": 1.181574054947325
+        }
+      ],
+      "intervalDiagnostics": [
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.0.001.cpuprofile",
+          "samples": 1026,
+          "medianIntervalUs": 1066,
+          "maxIntervalUs": 10583,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.1.002.cpuprofile",
+          "samples": 1057,
+          "medianIntervalUs": 1059,
+          "maxIntervalUs": 9432,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.10.010.cpuprofile",
+          "samples": 982,
+          "medianIntervalUs": 1060,
+          "maxIntervalUs": 18065,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.11.012.cpuprofile",
+          "samples": 962,
+          "medianIntervalUs": 1061,
+          "maxIntervalUs": 12159,
+          "negativeIntervals": 1
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.12.013.cpuprofile",
+          "samples": 977,
+          "medianIntervalUs": 1060,
+          "maxIntervalUs": 21429,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.13.015.cpuprofile",
+          "samples": 977,
+          "medianIntervalUs": 1061,
+          "maxIntervalUs": 20751,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.14.014.cpuprofile",
+          "samples": 959,
+          "medianIntervalUs": 1062,
+          "maxIntervalUs": 21290,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.15.017.cpuprofile",
+          "samples": 971,
+          "medianIntervalUs": 1061,
+          "maxIntervalUs": 19801,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.16.016.cpuprofile",
+          "samples": 947,
+          "medianIntervalUs": 1062,
+          "maxIntervalUs": 20138,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.17.019.cpuprofile",
+          "samples": 941,
+          "medianIntervalUs": 1061,
+          "maxIntervalUs": 20000,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.18.018.cpuprofile",
+          "samples": 960,
+          "medianIntervalUs": 1060,
+          "maxIntervalUs": 20736,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.19.020.cpuprofile",
+          "samples": 957,
+          "medianIntervalUs": 1061,
+          "maxIntervalUs": 24856,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.2.003.cpuprofile",
+          "samples": 962,
+          "medianIntervalUs": 1062,
+          "maxIntervalUs": 9483,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.20.023.cpuprofile",
+          "samples": 923,
+          "medianIntervalUs": 1061,
+          "maxIntervalUs": 13712,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.21.024.cpuprofile",
+          "samples": 879,
+          "medianIntervalUs": 1062,
+          "maxIntervalUs": 23098,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.22.021.cpuprofile",
+          "samples": 901,
+          "medianIntervalUs": 1062,
+          "maxIntervalUs": 25620,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.23.025.cpuprofile",
+          "samples": 938,
+          "medianIntervalUs": 1061,
+          "maxIntervalUs": 20652,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.24.022.cpuprofile",
+          "samples": 898,
+          "medianIntervalUs": 1060,
+          "maxIntervalUs": 21117,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.3.007.cpuprofile",
+          "samples": 971,
+          "medianIntervalUs": 1062,
+          "maxIntervalUs": 13554,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.4.005.cpuprofile",
+          "samples": 960,
+          "medianIntervalUs": 1060,
+          "maxIntervalUs": 9425,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.5.004.cpuprofile",
+          "samples": 1003,
+          "medianIntervalUs": 1060,
+          "maxIntervalUs": 9515,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.6.006.cpuprofile",
+          "samples": 1068,
+          "medianIntervalUs": 1059,
+          "maxIntervalUs": 9601,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.7.009.cpuprofile",
+          "samples": 1037,
+          "medianIntervalUs": 1058,
+          "maxIntervalUs": 14620,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.8.008.cpuprofile",
+          "samples": 966,
+          "medianIntervalUs": 1062,
+          "maxIntervalUs": 12697,
+          "negativeIntervals": 0
+        },
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-24/CPU.20261020.202646.1876782.9.011.cpuprofile",
+          "samples": 983,
+          "medianIntervalUs": 1063,
+          "maxIntervalUs": 12440,
+          "negativeIntervals": 0
+        }
+      ]
+    },
+    "node-cpu-1": {
+      "capture": {
+        "label": "node-cpu-1",
+        "engine": "node",
+        "workers": 1,
+        "mode": "cpu",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/node-cpu-1/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--max-inlined-bytecode-size=1000",
+          "--max-inlined-bytecode-size-cumulative=4000",
+          "--cpu-prof",
+          "--cpu-prof-interval=1000",
+          "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/node-cpu-1",
+          "plain/calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 10.576746894977987,
+        "usage": {
+          "user": 9.81,
+          "system": 0.84,
+          "maxRssKiB": 68732,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "91601f14f5d31e5611369346252558ef0562e0ccaaf573e121eedf6ed625fc81",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": ["results/profiles/node-cpu-1/CPU.20261020.202652.1876897.0.001.cpuprofile"]
+      },
+      "interpretation": [
+        "samples are raw statistical samples; sampledIntervalUs weights them by observed timeDeltas",
+        "summed worker intervals overlap and cannot be interpreted as process elapsed time",
+        "timeDeltas include scheduling and profiler delays; interval sums are not CPU counters",
+        "negative deltas, when supplied by V8, are retained as reported and counted per thread; prefer sample counts when intervals are irregular",
+        "inclusive frame rows overlap with one another and must not be added",
+        "Wasm callFrame columns are retained as reported; they may identify function entry rather than sampled instruction",
+        "positionTicks are preserved separately if V8 supplied per-line samples"
+      ],
+      "profiles": 1,
+      "samples": 9973,
+      "self": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 81,
+          "samples": 4018,
+          "sampledIntervalUs": 4240854,
+          "percentSamples": 40.28877970520405,
+          "percentIntervals": 40.284369373554114
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 124,
+          "samples": 3582,
+          "sampledIntervalUs": 3780135,
+          "percentSamples": 35.916975834753835,
+          "percentIntervals": 35.90794557461775
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 48,
+          "samples": 839,
+          "sampledIntervalUs": 885435,
+          "percentSamples": 8.412714328687455,
+          "percentIntervals": 8.410850879627755
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 727,
+          "sampledIntervalUs": 769065,
+          "percentSamples": 7.289682141782814,
+          "percentIntervals": 7.305438605590383
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "zeroBasedLine": 18,
+          "samples": 359,
+          "sampledIntervalUs": 378717,
+          "percentSamples": 3.5997192419532738,
+          "percentIntervals": 3.597477186445064
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 148,
+          "samples": 224,
+          "sampledIntervalUs": 236333,
+          "percentSamples": 2.246064373809285,
+          "percentIntervals": 2.2449548763433413
+        },
+        {
+          "functionName": "find",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 68,
+          "samples": 162,
+          "sampledIntervalUs": 170958,
+          "percentSamples": 1.6243858417727866,
+          "percentIntervals": 1.6239500863184784
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "zeroBasedLine": 7,
+          "samples": 9,
+          "sampledIntervalUs": 7372,
+          "percentSamples": 0.09024365787626591,
+          "percentIntervals": 0.07002749234513636
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 9,
+          "sampledIntervalUs": 9503,
+          "percentSamples": 0.09024365787626591,
+          "percentIntervals": 0.09027011119856632
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "zeroBasedLine": 424,
+          "samples": 7,
+          "sampledIntervalUs": 7382,
+          "percentSamples": 0.07018951168154015,
+          "percentIntervals": 0.0701224835176067
+        },
+        {
+          "functionName": "remainder",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 141,
+          "samples": 7,
+          "sampledIntervalUs": 7392,
+          "percentSamples": 0.07018951168154015,
+          "percentIntervals": 0.07021747469007705
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 6,
+          "sampledIntervalUs": 6345,
+          "percentSamples": 0.06016243858417728,
+          "percentIntervals": 0.06027189893243221
+        },
+        {
+          "functionName": "claim",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "zeroBasedLine": 25,
+          "samples": 5,
+          "sampledIntervalUs": 4321,
+          "percentSamples": 0.050135365486814396,
+          "percentIntervals": 0.04104568562443492
+        },
+        {
+          "functionName": "parse",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "zeroBasedLine": 36,
+          "samples": 3,
+          "sampledIntervalUs": 2160,
+          "percentSamples": 0.03008121929208864,
+          "percentIntervals": 0.020518093253593942
+        },
+        {
+          "functionName": "_fill",
+          "url": "node:buffer",
+          "zeroBasedLine": 1197,
+          "samples": 3,
+          "sampledIntervalUs": 3171,
+          "percentSamples": 0.03008121929208864,
+          "percentIntervals": 0.030121700790345554
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 2,
+          "sampledIntervalUs": 7422,
+          "percentSamples": 0.020054146194725758,
+          "percentIntervals": 0.07050244820748808
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 137,
+          "ticks": 1952,
+          "percentSamples": 19.57284668605234
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 91,
+          "ticks": 979,
+          "percentSamples": 9.81650456231826
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 97,
+          "ticks": 870,
+          "percentSamples": 8.723553594705706
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 88,
+          "ticks": 734,
+          "percentSamples": 7.359871653464354
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 727,
+          "percentSamples": 7.289682141782814
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "lineOneBased": 20,
+          "ticks": 359,
+          "percentSamples": 3.5997192419532738
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 98,
+          "ticks": 330,
+          "percentSamples": 3.30893412212975
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 54,
+          "ticks": 309,
+          "percentSamples": 3.0983655870851297
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 90,
+          "ticks": 291,
+          "percentSamples": 2.917878271332598
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 135,
+          "ticks": 285,
+          "percentSamples": 2.8577158327484207
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 130,
+          "ticks": 266,
+          "percentSamples": 2.667201443898526
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 58,
+          "ticks": 210,
+          "percentSamples": 2.1056853504462048
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 129,
+          "ticks": 190,
+          "percentSamples": 1.9051438884989471
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 87,
+          "ticks": 186,
+          "percentSamples": 1.8650355961094955
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 127,
+          "ticks": 181,
+          "percentSamples": 1.8149002306226811
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 52,
+          "ticks": 168,
+          "percentSamples": 1.6845482803569638
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 134,
+          "ticks": 153,
+          "percentSamples": 1.5341421838965206
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 92,
+          "ticks": 144,
+          "percentSamples": 1.4438985260202546
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 84,
+          "ticks": 124,
+          "percentSamples": 1.2433570640729972
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 89,
+          "ticks": 120,
+          "percentSamples": 1.2032487716835456
+        }
+      ],
+      "intervalDiagnostics": [
+        {
+          "file": "/home/mmv/projects/1brc-node/results/profiles/node-cpu-1/CPU.20261020.202652.1876897.0.001.cpuprofile",
+          "samples": 9973,
+          "medianIntervalUs": 1056,
+          "maxIntervalUs": 7142,
+          "negativeIntervals": 0
+        }
+      ]
+    }
+  },
+  "rawPc": {
+    "interpretation": [
+      "One separately sampled run per variant; these counts do not establish relative throughput or a speedup",
+      "All instruction ranges use TurboFan code printed in the same process as the raw tick log",
+      "Short blocks include station.head load through its conditional mismatch branch",
+      "Wide blocks include bucket load, station key pointer load, canonical-key vector loads, equality reduction and mismatch branch",
+      "Samples show where execution was observed, not cache misses, branch mispredictions, or retired-instruction counts"
+    ],
+    "observedChanges": [
+      "Short XOR replaced a five-instruction equality block with seven instructions including boolean materialization; parse native instruction size remained 11932 bytes",
+      "Wide single-mask replaced two movemasks plus scalar AND with vector AND plus one movemask; its block shrank from 13 instructions / 76 bytes to 12 instructions / 73 bytes",
+      "The full process_long native instruction size decreased from 1484 to 1480 bytes; parse_chunk remained 11932 bytes",
+      "Wide single-mask reversed the two canonical-vector load/compare orders, so it changes scheduling as well as removing one movemask"
+    ],
+    "cases": [
+      {
+        "variant": "baseline",
+        "commit": "bd04b60",
+        "capture": "results/profiles/wasm-ticks-1/capture.json",
+        "sourceSha256": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce",
+        "totalTicks": 13949,
+        "mappedWasmTicks": 10633,
+        "parse": {
+          "nativeInstructionBytes": 11932,
+          "ticks": 9444,
+          "shortEqualityBlocks": 15,
+          "shortEqualityTicks": 4071,
+          "percentParseTicksInShortEquality": 43.10673443456162,
+          "blocks": [
+            {
+              "start": "0x346",
+              "endExclusive": "0x362",
+              "bytes": 28,
+              "ticks": 35
+            },
+            {
+              "start": "0x45b",
+              "endExclusive": "0x476",
+              "bytes": 27,
+              "ticks": 7
+            },
+            {
+              "start": "0x565",
+              "endExclusive": "0x580",
+              "bytes": 27,
+              "ticks": 3
+            },
+            {
+              "start": "0x6fe",
+              "endExclusive": "0x71a",
+              "bytes": 28,
+              "ticks": 590
+            },
+            {
+              "start": "0x80a",
+              "endExclusive": "0x825",
+              "bytes": 27,
+              "ticks": 202
+            },
+            {
+              "start": "0x917",
+              "endExclusive": "0x932",
+              "bytes": 27,
+              "ticks": 217
+            },
+            {
+              "start": "0xa55",
+              "endExclusive": "0xa70",
+              "bytes": 27,
+              "ticks": 535
+            },
+            {
+              "start": "0xb65",
+              "endExclusive": "0xb80",
+              "bytes": 27,
+              "ticks": 208
+            },
+            {
+              "start": "0xc72",
+              "endExclusive": "0xc8d",
+              "bytes": 27,
+              "ticks": 259
+            },
+            {
+              "start": "0xdb1",
+              "endExclusive": "0xdcc",
+              "bytes": 27,
+              "ticks": 569
+            },
+            {
+              "start": "0xec1",
+              "endExclusive": "0xedc",
+              "bytes": 27,
+              "ticks": 197
+            },
+            {
+              "start": "0xfce",
+              "endExclusive": "0xfe9",
+              "bytes": 27,
+              "ticks": 227
+            },
+            {
+              "start": "0x110d",
+              "endExclusive": "0x1128",
+              "bytes": 27,
+              "ticks": 578
+            },
+            {
+              "start": "0x121d",
+              "endExclusive": "0x1238",
+              "bytes": 27,
+              "ticks": 209
+            },
+            {
+              "start": "0x132a",
+              "endExclusive": "0x1345",
+              "bytes": 27,
+              "ticks": 235
+            }
+          ],
+          "representativeSequence": [
+            {
+              "offset": "0x6fe",
+              "operation": "vmovdqu xmm4,[r11+rcx*1+0x18]"
+            },
+            {
+              "offset": "0x705",
+              "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+            },
+            {
+              "offset": "0x709",
+              "operation": "vpmovmskb r9,xmm0"
+            },
+            {
+              "offset": "0x70d",
+              "operation": "cmpl r9,0xffff"
+            },
+            {
+              "offset": "0x714",
+              "operation": "jnz TARGET  <+0x219e>"
+            }
+          ]
+        },
+        "processLong": {
+          "nativeInstructionBytes": 1484,
+          "ticks": 1155,
+          "bucketPointerAndEquality": {
+            "start": "0x316",
+            "endExclusive": "0x362",
+            "bytes": 76,
+            "instructions": [
+              {
+                "offset": "0x316",
+                "operation": "movl r12,[rdi+r11*1+0x980]"
+              },
+              {
+                "offset": "0x31e",
+                "operation": "movl r11,[rdi+r12*1+0x14]"
+              },
+              {
+                "offset": "0x323",
+                "operation": "andl r11,0xfffff"
+              },
+              {
+                "offset": "0x32a",
+                "operation": "vmovdqu xmm2,[rdi+r11*1+0x209f0]"
+              },
+              {
+                "offset": "0x334",
+                "operation": "vpcmpeqb xmm1,xmm2,xmm1"
+              },
+              {
+                "offset": "0x338",
+                "operation": "vpmovmskb r15,xmm1"
+              },
+              {
+                "offset": "0x33c",
+                "operation": "vmovdqu xmm1,[rdi+r11*1+0x209e0]"
+              },
+              {
+                "offset": "0x346",
+                "operation": "vpcmpeqb xmm0,xmm1,xmm0"
+              },
+              {
+                "offset": "0x34a",
+                "operation": "vpmovmskb r11,xmm0"
+              },
+              {
+                "offset": "0x34e",
+                "operation": "andl r11,r15"
+              },
+              {
+                "offset": "0x351",
+                "operation": "REX.W movq [rbp-0x18],rdi"
+              },
+              {
+                "offset": "0x355",
+                "operation": "cmpl r11,0xffff"
+              },
+              {
+                "offset": "0x35c",
+                "operation": "jnz TARGET  <+0x5a8>"
+              }
+            ],
+            "ticks": 711
+          },
+          "percentLongTicksInBlock": 61.55844155844156
+        }
+      },
+      {
+        "variant": "short-xor",
+        "commit": "ee8bb70",
+        "capture": "results/profiles/wasm-xor-ticks-1/capture.json",
+        "sourceSha256": "ff869abf7b01f06cefbd45962868ef962586507a3f401d2ef96b7aa0f859acb0",
+        "totalTicks": 14533,
+        "mappedWasmTicks": 11347,
+        "parse": {
+          "nativeInstructionBytes": 11932,
+          "ticks": 10185,
+          "shortEqualityBlocks": 15,
+          "shortEqualityTicks": 4948,
+          "percentParseTicksInShortEquality": 48.581246931762394,
+          "blocks": [
+            {
+              "start": "0x346",
+              "endExclusive": "0x366",
+              "bytes": 32,
+              "ticks": 27
+            },
+            {
+              "start": "0x45f",
+              "endExclusive": "0x47c",
+              "bytes": 29,
+              "ticks": 7
+            },
+            {
+              "start": "0x56b",
+              "endExclusive": "0x588",
+              "bytes": 29,
+              "ticks": 6
+            },
+            {
+              "start": "0x6fe",
+              "endExclusive": "0x71e",
+              "bytes": 32,
+              "ticks": 770
+            },
+            {
+              "start": "0x80e",
+              "endExclusive": "0x82b",
+              "bytes": 29,
+              "ticks": 230
+            },
+            {
+              "start": "0x91d",
+              "endExclusive": "0x93a",
+              "bytes": 29,
+              "ticks": 266
+            },
+            {
+              "start": "0xa5d",
+              "endExclusive": "0xa7b",
+              "bytes": 30,
+              "ticks": 654
+            },
+            {
+              "start": "0xb70",
+              "endExclusive": "0xb8d",
+              "bytes": 29,
+              "ticks": 256
+            },
+            {
+              "start": "0xc7f",
+              "endExclusive": "0xc9c",
+              "bytes": 29,
+              "ticks": 276
+            },
+            {
+              "start": "0xdc0",
+              "endExclusive": "0xdde",
+              "bytes": 30,
+              "ticks": 684
+            },
+            {
+              "start": "0xed3",
+              "endExclusive": "0xef0",
+              "bytes": 29,
+              "ticks": 251
+            },
+            {
+              "start": "0xfe2",
+              "endExclusive": "0xfff",
+              "bytes": 29,
+              "ticks": 302
+            },
+            {
+              "start": "0x1123",
+              "endExclusive": "0x1141",
+              "bytes": 30,
+              "ticks": 671
+            },
+            {
+              "start": "0x1236",
+              "endExclusive": "0x1253",
+              "bytes": 29,
+              "ticks": 242
+            },
+            {
+              "start": "0x1345",
+              "endExclusive": "0x1362",
+              "bytes": 29,
+              "ticks": 306
+            }
+          ],
+          "representativeSequence": [
+            {
+              "offset": "0x6fe",
+              "operation": "vmovdqu xmm4,[r11+rcx*1+0x18]"
+            },
+            {
+              "offset": "0x705",
+              "operation": "vpxor xmm0,xmm4,xmm0"
+            },
+            {
+              "offset": "0x709",
+              "operation": "xorl r9,r9"
+            },
+            {
+              "offset": "0x70c",
+              "operation": "vptest xmm0,xmm0"
+            },
+            {
+              "offset": "0x711",
+              "operation": "setnzl r9l"
+            },
+            {
+              "offset": "0x715",
+              "operation": "testl r9,r9"
+            },
+            {
+              "offset": "0x718",
+              "operation": "jnz TARGET  <+0x219e>"
+            }
+          ]
+        },
+        "processLong": {
+          "nativeInstructionBytes": 1484,
+          "ticks": 1123,
+          "bucketPointerAndEquality": {
+            "start": "0x316",
+            "endExclusive": "0x362",
+            "bytes": 76,
+            "instructions": [
+              {
+                "offset": "0x316",
+                "operation": "movl r12,[rdi+r11*1+0x980]"
+              },
+              {
+                "offset": "0x31e",
+                "operation": "movl r11,[rdi+r12*1+0x14]"
+              },
+              {
+                "offset": "0x323",
+                "operation": "andl r11,0xfffff"
+              },
+              {
+                "offset": "0x32a",
+                "operation": "vmovdqu xmm2,[rdi+r11*1+0x209f0]"
+              },
+              {
+                "offset": "0x334",
+                "operation": "vpcmpeqb xmm1,xmm2,xmm1"
+              },
+              {
+                "offset": "0x338",
+                "operation": "vpmovmskb r15,xmm1"
+              },
+              {
+                "offset": "0x33c",
+                "operation": "vmovdqu xmm1,[rdi+r11*1+0x209e0]"
+              },
+              {
+                "offset": "0x346",
+                "operation": "vpcmpeqb xmm0,xmm1,xmm0"
+              },
+              {
+                "offset": "0x34a",
+                "operation": "vpmovmskb r11,xmm0"
+              },
+              {
+                "offset": "0x34e",
+                "operation": "andl r11,r15"
+              },
+              {
+                "offset": "0x351",
+                "operation": "REX.W movq [rbp-0x18],rdi"
+              },
+              {
+                "offset": "0x355",
+                "operation": "cmpl r11,0xffff"
+              },
+              {
+                "offset": "0x35c",
+                "operation": "jnz TARGET  <+0x5a8>"
+              }
+            ],
+            "ticks": 695
+          },
+          "percentLongTicksInBlock": 61.88780053428317
+        }
+      },
+      {
+        "variant": "wide-single-mask",
+        "commit": "f50d16b",
+        "capture": "results/profiles/wasm-wide-ticks-1/capture.json",
+        "sourceSha256": "0908e14a92b37e0ba33161d3c7b9e880d60eeb7ee5f0e7048ed2a78f36256f57",
+        "totalTicks": 13889,
+        "mappedWasmTicks": 10767,
+        "parse": {
+          "nativeInstructionBytes": 11932,
+          "ticks": 9622,
+          "shortEqualityBlocks": 15,
+          "shortEqualityTicks": 4047,
+          "percentParseTicksInShortEquality": 42.059862814383706,
+          "blocks": [
+            {
+              "start": "0x346",
+              "endExclusive": "0x362",
+              "bytes": 28,
+              "ticks": 22
+            },
+            {
+              "start": "0x45b",
+              "endExclusive": "0x476",
+              "bytes": 27,
+              "ticks": 7
+            },
+            {
+              "start": "0x565",
+              "endExclusive": "0x580",
+              "bytes": 27,
+              "ticks": 4
+            },
+            {
+              "start": "0x6fe",
+              "endExclusive": "0x71a",
+              "bytes": 28,
+              "ticks": 601
+            },
+            {
+              "start": "0x80a",
+              "endExclusive": "0x825",
+              "bytes": 27,
+              "ticks": 193
+            },
+            {
+              "start": "0x917",
+              "endExclusive": "0x932",
+              "bytes": 27,
+              "ticks": 176
+            },
+            {
+              "start": "0xa55",
+              "endExclusive": "0xa70",
+              "bytes": 27,
+              "ticks": 555
+            },
+            {
+              "start": "0xb65",
+              "endExclusive": "0xb80",
+              "bytes": 27,
+              "ticks": 196
+            },
+            {
+              "start": "0xc72",
+              "endExclusive": "0xc8d",
+              "bytes": 27,
+              "ticks": 252
+            },
+            {
+              "start": "0xdb1",
+              "endExclusive": "0xdcc",
+              "bytes": 27,
+              "ticks": 571
+            },
+            {
+              "start": "0xec1",
+              "endExclusive": "0xedc",
+              "bytes": 27,
+              "ticks": 206
+            },
+            {
+              "start": "0xfce",
+              "endExclusive": "0xfe9",
+              "bytes": 27,
+              "ticks": 230
+            },
+            {
+              "start": "0x110d",
+              "endExclusive": "0x1128",
+              "bytes": 27,
+              "ticks": 585
+            },
+            {
+              "start": "0x121d",
+              "endExclusive": "0x1238",
+              "bytes": 27,
+              "ticks": 225
+            },
+            {
+              "start": "0x132a",
+              "endExclusive": "0x1345",
+              "bytes": 27,
+              "ticks": 224
+            }
+          ],
+          "representativeSequence": [
+            {
+              "offset": "0x6fe",
+              "operation": "vmovdqu xmm4,[r11+rcx*1+0x18]"
+            },
+            {
+              "offset": "0x705",
+              "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+            },
+            {
+              "offset": "0x709",
+              "operation": "vpmovmskb r9,xmm0"
+            },
+            {
+              "offset": "0x70d",
+              "operation": "cmpl r9,0xffff"
+            },
+            {
+              "offset": "0x714",
+              "operation": "jnz TARGET  <+0x219e>"
+            }
+          ]
+        },
+        "processLong": {
+          "nativeInstructionBytes": 1480,
+          "ticks": 1114,
+          "bucketPointerAndEquality": {
+            "start": "0x316",
+            "endExclusive": "0x35f",
+            "bytes": 73,
+            "instructions": [
+              {
+                "offset": "0x316",
+                "operation": "movl r12,[rdi+r11*1+0x980]"
+              },
+              {
+                "offset": "0x31e",
+                "operation": "movl r11,[rdi+r12*1+0x14]"
+              },
+              {
+                "offset": "0x323",
+                "operation": "andl r11,0xfffff"
+              },
+              {
+                "offset": "0x32a",
+                "operation": "vmovdqu xmm2,[rdi+r11*1+0x209e0]"
+              },
+              {
+                "offset": "0x334",
+                "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+              },
+              {
+                "offset": "0x338",
+                "operation": "vmovdqu xmm2,[rdi+r11*1+0x209f0]"
+              },
+              {
+                "offset": "0x342",
+                "operation": "vpcmpeqb xmm1,xmm2,xmm1"
+              },
+              {
+                "offset": "0x346",
+                "operation": "vpand xmm0,xmm0,xmm1"
+              },
+              {
+                "offset": "0x34a",
+                "operation": "vpmovmskb r11,xmm0"
+              },
+              {
+                "offset": "0x34e",
+                "operation": "REX.W movq [rbp-0x18],rdi"
+              },
+              {
+                "offset": "0x352",
+                "operation": "cmpl r11,0xffff"
+              },
+              {
+                "offset": "0x359",
+                "operation": "jnz TARGET  <+0x5a5>"
+              }
+            ],
+            "ticks": 665
+          },
+          "percentLongTicksInBlock": 59.69479353680431
+        }
+      }
+    ]
+  },
+  "readTrace": {
+    "file": "results/profiles/wasm-trace-24/trace.json",
+    "note": "Read wall and CPU times are sums within each worker and overlap across workers. They are not elapsed process time. Only reads >=131000 bytes are retained to omit module loads.",
+    "workers": [
+      {
+        "tid": 1877463,
+        "name": "[worker 1] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864512786,
+          "loopStart": 1395864512801,
+          "loopExit": 1395864936967
+        },
+        "reads": 1152,
+        "bytes": 604127232,
+        "firstRead": 1395864539181,
+        "lastRead": 1395864933259,
+        "readSpanMs": 394.078,
+        "readWallMs": 70.184,
+        "readThreadCpuMs": 68.683,
+        "medianReadUs": 56.0,
+        "maximumReadUs": 612
+      },
+      {
+        "tid": 1877465,
+        "name": "[worker 3] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864522436,
+          "loopStart": 1395864522455,
+          "loopExit": 1395864935379
+        },
+        "reads": 1173,
+        "bytes": 615139968,
+        "firstRead": 1395864541016,
+        "lastRead": 1395864933301,
+        "readSpanMs": 392.285,
+        "readWallMs": 70.149,
+        "readThreadCpuMs": 68.855,
+        "medianReadUs": 55,
+        "maximumReadUs": 575
+      },
+      {
+        "tid": 1877466,
+        "name": "[worker 4] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864512526,
+          "loopStart": 1395864512539,
+          "loopExit": 1395864935808
+        },
+        "reads": 1165,
+        "bytes": 610944640,
+        "firstRead": 1395864539267,
+        "lastRead": 1395864933234,
+        "readSpanMs": 393.967,
+        "readWallMs": 70.326,
+        "readThreadCpuMs": 69.539,
+        "medianReadUs": 55,
+        "maximumReadUs": 885
+      },
+      {
+        "tid": 1877464,
+        "name": "[worker 2] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864512339,
+          "loopStart": 1395864512361,
+          "loopExit": 1395864934677
+        },
+        "reads": 1118,
+        "bytes": 586297088,
+        "firstRead": 1395864538785,
+        "lastRead": 1395864933063,
+        "readSpanMs": 394.278,
+        "readWallMs": 70.792,
+        "readThreadCpuMs": 66.931,
+        "medianReadUs": 56.0,
+        "maximumReadUs": 2709
+      },
+      {
+        "tid": 1877467,
+        "name": "[worker 5] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864514342,
+          "loopStart": 1395864514358,
+          "loopExit": 1395864938220
+        },
+        "reads": 1233,
+        "bytes": 646604928,
+        "firstRead": 1395864523708,
+        "lastRead": 1395864933293,
+        "readSpanMs": 409.585,
+        "readWallMs": 74.132,
+        "readThreadCpuMs": 72.525,
+        "medianReadUs": 55,
+        "maximumReadUs": 1097
+      },
+      {
+        "tid": 1877468,
+        "name": "[worker 6] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864532373,
+          "loopStart": 1395864532401,
+          "loopExit": 1395864934916
+        },
+        "reads": 1097,
+        "bytes": 575284352,
+        "firstRead": 1395864545991,
+        "lastRead": 1395864933104,
+        "readSpanMs": 387.113,
+        "readWallMs": 72.77,
+        "readThreadCpuMs": 64.515,
+        "medianReadUs": 55,
+        "maximumReadUs": 7267
+      },
+      {
+        "tid": 1877470,
+        "name": "[worker 8] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864532619,
+          "loopStart": 1395864532638,
+          "loopExit": 1395864934682
+        },
+        "reads": 1069,
+        "bytes": 560600704,
+        "firstRead": 1395864541510,
+        "lastRead": 1395864933220,
+        "readSpanMs": 391.71,
+        "readWallMs": 70.308,
+        "readThreadCpuMs": 64.449,
+        "medianReadUs": 57,
+        "maximumReadUs": 5053
+      },
+      {
+        "tid": 1877471,
+        "name": "[worker 9] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864531790,
+          "loopStart": 1395864531817,
+          "loopExit": 1395864934290
+        },
+        "reads": 1108,
+        "bytes": 581052928,
+        "firstRead": 1395864541547,
+        "lastRead": 1395864933337,
+        "readSpanMs": 391.79,
+        "readWallMs": 70.434,
+        "readThreadCpuMs": 65.665,
+        "medianReadUs": 55.0,
+        "maximumReadUs": 3540
+      },
+      {
+        "tid": 1877469,
+        "name": "[worker 7] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864531846,
+          "loopStart": 1395864531863,
+          "loopExit": 1395864935035
+        },
+        "reads": 1139,
+        "bytes": 597309824,
+        "firstRead": 1395864541432,
+        "lastRead": 1395864933156,
+        "readSpanMs": 391.724,
+        "readWallMs": 71.607,
+        "readThreadCpuMs": 67.961,
+        "medianReadUs": 56,
+        "maximumReadUs": 3664
+      },
+      {
+        "tid": 1877472,
+        "name": "[worker 10] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864535304,
+          "loopStart": 1395864535320,
+          "loopExit": 1395864934661
+        },
+        "reads": 1083,
+        "bytes": 567942528,
+        "firstRead": 1395864545914,
+        "lastRead": 1395864933243,
+        "readSpanMs": 387.329,
+        "readWallMs": 69.453,
+        "readThreadCpuMs": 64.764,
+        "medianReadUs": 57,
+        "maximumReadUs": 3162
+      },
+      {
+        "tid": 1877474,
+        "name": "[worker 12] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864534121,
+          "loopStart": 1395864534139,
+          "loopExit": 1395864935211
+        },
+        "reads": 1093,
+        "bytes": 573186688,
+        "firstRead": 1395864545770,
+        "lastRead": 1395864933116,
+        "readSpanMs": 387.346,
+        "readWallMs": 72.225,
+        "readThreadCpuMs": 64.928,
+        "medianReadUs": 56,
+        "maximumReadUs": 7368
+      },
+      {
+        "tid": 1877473,
+        "name": "[worker 11] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864532711,
+          "loopStart": 1395864532728,
+          "loopExit": 1395864936234
+        },
+        "reads": 1107,
+        "bytes": 580528512,
+        "firstRead": 1395864545806,
+        "lastRead": 1395864933289,
+        "readSpanMs": 387.483,
+        "readWallMs": 73.836,
+        "readThreadCpuMs": 66.095,
+        "medianReadUs": 56,
+        "maximumReadUs": 7436
+      },
+      {
+        "tid": 1877475,
+        "name": "[worker 13] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864534269,
+          "loopStart": 1395864534284,
+          "loopExit": 1395864935392
+        },
+        "reads": 1124,
+        "bytes": 589443584,
+        "firstRead": 1395864540544,
+        "lastRead": 1395864933036,
+        "readSpanMs": 392.492,
+        "readWallMs": 67.888,
+        "readThreadCpuMs": 67.245,
+        "medianReadUs": 56.0,
+        "maximumReadUs": 411
+      },
+      {
+        "tid": 1877476,
+        "name": "[worker 14] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864532469,
+          "loopStart": 1395864532486,
+          "loopExit": 1395864936282
+        },
+        "reads": 1017,
+        "bytes": 533331072,
+        "firstRead": 1395864545951,
+        "lastRead": 1395864933052,
+        "readSpanMs": 387.101,
+        "readWallMs": 77.722,
+        "readThreadCpuMs": 60.955,
+        "medianReadUs": 57,
+        "maximumReadUs": 7121
+      },
+      {
+        "tid": 1877477,
+        "name": "[worker 15] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864536076,
+          "loopStart": 1395864536090,
+          "loopExit": 1395864934653
+        },
+        "reads": 1125,
+        "bytes": 589968000,
+        "firstRead": 1395864541714,
+        "lastRead": 1395864933339,
+        "readSpanMs": 391.625,
+        "readWallMs": 72.1,
+        "readThreadCpuMs": 67.177,
+        "medianReadUs": 56,
+        "maximumReadUs": 4874
+      },
+      {
+        "tid": 1877479,
+        "name": "[worker 17] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864532774,
+          "loopStart": 1395864532789,
+          "loopExit": 1395864938662
+        },
+        "reads": 1041,
+        "bytes": 545917056,
+        "firstRead": 1395864545755,
+        "lastRead": 1395864933200,
+        "readSpanMs": 387.445,
+        "readWallMs": 77.334,
+        "readThreadCpuMs": 62.01,
+        "medianReadUs": 56,
+        "maximumReadUs": 7150
+      },
+      {
+        "tid": 1877478,
+        "name": "[worker 16] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864535486,
+          "loopStart": 1395864535503,
+          "loopExit": 1395864936169
+        },
+        "reads": 1066,
+        "bytes": 559027456,
+        "firstRead": 1395864545799,
+        "lastRead": 1395864933235,
+        "readSpanMs": 387.436,
+        "readWallMs": 72.848,
+        "readThreadCpuMs": 63.423,
+        "medianReadUs": 56.0,
+        "maximumReadUs": 7099
+      },
+      {
+        "tid": 1877480,
+        "name": "[worker 18] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864533723,
+          "loopStart": 1395864533742,
+          "loopExit": 1395864934908
+        },
+        "reads": 1033,
+        "bytes": 541721728,
+        "firstRead": 1395864545800,
+        "lastRead": 1395864933328,
+        "readSpanMs": 387.528,
+        "readWallMs": 78.405,
+        "readThreadCpuMs": 61.588,
+        "medianReadUs": 57,
+        "maximumReadUs": 7504
+      },
+      {
+        "tid": 1877481,
+        "name": "[worker 19] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864556235,
+          "loopStart": 1395864556255,
+          "loopExit": 1395864934893
+        },
+        "reads": 1049,
+        "bytes": 550112384,
+        "firstRead": 1395864561227,
+        "lastRead": 1395864933336,
+        "readSpanMs": 372.109,
+        "readWallMs": 63.688,
+        "readThreadCpuMs": 62.552,
+        "medianReadUs": 56,
+        "maximumReadUs": 414
+      },
+      {
+        "tid": 1877482,
+        "name": "[worker 20] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864553059,
+          "loopStart": 1395864553078,
+          "loopExit": 1395864935212
+        },
+        "reads": 1084,
+        "bytes": 568466944,
+        "firstRead": 1395864557940,
+        "lastRead": 1395864933090,
+        "readSpanMs": 375.15,
+        "readWallMs": 63.479,
+        "readThreadCpuMs": 63.053,
+        "medianReadUs": 55.0,
+        "maximumReadUs": 397
+      },
+      {
+        "tid": 1877483,
+        "name": "[worker 21] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864554650,
+          "loopStart": 1395864554672,
+          "loopExit": 1395864936422
+        },
+        "reads": 1020,
+        "bytes": 534904320,
+        "firstRead": 1395864559800,
+        "lastRead": 1395864933328,
+        "readSpanMs": 373.528,
+        "readWallMs": 70.218,
+        "readThreadCpuMs": 60.337,
+        "medianReadUs": 56.0,
+        "maximumReadUs": 3795
+      },
+      {
+        "tid": 1877484,
+        "name": "[worker 22] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864552993,
+          "loopStart": 1395864553025,
+          "loopExit": 1395864935217
+        },
+        "reads": 1094,
+        "bytes": 573711104,
+        "firstRead": 1395864557965,
+        "lastRead": 1395864933298,
+        "readSpanMs": 375.333,
+        "readWallMs": 65.687,
+        "readThreadCpuMs": 64.566,
+        "medianReadUs": 56.0,
+        "maximumReadUs": 433
+      },
+      {
+        "tid": 1877486,
+        "name": "[worker 24] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864551644,
+          "loopStart": 1395864551677,
+          "loopExit": 1395864934945
+        },
+        "reads": 1066,
+        "bytes": 558892295,
+        "firstRead": 1395864558727,
+        "lastRead": 1395864933346,
+        "readSpanMs": 374.619,
+        "readWallMs": 64.25,
+        "readThreadCpuMs": 63.643,
+        "medianReadUs": 56.0,
+        "maximumReadUs": 362
+      },
+      {
+        "tid": 1877485,
+        "name": "[worker 23] WorkerThread",
+        "milestones": {
+          "bootstrapComplete": 1395864557181,
+          "loopStart": 1395864557199,
+          "loopExit": 1395864935817
+        },
+        "reads": 1057,
+        "bytes": 554307712,
+        "firstRead": 1395864562043,
+        "lastRead": 1395864933248,
+        "readSpanMs": 371.205,
+        "readWallMs": 62.69,
+        "readThreadCpuMs": 61.833,
+        "medianReadUs": 55,
+        "maximumReadUs": 328
+      }
+    ]
+  },
+  "limitations": [
+    "perf task-clock/cycles/instructions unavailable: perf_event_paranoid=4; no settings changed.",
+    "CPU summary includes all isolates, including the main thread.",
+    "Worker intervals overlap; CPU profile percentages are samples, not elapsed-time shares or hardware counters.",
+    "Raw-PC regions locate sampled native instructions, not cache misses or branch mispredictions.",
+    "Node trace runs crashed with signal11 both with and without v8 category; excluded. Successful Node CPU and raw-PC captures validated full stdout."
+  ]
+}
