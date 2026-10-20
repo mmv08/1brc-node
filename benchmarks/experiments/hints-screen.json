@@ -1,0 +1,54 @@
+[
+  {
+    "name": "Existing hints",
+    "script": "results/hints-baseline/calculate.mjs",
+    "revision": "e7d1d1a",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Cold paths only",
+    "script": "results/hints-cold-only/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Parser hints only",
+    "script": "results/hints-parser-only/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Neutral long-name calls",
+    "script": "results/hints-long-neutral/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Force-inline long-name path",
+    "script": "results/hints-inline-long/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Unroll parser twice",
+    "script": "results/hints-unroll-two/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Eagerly optimize parser",
+    "script": "results/hints-baseline/calculate.mjs",
+    "revision": "e7d1d1a",
+    "env": {
+      "ENGINE": "wasm",
+      "FLAGS": "--wasm-eager-tier-up-function=8"
+    }
+  }
+]
