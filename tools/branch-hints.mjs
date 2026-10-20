@@ -229,7 +229,7 @@ export function addBranchHints(bytes, coldNames) {
   for (let index = 0, count = input.u32(); index < count; index++) {
     const size = input.u32();
     const hints = hintsFor(decode(bytes, input.offset, input.offset + size), cold);
-    if (hints.length && index === names.get('parse_chunk')) functions.push({ index, hints });
+    if (hints.length) functions.push({ index, hints });
     input.skip(size);
   }
   const payload = [...leb(functions.length)];

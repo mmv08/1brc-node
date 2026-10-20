@@ -44,7 +44,9 @@ execFileSync(linker, link, { stdio: 'inherit' });
 const source = readFileSync('wasm/kernel.c', 'utf8');
 const cold = [
   ...source.matchAll(/__attribute__\(\(noinline, cold\)\)\s+static\s+[\w\s]+?\**(\w+)\(/g),
-].map((match) => match[1]);
+]
+  .map((match) => match[1])
+  .filter((name) => name !== 'process_long');
 const hinted = addBranchHints(readFileSync('results/build/kernel-linked.wasm'), cold);
 writeFileSync('wasm/kernel.wasm', hinted.bytes);
 chmodSync('wasm/kernel.wasm', 0o644);
