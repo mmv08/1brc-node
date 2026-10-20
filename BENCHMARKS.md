@@ -1,6 +1,117 @@
 # Benchmark and experiment log
 
-## Current: both plain Node.js and Wasm, 2026-10-20
+## Current: further Node optimization and Wasm trials, 2026-10-20
+
+Both implementations remain available. The selected plain Node implementation
+is faster; the existing Wasm implementation was retained after its experimental
+alternatives failed to improve elapsed time. Selected source: **`fd3771a`**.
+Every experiment below has an **unsigned checkpoint commit**, including rejected
+attempts. No experimental parser or third engine remains in the runtime tree.
+
+### Final matched comparison
+
+- This machine: AMD Ryzen 9 7900, 12 physical cores / 24 logical CPUs, 60 GiB RAM,
+  Linux 7.0.0-38-generic; Node **26.12.0**; 24 workers per implementation.
+- Unchanged `powersave` governor and `balance_performance` preference. No power
+  settings or system-wide caches were changed.
+- The existing seeded input contains **1,000,000,000 independently generated
+  measurements**, **13,795,455,110 bytes**, and 413 stations. Reused read-only from
+  the local checkout; no generation or repeated input blocks enter the timings.
+- Two excluded full-file warm-ups per case, then **seven alternating rounds**.
+  Each score discards the fastest and slowest run and averages the remaining five.
+- Fresh processes include startup, compilation, reads, parsing, aggregation,
+  merging, sorting, complete output and shutdown. All 21 measured processes
+  matched expected stdout and reported **zero filesystem inputs**: warm-cache results.
+- Node uses the two documented inlining flags and 128 KiB chunks; Wasm uses no
+  extra flags and 512 KiB chunks. Benchmark source hashes guard each run.
+
+| Implementation | Trimmed mean | Best | Throughput | Peak RSS |
+| --- | ---: | ---: | ---: | ---: |
+| Previous plain Node, `f5ed40a` | 1.245 s | 1.198 s | 11.08 GB/s | 343,892 KiB |
+| **Selected plain Node** | **1.165 s** | **1.137 s** | **11.84 GB/s** | 340,724 KiB |
+| **Retained Wasm SIMD** | **0.505 s** | **0.499 s** | **27.32 GB/s** | 318,948 KiB |
+
+Plain Node takes **6.4% less elapsed time** than the preceding implementation in
+this matched batch. The Wasm source hash remains exactly
+`2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886`.
+Its earlier 0.497 s result is a separate batch, not a source regression.
+These are local measurements, not official challenge scores.
+
+Raw results, tuning, source hashes and resource counters:
+[`2026-10-20-optimization-round.json`](benchmarks/2026-10-20-optimization-round.json).
+Exact billion-row validation:
+[`2026-10-20-exact-verification.json`](benchmarks/2026-10-20-exact-verification.json).
+
+### Selected changes and validation
+
+The Node prediction hash now includes a fifth stable byte, which distinguishes
+names sharing their first four bytes. For four-byte names it includes their
+semicolon. Reducing the prediction table from 128 KiB to **64 KiB per worker**
+also helped this input. A hit still verifies every name byte and the delimiter;
+the smaller table supports arbitrary valid names through the general fallback.
+The equality helper takes the stored length directly on predicted hits, while
+hash-table lookups explicitly check the scanned length before comparing bytes.
+
+A dedicated Node worker entry loads only aggregation code. The main thread
+starts workers while loading the formatter and merges posted aggregates while
+workers exit. Each worker has finished reading before it posts its result.
+
+All **52 tests pass on Node 24.15.0 and 26.12.0**. Exact station-name/minimum/sum/
+maximum/count tuples match across both engines for **all one billion rows**, and
+their complete stdout matches the independently generated expected output.
+Biome and C-format checks pass; the latter used clang-format 21.1.8. The retained
+Wasm source, binary, build manifest and host code are unchanged from `f5ed40a`.
+
+The benchmark tools now hash the dedicated Node worker, record inherited tuning
+variables, and check source hashes before and after warm-up and measured runs.
+
+### Experiment checkpoints
+
+Values within each row are from its own matched screening batch. Do not combine
+separate batches to calculate incremental gains. The initial worker/cache and
+chunk screens used three rounds and one warm-up; later parser trials used five
+rounds and two warm-ups.
+
+| Checkpoint | Experiment | Matched result and decision |
+| --- | --- | --- |
+| `5cc6fe6` | Pack name length beside predicted Node station ID | 1.262 s vs 1.234 s; rejected |
+| `6cac5bf` | Worker-count screen | Node 24: 1.234 s, 12: 1.258 s; Wasm 12/16/24 about 0.50 s; retain defaults |
+| `dfe8dc1` | Derive Node row width from decimal-point position | 1.275 s vs 1.233 s; rejected |
+| `9b1d4f6` | Four Wasm parsing lanes | 0.514 s vs 0.509 s same-toolchain three-lane control; rejected |
+| `65c7a8f` | Chunk sizes and immediate Wasm optimizing compilation | No chunk improvement; immediate compilation 0.531 s vs 0.507 s; retain defaults |
+| `2ab1297` | Fifth byte in Node prediction hash | 1.234 s vs 1.249 s; retained with smaller table |
+| `a27dfb5` | Halve Node prediction table | 1.228 s vs 1.234 s with larger fifth-byte table; retained |
+| `b644f8d` | Wasm short-name prefix prediction | 0.559 s vs 0.505 s; rejected |
+| `ab71544` | Smaller Node worker entry and earlier merging | Alone 1.218 s vs 1.249 s; combined with predictor 1.201 s; retained |
+| `c054e10` | Compile Wasm once and share its module with workers | 0.505 s vs 0.504 s; no improvement, rejected |
+| `5deaa9f` | Pass known Node name lengths directly to equality | 1.170 s vs selected predictor/startup's 1.191 s; retained |
+
+Wasm rebuild experiments used Clang 21.1.8 / LLD 21.1.8. A separate rebuild of
+the original source isolated toolchain effects; the final selection restores the
+original shipped binary and provenance. Screening reports are preserved under
+[`benchmarks/experiments/`](benchmarks/experiments/).
+
+Reproduce the two selected implementations:
+
+```sh
+RUNS=7 WARMUP=2 node tools/compare.mjs node-vs-wasm measurements.txt
+node tools/verify-engines.mjs measurements.txt 1000000000
+```
+
+To include the preceding Node implementation:
+
+```sh
+git worktree add --detach results/baseline-f5ed40a f5ed40a
+CASES='[{"name":"Previous plain Node","script":"results/baseline-f5ed40a/plain/calculate.mjs","env":{"ENGINE":"node"}},{"name":"Optimized plain Node","env":{"ENGINE":"node"}},{"name":"Wasm SIMD","env":{"ENGINE":"wasm"}}]' \
+  RUNS=7 WARMUP=2 node tools/compare.mjs matched-round measurements.txt
+```
+
+The screening reports refer to ignored source snapshots in `results/`.
+Their experiment commits preserve the source; the final benchmark used a clean
+archive of `f5ed40a` for its preceding-Node baseline. Dataset, runtime and local
+dependencies remain ignored.
+
+## Previous: both plain Node.js and Wasm, 2026-10-20
 
 The main branch now includes two selected implementations: the optimized plain
 Node.js solver under `plain/`, and the existing Wasm solver under `wasm/`.

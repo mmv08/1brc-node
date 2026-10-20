@@ -43,23 +43,26 @@ its optimized parsing loop:
 On an **AMD Ryzen 9 7900, 12 cores / 24 threads, 60 GiB RAM**, using Node
 **26.12.0**, the full **1,000,000,000-row / 13,795,455,110-byte** input measured:
 
-| Implementation | Five-run trimmed mean | Best |
+| Implementation | Seven-run trimmed mean | Best |
 | --- | ---: | ---: |
-| Original plain Node, `6915b53` | 1.441 s | 1.419 s |
-| **Optimized plain Node** | **1.242 s** | **1.212 s** |
-| **Wasm SIMD** | **0.497 s** | **0.495 s** |
+| Previous plain Node, `f5ed40a` | 1.245 s | 1.198 s |
+| **Optimized plain Node** | **1.165 s** | **1.137 s** |
+| **Wasm SIMD** | **0.505 s** | **0.499 s** |
 
-The plain version took **13.8% less elapsed time** than its original implementation
+The plain version took **6.4% less elapsed time** than its previous implementation
 in this same-session comparison. These are warm-filesystem-cache, end-to-end
 measurements: startup, compilation, reads, parsing, aggregation, merging, sorting,
 output and shutdown all count. Two full-file warm-ups per case were excluded;
-then five alternating rounds discarded each case's fastest and slowest run.
+then seven alternating rounds discarded each case's fastest and slowest run.
 All measured outputs were checked, and measured filesystem-input counters were zero.
+Both engines used 24 workers. Throughput was **11.84 GB/s** for Node and
+**27.32 GB/s** for Wasm. The existing Wasm implementation remains the fastest tested;
+four lanes, prefix prediction and sharing compiled code did not improve it.
 
 The earlier Wasm result of **0.866 s** was on a different Core Ultra 7 258V laptop;
 it is not a same-hardware comparison. The earlier loaded-machine plain-Node batch
 is also separate. See [BENCHMARKS.md](BENCHMARKS.md) and the
-[recorded comparison](benchmarks/2026-10-20-both-engines.json) for evidence and caveats.
+[recorded comparison](benchmarks/2026-10-20-optimization-round.json) for evidence and caveats.
 These are local results, not official leaderboard scores.
 
 ## Input and design
@@ -81,13 +84,19 @@ Java-compatible. Temperatures are accumulated as exact integer tenths.
 Workers use 128 KiB chunks, four-byte delimiter scanning, typed-array hash tables
 and two independent parsing cursors. There are no per-measurement strings or objects.
 
-A worker-local cache predicts a station from its first four name bytes. A hit
+A 64 KiB worker-local cache predicts a station from its first five bytes; for a
+four-byte name, the fifth byte is its delimiter. A hit
 must match the **entire name and its delimiter** before it can skip scanning and
-rolling-hash calculation. Misses use the general hash-table parser; short names
-are not cached. The cache learns only station IDs while reading the current file:
+rolling-hash calculation. Cached entries supply their stored length directly;
+hash-table lookups check the scanned length before comparing bytes. Misses use
+the general hash-table parser; names shorter than four bytes are not cached.
+The cache learns only station IDs while reading the current file:
 no hardcoded station names, precomputed answers or parsed state survive a process.
 Its benefit depends on name distribution; shared prefixes can reduce it or cause
 regressions without changing correctness.
+
+Workers load a small dedicated entry point and post completed aggregates before
+exiting, allowing the main thread to merge results while threads shut down.
 
 ### WebAssembly
 
@@ -122,7 +131,7 @@ solver needs neither an npm install nor a C toolchain. For Wasm development,
 `npm run build:wasm`, `npm run format:c`, `CLANG`, `WASM_LD` and `CLANG_FORMAT`
 remain available; no system tools are installed by these scripts. The C-format
 helper also detects a local `.runtimes/formatting/bin/clang-format`; version
-22.1.8 was used for the current check. Pointer alignment is explicit so checking
+21.1.8 was used for the latest check. Pointer alignment is explicit so checking
 formatting does not rewrite the existing kernel's pointer style.
 
 ## Generate, verify and benchmark
@@ -132,7 +141,7 @@ node tools/generate.mjs 1000000000 measurements.txt
 node tools/verify-engines.mjs measurements.txt 1000000000
 npm run bench:node -- measurements.txt
 npm run bench:wasm -- measurements.txt
-RUNS=5 WARMUP=2 node tools/compare.mjs node-vs-wasm measurements.txt
+RUNS=7 WARMUP=2 node tools/compare.mjs node-vs-wasm measurements.txt
 ```
 
 The seeded generator creates independent rows using upstream station names and
@@ -159,7 +168,9 @@ in `compare`), `FLAGS`, `SCRIPT` (in `bench`) and generic `CASES` (in `compare`)
 Worktree comparisons hash each script's own dependencies. Reports go to ignored
 `results/`; reviewed evidence lives in `benchmarks/`. Datasets, local runtimes,
 profiles and npm dependencies are ignored. No power settings or system-wide caches
-are changed. Keep rejected implementations in git history, not in the runtime tree.
+are changed. Reports include inherited parser/runtime tuning and verify source
+hashes before and after each run. Every experiment in the latest round has an
+unsigned checkpoint commit; rejected implementations remain in git history.
 
 ## Attribution
 
