@@ -29,7 +29,6 @@ _Static_assert(offsetof(Station, key) == 20, "station ABI key");
 _Static_assert(MAX_STATIONS * 104 + 48 < (1 << 20), "all valid key offsets fit");
 
 static uint32_t buckets[TABLE_SIZE];
-static uint32_t prefixes[8192];
 static Station stations[MAX_STATIONS];
 static Station empty_station;
 // Canonical keys: the name, its delimiter and zero padding to at least 32 bytes.
@@ -369,13 +368,14 @@ INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row
 INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
   uint32_t length = (uint32_t)__builtin_ctz(matches);
   v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length + 1]));
-  uint32_t slot = (load32(start) * UINT32_C(0x9e3779b1)) >> 19;
-  Station *station = (Station *)(uintptr_t)prefixes[slot];
-  // Prefixes predict a station; the complete delimiter-terminated key verifies it.
-  if (wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(&station->head), key)) != 0xffff) {
+  v128_t mixed = wasm_v128_xor(key, wasm_v128_load(mixers));
+  uint64_t hash =
+      (uint64_t)wasm_i64x2_extract_lane(mixed, 0) * (uint64_t)wasm_i64x2_extract_lane(mixed, 1);
+  uint32_t slot = (uint32_t)(hash >> 49);
+  Station *station = (Station *)(uintptr_t)buckets[slot];
+  // An empty record is all zero; a key containing ';' can never match it.
+  if (wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(&station->head), key)) != 0xffff)
     station = find_name(start);
-    prefixes[slot] = (uint32_t)(uintptr_t)station;
-  }
   return update_row((ParsedRow){start + length + 1, station});
 }
 
@@ -456,7 +456,6 @@ INLINE RowPointers process_three(const uint8_t *a, const uint8_t *b, const uint8
 }
 
 EXPORT(reset) void reset(void) {
-  for (uint32_t slot = 0; slot < 8192; slot++) prefixes[slot] = (uint32_t)(uintptr_t)&empty_station;
   for (uint32_t slot = 0; slot < TABLE_SIZE; slot++)
     buckets[slot] = (uint32_t)(uintptr_t)&empty_station;
   used = 0;

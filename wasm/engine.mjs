@@ -3,9 +3,11 @@ import { consume } from '../lib/read.mjs';
 
 let compiled;
 
-export async function createKernel(chunkSize) {
-  compiled ??= WebAssembly.compile(readFileSync(new URL('kernel.wasm', import.meta.url)));
-  const api = new WebAssembly.Instance(await compiled).exports;
+export async function createKernel(chunkSize, sharedModule) {
+  const module =
+    sharedModule ??
+    (compiled ??= WebAssembly.compile(readFileSync(new URL('kernel.wasm', import.meta.url))));
+  const api = new WebAssembly.Instance(await module).exports;
   const inputBase = api.input_base() >>> 0;
   const capacity = chunkSize + 256;
   const required = inputBase + capacity;
@@ -53,7 +55,7 @@ export async function createKernel(chunkSize) {
 }
 
 export async function aggregate(config) {
-  const kernel = await createKernel(config.chunkSize);
+  const kernel = await createKernel(config.chunkSize, config.module);
   consume(config, kernel.makeParser, kernel.allocateBuffer);
   return kernel.rows();
 }
