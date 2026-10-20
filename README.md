@@ -40,43 +40,42 @@ its optimized parsing loop:
 
 ## Measured results
 
-On an **AMD Ryzen 9 7900, 12 cores / 24 threads, 60 GiB RAM**, using Node
-**26.12.0**, the full **1,000,000,000-row / 13,795,455,110-byte** input measured:
+On an **AMD Ryzen 9 7900, 12 cores / 24 threads, 60 GiB RAM**, Node **26.12.0**
+processed the full **1,000,000,000-row / 13,795,455,110-byte** input as follows:
 
-| Latest Wasm comparison | 21-run trimmed mean | Best |
+| Solver | Nine-run trimmed mean | Best |
 | --- | ---: | ---: |
-| Previous Wasm, `e7d1d1a` | 0.488 s | 0.479 s |
-| **Wasm with four-way loop hint** | **0.485 s** | **0.470 s** |
+| Previous plain Node | 1.144 s | 1.137 s |
+| **Profile-guided plain Node** | **1.086 s** | **1.076 s** |
+| **Wasm** | **0.482 s** | **0.474 s** |
 
-The added Clang loop-unrolling hint measured **0.6% less elapsed time**, winning
-14 of 21 paired rounds. Earlier screens and a nine-round confirmation also
-favored it, but the gain is small compared with timing variation. The larger
-kernel is 13,175 bytes, versus 9,442 bytes before the hint. Other tested
-attributes and branch-hint policies did not show a useful repeatable gain.
-Ignoring the existing Wasm branch hints made a separate matched screen about
-4.6% slower, so those hints remain.
+Profiling identified integer conversions and range checks in Node's sum update.
+An exact half-unit bias makes V8 emit direct floating-point addition; each worker
+removes the bias before merging. Node takes **5.0% less elapsed time**, winning
+all nine paired rounds. The full billion-row exact aggregates match between
+engines, and all 53 tests pass on Node 24 and 26.
+
+Two profile-driven Wasm equality rewrites were rejected after native-code
+inspection and matched benchmarks. The selected Wasm kernel retains its existing
+branch hints and four-way loop-unrolling hint; it is unchanged in this round.
+Its measured throughput is **28.60 GB/s**, versus **12.70 GB/s** for plain Node.
 
 These are warm-filesystem-cache, end-to-end timings: startup, compilation, reads,
-parsing, aggregation, merging, sorting, complete output and shutdown all count.
-Three full-file warm-ups per case were excluded; 21 alternating rounds then
-discarded each case's fastest and slowest run. All outputs matched expectations,
-and filesystem-input counters were zero. Both cases used 24 workers, 512 KiB
-chunks and no extra V8 flags. Selected Wasm throughput was **28.42 GB/s**.
+parsing, aggregation, merging, sorting, output and shutdown all count. Three
+full-file warm-ups per case precede nine alternating rounds; scores discard the
+fastest and slowest run. All measured outputs matched and filesystem-input
+counters were zero. Both solvers use 24 workers, with 128 KiB Node chunks and
+512 KiB Wasm chunks. The Node launcher keeps its two existing inlining flags.
 
-The **plain Node implementation is unchanged** in this hint round. Its latest
-separate nine-round comparison measured **1.168 s**, versus 1.174 s before its
-last hash change, using 24 workers and 128 KiB chunks. See the
-[preceding matched results](benchmarks/2026-10-20-round2-optimization.json).
-Do not combine separate batches to calculate incremental gains.
+A separate engine-flag control was faster than the source fix in its matched
+batch. Its remaining advantage is unresolved by the profiles; commands and
+observations are recorded in [BENCHMARKS.md](BENCHMARKS.md). The retained source
+fix preserves the existing runtime requirements. No theoretical optimum is
+claimed, and read-only throughput is not a theoretical bound.
 
-A read-only diagnostic previously measured roughly 0.34–0.36 s using the current
-reader. That is an empirical comparison without parsing, **not a theoretical
-limit**, and cannot be subtracted from solver time to estimate parsing cost.
-No theoretical optimum is claimed.
-
-See [BENCHMARKS.md](BENCHMARKS.md) for all experiment checkpoints and caveats,
-and the [latest raw timings](benchmarks/2026-10-20-wasm-hints.json).
-These are local results, not official leaderboard scores.
+See the [raw final timings](benchmarks/2026-10-20-profile-guided-results.json),
+[profile evidence](benchmarks/2026-10-20-profiling.json), and
+[experiment log](BENCHMARKS.md). These are local results, not leaderboard scores.
 
 ## Input and design
 

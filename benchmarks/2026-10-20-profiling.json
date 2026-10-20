@@ -2782,5 +2782,1302 @@
     "Worker intervals overlap; CPU profile percentages are samples, not elapsed-time shares or hardware counters.",
     "Raw-PC regions locate sampled native instructions, not cache misses or branch mispredictions.",
     "Node trace runs crashed with signal11 both with and without v8 category; excluded. Successful Node CPU and raw-PC captures validated full stdout."
-  ]
+  ],
+  "nodeMulticoreProfiles": {
+    "node-half-cpu-24": {
+      "capture": {
+        "label": "node-half-cpu-24",
+        "engine": "node",
+        "workers": 24,
+        "mode": "cpu",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/node-half-cpu-24/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--max-inlined-bytecode-size=1000",
+          "--max-inlined-bytecode-size-cumulative=4000",
+          "--cpu-prof",
+          "--cpu-prof-interval=1000",
+          "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/node-half-cpu-24",
+          "plain/calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 1.1658515080343932,
+        "usage": {
+          "user": 22.87,
+          "system": 1.71,
+          "maxRssKiB": 417096,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "32d47a915fbe732a16745499278ec860ca58f3f84c030413cbf10795ed0a6aa1",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": [
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.0.001.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.1.008.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.10.009.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.11.011.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.12.013.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.13.015.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.14.019.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.15.014.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.16.017.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.17.016.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.18.020.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.19.021.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.2.002.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.20.018.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.21.025.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.22.022.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.23.024.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.24.023.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.3.003.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.4.004.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.5.005.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.6.006.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.7.007.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.8.012.cpuprofile",
+          "results/profiles/node-half-cpu-24/CPU.20261020.204023.1886372.9.010.cpuprofile"
+        ]
+      },
+      "profiles": 25,
+      "samples": 22427,
+      "self": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 85,
+          "samples": 9079,
+          "sampledIntervalUs": 10160698,
+          "percentSamples": 40.4824541846881,
+          "percentIntervals": 39.84087799498714
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 128,
+          "samples": 5880,
+          "sampledIntervalUs": 6589372,
+          "percentSamples": 26.218397467338477,
+          "percentIntervals": 25.837434191586482
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 52,
+          "samples": 1820,
+          "sampledIntervalUs": 2007246,
+          "percentSamples": 8.115218263700005,
+          "percentIntervals": 7.8705658796202735
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 152,
+          "samples": 1497,
+          "sampledIntervalUs": 1559714,
+          "percentSamples": 6.674989967449949,
+          "percentIntervals": 6.115758502129811
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 1198,
+          "sampledIntervalUs": 1426362,
+          "percentSamples": 5.341775538413519,
+          "percentIntervals": 5.5928750582574
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "zeroBasedLine": 18,
+          "samples": 1076,
+          "sampledIntervalUs": 1198513,
+          "percentSamples": 4.797788380077585,
+          "percentIntervals": 4.699461612618151
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 973,
+          "sampledIntervalUs": 1510417,
+          "percentSamples": 4.338520533285772,
+          "percentIntervals": 5.922461175261236
+        },
+        {
+          "functionName": "find",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 72,
+          "samples": 271,
+          "sampledIntervalUs": 297276,
+          "percentSamples": 1.2083649172871984,
+          "percentIntervals": 1.1656420500676032
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 93,
+          "sampledIntervalUs": 116780,
+          "percentSamples": 0.4146787354528024,
+          "percentIntervals": 0.4579033578455533
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "zeroBasedLine": 7,
+          "samples": 74,
+          "sampledIntervalUs": 67390,
+          "percentSamples": 0.3299594239086815,
+          "percentIntervals": 0.2642413708272978
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "zeroBasedLine": 424,
+          "samples": 45,
+          "sampledIntervalUs": 51910,
+          "percentSamples": 0.20065100102554956,
+          "percentIntervals": 0.20354310075152143
+        },
+        {
+          "functionName": "parse",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "zeroBasedLine": 36,
+          "samples": 44,
+          "sampledIntervalUs": 65405,
+          "percentSamples": 0.19619208989164846,
+          "percentIntervals": 0.25645803322391175
+        },
+        {
+          "functionName": "claim",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "zeroBasedLine": 25,
+          "samples": 41,
+          "sampledIntervalUs": 34618,
+          "percentSamples": 0.18281535648994515,
+          "percentIntervals": 0.13573983937230147
+        },
+        {
+          "functionName": "remainder",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 145,
+          "samples": 34,
+          "sampledIntervalUs": 35140,
+          "percentSamples": 0.15160297855263744,
+          "percentIntervals": 0.13778664150276368
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "zeroBasedLine": 97,
+          "samples": 27,
+          "sampledIntervalUs": 4562,
+          "percentSamples": 0.12039060061532973,
+          "percentIntervals": 0.017887952718713945
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 7,
+          "samples": 20,
+          "sampledIntervalUs": 30841,
+          "percentSamples": 0.08917822267802203,
+          "percentIntervals": 0.12092993200303742
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 92,
+          "ticks": 2325,
+          "percentSamples": 10.36696838632006
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 95,
+          "ticks": 2308,
+          "percentSamples": 10.291166897043741
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 141,
+          "ticks": 1748,
+          "percentSamples": 7.794176662059125
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 101,
+          "ticks": 1457,
+          "percentSamples": 6.496633522093905
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1198,
+          "percentSamples": 5.341775538413519
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "lineOneBased": 20,
+          "ticks": 1076,
+          "percentSamples": 4.797788380077585
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 165,
+          "ticks": 968,
+          "percentSamples": 4.316225977616266
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 134,
+          "ticks": 828,
+          "percentSamples": 3.691978418870112
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 102,
+          "ticks": 704,
+          "percentSamples": 3.1390734382663754
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 58,
+          "ticks": 701,
+          "percentSamples": 3.125696704864672
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 91,
+          "ticks": 657,
+          "percentSamples": 2.9295046149730237
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 139,
+          "ticks": 607,
+          "percentSamples": 2.7065590582779686
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 94,
+          "ticks": 587,
+          "percentSamples": 2.6173808355999464
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 133,
+          "ticks": 442,
+          "percentSamples": 1.9708387211842868
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 56,
+          "ticks": 439,
+          "percentSamples": 1.9574619877825834
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 130,
+          "ticks": 387,
+          "percentSamples": 1.7255986088197262
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 88,
+          "ticks": 365,
+          "percentSamples": 1.627502563873902
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 62,
+          "ticks": 351,
+          "percentSamples": 1.5650778079992866
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 138,
+          "ticks": 337,
+          "percentSamples": 1.5026530521246713
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 132,
+          "ticks": 313,
+          "percentSamples": 1.3956391849110448
+        }
+      ]
+    },
+    "node-control-cpu-24": {
+      "capture": {
+        "label": "node-control-cpu-24",
+        "engine": "node",
+        "workers": 24,
+        "mode": "cpu",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/node-control-cpu-24/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--max-inlined-bytecode-size=1000",
+          "--max-inlined-bytecode-size-cumulative=4000",
+          "--no-additive-safe-int-feedback",
+          "--cpu-prof",
+          "--cpu-prof-interval=1000",
+          "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/node-control-cpu-24",
+          "results/profile-baseline/plain/calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 1.167497379006818,
+        "usage": {
+          "user": 22.94,
+          "system": 1.67,
+          "maxRssKiB": 416076,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "91601f14f5d31e5611369346252558ef0562e0ccaaf573e121eedf6ed625fc81",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": [
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.0.001.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.1.006.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.10.012.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.11.011.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.12.013.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.13.014.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.14.016.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.15.015.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.16.018.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.17.017.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.18.022.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.19.020.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.2.003.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.20.021.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.21.019.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.22.023.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.23.025.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.24.024.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.3.002.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.4.004.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.5.005.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.6.009.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.7.007.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.8.008.cpuprofile",
+          "results/profiles/node-control-cpu-24/CPU.20261020.204024.1886476.9.010.cpuprofile"
+        ]
+      },
+      "profiles": 25,
+      "samples": 22391,
+      "self": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 81,
+          "samples": 8924,
+          "sampledIntervalUs": 9954733,
+          "percentSamples": 39.855299004064136,
+          "percentIntervals": 38.87514911977741
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 124,
+          "samples": 5861,
+          "sampledIntervalUs": 6568094,
+          "percentSamples": 26.17569559197892,
+          "percentIntervals": 25.649671737324876
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 48,
+          "samples": 1906,
+          "sampledIntervalUs": 2140487,
+          "percentSamples": 8.512348711535886,
+          "percentIntervals": 8.359013879522935
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 148,
+          "samples": 1665,
+          "sampledIntervalUs": 1904255,
+          "percentSamples": 7.436023402259837,
+          "percentIntervals": 7.436482433740989
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 1110,
+          "sampledIntervalUs": 1325679,
+          "percentSamples": 4.957348934839891,
+          "percentIntervals": 5.1770317506212775
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/parse-utils.mjs",
+          "zeroBasedLine": 18,
+          "samples": 1065,
+          "sampledIntervalUs": 1190320,
+          "percentSamples": 4.756375329373409,
+          "percentIntervals": 4.648428792640993
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 940,
+          "sampledIntervalUs": 1351153,
+          "percentSamples": 4.198115314188737,
+          "percentIntervals": 5.2765126255656085
+        },
+        {
+          "functionName": "find",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 68,
+          "samples": 284,
+          "sampledIntervalUs": 317812,
+          "percentSamples": 1.2683667544995758,
+          "percentIntervals": 1.2411170537727831
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "zeroBasedLine": -1,
+          "samples": 98,
+          "sampledIntervalUs": 169116,
+          "percentSamples": 0.4376758519047832,
+          "percentIntervals": 0.6604305427920846
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/read.mjs",
+          "zeroBasedLine": 7,
+          "samples": 83,
+          "sampledIntervalUs": 96119,
+          "percentSamples": 0.37068465008262247,
+          "percentIntervals": 0.3753632024328412
+        },
+        {
+          "functionName": "claim",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/read.mjs",
+          "zeroBasedLine": 25,
+          "samples": 49,
+          "sampledIntervalUs": 41457,
+          "percentSamples": 0.2188379259523916,
+          "percentIntervals": 0.16189756742432088
+        },
+        {
+          "functionName": "parse",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/read.mjs",
+          "zeroBasedLine": 36,
+          "samples": 41,
+          "sampledIntervalUs": 50725,
+          "percentSamples": 0.18310928498057255,
+          "percentIntervals": 0.19809089195066398
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "zeroBasedLine": 424,
+          "samples": 40,
+          "sampledIntervalUs": 50082,
+          "percentSamples": 0.17864320485909518,
+          "percentIntervals": 0.19557985314289114
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "zeroBasedLine": 97,
+          "samples": 32,
+          "sampledIntervalUs": 12660,
+          "percentSamples": 0.14291456388727614,
+          "percentIntervals": 0.04943973764604053
+        },
+        {
+          "functionName": "remainder",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 141,
+          "samples": 29,
+          "sampledIntervalUs": 29354,
+          "percentSamples": 0.129516323522844,
+          "percentIntervals": 0.11463302202700425
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "zeroBasedLine": 7,
+          "samples": 22,
+          "sampledIntervalUs": 27461,
+          "percentSamples": 0.09825376267250234,
+          "percentIntervals": 0.10724049253538065
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 91,
+          "ticks": 2369,
+          "percentSamples": 10.580143807779912
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 88,
+          "ticks": 2147,
+          "percentSamples": 9.588674020811933
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 137,
+          "ticks": 1656,
+          "percentSamples": 7.39582868116654
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 97,
+          "ticks": 1453,
+          "percentSamples": 6.489214416506632
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 161,
+          "ticks": 1335,
+          "percentSamples": 5.962216962172302
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1110,
+          "percentSamples": 4.957348934839891
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/parse-utils.mjs",
+          "lineOneBased": 20,
+          "ticks": 1065,
+          "percentSamples": 4.756375329373409
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 130,
+          "ticks": 882,
+          "percentSamples": 3.9390826671430483
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 98,
+          "ticks": 730,
+          "percentSamples": 3.2602384886784868
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 54,
+          "ticks": 680,
+          "percentSamples": 3.036934482604618
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 135,
+          "ticks": 638,
+          "percentSamples": 2.849359117502568
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 87,
+          "ticks": 572,
+          "percentSamples": 2.554597829485061
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 90,
+          "ticks": 562,
+          "percentSamples": 2.5099370282702873
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 52,
+          "ticks": 459,
+          "percentSamples": 2.049930775758117
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 129,
+          "ticks": 427,
+          "percentSamples": 1.907016211870841
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 84,
+          "ticks": 410,
+          "percentSamples": 1.8310928498057255
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 126,
+          "ticks": 405,
+          "percentSamples": 1.8087624491983387
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 58,
+          "ticks": 371,
+          "percentSamples": 1.6569157250681077
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 134,
+          "ticks": 336,
+          "percentSamples": 1.5006029208163993
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/results/profile-baseline/plain/lib/aggregate.mjs",
+          "lineOneBased": 128,
+          "ticks": 320,
+          "percentSamples": 1.4291456388727615
+        }
+      ]
+    }
+  },
+  "nodeTierComparison": {
+    "interpretation": [
+      "Two instrumented full-file captures; compare distribution and source attribution, not profiled elapsed times as speed scores.",
+      "Parser-tier percentages use only raw leaf samples inside aggregate.mjs native code, excluding interpreter/builtin/native/other-script PCs. They are not whole-process CPU-time percentages.",
+      "First TurboFan delay is code-creation timestamp minus parser bytecode-creation timestamp within each worker. It includes work and scheduling before availability; it is not compiler CPU time.",
+      "Native-code sizes reflect observed code versions, not measured executed instruction counts. Multiple versions do not alone establish deoptimization."
+    ],
+    "cases": [
+      {
+        "case": "half",
+        "workers": 24,
+        "sourceSha256": "32d47a915fbe732a16745499278ec860ca58f3f84c030413cbf10795ed0a6aa1",
+        "correct": true,
+        "workerTicks": 11472,
+        "parserTicks": 9980,
+        "tierCounts": {
+          "Maglev": 293,
+          "Sparkplug baseline": 44,
+          "TurboFan": 9643
+        },
+        "tierPercentParserTicks": {
+          "Maglev": 2.935871743486974,
+          "Sparkplug baseline": 0.4408817635270541,
+          "TurboFan": 96.62324649298597
+        },
+        "parserFirstTurboAfterBytecodeUs": {
+          "min": 32607,
+          "median": 175031.5,
+          "max": 285870,
+          "mean": 165586.375
+        },
+        "parserTurboVersionCountsPerWorker": {
+          "1": 20,
+          "2": 4
+        },
+        "parserTurboSizeCounts": {
+          "9128": 1,
+          "12620": 1,
+          "12656": 1,
+          "12680": 2,
+          "12888": 9,
+          "13220": 1,
+          "13324": 1,
+          "13540": 1,
+          "13560": 3,
+          "13568": 1,
+          "13716": 4,
+          "14684": 1,
+          "14748": 2
+        },
+        "parserTurboSizeTickCounts": {
+          "9128": 387,
+          "12620": 323,
+          "12656": 451,
+          "12680": 861,
+          "12888": 3363,
+          "13220": 0,
+          "13324": 450,
+          "13540": 381,
+          "13560": 0,
+          "13568": 262,
+          "13716": 1459,
+          "14684": 505,
+          "14748": 732
+        },
+        "topSourceRegions": [
+          {
+            "tier": "TurboFan",
+            "function": "scan",
+            "source": "const length = records[r + 4];",
+            "ticks": 1414,
+            "percentParserTicks": 14.168336673346694
+          },
+          {
+            "tier": "TurboFan",
+            "function": "scan",
+            "source": "const predicted = prefixCache[prefixSlot] - 1;",
+            "ticks": 1080,
+            "percentParserTicks": 10.821643286573146
+          },
+          {
+            "tier": "TurboFan",
+            "function": "update",
+            "source": "sums[id] += value;",
+            "ticks": 834,
+            "percentParserTicks": 8.356713426853707
+          },
+          {
+            "tier": "TurboFan",
+            "function": "scan",
+            "source": "if (buffer[end] === 59 && equal(view, start, length, r, head)) {",
+            "ticks": 695,
+            "percentParserTicks": 6.963927855711423
+          },
+          {
+            "tier": "TurboFan",
+            "function": "(parser)",
+            "source": "while (a < endA && b < end) {",
+            "ticks": 663,
+            "percentParserTicks": 6.643286573146293
+          },
+          {
+            "tier": "TurboFan",
+            "function": "update",
+            "source": "let value = temperatureBase(digits) + (buffer[p + width - 2] & 15);",
+            "ticks": 614,
+            "percentParserTicks": 6.152304609218437
+          },
+          {
+            "tier": "TurboFan",
+            "function": "update",
+            "source": "if (value < records[r + 6]) records[r + 6] = value;",
+            "ticks": 413,
+            "percentParserTicks": 4.138276553106213
+          },
+          {
+            "tier": "TurboFan",
+            "function": "temperatureBase",
+            "source": "return temperaturePrefixes[digits & 0x0f0f];",
+            "ticks": 361,
+            "percentParserTicks": 3.617234468937876
+          },
+          {
+            "tier": "TurboFan",
+            "function": "scan",
+            "source": "temperatures[lane] = end + 1;",
+            "ticks": 328,
+            "percentParserTicks": 3.2865731462925853
+          },
+          {
+            "tier": "TurboFan",
+            "function": "equal",
+            "source": "if (view.getInt32(start + Math.min(4, length - 4), true) !== records[r + 3]) return false;",
+            "ticks": 288,
+            "percentParserTicks": 2.8857715430861726
+          },
+          {
+            "tier": "TurboFan",
+            "function": "update",
+            "source": "const negative = (~word & 0x10) >>> 4;",
+            "ticks": 245,
+            "percentParserTicks": 2.4549098196392785
+          },
+          {
+            "tier": "TurboFan",
+            "function": "update",
+            "source": "const width = 4 + negative + ((digits >>> 12) & 1);",
+            "ticks": 221,
+            "percentParserTicks": 2.214428857715431
+          }
+        ],
+        "codeMoves": 0,
+        "nativeRangeOverlaps": 0
+      },
+      {
+        "case": "control",
+        "workers": 24,
+        "sourceSha256": "91601f14f5d31e5611369346252558ef0562e0ccaaf573e121eedf6ed625fc81",
+        "correct": true,
+        "workerTicks": 10776,
+        "parserTicks": 9300,
+        "tierCounts": {
+          "Maglev": 193,
+          "TurboFan": 9092,
+          "Sparkplug baseline": 15
+        },
+        "tierPercentParserTicks": {
+          "Maglev": 2.075268817204301,
+          "TurboFan": 97.76344086021506,
+          "Sparkplug baseline": 0.16129032258064516
+        },
+        "parserFirstTurboAfterBytecodeUs": {
+          "min": 29780,
+          "median": 133605.0,
+          "max": 233598,
+          "mean": 127733.125
+        },
+        "parserTurboVersionCountsPerWorker": {
+          "1": 20,
+          "2": 4
+        },
+        "parserTurboSizeCounts": {
+          "8868": 1,
+          "9128": 3,
+          "10916": 1,
+          "11088": 2,
+          "12112": 1,
+          "12372": 1,
+          "12376": 2,
+          "12940": 7,
+          "13016": 1,
+          "13092": 1,
+          "14032": 7,
+          "14312": 1
+        },
+        "parserTurboSizeTickCounts": {
+          "8868": 275,
+          "9128": 1219,
+          "10916": 344,
+          "11088": 0,
+          "12112": 391,
+          "12372": 441,
+          "12376": 704,
+          "12940": 2540,
+          "13016": 0,
+          "13092": 349,
+          "14032": 2309,
+          "14312": 0
+        },
+        "topSourceRegions": [
+          {
+            "tier": "TurboFan",
+            "function": "scan",
+            "source": "const length = records[r + 4];",
+            "ticks": 1330,
+            "percentParserTicks": 14.301075268817204
+          },
+          {
+            "tier": "TurboFan",
+            "function": "scan",
+            "source": "const predicted = prefixCache[prefixSlot] - 1;",
+            "ticks": 942,
+            "percentParserTicks": 10.129032258064516
+          },
+          {
+            "tier": "TurboFan",
+            "function": "update",
+            "source": "sums[id] += value;",
+            "ticks": 726,
+            "percentParserTicks": 7.806451612903226
+          },
+          {
+            "tier": "TurboFan",
+            "function": "scan",
+            "source": "if (buffer[end] === 59 && equal(view, start, length, r, head)) {",
+            "ticks": 693,
+            "percentParserTicks": 7.451612903225806
+          },
+          {
+            "tier": "TurboFan",
+            "function": "(parser)",
+            "source": "while (a < endA && b < end) {",
+            "ticks": 684,
+            "percentParserTicks": 7.354838709677419
+          },
+          {
+            "tier": "TurboFan",
+            "function": "update",
+            "source": "let value = temperatureBase(digits) + (buffer[p + width - 2] & 15);",
+            "ticks": 595,
+            "percentParserTicks": 6.397849462365591
+          },
+          {
+            "tier": "TurboFan",
+            "function": "update",
+            "source": "if (value < records[r + 6]) records[r + 6] = value;",
+            "ticks": 374,
+            "percentParserTicks": 4.021505376344086
+          },
+          {
+            "tier": "TurboFan",
+            "function": "temperatureBase",
+            "source": "return temperaturePrefixes[digits & 0x0f0f];",
+            "ticks": 371,
+            "percentParserTicks": 3.989247311827957
+          },
+          {
+            "tier": "TurboFan",
+            "function": "equal",
+            "source": "if (view.getInt32(start + Math.min(4, length - 4), true) !== records[r + 3]) return false;",
+            "ticks": 337,
+            "percentParserTicks": 3.6236559139784945
+          },
+          {
+            "tier": "TurboFan",
+            "function": "scan",
+            "source": "temperatures[lane] = end + 1;",
+            "ticks": 278,
+            "percentParserTicks": 2.989247311827957
+          },
+          {
+            "tier": "TurboFan",
+            "function": "update",
+            "source": "const negative = (~word & 0x10) >>> 4;",
+            "ticks": 214,
+            "percentParserTicks": 2.3010752688172045
+          },
+          {
+            "tier": "TurboFan",
+            "function": "scan",
+            "source": "const prefixSlot = Math.imul(head ^ buffer[p + 4], 0x9e3779b1) >>> 17;",
+            "ticks": 214,
+            "percentParserTicks": 2.3010752688172045
+          }
+        ],
+        "codeMoves": 0,
+        "nativeRangeOverlaps": 0
+      }
+    ],
+    "finding": "Both variants spend most sampled parser machine-code execution in TurboFan and have similar hot source regions. The half-offset capture shows later first optimized-parser availability and a slightly larger lower-tier sample share. These observations identify tiering/availability as a diagnostic lead but do not establish the cause or size of the separate uninstrumented multicore timing gap."
+  },
+  "traceFailures": [
+    {
+      "commandCategories": "v8,node.bootstrap,node.worker,node.fs.sync",
+      "returnCode": 139,
+      "signal": 11,
+      "correct": false,
+      "usageText": "Command terminated by signal 11\n{\"user\":15.02,\"system\":1.14,\"maxRssKiB\":365084,\"filesystemInputs\":0}\n",
+      "note": "Diagnostic trace run failed; not used as solver validation or performance data."
+    },
+    {
+      "commandCategories": "node.bootstrap,node.worker,node.fs.sync",
+      "returnCode": 139,
+      "signal": 11,
+      "correct": false,
+      "usageText": "Command terminated by signal 11\n{\"user\":8.52,\"system\":0.62,\"maxRssKiB\":340328,\"filesystemInputs\":0}\n",
+      "note": "Second diagnostic trace failed even without v8 category; no timing used. CPU profiles validate normally."
+    }
+  ],
+  "references": {
+    "cliProfiling": "https://nodejs.org/api/cli.html",
+    "traceFsHooks": "https://github.com/nodejs/node/blob/main/src/node_file.cc",
+    "node22Flags": "https://github.com/nodejs/node/blob/v22.0.0/deps/v8/src/flags/flag-definitions.h",
+    "node24Flags": "https://github.com/nodejs/node/blob/v24.0.0/deps/v8/src/flags/flag-definitions.h"
+  },
+  "nativeAndTierCaptures": {
+    "wasm-ticks-1": {
+      "label": "wasm-ticks-1",
+      "engine": "wasm",
+      "workers": 1,
+      "mode": "ticks",
+      "correct": true,
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "sourceSha256": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce",
+      "usage": {
+        "user": 3.31,
+        "system": 1.14,
+        "maxRssKiB": 66860,
+        "filesystemInputs": 0
+      },
+      "note": "Capture metadata recovered after diagnostic disassembly prefix was separated from exact correct output. Duration was not retained."
+    },
+    "wasm-xor-ticks-1": {
+      "label": "wasm-xor-ticks-1",
+      "engine": "wasm",
+      "workers": 1,
+      "mode": "ticks",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/wasm-xor-ticks-1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--prof",
+        "--prof-sampling-interval=250",
+        "--logfile=/home/mmv/projects/1brc-node/results/profiles/wasm-xor-ticks-1/v8.log",
+        "--print-wasm-code",
+        "--print-wasm-code-function-index=8",
+        "--code-comments",
+        "--redirect-code-traces",
+        "--redirect-code-traces-to=/home/mmv/projects/1brc-node/results/profiles/wasm-xor-ticks-1/native.asm",
+        "calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 4.46965609700419,
+      "usage": {
+        "user": 3.57,
+        "system": 1.06,
+        "maxRssKiB": 66888,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "ff869abf7b01f06cefbd45962868ef962586507a3f401d2ef96b7aa0f859acb0",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "profiles": []
+    },
+    "wasm-wide-ticks-1": {
+      "label": "wasm-wide-ticks-1",
+      "engine": "wasm",
+      "workers": 1,
+      "mode": "ticks",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/wasm-wide-ticks-1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--prof",
+        "--prof-sampling-interval=250",
+        "--logfile=/home/mmv/projects/1brc-node/results/profiles/wasm-wide-ticks-1/v8.log",
+        "--print-wasm-code",
+        "--print-wasm-code-function-index=8",
+        "--code-comments",
+        "--redirect-code-traces",
+        "--redirect-code-traces-to=/home/mmv/projects/1brc-node/results/profiles/wasm-wide-ticks-1/native.asm",
+        "calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 4.269458433846012,
+      "usage": {
+        "user": 3.21,
+        "system": 1.19,
+        "maxRssKiB": 67292,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "0908e14a92b37e0ba33161d3c7b9e880d60eeb7ee5f0e7048ed2a78f36256f57",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "profiles": []
+    },
+    "node-ticks-1": {
+      "label": "node-ticks-1",
+      "engine": "node",
+      "workers": 1,
+      "mode": "js-ticks",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/node-ticks-1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--prof",
+        "--prof-sampling-interval=250",
+        "--logfile=/home/mmv/projects/1brc-node/results/profiles/node-ticks-1/v8.log",
+        "--print-opt-code",
+        "--code-comments",
+        "--log-source-code",
+        "--log-source-position",
+        "--trace-deopt",
+        "plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 11.428906992077827,
+      "usage": {
+        "user": 10.87,
+        "system": 0.94,
+        "maxRssKiB": 65852,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "91601f14f5d31e5611369346252558ef0562e0ccaaf573e121eedf6ed625fc81",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "profiles": []
+    },
+    "node-half-ticks-1": {
+      "label": "node-half-ticks-1",
+      "engine": "node",
+      "workers": 1,
+      "mode": "js-ticks",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/node-half-ticks-1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--prof",
+        "--prof-sampling-interval=250",
+        "--logfile=/home/mmv/projects/1brc-node/results/profiles/node-half-ticks-1/v8.log",
+        "--print-opt-code",
+        "--code-comments",
+        "--log-source-code",
+        "--log-source-position",
+        "--trace-deopt",
+        "plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 10.227461275877431,
+      "usage": {
+        "user": 9.58,
+        "system": 0.96,
+        "maxRssKiB": 64768,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "32d47a915fbe732a16745499278ec860ca58f3f84c030413cbf10795ed0a6aa1",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "profiles": []
+    },
+    "node-control-ticks-1": {
+      "label": "node-control-ticks-1",
+      "engine": "node",
+      "workers": 1,
+      "mode": "js-ticks",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/node-control-ticks-1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--no-additive-safe-int-feedback",
+        "--prof",
+        "--prof-sampling-interval=250",
+        "--logfile=/home/mmv/projects/1brc-node/results/profiles/node-control-ticks-1/v8.log",
+        "--print-opt-code",
+        "--code-comments",
+        "--log-source-code",
+        "--log-source-position",
+        "--trace-deopt",
+        "results/profile-baseline/plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 10.676955750910565,
+      "usage": {
+        "user": 10.08,
+        "system": 0.96,
+        "maxRssKiB": 66060,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "91601f14f5d31e5611369346252558ef0562e0ccaaf573e121eedf6ed625fc81",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "profiles": []
+    },
+    "node-half-tier-24": {
+      "label": "node-half-tier-24",
+      "engine": "node",
+      "workers": 24,
+      "mode": "js-tier",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/node-half-tier-24/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--prof",
+        "--prof-sampling-interval=1000",
+        "--logfile=/home/mmv/projects/1brc-node/results/profiles/node-half-tier-24/v8.log",
+        "--log-source-code",
+        "--log-source-position",
+        "plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 1.2179374599363655,
+      "usage": {
+        "user": 24.19,
+        "system": 1.94,
+        "maxRssKiB": 361780,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "32d47a915fbe732a16745499278ec860ca58f3f84c030413cbf10795ed0a6aa1",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "profiles": []
+    },
+    "node-control-tier-24": {
+      "label": "node-control-tier-24",
+      "engine": "node",
+      "workers": 24,
+      "mode": "js-tier",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/node-control-tier-24/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--no-additive-safe-int-feedback",
+        "--prof",
+        "--prof-sampling-interval=1000",
+        "--logfile=/home/mmv/projects/1brc-node/results/profiles/node-control-tier-24/v8.log",
+        "--log-source-code",
+        "--log-source-position",
+        "results/profile-baseline/plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 1.2171086778398603,
+      "usage": {
+        "user": 23.95,
+        "system": 2.08,
+        "maxRssKiB": 360972,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "91601f14f5d31e5611369346252558ef0562e0ccaaf573e121eedf6ed625fc81",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "profiles": []
+    }
+  }
 }

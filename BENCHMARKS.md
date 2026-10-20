@@ -1,6 +1,154 @@
 # Benchmark and experiment log
 
-## Current: Wasm hint and attribute experiments, 2026-10-20
+## Current: profile-guided Node sum updates, 2026-10-20
+
+The retained source change is **`b216096`**, confirmed at **`c60feda`**. Plain
+Node now keeps each worker-local sum biased by exactly 0.5 and removes the bias
+once when exporting that station. This makes V8 emit direct Float64 addition
+instead of the measured integer-conversion and range-check sequence. Wasm is
+byte-for-byte unchanged from **`bd04b60`**, including its four-way loop hint.
+There are still two production solvers. Every experiment has an unsigned commit.
+
+### Final full-machine comparison
+
+Same Ryzen 9 7900 (12 cores / 24 threads), Node 26.12.0 and independently seeded
+**1,000,000,000-row / 13,795,455,110-byte / 413-station** input. Power settings
+were unchanged. Each case used three excluded full-file warm-ups followed by
+nine alternating rounds; the fastest and slowest times are discarded. Fresh
+process timings include startup, compilation, reads, parsing, merging, output
+and shutdown. Node uses its existing two inlining flags and 128 KiB chunks;
+Wasm uses no extra flags and 512 KiB chunks. Both use 24 workers.
+
+| Solver | Trimmed mean | Best | Throughput | Peak RSS |
+| --- | ---: | ---: | ---: | ---: |
+| Previous Node, `bd04b60` | 1.144 s | 1.137 s | 12.06 GB/s | 340,880 KiB |
+| **Profile-guided Node** | **1.086 s** | **1.076 s** | **12.70 GB/s** | 341,420 KiB |
+| Retained Wasm | 0.482 s | 0.474 s | 28.60 GB/s | 326,920 KiB |
+
+Node took **5.01% less elapsed time**, winning all nine paired rounds. The
+untrimmed paired saving averaged 57.86 ms with a 1.69 ms standard error.
+An earlier nine-round comparison independently measured 1.121 versus 1.190 s
+(5.8% less time), also winning all nine. Separate batches are not combined.
+All 27 final measured processes matched complete expected stdout and reported
+zero filesystem inputs: these are cached-file results. Sources were checked
+before and after every process, including warm-ups.
+
+[Final raw results](benchmarks/2026-10-20-profile-guided-results.json) and
+[exact verification](benchmarks/2026-10-20-profiling-verification.json) preserve
+commands, hashes and observations. All **53 tests pass on Node 24.15.0 and
+26.12.0**. Full-billion-row station-name/minimum/sum/maximum/count tuples match
+between engines, including expected output. Biome and C formatting pass.
+
+### What the profiles actually show
+
+Hardware counters were unavailable under this machine's existing
+`perf_event_paranoid=4`; no system settings were changed. The investigation used
+V8 CPU profiles from the main thread and all 24 workers, separate single-worker
+profiles, raw V8 tick PCs joined to same-process native disassembly, and a
+successful Wasm filesystem trace. Diagnostic durations are not benchmark scores.
+
+Across all isolates, the baseline Node CPU profile attributes 35.4% of samples
+to `scan`, 34.4% to `update`, and 7.6% to `equal`; GC is 0.48%. The sum-update
+source line receives 18.3% of samples with 24 workers and 19.6% with one worker.
+Native sampling resolves that source attribution: the dominant optimized
+parser converts each Float64 sum to int64 and back, compares it, checks its
+range, performs shifted integer addition with an overflow guard, then converts
+back for storage. Both inlined update lanes emit this sequence.
+
+With the half-unit bias, both lanes emit temperature-to-double conversion,
+`vaddsd` and a store. The sum regions shrink from 57 to 14 static instructions
+including cold paths; the optimized parser shrinks from 13,268 to 12,884 bytes.
+The sum line's raw-sample share falls from 15.5% to 10.0% in those single-worker
+captures. In the later 24-worker CPU capture it falls from 18.3% to 7.8%.
+These are sample distributions, not elapsed-time components or cache counters.
+
+Exactness follows from the input contract: at most one billion measurements,
+each in [-999, 999] integer tenths, keep every intermediate sum below 2^40 in
+absolute value. Every `sum + 0.5` is exactly representable in binary64 there.
+Adding integer tenths preserves that invariant; subtracting 0.5 once per
+worker's station restores the exact integer before merging. Zero and negative
+totals need no special handling. Existing exact-tuple tests cover these cases,
+multiple workers, parser modes, and sums beyond unsigned 32-bit limits.
+
+Wasm's baseline CPU profile attributes 69.9% of samples to `parse_chunk`, 6.2%
+to the long-name path and 14.7% to native reads. Raw PCs locate 4,071 of 9,444
+optimized parser samples in the short-key lookup/equality blocks. The trace
+records 26,313 large reads. Across workers, the median read span is 387.5 ms,
+the median sum of read durations is 70.4 ms, and the median summed read thread
+CPU time is 64.7 ms. The per-worker sums overlap and cannot be subtracted from
+whole-process time. CPU-profile Wasm
+columns identify function starts, so they were not treated as instruction PCs.
+
+[Profile evidence](benchmarks/2026-10-20-profiling.json) and the
+[Node native-code comparison](benchmarks/experiments/profile-node-half-native.json)
+contain counts, source hashes, instruction sequences and caveats. Node tracing
+with `node.fs.sync` terminated with signal 11 in two diagnostic runs, both with
+and without the `v8` category; those runs were excluded. CPU and raw-PC captures
+completed with correct output. The reason for that tracing failure is unresolved.
+
+### Rejected Wasm changes and runtime control
+
+| Checkpoint | Profile-driven experiment | Matched result / decision |
+| --- | --- | --- |
+| `d015c5c` | Profile both current engines before selecting changes | Baseline observations and reproducibility plan. |
+| `ee8bb70` | Short-key XOR plus vector zero test | V8 materialized a Boolean, expanding five native instructions to seven. 0.492 vs 0.481 s in nine rounds; reject. |
+| `f50d16b` | Combine long-key equality vectors before one movemask | Removed one native instruction, but 0.484 vs 0.483 s in nine rounds; reject. |
+| `cde72aa` | Disable additive-safe-integer feedback as a diagnostic control | Baseline Node 1.190 s, control 1.079 s, half-offset source 1.121 s in the same nine-round batch. |
+| `b216096` | Exact half-offset Node sums | Removes the measured conversion checks; retain after correctness and repeated full-machine gains. |
+| `ad3ec02` | Profile control versus source fix with all 24 workers | Similar hot code; tier availability differs, but cause of remaining timing gap is unresolved. |
+| `c60feda` | Confirm selected Node and retained Wasm | Final 1.144 → 1.086 s Node pair; Wasm 0.482 s. |
+
+The control uses `--no-additive-safe-int-feedback` alongside the normal Node
+inlining flags. It explains why the original sum sequence is avoidable. The
+control and source fix emit equivalent optimized sum sequences. In 24-worker
+raw samples, 97.76% of mapped parser samples are TurboFan for the control versus
+96.62% for the source fix. Median first optimized-parser availability after
+bytecode creation is 133.6 versus 175.0 ms. These delays include preceding work
+and scheduling; they are not compiler CPU times and do not establish the cause
+or magnitude of the separate timing gap. Both have four workers with an extra
+optimized parser version that receives no samples.
+
+The portable source fix is selected; the new engine flag remains a documented
+control. Local Node 26 enables that feedback by default, while local Node 24
+leaves it disabled. The flag is absent from
+[Node 22.0.0's V8 definitions](https://github.com/nodejs/node/blob/v22.0.0/deps/v8/src/flags/flag-definitions.h)
+and appears, defaulting off, in
+[Node 24.0.0](https://github.com/nodejs/node/blob/v24.0.0/deps/v8/src/flags/flag-definitions.h).
+No blanket runtime requirement was added. A theoretical optimum is not claimed:
+the measured improvement proves the preceding Node version had avoidable work;
+read-only throughput is not a theoretical bound.
+
+Raw rejected results: [short XOR](benchmarks/experiments/profile-short-xor-results.json),
+[wide mask](benchmarks/experiments/profile-wide-mask-results.json), and
+[Node three-case control](benchmarks/experiments/profile-node-addition-results.json).
+
+### Reproduce
+
+```sh
+git worktree add --detach results/profile-baseline bd04b60
+CASES="$(cat benchmarks/experiments/profile-final-cases.json)" \
+  RUNS=9 WARMUP=3 node tools/compare.mjs profile-final measurements.txt
+node tools/verify-engines.mjs measurements.txt 1000000000
+```
+
+For a CPU profile, create a fresh output directory and run the selected Node
+runtime with `--cpu-prof --cpu-prof-interval=1000 --cpu-prof-dir=ABSOLUTE_DIR`.
+Preserve the normal inlining flags when profiling plain Node. Summarize the
+main and worker files together with
+`node tools/profile-summary.mjs ABSOLUTE_DIR`; it reports raw samples separately
+from interval weights and preserves scheduling outliers.
+
+Saved capture commands and hashes are in the profile evidence. Wasm native
+capture uses `--prof --prof-sampling-interval=250 --print-wasm-code --code-comments`
+with one worker. Pass its matching V8 log and stdout disassembly to
+`node tools/profile-wasm-pc.mjs V8_LOG DISASSEMBLY`. The mapper rejects overlapping
+code ranges and code moves. For Node, `--print-opt-code --log-source-code
+--log-source-position --trace-deopt` supplies optimized instruction and inlining
+metadata alongside `--prof`. Each capture's solver output was checked against
+the expected complete result; native-code diagnostics were separated from it.
+Large raw profiles remain under ignored `results/profiles/`.
+
+## Previous: Wasm hint and attribute experiments, 2026-10-20
 
 Selected runtime: **`801ecc5`**, equivalent to the four-way experiment `bbef50b`.
 The sole C change from **`e7d1d1a`** is
