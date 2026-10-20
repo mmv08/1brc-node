@@ -9,7 +9,7 @@
   },
   {
     "name": "Optimized plain Node",
-    "revision": "7969ca6",
+    "revision": "bf11dbb",
     "env": {
       "ENGINE": "node"
     }
@@ -24,14 +24,14 @@
   },
   {
     "name": "Optimized Wasm",
-    "revision": "7969ca6",
+    "revision": "bf11dbb",
     "env": {
       "ENGINE": "wasm"
     }
   },
   {
     "name": "Optimized Wasm 16 workers",
-    "revision": "7969ca6",
+    "revision": "bf11dbb",
     "env": {
       "ENGINE": "wasm",
       "WORKERS": "16"
