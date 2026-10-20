@@ -2,7 +2,13 @@ import { execFileSync, spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { availableParallelism, cpus } from 'node:os';
-import { benchmarkEnv, entryScript, nodeFlags, nodeRuntime, sourceHash } from './benchmark-config.mjs';
+import {
+  benchmarkEnv,
+  entryScript,
+  nodeFlags,
+  nodeRuntime,
+  sourceHash,
+} from './benchmark-config.mjs';
 
 // Generic external-process comparisons also accept scripts from git worktrees.
 const label = process.argv[2] ?? 'node-vs-wasm';

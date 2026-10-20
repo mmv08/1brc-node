@@ -68,18 +68,11 @@
         "ENGINE": "node",
         "CHUNK_BYTES": "65536"
       },
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 24,
       "chunkBytes": 65536,
       "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
-      "times": [
-        1.221264014999999,
-        1.2991798490000002,
-        1.2740554470000025
-      ],
+      "times": [1.221264014999999, 1.2991798490000002, 1.2740554470000025],
       "usage": [
         {
           "user": 25.62,
@@ -110,18 +103,11 @@
         "ENGINE": "node",
         "CHUNK_BYTES": "262144"
       },
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 24,
       "chunkBytes": 262144,
       "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
-      "times": [
-        1.270149782999999,
-        1.2969675339999995,
-        1.3770213919999987
-      ],
+      "times": [1.270149782999999, 1.2969675339999995, 1.3770213919999987],
       "usage": [
         {
           "user": 26.53,
@@ -152,18 +138,11 @@
         "ENGINE": "node",
         "CHUNK_BYTES": "524288"
       },
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 24,
       "chunkBytes": 524288,
       "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
-      "times": [
-        1.338136434,
-        1.2856190209999987,
-        1.2818172129999985
-      ],
+      "times": [1.338136434, 1.2856190209999987, 1.2818172129999985],
       "usage": [
         {
           "user": 26.83,
@@ -198,11 +177,7 @@
       "requestedWorkers": 24,
       "chunkBytes": 131072,
       "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
-      "times": [
-        0.5066049210000001,
-        0.505375591,
-        0.507758098000002
-      ],
+      "times": [0.5066049210000001, 0.505375591, 0.507758098000002],
       "usage": [
         {
           "user": 8.57,
@@ -237,11 +212,7 @@
       "requestedWorkers": 24,
       "chunkBytes": 262144,
       "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
-      "times": [
-        0.5195809810000009,
-        0.500855141,
-        0.4999528900000005
-      ],
+      "times": [0.5195809810000009, 0.500855141, 0.4999528900000005],
       "usage": [
         {
           "user": 8.73,
@@ -276,11 +247,7 @@
       "requestedWorkers": 24,
       "chunkBytes": 1048576,
       "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
-      "times": [
-        0.5058723919999993,
-        0.5046255679999995,
-        0.5115110520000017
-      ],
+      "times": [0.5058723919999993, 0.5046255679999995, 0.5115110520000017],
       "usage": [
         {
           "user": 8.55,
@@ -315,11 +282,7 @@
       "requestedWorkers": 24,
       "chunkBytes": 2097152,
       "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
-      "times": [
-        0.5199699280000004,
-        0.5073195960000012,
-        0.5083567120000007
-      ],
+      "times": [0.5199699280000004, 0.5073195960000012, 0.5083567120000007],
       "usage": [
         {
           "user": 8.56,
@@ -349,18 +312,11 @@
       "env": {
         "ENGINE": "node"
       },
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 24,
       "chunkBytes": 131072,
       "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
-      "times": [
-        1.2657193939999998,
-        1.2386952209999982,
-        1.2594709980000007
-      ],
+      "times": [1.2657193939999998, 1.2386952209999982, 1.2594709980000007],
       "usage": [
         {
           "user": 26.71,
@@ -394,11 +350,7 @@
       "requestedWorkers": 24,
       "chunkBytes": 524288,
       "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
-      "times": [
-        0.5060166649999992,
-        0.49473172200000043,
-        0.5212094880000004
-      ],
+      "times": [0.5060166649999992, 0.49473172200000043, 0.5212094880000004],
       "usage": [
         {
           "user": 8.71,
@@ -429,17 +381,11 @@
         "ENGINE": "wasm",
         "FLAGS": "--no-liftoff"
       },
-      "flags": [
-        "--no-liftoff"
-      ],
+      "flags": ["--no-liftoff"],
       "requestedWorkers": 24,
       "chunkBytes": 524288,
       "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
-      "times": [
-        0.5092588319999996,
-        0.546280388000001,
-        0.5360953699999991
-      ],
+      "times": [0.5092588319999996, 0.546280388000001, 0.5360953699999991],
       "usage": [
         {
           "user": 8.9,

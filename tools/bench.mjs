@@ -3,7 +3,13 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { availableParallelism, cpus } from 'node:os';
 import { basename } from 'node:path';
-import { benchmarkEnv, entryScript, nodeFlags, nodeRuntime, sourceHash } from './benchmark-config.mjs';
+import {
+  benchmarkEnv,
+  entryScript,
+  nodeFlags,
+  nodeRuntime,
+  sourceHash,
+} from './benchmark-config.mjs';
 
 const file = process.argv[2] ?? 'measurements.txt';
 const runs = Number(process.env.RUNS ?? 5);
@@ -18,7 +24,8 @@ const flags =
 const expected = readFileSync(`${file}.out`, 'utf8');
 const sourceSha256 = sourceHash(engine, script);
 const verifySource = () => {
-  if (sourceHash(engine, script) !== sourceSha256) throw new Error('Source changed during benchmark');
+  if (sourceHash(engine, script) !== sourceSha256)
+    throw new Error('Source changed during benchmark');
 };
 const results = [];
 for (let i = 0; i < runs; i++) {

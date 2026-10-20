@@ -1,4 +1,4 @@
-import { closeSync, fstatSync, openSync, readFileSync } from 'node:fs';
+import { closeSync, fstatSync, openSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
 import { pathToFileURL } from 'node:url';
 import { Worker } from 'node:worker_threads';
@@ -24,10 +24,6 @@ export async function calculate(file, options = {}) {
       queue,
     };
     if (workers === 1) return await (await import('./wasm/engine.mjs')).aggregate(config);
-    // Structured cloning shares compiled code; each worker owns its instance.
-    config.module = await WebAssembly.compile(
-      readFileSync(new URL('./wasm/kernel.wasm', import.meta.url)),
-    );
     const threads = [];
     try {
       // Workers load only the kernel engine; each result arrives before its

@@ -41,7 +41,9 @@ export function benchmarkEnv(env) {
     'NODE_DISABLE_COMPILE_CACHE',
     'UV_THREADPOOL_SIZE',
   ];
-  return Object.fromEntries(keys.filter((key) => env[key] !== undefined).map((key) => [key, env[key]]));
+  return Object.fromEntries(
+    keys.filter((key) => env[key] !== undefined).map((key) => [key, env[key]]),
+  );
 }
 
 export function sourceHash(engine = 'wasm', script = entryScript(engine)) {

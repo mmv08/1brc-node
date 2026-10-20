@@ -87,18 +87,12 @@
       "env": {
         "ENGINE": "node"
       },
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 24,
       "chunkBytes": 131072,
       "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
       "times": [
-        1.2270460870000006,
-        1.226582997999998,
-        1.2552513790000013,
-        1.2656723160000038,
+        1.2270460870000006, 1.226582997999998, 1.2552513790000013, 1.2656723160000038,
         1.2809463720000058
       ],
       "usage": [
@@ -142,18 +136,12 @@
       "env": {
         "ENGINE": "node"
       },
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 24,
       "chunkBytes": 131072,
       "sourceSha256": "c25bf40588d860a57b14f5d7b6e75256f458084abb7e6fcd2bc10afa0c96433c",
       "times": [
-        1.2363228840000011,
-        1.2208378370000028,
-        1.2332921769999994,
-        1.305561606999996,
+        1.2363228840000011, 1.2208378370000028, 1.2332921769999994, 1.305561606999996,
         1.2325546600000017
       ],
       "usage": [
@@ -197,18 +185,12 @@
       "env": {
         "ENGINE": "node"
       },
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 24,
       "chunkBytes": 131072,
       "sourceSha256": "5d2cd560e48c7fdfa6548266e7a13ba5b209ce5c16c4986ed78e2913f1f7a6de",
       "times": [
-        1.2077984770000003,
-        1.203960450999999,
-        1.2443149550000017,
-        1.2609511140000031,
+        1.2077984770000003, 1.203960450999999, 1.2443149550000017, 1.2609511140000031,
         1.2305731840000007
       ],
       "usage": [
@@ -252,18 +234,12 @@
       "env": {
         "ENGINE": "node"
       },
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 24,
       "chunkBytes": 131072,
       "sourceSha256": "61f8221c345eb5a478d5e51ab12a5bc19e5fe8afee7eb91a959f98a95e253aad",
       "times": [
-        1.2220738999999994,
-        1.205375844000002,
-        1.2051399569999994,
-        1.2280235689999972,
+        1.2220738999999994, 1.205375844000002, 1.2051399569999994, 1.2280235689999972,
         1.2590810899999996
       ],
       "usage": [
@@ -307,18 +283,12 @@
         "ENGINE": "node"
       },
       "script": "plain/calculate.mjs",
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 24,
       "chunkBytes": 131072,
       "sourceSha256": "3d34857c633fbc38d70429ddec05ff44f6b0b9218e6a00bead6ef23dc2f65872",
       "times": [
-        1.1917479080000013,
-        1.1973221559999982,
-        1.2012290920000015,
-        1.2075676590000002,
+        1.1917479080000013, 1.1973221559999982, 1.2012290920000015, 1.2075676590000002,
         1.2040409129999972
       ],
       "usage": [
@@ -367,10 +337,7 @@
       "chunkBytes": 524288,
       "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
       "times": [
-        0.49911335800000234,
-        0.4988555989999986,
-        0.5111484150000033,
-        0.5046261500000037,
+        0.49911335800000234, 0.4988555989999986, 0.5111484150000033, 0.5046261500000037,
         0.5114111630000043
       ],
       "usage": [
@@ -419,10 +386,7 @@
       "chunkBytes": 524288,
       "sourceSha256": "4f6f0f014b031e6ab4ea931cf74f443f172071b24fc62105a600d168005251ba",
       "times": [
-        0.5617277219999997,
-        0.5599592510000002,
-        0.5730146019999957,
-        0.5538399100000024,
+        0.5617277219999997, 0.5599592510000002, 0.5730146019999957, 0.5538399100000024,
         0.555477423999997
       ],
       "usage": [

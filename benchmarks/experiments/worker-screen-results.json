@@ -53,18 +53,11 @@
         "ENGINE": "node",
         "WORKERS": "24"
       },
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 24,
       "chunkBytes": 131072,
       "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
-      "times": [
-        1.2349353439999995,
-        1.2213761269999996,
-        1.2469161860000022
-      ],
+      "times": [1.2349353439999995, 1.2213761269999996, 1.2469161860000022],
       "usage": [
         {
           "user": 25.82,
@@ -95,18 +88,11 @@
         "WORKERS": "24"
       },
       "script": "plain/calculate.mjs",
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 24,
       "chunkBytes": 131072,
       "sourceSha256": "9d7dd817ebadb924107cc461f2cfd2b26030ea2da96623d29ec202b624b647e8",
-      "times": [
-        1.2210582639999994,
-        1.2818563369999993,
-        1.2823395139999993
-      ],
+      "times": [1.2210582639999994, 1.2818563369999993, 1.2823395139999993],
       "usage": [
         {
           "user": 25.45,
@@ -137,18 +123,11 @@
         "ENGINE": "node",
         "WORKERS": "12"
       },
-      "flags": [
-        "--max-inlined-bytecode-size=1000",
-        "--max-inlined-bytecode-size-cumulative=4000"
-      ],
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
       "requestedWorkers": 12,
       "chunkBytes": 131072,
       "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
-      "times": [
-        1.2570003640000014,
-        1.2549001229999994,
-        1.2611924119999967
-      ],
+      "times": [1.2570003640000014, 1.2549001229999994, 1.2611924119999967],
       "usage": [
         {
           "user": 13.57,
@@ -183,11 +162,7 @@
       "requestedWorkers": 8,
       "chunkBytes": 524288,
       "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
-      "times": [
-        0.6420048349999997,
-        0.6556909409999989,
-        0.6458789199999992
-      ],
+      "times": [0.6420048349999997, 0.6556909409999989, 0.6458789199999992],
       "usage": [
         {
           "user": 3.94,
@@ -222,11 +197,7 @@
       "requestedWorkers": 12,
       "chunkBytes": 524288,
       "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
-      "times": [
-        0.5021586619999998,
-        0.500137721000001,
-        0.49423580100000253
-      ],
+      "times": [0.5021586619999998, 0.500137721000001, 0.49423580100000253],
       "usage": [
         {
           "user": 4.46,
@@ -261,11 +232,7 @@
       "requestedWorkers": 16,
       "chunkBytes": 524288,
       "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
-      "times": [
-        0.5031834249999992,
-        0.5038203620000004,
-        0.4977035260000012
-      ],
+      "times": [0.5031834249999992, 0.5038203620000004, 0.4977035260000012],
       "usage": [
         {
           "user": 5.89,
@@ -300,11 +267,7 @@
       "requestedWorkers": 24,
       "chunkBytes": 524288,
       "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
-      "times": [
-        0.5015768580000004,
-        0.5007290620000003,
-        0.48677800200000276
-      ],
+      "times": [0.5015768580000004, 0.5007290620000003, 0.48677800200000276],
       "usage": [
         {
           "user": 8.56,

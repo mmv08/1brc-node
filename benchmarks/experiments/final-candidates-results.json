@@ -1,0 +1,249 @@
+{
+  "date": "2026-10-20T19:33:22.838Z",
+  "label": "final-candidates",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Node selected predictor and startup",
+      "round": 1,
+      "seconds": 1.218938005
+    },
+    {
+      "name": "Node direct length",
+      "round": 1,
+      "seconds": 1.1517029099999998
+    },
+    {
+      "name": "Wasm baseline",
+      "round": 1,
+      "seconds": 0.4996956919999998
+    },
+    {
+      "name": "Wasm shared compilation",
+      "round": 1,
+      "seconds": 0.5041199700000002
+    },
+    {
+      "name": "Wasm shared compilation",
+      "round": 2,
+      "seconds": 0.5139402279999999
+    },
+    {
+      "name": "Wasm baseline",
+      "round": 2,
+      "seconds": 0.5023554639999998
+    },
+    {
+      "name": "Node direct length",
+      "round": 2,
+      "seconds": 1.1722156169999998
+    },
+    {
+      "name": "Node selected predictor and startup",
+      "round": 2,
+      "seconds": 1.20229886
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Node selected predictor and startup",
+      "script": "results/plain-selected/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "3d34857c633fbc38d70429ddec05ff44f6b0b9218e6a00bead6ef23dc2f65872",
+      "times": [
+        1.1883518889999996, 1.1938066710000004, 1.192276339, 1.1933930070000025, 1.1791039569999993
+      ],
+      "usage": [
+        {
+          "user": 25.09,
+          "system": 1.3,
+          "maxRssKiB": 336908,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.92,
+          "system": 1.39,
+          "maxRssKiB": 337904,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.89,
+          "system": 1.43,
+          "maxRssKiB": 337704,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.28,
+          "system": 1.35,
+          "maxRssKiB": 338108,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.61,
+          "system": 1.39,
+          "maxRssKiB": 337368,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.1913404116666673,
+      "best": 1.1791039569999993
+    },
+    {
+      "name": "Node direct length",
+      "env": {
+        "ENGINE": "node"
+      },
+      "script": "plain/calculate.mjs",
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "6fb57ef53449b8c640fce11081c57688a6cffdd09a7cccafd1622b72aa998433",
+      "times": [
+        1.1607569539999996, 1.1874001140000001, 1.1647000499999995, 1.1715170599999982,
+        1.1749985940000005
+      ],
+      "usage": [
+        {
+          "user": 24.54,
+          "system": 1.36,
+          "maxRssKiB": 340128,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.52,
+          "system": 1.44,
+          "maxRssKiB": 341344,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.49,
+          "system": 1.4,
+          "maxRssKiB": 339624,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.69,
+          "system": 1.38,
+          "maxRssKiB": 338940,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.56,
+          "system": 1.35,
+          "maxRssKiB": 338860,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.1704052346666662,
+      "best": 1.1607569539999996
+    },
+    {
+      "name": "Wasm baseline",
+      "script": "results/baseline/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
+      "times": [
+        0.517184518, 0.5005105670000012, 0.5090386350000008, 0.4951713449999988, 0.5025027840000003
+      ],
+      "usage": [
+        {
+          "user": 8.51,
+          "system": 1.51,
+          "maxRssKiB": 317216,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.79,
+          "system": 1.42,
+          "maxRssKiB": 316904,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.71,
+          "system": 1.48,
+          "maxRssKiB": 318016,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.7,
+          "system": 1.43,
+          "maxRssKiB": 319036,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.65,
+          "system": 1.49,
+          "maxRssKiB": 316956,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5040173286666674,
+      "best": 0.4951713449999988
+    },
+    {
+      "name": "Wasm shared compilation",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "script": "calculate.mjs",
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "19bb60e044ade10567641b4e382ca201d2971083b839db58bb251ea18ad1f70b",
+      "times": [
+        0.5021180349999995, 0.5058317950000001, 0.506253203999997, 0.49633751499999923,
+        0.5097157280000029
+      ],
+      "usage": [
+        {
+          "user": 8.6,
+          "system": 1.49,
+          "maxRssKiB": 317680,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.67,
+          "system": 1.48,
+          "maxRssKiB": 318068,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.63,
+          "system": 1.52,
+          "maxRssKiB": 317860,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.74,
+          "system": 1.49,
+          "maxRssKiB": 317116,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.69,
+          "system": 1.46,
+          "maxRssKiB": 317728,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5047343446666656,
+      "best": 0.49633751499999923
+    }
+  ]
+}
