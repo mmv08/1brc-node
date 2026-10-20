@@ -11,7 +11,7 @@ export async function aggregate(config) {
     throw new Error('TABLE_BITS must be 14, 15, or 16');
   const table = new Uint16Array(tableSize);
   // Worker-local, direct-mapped predictions; the hash table remains authoritative.
-  const prefixCache = new Uint16Array(65536);
+  const prefixCache = new Uint16Array(32768);
   // Dense station IDs. Each 32-byte record holds hash, head, tail, middle,
   // byte length, arena offset, minimum, maximum, in that order.
   const records = new Int32Array(MAX_STATIONS * 8);
@@ -82,7 +82,7 @@ export async function aggregate(config) {
       // A fifth byte is stable even for four-byte names: it is their delimiter.
       // It distinguishes common four-byte prefixes without scanning the name.
       const prefixSlot =
-        Math.imul(head ^ (head >>> 16) ^ (buffer[p + 4] << 24), 0x9e3779b1) >>> 16;
+        Math.imul(head ^ (head >>> 16) ^ (buffer[p + 4] << 24), 0x9e3779b1) >>> 17;
       const predicted = prefixCache[prefixSlot] - 1;
       if (predicted >= 0) {
         const r = predicted * 8;
