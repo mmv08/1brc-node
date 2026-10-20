@@ -47,15 +47,12 @@ export async function aggregate(config) {
 
   // Cache predictions supply the stored length; hash lookups validate it first.
   function equal(view, start, length, r, head) {
-    // Validate independent name words together before taking the miss branch.
-    // OR preserves every differing bit, including high UTF-8 and embedded NULs.
-    let mismatch = records[r + 1] ^ head;
-    if (length <= 4) return mismatch === 0;
-    mismatch |= view.getInt32(start + length - 4, true) ^ records[r + 2];
+    if (records[r + 1] !== head) return false;
+    if (length <= 4) return true;
+    if (view.getInt32(start + length - 4, true) !== records[r + 2]) return false;
     if (branchlessNames) {
-      mismatch |= view.getInt32(start + Math.min(4, length - 4), true) ^ records[r + 3];
-    } else if (length > 8) mismatch |= view.getInt32(start + 4, true) ^ records[r + 3];
-    if (mismatch !== 0) return false;
+      if (view.getInt32(start + Math.min(4, length - 4), true) !== records[r + 3]) return false;
+    } else if (length > 8 && view.getInt32(start + 4, true) !== records[r + 3]) return false;
     const offset = records[r + 5];
     for (let i = 8; i < length - 4; i += 4) {
       if (view.getInt32(start + i, true) !== keys.getInt32(offset + i, true)) return false;
@@ -66,6 +63,7 @@ export async function aggregate(config) {
   function makeParser(buffer) {
     const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
     const temperatures = new Int32Array(4);
+    const values = new Int32Array(4);
     const streams = Number(process.env.STREAMS ?? 2);
     if (![1, 2, 3, 4].includes(streams)) throw new Error('STREAMS must be 1..4');
 
@@ -125,7 +123,9 @@ export async function aggregate(config) {
       return id;
     }
 
-    function update(p, id) {
+    // Decode every lane before touching statistics so independent temperature
+    // loads can overlap instead of waiting for another lane's extrema branches.
+    function decode(p, lane) {
       const word = view.getUint32(p, true);
       const negative = (~word & 0x10) >>> 4;
       const digits = word >>> (negative * 8);
@@ -134,11 +134,21 @@ export async function aggregate(config) {
       if (negative) value = -value;
       p += width;
       if (buffer[p - 1] === 13) p++;
+      values[lane] = value;
+      return p;
+    }
+
+    function accumulate(id, value) {
       const r = id * 8;
       if (value < records[r + 6]) records[r + 6] = value;
       if (value > records[r + 7]) records[r + 7] = value;
       sums[id] += value;
       counts[id]++;
+    }
+
+    function update(p, id) {
+      p = decode(p, 0);
+      accumulate(id, values[0]);
       return p;
     }
 
@@ -164,17 +174,22 @@ export async function aggregate(config) {
         while (a < endA && b < end) {
           const idA = scan(a, 0);
           const idB = scan(b, 1);
-          a = update(temperatures[0], idA);
-          b = update(temperatures[1], idB);
+          a = decode(temperatures[0], 0);
+          b = decode(temperatures[1], 1);
+          accumulate(idA, values[0]);
+          accumulate(idB, values[1]);
         }
       } else if (streams === 3) {
         while (a < endA && b < endB && c < end) {
           const idA = scan(a, 0);
           const idB = scan(b, 1);
           const idC = scan(c, 2);
-          a = update(temperatures[0], idA);
-          b = update(temperatures[1], idB);
-          c = update(temperatures[2], idC);
+          a = decode(temperatures[0], 0);
+          b = decode(temperatures[1], 1);
+          c = decode(temperatures[2], 2);
+          accumulate(idA, values[0]);
+          accumulate(idB, values[1]);
+          accumulate(idC, values[2]);
         }
       } else {
         while (a < endA && b < endB && c < endC && d < end) {
@@ -182,10 +197,14 @@ export async function aggregate(config) {
           const idB = scan(b, 1);
           const idC = scan(c, 2);
           const idD = scan(d, 3);
-          a = update(temperatures[0], idA);
-          b = update(temperatures[1], idB);
-          c = update(temperatures[2], idC);
-          d = update(temperatures[3], idD);
+          a = decode(temperatures[0], 0);
+          b = decode(temperatures[1], 1);
+          c = decode(temperatures[2], 2);
+          d = decode(temperatures[3], 3);
+          accumulate(idA, values[0]);
+          accumulate(idB, values[1]);
+          accumulate(idC, values[2]);
+          accumulate(idD, values[3]);
         }
       }
       remainder(a, endA);
