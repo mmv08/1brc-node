@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Previous Wasm",
+    "script": "results/hints-baseline/calculate.mjs",
+    "revision": "e7d1d1a",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  },
+  {
+    "name": "Four-way loop hint",
+    "script": "results/hints-unroll-four/calculate.mjs",
+    "revision": "bbef50b",
+    "env": {
+      "ENGINE": "wasm"
+    }
+  }
+]
