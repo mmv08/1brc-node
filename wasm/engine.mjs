@@ -44,7 +44,7 @@ export async function createKernel(chunkSize) {
           name,
           view.getInt16(p + 12, true),
           Number(view.getBigInt64(p, true)),
-          0 - view.getInt16(p + 14, true),
+          view.getInt16(p + 14, true),
           view.getUint32(p + 8, true),
         ];
       });

@@ -16,7 +16,7 @@ typedef struct {
   int64_t sum;
   uint32_t count;
   int16_t min;
-  int16_t negative_max;
+  int16_t max;
   uint32_t hash;
   uint32_t key;
   uint64_t head;
@@ -39,7 +39,7 @@ static uint8_t names[MAX_STATIONS * 104 + 48];
 // the byte offset of that temperature's statistics delta.
 static uint16_t temperatures[1 << 16];
 // One statistics delta per legal temperature: the signed sum increment, a
-// count increment, then value and -value in the min/negative-max lanes.
+// count increment, then the value again in the min/max lanes.
 static v128_t deltas[1999];
 static uint32_t used;
 // The mixing words start fixed. While the table is sparse, an insertion that
@@ -66,9 +66,8 @@ static const uint64_t byte_masks[9] = {
     UINT64_MAX,
 };
 
-// Include the delimiter in short keys so their length is part of the SIMD key.
-static const uint64_t short_masks[17][2] __attribute__((aligned(16))) = {
-    {UINT64_C(0x0), UINT64_C(0x0)},
+// Entry n keeps n name bytes plus the delimiter; no empty mask is needed.
+static const uint64_t short_masks[16][2] __attribute__((aligned(16))) = {
     {UINT64_C(0xff), UINT64_C(0x0)},
     {UINT64_C(0xffff), UINT64_C(0x0)},
     {UINT64_C(0xffffff), UINT64_C(0x0)},
@@ -87,9 +86,8 @@ static const uint64_t short_masks[17][2] __attribute__((aligned(16))) = {
     {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff)},
 };
 
-// Keep the first n bytes of a 32-byte key, n = 0..32.
-static const uint64_t wide_masks[33][4] __attribute__((aligned(16))) = {
-    {UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
+// Entry n keeps n name bytes plus the delimiter in a 32-byte key.
+static const uint64_t wide_masks[32][4] __attribute__((aligned(16))) = {
     {UINT64_C(0xff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
     {UINT64_C(0xffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
     {UINT64_C(0xffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
@@ -184,7 +182,7 @@ __attribute__((noinline, cold)) static int same_middle(const uint8_t *key, const
 INLINE int same_name(const Station *station, const uint8_t *start, uint32_t length) {
   if ((station->key >> 20) != length) return 0;
   if (length < 16) {
-    v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length + 1]));
+    v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length]));
     return !wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key));
   }
   // The first and an overlapping final vector cover every byte of names up to
@@ -206,11 +204,11 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   station->sum = 0;
   station->count = 0;
   station->min = 999;
-  station->negative_max = 999;
+  station->max = -999;
   station->hash = hash;
   station->key = (length << 20) | name_used;
   if (length < 16) {
-    v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length + 1]));
+    v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length]));
     wasm_v128_store(&station->head, key);
   } else {
     station->head = head;
@@ -352,12 +350,13 @@ INLINE const uint8_t *update_row(ParsedRow row) {
 
   Station *station = row.station;
   // Counts stay below 2^32, so adding one cannot carry into packed min/max.
-  // Store -maximum beside minimum, so one signed min updates both extrema.
+  // Update the exact sum/count together and blend in signed 16-bit extrema.
   v128_t stats = wasm_v128_load(station);
   v128_t delta = wasm_v128_load((const uint8_t *)deltas + offset);
   v128_t added = wasm_i64x2_add(stats, delta);
   // Fixed lane selections let the host compiler use immediate SIMD blends.
-  v128_t extrema = wasm_i16x8_min(stats, delta);
+  v128_t extrema = wasm_i16x8_shuffle(wasm_i16x8_min(stats, delta), wasm_i16x8_max(stats, delta), 0,
+                                      1, 2, 3, 4, 5, 6, 15);
   wasm_v128_store(station, wasm_i16x8_shuffle(added, extrema, 0, 1, 2, 3, 4, 5, 14, 15));
   return next;
 }
@@ -366,7 +365,7 @@ INLINE const uint8_t *process_row(const uint8_t *p) { return update_row(scan_row
 
 INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128_t bytes) {
   uint32_t length = (uint32_t)__builtin_ctz(matches);
-  v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length + 1]));
+  v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length]));
   v128_t mixed = wasm_v128_xor(key, wasm_v128_load(mixers));
   uint64_t hash =
       (uint64_t)wasm_i64x2_extract_lane(mixed, 0) * (uint64_t)wasm_i64x2_extract_lane(mixed, 1);
@@ -387,7 +386,7 @@ INLINE uint32_t same_key(v128_t key, const uint8_t *p) {
 INLINE const uint8_t *process_wide(const uint8_t *start, uint32_t matches, v128_t low,
                                    v128_t high) {
   uint32_t length = (uint32_t)__builtin_ctz(matches);
-  const uint64_t *mask = wide_masks[length + 1];
+  const uint64_t *mask = wide_masks[length];
   v128_t key_low = wasm_v128_and(low, wasm_v128_load(mask));
   v128_t key_high = wasm_v128_and(high, wasm_v128_load(mask + 2));
   uint64_t first = mix_pair(0, (uint64_t)wasm_i64x2_extract_lane(key_low, 0),
@@ -412,13 +411,46 @@ INLINE const uint8_t *advance_short(const uint8_t *start, uint32_t matches, v128
   return start + __builtin_ctz(lines) + 1;
 }
 
-// Keep short rows in their fast path even when another lane has a long name.
-__attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *start,
-                                                                   v128_t low) {
-  v128_t high = wasm_v128_load(start + 16);
-  uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high, wasm_v128_load(&separators)))
-                     << 16;
-  return matches ? process_wide(start, matches, low, high) : process_row(start);
+typedef struct {
+  const uint8_t *a;
+  const uint8_t *b;
+  const uint8_t *c;
+} RowPointers;
+
+// An empty cold call marks the start of an unlikely path for the derived
+// branch hints. V8 inlines it away; the path itself needs no real call.
+__attribute__((noinline, cold)) static void cold_path(void) { __asm__ volatile(""); }
+
+// Rows whose names need another vector: every name below 32 bytes takes the
+// two-vector path; longer names keep the complete general parser.
+INLINE RowPointers process_three(const uint8_t *a, const uint8_t *b, const uint8_t *c) {
+  const v128_t separator = wasm_i8x16_splat(';');
+  v128_t low_a = wasm_v128_load(a);
+  v128_t low_b = wasm_v128_load(b);
+  v128_t low_c = wasm_v128_load(c);
+  v128_t high_a = wasm_v128_load(a + 16);
+  v128_t high_b = wasm_v128_load(b + 16);
+  v128_t high_c = wasm_v128_load(c + 16);
+  uint32_t matches_a = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(low_a, separator)) |
+                       (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high_a, separator)) << 16;
+  uint32_t matches_b = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(low_b, separator)) |
+                       (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high_b, separator)) << 16;
+  uint32_t matches_c = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(low_c, separator)) |
+                       (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high_c, separator)) << 16;
+  if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
+    const uint8_t *next_a = process_wide(a, matches_a, low_a, high_a);
+    const uint8_t *next_b = process_wide(b, matches_b, low_b, high_b);
+    const uint8_t *next_c = process_wide(c, matches_c, low_c, high_c);
+    return (RowPointers){next_a, next_b, next_c};
+  }
+  // Hash each name just before its lookup: an insertion may retune the mixers.
+  ParsedRow row_a = scan_row(a);
+  ParsedRow row_b = scan_row(b);
+  ParsedRow row_c = scan_row(c);
+  const uint8_t *next_a = update_row(row_a);
+  const uint8_t *next_b = update_row(row_b);
+  const uint8_t *next_c = update_row(row_c);
+  return (RowPointers){next_a, next_b, next_c};
 }
 
 EXPORT(reset) void reset(void) {
@@ -435,10 +467,8 @@ EXPORT(reset) void reset(void) {
   wasm_v128_store(names + 16, wasm_i64x2_const(-1, -1));
   name_used = 32;
   for (int32_t value = -999; value <= 999; value++) {
-    uint64_t minimum = (uint16_t)value;
-    uint64_t negative_maximum = (uint16_t)-value;
-    deltas[value + 999] =
-        wasm_i64x2_make(value, (int64_t)(1 | minimum << 32 | negative_maximum << 48));
+    uint64_t extreme = (uint16_t)value;
+    deltas[value + 999] = wasm_i64x2_make(value, (int64_t)(1 | extreme << 32 | extreme << 48));
   }
   for (uint32_t tenths = 0; tenths <= 9; tenths++) {
     for (uint32_t units = 0; units <= 9; units++) {
@@ -497,9 +527,17 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
       uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
       uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-      a = matches_a ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
-      b = matches_b ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
-      c = matches_c ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
+      if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
+        a = advance_short(a, matches_a, bytes_a);
+        b = advance_short(b, matches_b, bytes_b);
+        c = advance_short(c, matches_c, bytes_c);
+      } else {
+        cold_path();
+        RowPointers next = process_three(a, b, c);
+        a = next.a;
+        b = next.b;
+        c = next.c;
+      }
     } while (--rounds);
   }
   while (a < end_a) a = process_row(a);
