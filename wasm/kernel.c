@@ -463,7 +463,7 @@ EXPORT(empty_station_base) uint32_t empty_station_base(void) {
 EXPORT(mixers_base) uint32_t mixers_base(void) { return (uint32_t)(uintptr_t)mixers; }
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
-  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 4;
+  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 3;
   if (p == begin) return p;
   while (p < end && p[-1] != '\n') p++;
   return p;
@@ -475,20 +475,16 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *limit = (const uint8_t *)(uintptr_t)end;
   const uint8_t *end_a = boundary(a, limit, 1);
   const uint8_t *end_b = boundary(a, limit, 2);
-  const uint8_t *end_c = boundary(a, limit, 3);
   const uint8_t *b = end_a;
   const uint8_t *c = end_b;
-  const uint8_t *d = end_c;
   for (;;) {
     // A row is at most 108 bytes, so this many iterations stay inside all
-    // four lanes without checking each pointer.
+    // three lanes without checking each pointer.
     uint32_t left_a = (uint32_t)(end_a - a);
     uint32_t left_b = (uint32_t)(end_b - b);
-    uint32_t left_c = (uint32_t)(end_c - c);
-    uint32_t left_d = (uint32_t)(limit - d);
+    uint32_t left_c = (uint32_t)(limit - c);
     uint32_t left = left_a < left_b ? left_a : left_b;
     left = left < left_c ? left : left_c;
-    left = left < left_d ? left : left_d;
     uint32_t rounds = left / 108;
     if (!rounds) break;
     do {
@@ -496,19 +492,15 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       v128_t bytes_a = wasm_v128_load(a);
       v128_t bytes_b = wasm_v128_load(b);
       v128_t bytes_c = wasm_v128_load(c);
-      v128_t bytes_d = wasm_v128_load(d);
       uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
       uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
       uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-      uint32_t matches_d = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_d, separator));
       a = matches_a ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
       b = matches_b ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
       c = matches_c ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
-      d = matches_d ? advance_short(d, matches_d, bytes_d) : process_long(d, bytes_d);
     } while (--rounds);
   }
   while (a < end_a) a = process_row(a);
   while (b < end_b) b = process_row(b);
-  while (c < end_c) c = process_row(c);
-  while (d < limit) d = process_row(d);
+  while (c < limit) c = process_row(c);
 }

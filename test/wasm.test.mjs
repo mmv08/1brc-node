@@ -408,7 +408,6 @@ test('first-bucket collisions retune the mixers so every station hits directly',
   });
 });
 
-
 test('negated maximum lane decodes signed extrema and positive zero', async () => {
   const kernel = await createKernel(65536);
   const buffer = kernel.allocateBuffer(65536 + 256);
