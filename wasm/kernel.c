@@ -4,6 +4,8 @@
 
 #define EXPORT(name) __attribute__((export_name(#name)))
 #define INLINE static inline __attribute__((always_inline))
+#define LIKELY(condition) __builtin_expect(!!(condition), 1)
+#define UNLIKELY(condition) __builtin_expect(!!(condition), 0)
 #define MAX_STATIONS 10000
 #define TABLE_SIZE 32768
 #define OFFSET_MASK UINT32_C(0xfffff)
@@ -371,7 +373,7 @@ INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128
   uint32_t slot = (uint32_t)(hash >> 49);
   Station *station = (Station *)(uintptr_t)buckets[slot];
   // An empty record is all zero; a key containing ';' can never match it.
-  if (wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(&station->head), key)) != 0xffff)
+  if (UNLIKELY(wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(&station->head), key)) != 0xffff))
     station = find_name(start);
   return update_row((ParsedRow){start + length + 1, station});
 }
@@ -395,7 +397,8 @@ INLINE const uint8_t *process_wide(const uint8_t *start, uint32_t matches, v128_
   uint64_t hash = length < 16 ? first : second;
   Station *station = (Station *)(uintptr_t)buckets[hash >> 49];
   const uint8_t *key = names + (station->key & OFFSET_MASK);
-  if ((same_key(key_low, key) & same_key(key_high, key + 16)) != 0xffff) station = find_name(start);
+  if (UNLIKELY((same_key(key_low, key) & same_key(key_high, key + 16)) != 0xffff))
+    station = find_name(start);
   return update_row((ParsedRow){start + length + 1, station});
 }
 
@@ -495,9 +498,9 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
       uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
       uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-      a = matches_a ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
-      b = matches_b ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
-      c = matches_c ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
+      a = LIKELY(matches_a) ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
+      b = LIKELY(matches_b) ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
+      c = LIKELY(matches_c) ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
     } while (--rounds);
   }
   while (a < end_a) a = process_row(a);
