@@ -33,14 +33,7 @@
     "-o",
     "results/build/kernel-linked.wasm"
   ],
-  "cold": [
-    "same_middle",
-    "insert_station",
-    "retune",
-    "probe_station",
-    "find_name",
-    "process_long"
-  ],
+  "cold": ["same_middle", "insert_station", "retune", "probe_station", "find_name", "process_long"],
   "branchHints": [
     {
       "function": "reset",
