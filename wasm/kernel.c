@@ -371,13 +371,9 @@ INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128
   uint32_t slot = (uint32_t)(hash >> 49);
   Station *station = (Station *)(uintptr_t)buckets[slot];
   // An empty record is all zero; a key containing ';' can never match it.
-  if (wasm_v128_any_true(wasm_v128_xor(wasm_v128_load(&station->head), key)))
+  if (wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(&station->head), key)) != 0xffff)
     station = find_name(start);
   return update_row((ParsedRow){start + length + 1, station});
-}
-
-INLINE uint32_t same_key(v128_t key, const uint8_t *p) {
-  return (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(key, wasm_v128_load(p)));
 }
 
 // Names below 32 bytes compare both vectors of their canonical arena key, so
@@ -395,7 +391,10 @@ INLINE const uint8_t *process_wide(const uint8_t *start, uint32_t matches, v128_
   uint64_t hash = length < 16 ? first : second;
   Station *station = (Station *)(uintptr_t)buckets[hash >> 49];
   const uint8_t *key = names + (station->key & OFFSET_MASK);
-  if ((same_key(key_low, key) & same_key(key_high, key + 16)) != 0xffff) station = find_name(start);
+  v128_t equal_low = wasm_i8x16_eq(key_low, wasm_v128_load(key));
+  v128_t equal_high = wasm_i8x16_eq(key_high, wasm_v128_load(key + 16));
+  if (wasm_i8x16_bitmask(wasm_v128_and(equal_low, equal_high)) != 0xffff)
+    station = find_name(start);
   return update_row((ParsedRow){start + length + 1, station});
 }
 

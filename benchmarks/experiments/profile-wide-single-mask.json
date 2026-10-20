@@ -1,0 +1,9 @@
+{
+  "baseline": "bd04b60",
+  "rejectedPrevious": "ee8bb70",
+  "previousResult": "Short XOR materializes an integer Boolean: load,xor,zero register,ptest,setnz,test,jnz. Nine-round mean0.492 vs0.481s; reject.",
+  "experiment": "wide-single-bitmask",
+  "evidence": "711 of1155 process_long raw PC samples are in bucket/key-pointer plus two-vector full-key equality. Current native code uses two vpmovmskb instructions and integer AND.",
+  "change": "AND the two SIMD byte-equality vectors before extracting one bitmask. All32 canonical key bytes still checked.",
+  "hypothesis": "Remove one vector-to-integer mask extraction from measured hot long-name path."
+}
