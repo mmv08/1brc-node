@@ -29,7 +29,7 @@ const link = [
   ...flavor,
   '--no-entry',
   '--export-memory',
-  '--initial-memory=2097152',
+  '--initial-memory=4194304',
   '--max-memory=1073741824',
   '-z',
   'stack-size=65536',

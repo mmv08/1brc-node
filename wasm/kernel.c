@@ -37,7 +37,7 @@ static uint8_t names[MAX_STATIONS * 104 + 48];
 // Indexed by the low nibbles of the two bytes before the decimal (';', '-' or
 // tens, then units) and of the tenths digit, plus the sign bit. Each entry is
 // a complete statistics delta, avoiding a dependent offset-table lookup.
-static v128_t temperatures[1 << 13];
+static v128_t temperatures[1 << 16];
 // One statistics delta per legal temperature: the signed sum increment, a
 // count increment, then value and -value in the min/negative-max lanes.
 static v128_t deltas[1999];
@@ -344,8 +344,7 @@ INLINE const uint8_t *update_row(ParsedRow row) {
   // The two bytes before the decimal are ';' or '-' or tens, then units.
   uint32_t digits = load32(dot - 2) & UINT32_C(0x0f000f0f);
   // Pack both nibbles, tenths and the sign: a minus lacks ASCII bit 4.
-  uint32_t index =
-      (digits & 15) | ((digits >> 3) & 0x1e0) | ((digits >> 15) & 0x1e00) | (inverse & 0x10);
+  uint32_t index = ((digits | (digits >> 12)) & 0xffff) | (inverse & 0x10);
   // LF is even and CR is odd.
   const uint8_t *next = dot + 3 + (dot[2] & 1);
 
@@ -441,7 +440,7 @@ EXPORT(reset) void reset(void) {
   }
   for (uint32_t tenths = 0; tenths <= 9; tenths++) {
     for (uint32_t units = 0; units <= 9; units++) {
-      uint32_t index = (units << 5) | (tenths << 9);
+      uint32_t index = (units << 8) | (tenths << 12);
       int32_t value = (int32_t)(units * 10 + tenths);
       temperatures[index | (';' & 15)] = deltas[999 + value];
       temperatures[index | 0x10 | ('-' & 15)] = deltas[999 - value];
@@ -464,7 +463,7 @@ EXPORT(empty_station_base) uint32_t empty_station_base(void) {
 EXPORT(mixers_base) uint32_t mixers_base(void) { return (uint32_t)(uintptr_t)mixers; }
 
 static const uint8_t *boundary(const uint8_t *begin, const uint8_t *end, uint32_t part) {
-  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 3;
+  const uint8_t *p = begin + (uint32_t)(end - begin) * part / 2;
   if (p == begin) return p;
   while (p < end && p[-1] != '\n') p++;
   return p;
@@ -475,33 +474,24 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
   const uint8_t *a = (const uint8_t *)(uintptr_t)begin;
   const uint8_t *limit = (const uint8_t *)(uintptr_t)end;
   const uint8_t *end_a = boundary(a, limit, 1);
-  const uint8_t *end_b = boundary(a, limit, 2);
   const uint8_t *b = end_a;
-  const uint8_t *c = end_b;
   for (;;) {
-    // A row is at most 108 bytes, so this many iterations stay inside all
-    // three lanes without checking each pointer.
+    // At most 108 bytes per row; every lane stays inside its range.
     uint32_t left_a = (uint32_t)(end_a - a);
-    uint32_t left_b = (uint32_t)(end_b - b);
-    uint32_t left_c = (uint32_t)(limit - c);
+    uint32_t left_b = (uint32_t)(limit - b);
     uint32_t left = left_a < left_b ? left_a : left_b;
-    left = left < left_c ? left : left_c;
     uint32_t rounds = left / 108;
     if (!rounds) break;
     do {
       const v128_t separator = wasm_v128_load(&separators);
       v128_t bytes_a = wasm_v128_load(a);
       v128_t bytes_b = wasm_v128_load(b);
-      v128_t bytes_c = wasm_v128_load(c);
       uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
       uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
-      uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
       a = matches_a ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
       b = matches_b ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
-      c = matches_c ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
     } while (--rounds);
   }
   while (a < end_a) a = process_row(a);
-  while (b < end_b) b = process_row(b);
-  while (c < limit) c = process_row(c);
+  while (b < limit) b = process_row(b);
 }
