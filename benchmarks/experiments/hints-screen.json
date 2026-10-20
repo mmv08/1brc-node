@@ -41,14 +41,5 @@
     "env": {
       "ENGINE": "wasm"
     }
-  },
-  {
-    "name": "Eagerly optimize parser",
-    "script": "results/hints-baseline/calculate.mjs",
-    "revision": "e7d1d1a",
-    "env": {
-      "ENGINE": "wasm",
-      "FLAGS": "--wasm-eager-tier-up-function=8"
-    }
   }
 ]

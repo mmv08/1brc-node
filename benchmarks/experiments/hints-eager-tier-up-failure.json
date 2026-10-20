@@ -1,0 +1,18 @@
+{
+  "experiment": "Targeted eager tier-up of parse_chunk",
+  "case": {
+    "name": "Eagerly optimize parser",
+    "script": "results/hints-baseline/calculate.mjs",
+    "revision": "e7d1d1a",
+    "env": {
+      "ENGINE": "wasm",
+      "FLAGS": "--wasm-eager-tier-up-function=8"
+    }
+  },
+  "outcome": "Rejected: second full-file warmup stalled and was terminated after more than 50 seconds, while normal runs take about 0.5 seconds.",
+  "firstWarmupSeconds": 0.475,
+  "signal": "SIGTERM",
+  "nodeVersion": "v26.12.0",
+  "baseline": "e7d1d1a",
+  "partialReport": "results/1792527331132-1862845-compare-hints-screen.json"
+}
