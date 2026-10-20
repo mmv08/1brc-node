@@ -3,7 +3,7 @@
 #include <wasm_simd128.h>
 
 #define EXPORT(name) __attribute__((export_name(#name)))
-#define INLINE static inline
+#define INLINE static inline __attribute__((always_inline))
 #define MAX_STATIONS 10000
 #define TABLE_SIZE 32768
 #define OFFSET_MASK UINT32_C(0xfffff)
@@ -487,6 +487,7 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
     left = left < left_c ? left : left_c;
     uint32_t rounds = left / 108;
     if (!rounds) break;
+#pragma clang loop unroll(disable)
     do {
       const v128_t separator = wasm_v128_load(&separators);
       v128_t bytes_a = wasm_v128_load(a);

@@ -1,9 +1,9 @@
 {
   "compiler": "Ubuntu clang version 21.1.8 (6ubuntu1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /usr/lib/llvm-21/bin",
   "linker": "Ubuntu LLD 21.1.8",
-  "sourceSha256": "2d99a7dfb4b38a0928257088a04065b6c07e92c2cef3cb48338955177826028e",
-  "sha256": "005e2021de7f477a6df2c493ee032acaa9f6268c6c48197fd28c854a02d044c2",
-  "bytes": 7615,
+  "sourceSha256": "0def405b5e67ac8effcda5fd9be38f3350fac6664790d18a43941d439634bf96",
+  "sha256": "2f18483f7b388ac0f7e21bfa344f1b0b73669eea77bc579ecd03a05e9944c8ab",
+  "bytes": 9442,
   "compile": [
     "--target=wasm32",
     "-std=c11",
@@ -42,8 +42,8 @@
     },
     {
       "function": "parse_chunk",
-      "likely": 10,
-      "unlikely": 3
+      "likely": 16,
+      "unlikely": 15
     },
     {
       "function": "find_name",
@@ -52,12 +52,7 @@
     },
     {
       "function": "process_long",
-      "likely": 1,
-      "unlikely": 0
-    },
-    {
-      "function": "process_row",
-      "likely": 2,
+      "likely": 3,
       "unlikely": 4
     },
     {
