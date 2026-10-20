@@ -1,0 +1,57 @@
+[
+  {
+    "name": "Node baseline 24",
+    "script": "results/baseline/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24"
+    }
+  },
+  {
+    "name": "Node packed cache 24",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24"
+    }
+  },
+  {
+    "name": "Node baseline 12",
+    "script": "results/baseline/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "12"
+    }
+  },
+  {
+    "name": "Wasm baseline 8",
+    "script": "results/baseline/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "8"
+    }
+  },
+  {
+    "name": "Wasm baseline 12",
+    "script": "results/baseline/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "12"
+    }
+  },
+  {
+    "name": "Wasm baseline 16",
+    "script": "results/baseline/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "16"
+    }
+  },
+  {
+    "name": "Wasm baseline 24",
+    "script": "results/baseline/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "24"
+    }
+  }
+]
