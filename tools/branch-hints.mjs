@@ -200,7 +200,7 @@ function hintsFor(instructions, cold) {
       // A label past every open construct exits the function: leave it unhinted.
       const target = open[open.length - 1 - instruction.label];
       if (target === undefined) return;
-      if (instructions[target].opcode === 0x03) hints.push([instruction.offset, 1]);
+      if (instructions[target].opcode === 0x03) return;
       else if (reachesCold(instructions, ends.get(target) + 1, cold))
         hints.push([instruction.offset, 0]);
       else if (reachesCold(instructions, index + 1, cold)) hints.push([instruction.offset, 1]);
