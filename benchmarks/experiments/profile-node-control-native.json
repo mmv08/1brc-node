@@ -1,0 +1,38 @@
+{
+  "cases": [
+    {
+      "case": "half-offset",
+      "sourceSha256": "32d47a915fbe732a16745499278ec860ca58f3f84c030413cbf10795ed0a6aa1",
+      "correct": true,
+      "totalTicks": 33278,
+      "parserTicks": 30043,
+      "parserNativeSize": 12884,
+      "sumTicks": 3342,
+      "sumInstructionCount": 14,
+      "sumFloat64AddCount": 2,
+      "sumDoubleToInt64Count": 0,
+      "sumInt64ToDoubleCount": 0
+    },
+    {
+      "case": "flag-control",
+      "sourceSha256": "91601f14f5d31e5611369346252558ef0562e0ccaaf573e121eedf6ed625fc81",
+      "correct": true,
+      "totalTicks": 34904,
+      "parserTicks": 31691,
+      "parserNativeSize": 13012,
+      "sumTicks": 3387,
+      "sumInstructionCount": 14,
+      "sumFloat64AddCount": 2,
+      "sumDoubleToInt64Count": 0,
+      "sumInt64ToDoubleCount": 0
+    }
+  ],
+  "findings": [
+    "The flag control and half-offset source have equivalent 14-instruction sum regions: retained bounds checks, 32-bit temperature-to-double conversion, direct vaddsd from sums memory, and store.",
+    "Neither dominant parser has additional sum int64 conversions, round-trip comparisons, safe-integer range guards, or shifted integer-add overflow checks.",
+    "The two predicted-name equality loops have 57 source-attributed instructions each in both builds. The notable equality difference is in the hash-table fallback for the second lane: the half-offset build contains 65 attributed instructions versus 25 for control, consistent with a different unroll decision; those instances received only 8 and 6 raw ticks respectively.",
+    "Cold insertion and remainder inlining/layout also differ. Those differences do not establish the cause of the 24-worker benchmark gap.",
+    "The one-worker instrumented captures do not reproduce the observed 24-worker ordering. They cannot establish which startup, compilation, or worker-scheduling behavior accounts for that gap."
+  ],
+  "conclusion": "The available native profiles do not identify another hot safe-integer guard sequence to fix. Do not attribute the multicore gap to a specific mechanism without profiling the 24-worker configurations."
+}

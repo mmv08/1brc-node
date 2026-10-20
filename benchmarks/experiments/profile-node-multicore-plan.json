@@ -1,0 +1,12 @@
+{
+  "reason": "The no-integer-feedback control was faster than half-offset source in all9 full-machine pairs, but their single-worker native sum sequences match. Do not infer a cause from unrelated cold-code differences.",
+  "experiments": [
+    "Capture cpu profiles of all24workers plus main for both cases",
+    "Capture V8 raw ticks/code-creation events at24workers to inspect tier distributions and compilation timing"
+  ],
+  "cases": [
+    "baseline with --no-additive-safe-int-feedback",
+    "half-offset source with normal inlining flags"
+  ],
+  "constraints": "Validate full stdout and source hashes. Diagnostic durations are not timing scores."
+}
