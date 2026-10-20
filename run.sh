@@ -12,4 +12,18 @@ else
   runtime=node
 fi
 
-exec "$runtime" "$root/calculate.mjs" "$@"
+case "${ENGINE:-wasm}" in
+  wasm)
+    exec "$runtime" "$root/calculate.mjs" "$@"
+    ;;
+  node)
+    exec "$runtime" \
+      --max-inlined-bytecode-size=1000 \
+      --max-inlined-bytecode-size-cumulative=4000 \
+      "$root/plain/calculate.mjs" "$@"
+    ;;
+  *)
+    printf '%s\n' 'ENGINE must be node or wasm' >&2
+    exit 2
+    ;;
+esac

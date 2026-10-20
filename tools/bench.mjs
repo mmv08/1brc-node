@@ -1,18 +1,19 @@
 import { execFileSync, spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
-import { cpus } from 'node:os';
-import { nodeFlags, nodeRuntime, sourceHash } from './benchmark-config.mjs';
+import { availableParallelism, cpus } from 'node:os';
+import { basename } from 'node:path';
+import { entryScript, nodeFlags, nodeRuntime, sourceHash } from './benchmark-config.mjs';
 
 const file = process.argv[2] ?? 'measurements.txt';
 const runs = Number(process.env.RUNS ?? 5);
 if (!Number.isInteger(runs) || runs < 1) throw new Error('RUNS must be a positive integer');
 const runtime = nodeRuntime();
-const script = process.env.SCRIPT ?? 'calculate.mjs';
-const engine = 'wasm';
+const engine = process.env.ENGINE ?? 'wasm';
+const script = process.env.SCRIPT ?? entryScript(engine);
 const flags =
-  script === 'calculate.mjs'
-    ? nodeFlags(process.env)
+  basename(script) === 'calculate.mjs'
+    ? nodeFlags({ ...process.env, ENGINE: engine })
     : (process.env.FLAGS ?? '').split(/\s+/).filter(Boolean);
 const expected = readFileSync(`${file}.out`, 'utf8');
 const results = [];
@@ -52,8 +53,8 @@ writeFileSync(
       script,
       engine,
       flags,
-      workers: process.env.WORKERS ?? 'auto',
-      chunkBytes: process.env.CHUNK_BYTES ?? '524288',
+      workers: Number(process.env.WORKERS ?? availableParallelism()),
+      chunkBytes: Number(process.env.CHUNK_BYTES ?? (engine === 'node' ? 131072 : 524288)),
       cpu: cpus()[0].model,
       file,
       bytes: statSync(file).size,

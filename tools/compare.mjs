@@ -1,53 +1,81 @@
 import { execFileSync, spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { nodeFlags, nodeRuntime, sourceHash } from './benchmark-config.mjs';
+import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { availableParallelism, cpus } from 'node:os';
+import { entryScript, nodeFlags, nodeRuntime, sourceHash } from './benchmark-config.mjs';
 
-// Cases may point at scripts in different git worktrees. This is a generic
-// process benchmark, not a runtime registry of discarded parser variants.
-const label = process.argv[2] ?? 'current';
+// Generic external-process comparisons also accept scripts from git worktrees.
+const label = process.argv[2] ?? 'node-vs-wasm';
+if (!/^[a-zA-Z0-9_-]+$/.test(label)) throw new Error('Invalid comparison label');
 const file = process.argv[3] ?? 'measurements.txt';
 const runs = Number(process.env.RUNS ?? 5);
-const warmups = Number(process.env.WARMUP ?? 0);
-if (![runs, warmups].every(Number.isInteger) || runs < 1 || warmups < 0)
+const warmups = Number(process.env.WARMUP ?? 1);
+if (![runs, warmups].every(Number.isSafeInteger) || runs < 1 || warmups < 0)
   throw new Error('Invalid RUNS/WARMUP');
 const runtime = nodeRuntime();
 const expected = readFileSync(`${file}.out`, 'utf8');
 const cases = process.env.CASES
   ? JSON.parse(process.env.CASES)
-  : [{ name: 'Wasm SIMD', env: { ENGINE: 'wasm' } }];
+  : [
+      { name: 'Plain Node.js', env: { ENGINE: 'node' } },
+      { name: 'Wasm SIMD', env: { ENGINE: 'wasm' } },
+    ];
+if (!Array.isArray(cases) || !cases.length) throw new Error('CASES must be a nonempty array');
 mkdirSync('results', { recursive: true });
-const stamp = Date.now();
+const stamp = `${Date.now()}-${process.pid}`;
 const report = {
   date: new Date().toISOString(),
   label,
   file,
+  bytes: statSync(file).size,
+  cpu: cpus()[0].model,
   runtime,
   version: execFileSync(runtime, ['--version'], { encoding: 'utf8' }).trim(),
   outputSha256: createHash('sha256').update(expected).digest('hex'),
   warmups: [],
-  cases: cases.map((c) => ({
-    ...c,
-    sourceSha256: sourceHash(c.env?.ENGINE, c.script),
-    times: [],
-    usage: [],
-  })),
+  complete: false,
+  cases: cases.map((entry) => {
+    if (typeof entry.name !== 'string' || !entry.name) throw new Error('Each case needs a name');
+    const engine = entry.env?.ENGINE ?? process.env.ENGINE ?? 'wasm';
+    const script = entry.script ?? entryScript(engine);
+    const env = { ...process.env, ...entry.env, ENGINE: engine };
+    return {
+      ...entry,
+      script,
+      env: { ...entry.env, ENGINE: engine },
+      flags: nodeFlags(env),
+      requestedWorkers: Number(env.WORKERS ?? availableParallelism()),
+      chunkBytes: Number(env.CHUNK_BYTES ?? (engine === 'wasm' ? 524288 : 131072)),
+      sourceSha256: sourceHash(engine, script),
+      times: [],
+      usage: [],
+    };
+  }),
 };
-for (let i = 0; i < warmups; i++) {
-  const env = { ...process.env };
-  const start = performance.now();
-  const output = execFileSync(runtime, [...nodeFlags(env), 'calculate.mjs', file], {
-    env,
-    encoding: 'utf8',
-    maxBuffer: 16 * 1024 * 1024,
-  });
-  if (output !== expected) throw new Error('Incorrect warm-up output');
-  report.warmups.push((performance.now() - start) / 1000);
-  console.log(`Warm-up ${i + 1}: ${report.warmups.at(-1).toFixed(3)}s, correct`);
+const save = () =>
+  writeFileSync(`results/${stamp}-compare-${label}.json`, `${JSON.stringify(report, null, 2)}\n`);
+save();
+for (let round = 0; round < warmups; round++) {
+  for (const entry of round % 2 ? report.cases.toReversed() : report.cases) {
+    const env = { ...process.env, ...entry.env };
+    const start = performance.now();
+    const output = execFileSync(runtime, [...entry.flags, entry.script, file], {
+      env,
+      encoding: 'utf8',
+      maxBuffer: 16 * 1024 * 1024,
+    });
+    if (output !== expected) throw new Error(`Incorrect warm-up output: ${entry.name}`);
+    const seconds = (performance.now() - start) / 1000;
+    report.warmups.push({ name: entry.name, round: round + 1, seconds });
+    save();
+    console.log(`Warm-up ${round + 1}: ${entry.name}: ${seconds.toFixed(3)}s, correct`);
+  }
 }
 for (let round = 0; round < runs; round++) {
-  for (const c of round % 2 ? report.cases.toReversed() : report.cases) {
-    const env = { ...process.env, ...c.env };
+  for (const entry of round % 2 ? report.cases.toReversed() : report.cases) {
+    if (sourceHash(entry.env.ENGINE, entry.script) !== entry.sourceSha256)
+      throw new Error(`Source changed during comparison: ${entry.name}`);
+    const env = { ...process.env, ...entry.env };
     const usageFile = `results/${stamp}-usage.json`;
     const start = performance.now();
     const child = spawn(
@@ -58,14 +86,11 @@ for (let round = 0; round < runs; round++) {
         '-f',
         '{"user":%U,"system":%S,"maxRssKiB":%M,"filesystemInputs":%I}',
         runtime,
-        ...nodeFlags(env),
-        c.script ?? 'calculate.mjs',
+        ...entry.flags,
+        entry.script,
         file,
       ],
-      {
-        env,
-        stdio: ['ignore', 'pipe', 'inherit'],
-      },
+      { env, stdio: ['ignore', 'pipe', 'inherit'] },
     );
     let output = '';
     child.stdout.setEncoding('utf8');
@@ -74,20 +99,25 @@ for (let round = 0; round < runs; round++) {
     });
     await new Promise((resolve, reject) => {
       child.once('error', reject);
-      child.once('close', (code) => (code === 0 ? resolve() : reject(new Error(`Exit ${code}`))));
+      child.once('close', (code, signal) =>
+        code === 0 ? resolve() : reject(new Error(`Exit ${code}, signal ${signal}`)),
+      );
     });
     const seconds = (performance.now() - start) / 1000;
-    if (output !== expected) throw new Error(`Incorrect output: ${c.name}`);
-    c.times.push(seconds);
-    c.usage.push(JSON.parse(readFileSync(usageFile, 'utf8')));
-    console.log(`${round + 1}: ${c.name}: ${seconds.toFixed(3)}s, correct`);
-    writeFileSync(`results/${stamp}-compare-${label}.json`, `${JSON.stringify(report, null, 2)}\n`);
+    if (output !== expected) throw new Error(`Incorrect output: ${entry.name}`);
+    entry.times.push(seconds);
+    entry.usage.push(JSON.parse(readFileSync(usageFile, 'utf8')));
+    console.log(`${round + 1}: ${entry.name}: ${seconds.toFixed(3)}s, correct`);
+    save();
   }
 }
-for (const c of report.cases) {
-  const sorted = c.times.toSorted((a, b) => a - b);
+for (const entry of report.cases) {
+  const sorted = entry.times.toSorted((a, b) => a - b);
   const kept = runs >= 5 ? sorted.slice(1, -1) : sorted;
-  c.average = kept.reduce((a, b) => a + b, 0) / kept.length;
-  console.log(`${c.name}: ${c.average.toFixed(3)}s ${runs >= 5 ? 'trimmed mean' : 'mean'}`);
+  entry.average = kept.reduce((a, b) => a + b, 0) / kept.length;
+  entry.best = sorted[0];
+  console.log(`${entry.name}: ${entry.average.toFixed(3)}s ${runs >= 5 ? 'trimmed mean' : 'mean'}`);
 }
-writeFileSync(`results/${stamp}-compare-${label}.json`, `${JSON.stringify(report, null, 2)}\n`);
+report.complete = true;
+save();
+console.log(`Report: results/${stamp}-compare-${label}.json`);

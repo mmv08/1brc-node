@@ -1,0 +1,212 @@
+{
+  "date": "2026-10-20T07:09:47.345Z",
+  "label": "final-both-engines",
+  "file": "1brc-node-d27101f-1b.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": ".runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Original Node.js (6915b53)",
+      "round": 1,
+      "seconds": 1.4875654770000002
+    },
+    {
+      "name": "Optimized plain Node.js",
+      "round": 1,
+      "seconds": 1.2299394689999998
+    },
+    {
+      "name": "Wasm SIMD",
+      "round": 1,
+      "seconds": 0.5060120280000001
+    },
+    {
+      "name": "Wasm SIMD",
+      "round": 2,
+      "seconds": 0.4956067509999998
+    },
+    {
+      "name": "Optimized plain Node.js",
+      "round": 2,
+      "seconds": 1.24895552
+    },
+    {
+      "name": "Original Node.js (6915b53)",
+      "round": 2,
+      "seconds": 1.4393249699999997
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Original Node.js (6915b53)",
+      "script": "[baseline worktree at 6915b53]/calculate.mjs",
+      "env": {
+        "ENGINE": "phased"
+      },
+      "flags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000"
+      ],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "7d29023e626db7ec391f029753dceb38ebde43f9ff30e51afb87ab664151508d",
+      "times": [
+        1.42895986,
+        1.446959164,
+        1.4468265220000012,
+        1.4193750579999977,
+        1.4689930559999993
+      ],
+      "usage": [
+        {
+          "user": 30.5,
+          "system": 1.38,
+          "maxRssKiB": 348140,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 30.64,
+          "system": 1.28,
+          "maxRssKiB": 346780,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 31.13,
+          "system": 1.33,
+          "maxRssKiB": 346232,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 30.38,
+          "system": 1.35,
+          "maxRssKiB": 345808,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 31.17,
+          "system": 1.34,
+          "maxRssKiB": 346332,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.4409151820000003,
+      "best": 1.4193750579999977
+    },
+    {
+      "name": "Optimized plain Node.js",
+      "env": {
+        "ENGINE": "node"
+      },
+      "script": "plain/calculate.mjs",
+      "flags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000"
+      ],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "815673ac729bf6eb6262785399f0e86dbaa8b7841403a4135c7936bea95d5290",
+      "times": [
+        1.2402923760000004,
+        1.2170875639999994,
+        1.2814735789999996,
+        1.2123703800000003,
+        1.2699666539999999
+      ],
+      "usage": [
+        {
+          "user": 26.26,
+          "system": 1.38,
+          "maxRssKiB": 341136,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.42,
+          "system": 1.35,
+          "maxRssKiB": 342764,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 27.06,
+          "system": 1.27,
+          "maxRssKiB": 341208,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.49,
+          "system": 1.39,
+          "maxRssKiB": 342500,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 26.48,
+          "system": 1.43,
+          "maxRssKiB": 342012,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.2424488646666667,
+      "best": 1.2123703800000003
+    },
+    {
+      "name": "Wasm SIMD",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "script": "calculate.mjs",
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
+      "times": [
+        0.49467739900000013,
+        0.5206387180000002,
+        0.49476942400000007,
+        0.4952776380000014,
+        0.500510929
+      ],
+      "usage": [
+        {
+          "user": 8.57,
+          "system": 1.43,
+          "maxRssKiB": 318844,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.85,
+          "system": 1.51,
+          "maxRssKiB": 318960,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.63,
+          "system": 1.45,
+          "maxRssKiB": 317660,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.53,
+          "system": 1.46,
+          "maxRssKiB": 318424,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.69,
+          "system": 1.42,
+          "maxRssKiB": 316332,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4968526636666672,
+      "best": 0.49467739900000013
+    }
+  ],
+  "exportNotes": "Absolute runtime, input and baseline script paths are portable labels; measured values, flags, source hashes and resource counters are unchanged.",
+  "measurements": 1000000000,
+  "stations": 413,
+  "baselineRevision": "6915b53d2c919871095a59a645ee265fa9d3e019",
+  "plainLessElapsedPercent": 13.773629413624544
+}
