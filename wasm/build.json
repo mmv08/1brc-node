@@ -1,9 +1,9 @@
 {
   "compiler": "Ubuntu clang version 21.1.8 (6ubuntu1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /usr/lib/llvm-21/bin",
   "linker": "Ubuntu LLD 21.1.8",
-  "sourceSha256": "1b08da6bae0368fc075316638ca599916cf150c85c896f061a3f2ac436164887",
-  "sha256": "77a786bb445e267ec5f39e08c702f0cd206a1c32e1d6d53963a20bf153c25256",
-  "bytes": 9304,
+  "sourceSha256": "b02857345b5d1cb377e4d8ca668e4ff7c86c504aa6bee20f5f19a952ed3c3e0a",
+  "sha256": "4792fc3d3f1f7d49bdc77d2869f27697bda64861e4f70991abb47fc533669c97",
+  "bytes": 11595,
   "compile": [
     "--target=wasm32",
     "-std=c11",
@@ -39,7 +39,7 @@
     "retune",
     "probe_station",
     "find_name",
-    "process_long"
+    "cold_path"
   ],
   "branchHints": [
     {
@@ -49,18 +49,13 @@
     },
     {
       "function": "parse_chunk",
-      "likely": 16,
-      "unlikely": 15
+      "likely": 25,
+      "unlikely": 25
     },
     {
       "function": "find_name",
       "likely": 3,
       "unlikely": 3
-    },
-    {
-      "function": "process_long",
-      "likely": 3,
-      "unlikely": 4
     },
     {
       "function": "insert_station",

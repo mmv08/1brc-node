@@ -413,13 +413,46 @@ INLINE const uint8_t *advance_short(const uint8_t *start, uint32_t matches, v128
   return start + __builtin_ctz(lines) + 1;
 }
 
-// Keep short rows in their fast path even when another lane has a long name.
-__attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *start,
-                                                                   v128_t low) {
-  v128_t high = wasm_v128_load(start + 16);
-  uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high, wasm_v128_load(&separators)))
-                     << 16;
-  return matches ? process_wide(start, matches, low, high) : process_row(start);
+typedef struct {
+  const uint8_t *a;
+  const uint8_t *b;
+  const uint8_t *c;
+} RowPointers;
+
+// An empty cold call marks the start of an unlikely path for the derived
+// branch hints. V8 inlines it away; the path itself needs no real call.
+__attribute__((noinline, cold)) static void cold_path(void) { __asm__ volatile(""); }
+
+// Rows whose names need another vector: every name below 32 bytes takes the
+// two-vector path; longer names keep the complete general parser.
+INLINE RowPointers process_three(const uint8_t *a, const uint8_t *b, const uint8_t *c) {
+  const v128_t separator = wasm_i8x16_splat(';');
+  v128_t low_a = wasm_v128_load(a);
+  v128_t low_b = wasm_v128_load(b);
+  v128_t low_c = wasm_v128_load(c);
+  v128_t high_a = wasm_v128_load(a + 16);
+  v128_t high_b = wasm_v128_load(b + 16);
+  v128_t high_c = wasm_v128_load(c + 16);
+  uint32_t matches_a = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(low_a, separator)) |
+                       (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high_a, separator)) << 16;
+  uint32_t matches_b = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(low_b, separator)) |
+                       (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high_b, separator)) << 16;
+  uint32_t matches_c = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(low_c, separator)) |
+                       (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high_c, separator)) << 16;
+  if ((matches_a != 0) & (matches_b != 0) & (matches_c != 0)) {
+    const uint8_t *next_a = process_wide(a, matches_a, low_a, high_a);
+    const uint8_t *next_b = process_wide(b, matches_b, low_b, high_b);
+    const uint8_t *next_c = process_wide(c, matches_c, low_c, high_c);
+    return (RowPointers){next_a, next_b, next_c};
+  }
+  // Hash each name just before its lookup: an insertion may retune the mixers.
+  ParsedRow row_a = scan_row(a);
+  ParsedRow row_b = scan_row(b);
+  ParsedRow row_c = scan_row(c);
+  const uint8_t *next_a = update_row(row_a);
+  const uint8_t *next_b = update_row(row_b);
+  const uint8_t *next_c = update_row(row_c);
+  return (RowPointers){next_a, next_b, next_c};
 }
 
 EXPORT(reset) void reset(void) {
@@ -496,9 +529,18 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
       uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
       uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-      a = matches_a ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
-      b = matches_b ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
-      c = matches_c ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
+      // Every mask fits in 16 bits, so only zero becomes negative after subtracting one.
+      if (((matches_a - 1) | (matches_b - 1) | (matches_c - 1)) < UINT32_C(0x80000000)) {
+        a = advance_short(a, matches_a, bytes_a);
+        b = advance_short(b, matches_b, bytes_b);
+        c = advance_short(c, matches_c, bytes_c);
+      } else {
+        cold_path();
+        RowPointers next = process_three(a, b, c);
+        a = next.a;
+        b = next.b;
+        c = next.c;
+      }
     } while (--rounds);
   }
   while (a < end_a) a = process_row(a);
