@@ -403,8 +403,8 @@ test('first-bucket collisions retune the mixers so every station hits directly',
   assert.notDeepEqual(mix, initialMixers);
   rows.forEach(([name], id) => {
     const { slot, fingerprint } = hashName(name, mix);
-    assert.equal(view.getUint32(buckets + slot * 4, true), base + id * 48, name);
-    assert.equal(view.getUint32(base + id * 48 + 32, true), fingerprint, name);
+    assert.equal(view.getUint32(buckets + slot * 4, true), base + id * 64, name);
+    assert.equal(view.getUint32(base + id * 64 + 32, true), fingerprint, name);
   });
 });
 
@@ -417,10 +417,10 @@ test('aligned station records preserve statistics and short-key ABI', async () =
   const base = kernel.api.stations_base();
   const keys = kernel.api.keys_base();
   const view = new DataView(kernel.memory);
-  assert.equal(base % 16, 0);
-  assert.equal(kernel.api.empty_station_base() % 16, 0);
+  assert.equal(base % 64, 0);
+  assert.equal(kernel.api.empty_station_base() % 64, 0);
   for (let i = 0; i < 9; i++) {
-    const p = base + i * 48;
+    const p = base + i * 64;
     assert.equal(p % 16, 0);
     assert.equal((p + 16) % 16, 0);
     assert.equal(view.getBigInt64(p, true), BigInt(i * 10 + 1));

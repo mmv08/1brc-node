@@ -12,7 +12,7 @@
 // key descriptor. The entire valid arena fits in 20 bits; length needs only 7.
 // Names below 16 bytes cache their delimiter-terminated key in head/tail;
 // longer names cache raw words without a delimiter, so they never match one.
-typedef struct __attribute__((aligned(16))) {
+typedef struct __attribute__((aligned(64))) {
   int64_t sum;
   uint32_t count;
   int16_t min;
@@ -23,8 +23,8 @@ typedef struct __attribute__((aligned(16))) {
   uint32_t key;
 } Station;
 
-_Static_assert(sizeof(Station) == 48, "station ABI size");
-_Static_assert(_Alignof(Station) == 16, "station ABI alignment");
+_Static_assert(sizeof(Station) == 64, "station ABI size");
+_Static_assert(_Alignof(Station) == 64, "station ABI alignment");
 _Static_assert(offsetof(Station, head) == 16, "station ABI short key");
 _Static_assert(offsetof(Station, hash) == 32, "station ABI hash");
 _Static_assert(offsetof(Station, count) == 8, "station ABI count");
