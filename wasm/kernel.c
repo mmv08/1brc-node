@@ -487,7 +487,7 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
     left = left < left_c ? left : left_c;
     uint32_t rounds = left / 108;
     if (!rounds) break;
-#pragma clang loop unroll(disable)
+#pragma clang loop unroll_count(4)
     do {
       const v128_t separator = wasm_v128_load(&separators);
       v128_t bytes_a = wasm_v128_load(a);
