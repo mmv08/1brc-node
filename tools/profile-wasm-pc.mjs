@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 
 const [logFile, assemblyFile] = process.argv.slice(2);
-if (!assemblyFile) throw new Error('Usage: node wasm-pc.mjs V8_LOG WASM_DISASSEMBLY');
+if (!assemblyFile) throw new Error('Usage: node tools/profile-wasm-pc.mjs V8_LOG WASM_DISASSEMBLY');
 const text = readFileSync(assemblyFile, 'utf8');
 const functions = text
   .split('--- WebAssembly code ---')
@@ -40,9 +40,16 @@ const functions = text
     };
   })
   .filter((f) => f.start !== undefined);
-const ticks = readFileSync(logFile, 'utf8')
-  .split('\n')
-  .filter((line) => line.startsWith('tick,'));
+// Address-only attribution is valid only while these code ranges are unique.
+// Refuse ambiguous dumps instead of assigning recycled addresses to old code.
+const ordered = functions.toSorted((a, b) => a.start - b.start);
+for (let i = 1; i < ordered.length; i++) {
+  if (ordered[i].start < ordered[i - 1].start + ordered[i - 1].size)
+    throw new Error('Overlapping code ranges require lifetime-aware attribution');
+}
+const log = readFileSync(logFile, 'utf8');
+if (/^code-move,/m.test(log)) throw new Error('Code moves require lifetime-aware attribution');
+const ticks = log.split('\n').filter((line) => line.startsWith('tick,'));
 let mapped = 0;
 for (const line of ticks) {
   const pc = Number(line.split(',')[1]);

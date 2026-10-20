@@ -4,7 +4,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 
 const arguments_ = process.argv.slice(2);
-if (!arguments_.length) throw new Error('Usage: node summarize.mjs FILE_OR_DIRECTORY ...');
+if (!arguments_.length)
+  throw new Error('Usage: node tools/profile-summary.mjs FILE_OR_DIRECTORY ...');
 const files = arguments_.flatMap((argument) => {
   const path = resolve(argument);
   return statSync(path).isDirectory()
