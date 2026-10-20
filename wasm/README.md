@@ -12,8 +12,9 @@ Node handles file reads, workers, dynamic range scheduling, row ownership,
 UTF-8 result decoding, merging, sorting and formatting. Workers start from
 `worker.mjs`, which loads only `engine.mjs` and the reader. Each worker owns a
 private Wasm instance and table. Its input Buffer aliases Wasm memory, so the
-filesystem writes there directly. Memory grows before any views are created
-and never during parsing.
+filesystem writes there directly. Each instance starts with 4 MiB of memory.
+Any growth needed for the input buffer happens before views are created and
+never during parsing.
 
 The freestanding kernel imports nothing: no libc, WASI or host callbacks.
 SIMD scans 16 bytes for delimiters. Three independent newline-aligned lanes
@@ -21,10 +22,11 @@ load their first vectors together. A valid row is at most 108 bytes, so a
 counted inner loop runs as many iterations as the shortest lane allows without
 checking each lane's end.
 
-When all three delimiters are present (1–15 name bytes), each row reuses its
-vector for hashing and matching. Such a row ends within 32 bytes: two vector
-comparisons find its newline, so the lane advances without waiting for the
-temperature to decode, roughly halving the per-lane dependency chain.
+Each lane whose first vector contains the delimiter (1–15 name bytes) reuses
+that vector for hashing and matching. Such a row ends within 32 bytes: two
+vector comparisons find its newline, so the lane advances without waiting for
+the temperature to decode. A longer name in another lane does not take this
+row out of its short-name path.
 
 A short key contains the complete name, its semicolon delimiter and zero padding
 to 16 bytes. The delimiter encodes the length even when names end in NUL bytes.
@@ -34,13 +36,14 @@ match a short key. Empty buckets point to a shared zero record, which also
 cannot match a key containing the delimiter. Misses recompute the hash from the
 name in an outlined lookup, so the hot loop keeps no hash state alive for them.
 
-If any name needs another vector, all three rows take a two-vector path. Every
-name below 32 bytes forms a canonical 32-byte key: the name, its delimiter and
-zero padding. The arena stores each name in that form, so one pair of vector
-comparisons verifies short and longer names alike, without length-dependent
-branches. Names of 32 bytes or more use the complete general parser. The
-fallback is inlined into the loop; an empty `cold_path()` call marks it for
-branch hints and disappears in V8's inliner.
+Each lane with a longer name calls the outlined, cold `process_long()` helper.
+Names of 16–31 bytes take a two-vector path. Their canonical 32-byte key holds
+the name, its delimiter and zero padding; the arena stores the same form, so
+one pair of vector comparisons verifies the complete key. Names of 32 bytes or
+more use the complete general parser. Both short and wide mask tables are
+indexed directly by name length, with the delimiter included in the mask.
+Removing unused zero-width entries lets Clang fold their bases into memory
+access offsets.
 
 The general scanner packs the name's length into seven bits beside its full
 32-bit pointer and carries that descriptor plus the hash into lookup. Hashing
@@ -68,7 +71,8 @@ Station records remain exactly **40 bytes**:
 | ---: | --- |
 | 0 | signed Int64 sum, in tenths |
 | 8 | Uint32 count |
-| 12, 14 | Int16 min/max |
+| 12 | Int16 minimum |
+| 14 | Int16 negative maximum |
 | 16 | Uint32 fingerprint, retained for inspection |
 | 20 | key offset (low 20 bits) and byte length (upper bits) |
 | 24–39 | 16-byte delimiter-terminated key for names below 16 bytes; raw head/tail words otherwise |
@@ -80,20 +84,23 @@ Ignoring byte 0 excludes the optional minus sign, so
 bytes before it are `;` (one digit), `-` (a negative single digit) or the tens
 digit, then the units digit. Their low nibbles, the tenths digit's and the
 inverted bit 4 of the first byte (set only for a minus sign) form a 16-bit
-index. One `uint16` lookup returns the byte offset of that temperature's
-statistics delta; the table is sparse, and only about 100 of its cache lines
-are ever used. LF is even and CR odd, so the low bit of the byte two places
+index. One vector lookup returns the complete statistics delta directly from
+a sparse 65,536-entry `v128_t` table (1 MiB). This removes the dependent lookup
+through a `uint16` offset table. During reset, the 1,999 possible deltas are
+constructed once and copied into each legal spelling's table entry. LF is even
+and CR odd, so the low bit of the byte two places
 after the decimal identifies CRLF where the general path advances by the
 temperature. Tests cover all 4,400 sign/digit-width/newline combinations,
 including leading zeros and negative zero, through the production parser.
 
-Each of the 1,999 deltas holds the signed sum increment, a count increment and
-the value again in the min/max lanes. One 128-bit load/store updates the
-statistics: an `i64x2.add` updates the sum and count, and signed `i16x8.min/max`
-compute the extrema from the same delta. Fixed lane shuffles merge the fields,
-lowering to two immediate SIMD blends. Counts cannot reach 2^32 within the
-billion-row challenge, so incrementing the count cannot carry into its adjacent
-min/max fields. Sums are exact signed 64-bit integers.
+Each delta holds the signed sum increment, a count increment, the value in the
+minimum lane and its negation in the negative-maximum lane. An `i64x2.add`
+updates the sum and count, while one signed `i16x8.min` updates both extrema.
+A fixed lane shuffle merges the fields, lowering to one immediate SIMD blend,
+then one 128-bit store writes the statistics. Counts cannot reach 2^32 within
+the billion-row challenge, so incrementing the count cannot carry into the
+adjacent extrema fields. Sums are exact signed 64-bit integers. The host
+decodes the maximum as `0 - negative_max`, preserving positive zero.
 
 V8 rebuilds immediate SIMD constants inside loops, so the delimiter splats and
 mixing words are written by `reset()` and loaded from memory instead.
@@ -102,8 +109,7 @@ Clang emits no Wasm branch hints, but V8 uses them to place cold blocks out of
 line and keep their register spills there. `tools/branch-hints.mjs` decodes the
 linked module and hints a branch unlikely when taking it calls a function
 declared `noinline, cold`, and likely when it skips such a call or repeats a
-loop. Everything else stays unhinted. On this kernel the hints remove roughly
-eight native instructions per row. The shipped module keeps no other custom
+loop. Everything else stays unhinted. The shipped module keeps no other custom
 sections; `build.json` lists the cold functions and per-function hint counts.
 
 The bounded name arena fits in 20 bits even for 10,000 maximum-length names.
@@ -111,7 +117,7 @@ Every name byte is checked, including the middle of names sharing identical
 heads and tails. No input dictionary or precomputed results are embedded.
 BigInt conversion happens once per result station, never per measurement.
 All challenge sums fit exactly in a JS Number after conversion.
-The selected binary is **11,499 bytes**.
+The selected binary is **9,442 bytes**.
 
 Build and inspect:
 
@@ -123,7 +129,7 @@ npm run check:c
 node_modules/.bin/wasm2wat wasm/kernel.wasm -o results/build/kernel.wat
 ```
 
-Build tools used here: existing Clang 22.1.8 and LLD 20.0.0. No global tools
+Build tools used here: existing Clang 21.1.8 and LLD 21.1.8. No global tools
 were installed. `CLANG`, `WASM_LD`, and `CLANG_FORMAT` override tool locations.
 The kernel is built at `-O3 -msimd128 -ffreestanding -fno-builtin -nostdlib`
 and linked with its symbol names, which only the hint derivation reads.

@@ -1,0 +1,447 @@
+{
+  "date": "2026-10-20T20:05:20.349Z",
+  "label": "round2-direct-workers",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Wasm direct 3 lanes 12 workers",
+      "round": 1,
+      "seconds": 0.5334833170000001
+    },
+    {
+      "name": "Wasm direct 3 lanes 16 workers",
+      "round": 1,
+      "seconds": 0.499540234
+    },
+    {
+      "name": "Wasm direct 3 lanes 24 workers",
+      "round": 1,
+      "seconds": 0.49537330399999996
+    },
+    {
+      "name": "Wasm direct 2 lanes 12 workers",
+      "round": 1,
+      "seconds": 0.5088572279999999
+    },
+    {
+      "name": "Wasm direct 2 lanes 16 workers",
+      "round": 1,
+      "seconds": 0.4970379389999998
+    },
+    {
+      "name": "Wasm direct 2 lanes 24 workers",
+      "round": 1,
+      "seconds": 0.4862299590000002
+    },
+    {
+      "name": "Wasm direct 2 lanes 24 workers",
+      "round": 2,
+      "seconds": 0.4796460360000001
+    },
+    {
+      "name": "Wasm direct 2 lanes 16 workers",
+      "round": 2,
+      "seconds": 0.49502811999999996
+    },
+    {
+      "name": "Wasm direct 2 lanes 12 workers",
+      "round": 2,
+      "seconds": 0.5046500209999999
+    },
+    {
+      "name": "Wasm direct 3 lanes 24 workers",
+      "round": 2,
+      "seconds": 0.4944563450000005
+    },
+    {
+      "name": "Wasm direct 3 lanes 16 workers",
+      "round": 2,
+      "seconds": 0.4789728789999999
+    },
+    {
+      "name": "Wasm direct 3 lanes 12 workers",
+      "round": 2,
+      "seconds": 0.492242859
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Wasm direct 3 lanes 12 workers",
+      "script": "results/round2-direct-deltas/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "12"
+      },
+      "flags": [],
+      "requestedWorkers": 12,
+      "chunkBytes": 524288,
+      "sourceSha256": "086f73369109333c68bdbc358b15dffd80082a61b6ab2acd9a4e7be919f4674a",
+      "times": [
+        0.5048742869999996, 0.5122972700000009, 0.4882718590000004, 0.4962377529999976,
+        0.5132156709999981, 0.491895790999999, 0.5010078959999992
+      ],
+      "usage": [
+        {
+          "user": 4.2,
+          "system": 1.27,
+          "maxRssKiB": 200052,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.3,
+          "system": 1.25,
+          "maxRssKiB": 200472,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.07,
+          "system": 1.27,
+          "maxRssKiB": 200316,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.19,
+          "system": 1.18,
+          "maxRssKiB": 200316,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.33,
+          "system": 1.27,
+          "maxRssKiB": 199400,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.19,
+          "system": 1.24,
+          "maxRssKiB": 200600,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.1,
+          "system": 1.3,
+          "maxRssKiB": 200060,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5012625993999993,
+      "best": 0.4882718590000004
+    },
+    {
+      "name": "Wasm direct 3 lanes 16 workers",
+      "script": "results/round2-direct-deltas/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "16"
+      },
+      "flags": [],
+      "requestedWorkers": 16,
+      "chunkBytes": 524288,
+      "sourceSha256": "086f73369109333c68bdbc358b15dffd80082a61b6ab2acd9a4e7be919f4674a",
+      "times": [
+        0.4819704329999995, 0.4917868639999997, 0.4863561379999992, 0.48989477700000134,
+        0.5295269550000011, 0.4906429849999986, 0.48806862499999987
+      ],
+      "usage": [
+        {
+          "user": 5.59,
+          "system": 1.51,
+          "maxRssKiB": 243456,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 5.54,
+          "system": 1.47,
+          "maxRssKiB": 243756,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 5.49,
+          "system": 1.49,
+          "maxRssKiB": 243156,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 5.47,
+          "system": 1.52,
+          "maxRssKiB": 242876,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 6,
+          "system": 1.6,
+          "maxRssKiB": 242460,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 5.63,
+          "system": 1.41,
+          "maxRssKiB": 242464,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 5.54,
+          "system": 1.48,
+          "maxRssKiB": 243520,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4893498777999998,
+      "best": 0.4819704329999995
+    },
+    {
+      "name": "Wasm direct 3 lanes 24 workers",
+      "script": "results/round2-direct-deltas/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "24"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "086f73369109333c68bdbc358b15dffd80082a61b6ab2acd9a4e7be919f4674a",
+      "times": [
+        0.507179948, 0.4909090899999992, 0.4888234159999993, 0.4964031159999977, 0.5223114060000007,
+        0.4824554620000017, 0.47788428599999677
+      ],
+      "usage": [
+        {
+          "user": 8.01,
+          "system": 1.68,
+          "maxRssKiB": 323856,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.12,
+          "system": 1.74,
+          "maxRssKiB": 324456,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.1,
+          "system": 1.65,
+          "maxRssKiB": 325020,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.11,
+          "system": 1.72,
+          "maxRssKiB": 324924,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.95,
+          "system": 1.7,
+          "maxRssKiB": 324940,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.02,
+          "system": 1.68,
+          "maxRssKiB": 323080,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.16,
+          "system": 1.63,
+          "maxRssKiB": 323368,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4931542063999996,
+      "best": 0.47788428599999677
+    },
+    {
+      "name": "Wasm direct 2 lanes 12 workers",
+      "script": "results/round2-direct-two-lanes/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "12"
+      },
+      "flags": [],
+      "requestedWorkers": 12,
+      "chunkBytes": 524288,
+      "sourceSha256": "33506efc067bc5dbe02cd4b8c89ddf349606a99902e421ad2f5f969a17f0a2a0",
+      "times": [
+        0.5086376420000006, 0.5048337300000003, 0.5086776469999986, 0.5379403869999987,
+        0.5757713719999993, 0.5072364949999973, 0.5054605179999999
+      ],
+      "usage": [
+        {
+          "user": 4.23,
+          "system": 1.27,
+          "maxRssKiB": 199652,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.22,
+          "system": 1.29,
+          "maxRssKiB": 200004,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.24,
+          "system": 1.3,
+          "maxRssKiB": 201048,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.51,
+          "system": 1.29,
+          "maxRssKiB": 198012,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.94,
+          "system": 1.34,
+          "maxRssKiB": 198788,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.14,
+          "system": 1.29,
+          "maxRssKiB": 199716,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.2,
+          "system": 1.26,
+          "maxRssKiB": 200144,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.513590537799999,
+      "best": 0.5048337300000003
+    },
+    {
+      "name": "Wasm direct 2 lanes 16 workers",
+      "script": "results/round2-direct-two-lanes/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "16"
+      },
+      "flags": [],
+      "requestedWorkers": 16,
+      "chunkBytes": 524288,
+      "sourceSha256": "33506efc067bc5dbe02cd4b8c89ddf349606a99902e421ad2f5f969a17f0a2a0",
+      "times": [
+        0.495880986000001, 0.5050684149999998, 0.49810238799999934, 0.49569432199999935,
+        0.5188834260000004, 0.49725533200000066, 0.4936000920000006
+      ],
+      "usage": [
+        {
+          "user": 5.66,
+          "system": 1.48,
+          "maxRssKiB": 242952,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 5.76,
+          "system": 1.41,
+          "maxRssKiB": 241372,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 5.62,
+          "system": 1.49,
+          "maxRssKiB": 243428,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 5.77,
+          "system": 1.32,
+          "maxRssKiB": 241148,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 5.96,
+          "system": 1.47,
+          "maxRssKiB": 244784,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 5.66,
+          "system": 1.5,
+          "maxRssKiB": 243300,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 5.68,
+          "system": 1.39,
+          "maxRssKiB": 241876,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4984002886000001,
+      "best": 0.4936000920000006
+    },
+    {
+      "name": "Wasm direct 2 lanes 24 workers",
+      "script": "results/round2-direct-two-lanes/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "24"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "33506efc067bc5dbe02cd4b8c89ddf349606a99902e421ad2f5f969a17f0a2a0",
+      "times": [
+        0.4925768420000004, 0.4935330649999996, 0.49516796500000054, 0.4948459839999996,
+        0.5028586150000011, 0.5004942320000009, 0.48991743999999743
+      ],
+      "usage": [
+        {
+          "user": 8.23,
+          "system": 1.65,
+          "maxRssKiB": 325992,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.17,
+          "system": 1.69,
+          "maxRssKiB": 325772,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.16,
+          "system": 1.69,
+          "maxRssKiB": 324272,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.21,
+          "system": 1.68,
+          "maxRssKiB": 325584,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.15,
+          "system": 1.69,
+          "maxRssKiB": 322028,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.12,
+          "system": 1.74,
+          "maxRssKiB": 325364,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.19,
+          "system": 1.66,
+          "maxRssKiB": 324660,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.49532361760000015,
+      "best": 0.48991743999999743
+    }
+  ]
+}

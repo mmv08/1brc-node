@@ -1,0 +1,550 @@
+{
+  "date": "2026-10-20T19:50:42.399Z",
+  "label": "round2-hash-io",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Node baseline",
+      "round": 1,
+      "seconds": 1.1983664189999998
+    },
+    {
+      "name": "Node simple hash",
+      "round": 1,
+      "seconds": 1.124042283
+    },
+    {
+      "name": "Node simple hash16",
+      "round": 1,
+      "seconds": 1.1975523659999998
+    },
+    {
+      "name": "Node IO=macro",
+      "round": 1,
+      "seconds": 1.165902623
+    },
+    {
+      "name": "Node IO=async",
+      "round": 1,
+      "seconds": 1.838794637
+    },
+    {
+      "name": "Node PRIVATE_FD=1",
+      "round": 1,
+      "seconds": 1.2040183750000006
+    },
+    {
+      "name": "Wasm baseline",
+      "round": 1,
+      "seconds": 0.5047120329999998
+    },
+    {
+      "name": "Wasm combined",
+      "round": 1,
+      "seconds": 0.5009251029999996
+    },
+    {
+      "name": "Wasm combined 12 workers",
+      "round": 1,
+      "seconds": 0.4808677869999992
+    },
+    {
+      "name": "Wasm combined 12 workers",
+      "round": 2,
+      "seconds": 0.48043049900000007
+    },
+    {
+      "name": "Wasm combined",
+      "round": 2,
+      "seconds": 0.5088913260000009
+    },
+    {
+      "name": "Wasm baseline",
+      "round": 2,
+      "seconds": 0.4794482369999987
+    },
+    {
+      "name": "Node PRIVATE_FD=1",
+      "round": 2,
+      "seconds": 1.1673559590000004
+    },
+    {
+      "name": "Node IO=async",
+      "round": 2,
+      "seconds": 1.7956375589999989
+    },
+    {
+      "name": "Node IO=macro",
+      "round": 2,
+      "seconds": 1.1599572419999986
+    },
+    {
+      "name": "Node simple hash16",
+      "round": 2,
+      "seconds": 1.190602901
+    },
+    {
+      "name": "Node simple hash",
+      "round": 2,
+      "seconds": 1.1340702140000012
+    },
+    {
+      "name": "Node baseline",
+      "round": 2,
+      "seconds": 1.207050973999998
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Node baseline",
+      "script": "results/round2-baseline/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "c7aeba04e172902c719db678c2c2b0c91a2b335935e9943758783847d340caa7",
+      "times": [
+        1.1751041070000028, 1.1604892499999988, 1.1766528840000028, 1.1538210990000006,
+        1.1892860139999974
+      ],
+      "usage": [
+        {
+          "user": 24.82,
+          "system": 1.4,
+          "maxRssKiB": 339328,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.28,
+          "system": 1.37,
+          "maxRssKiB": 339588,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.64,
+          "system": 1.43,
+          "maxRssKiB": 338524,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.32,
+          "system": 1.38,
+          "maxRssKiB": 340448,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.97,
+          "system": 1.32,
+          "maxRssKiB": 339556,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.1707487470000013,
+      "best": 1.1538210990000006
+    },
+    {
+      "name": "Node simple hash",
+      "script": "results/round2-node-hash0/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "91601f14f5d31e5611369346252558ef0562e0ccaaf573e121eedf6ed625fc81",
+      "times": [
+        1.1264394780000002, 1.1588955690000002, 1.1914765770000013, 1.1810681450000047,
+        1.1935795240000007
+      ],
+      "usage": [
+        {
+          "user": 23.71,
+          "system": 1.4,
+          "maxRssKiB": 340148,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.18,
+          "system": 1.39,
+          "maxRssKiB": 341628,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.14,
+          "system": 1.41,
+          "maxRssKiB": 340404,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.61,
+          "system": 1.42,
+          "maxRssKiB": 337824,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.04,
+          "system": 1.39,
+          "maxRssKiB": 339228,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.1771467636666688,
+      "best": 1.1264394780000002
+    },
+    {
+      "name": "Node simple hash16",
+      "script": "results/round2-node-hash16/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "bd387809fbdc70a08ee463e942768190d207bb866cea0da852f1c79713dac3c3",
+      "times": [
+        1.1652918759999993, 1.1731601819999997, 1.2061240969999998, 1.187565843999997,
+        1.1805728260000032
+      ],
+      "usage": [
+        {
+          "user": 24.42,
+          "system": 1.38,
+          "maxRssKiB": 339260,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.7,
+          "system": 1.43,
+          "maxRssKiB": 338344,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.31,
+          "system": 1.41,
+          "maxRssKiB": 342768,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.79,
+          "system": 1.43,
+          "maxRssKiB": 340524,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.74,
+          "system": 1.37,
+          "maxRssKiB": 339584,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.1804329506666666,
+      "best": 1.1652918759999993
+    },
+    {
+      "name": "Node IO=macro",
+      "script": "results/round2-baseline/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "IO": "macro"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "c7aeba04e172902c719db678c2c2b0c91a2b335935e9943758783847d340caa7",
+      "times": [
+        1.1791689740000002, 1.1816012350000018, 1.1917520399999995, 1.1599388770000005,
+        1.1697631519999996
+      ],
+      "usage": [
+        {
+          "user": 24.61,
+          "system": 1.32,
+          "maxRssKiB": 340780,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.76,
+          "system": 1.33,
+          "maxRssKiB": 341384,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.75,
+          "system": 1.39,
+          "maxRssKiB": 338360,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.41,
+          "system": 1.34,
+          "maxRssKiB": 341084,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.61,
+          "system": 1.39,
+          "maxRssKiB": 340544,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.1768444536666671,
+      "best": 1.1599388770000005
+    },
+    {
+      "name": "Node IO=async",
+      "script": "results/round2-baseline/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "IO": "async"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "c7aeba04e172902c719db678c2c2b0c91a2b335935e9943758783847d340caa7",
+      "times": [
+        1.7963781930000005, 1.8368329880000018, 1.8208084489999965, 1.8052883349999975,
+        1.8602878360000032
+      ],
+      "usage": [
+        {
+          "user": 37.08,
+          "system": 3.49,
+          "maxRssKiB": 340016,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 38.04,
+          "system": 3.55,
+          "maxRssKiB": 343156,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 37.49,
+          "system": 3.42,
+          "maxRssKiB": 343920,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 37.14,
+          "system": 3.47,
+          "maxRssKiB": 339976,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 37.7,
+          "system": 3.45,
+          "maxRssKiB": 342788,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.8209765906666655,
+      "best": 1.7963781930000005
+    },
+    {
+      "name": "Node PRIVATE_FD=1",
+      "script": "results/round2-baseline/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "PRIVATE_FD": "1"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "c7aeba04e172902c719db678c2c2b0c91a2b335935e9943758783847d340caa7",
+      "times": [
+        1.2148382170000005, 1.1777241350000003, 1.1658844189999946, 1.218996871000003,
+        1.1850435419999994
+      ],
+      "usage": [
+        {
+          "user": 25.6,
+          "system": 1.38,
+          "maxRssKiB": 340024,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.18,
+          "system": 1.4,
+          "maxRssKiB": 343272,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.32,
+          "system": 1.37,
+          "maxRssKiB": 340400,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.53,
+          "system": 1.37,
+          "maxRssKiB": 340776,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25,
+          "system": 1.31,
+          "maxRssKiB": 339048,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.1925352980000001,
+      "best": 1.1658844189999946
+    },
+    {
+      "name": "Wasm baseline",
+      "script": "results/round2-baseline/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
+      "times": [
+        0.501764353999999, 0.5063843830000005, 0.5008632929999949, 0.5202906969999967,
+        0.5182118459999984
+      ],
+      "usage": [
+        {
+          "user": 8.63,
+          "system": 1.48,
+          "maxRssKiB": 317220,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.63,
+          "system": 1.45,
+          "maxRssKiB": 317796,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.75,
+          "system": 1.44,
+          "maxRssKiB": 318288,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.79,
+          "system": 1.39,
+          "maxRssKiB": 317104,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.74,
+          "system": 1.46,
+          "maxRssKiB": 317464,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5087868609999994,
+      "best": 0.5008632929999949
+    },
+    {
+      "name": "Wasm combined",
+      "script": "results/round2-wasm/negated-per-lane/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "54fe2639043d1478666de5b79c46a758750bc1d2060d5cc17c18001b497bf4e1",
+      "times": [
+        0.5150451820000017, 0.49400229799999945, 0.5035300519999946, 0.5126414850000001,
+        0.4927835279999999
+      ],
+      "usage": [
+        {
+          "user": 8.64,
+          "system": 1.46,
+          "maxRssKiB": 317520,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.42,
+          "system": 1.5,
+          "maxRssKiB": 315812,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.61,
+          "system": 1.47,
+          "maxRssKiB": 318284,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.63,
+          "system": 1.43,
+          "maxRssKiB": 317540,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.59,
+          "system": 1.47,
+          "maxRssKiB": 315628,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5033912783333313,
+      "best": 0.4927835279999999
+    },
+    {
+      "name": "Wasm combined 12 workers",
+      "script": "results/round2-wasm/negated-per-lane/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "12"
+      },
+      "flags": [],
+      "requestedWorkers": 12,
+      "chunkBytes": 524288,
+      "sourceSha256": "54fe2639043d1478666de5b79c46a758750bc1d2060d5cc17c18001b497bf4e1",
+      "times": [
+        0.4897620089999982, 0.4906104479999995, 0.4954176619999998, 0.4914625339999984,
+        0.4863334390000018
+      ],
+      "usage": [
+        {
+          "user": 4.34,
+          "system": 1.04,
+          "maxRssKiB": 196256,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.28,
+          "system": 0.99,
+          "maxRssKiB": 196256,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.28,
+          "system": 1.16,
+          "maxRssKiB": 196400,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.22,
+          "system": 1.17,
+          "maxRssKiB": 196960,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 4.22,
+          "system": 1.1,
+          "maxRssKiB": 196268,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.49061166366666537,
+      "best": 0.4863334390000018
+    }
+  ]
+}

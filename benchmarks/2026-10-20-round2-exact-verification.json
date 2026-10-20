@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-20T20:07:24.704Z",
+  "nodeVersion": "v26.12.0",
+  "file": "measurements.txt",
+  "measurements": 1000000000,
+  "stations": 413,
+  "exactTuplesMatch": true,
+  "expectedStdoutMatches": true,
+  "sources": {
+    "node": "91601f14f5d31e5611369346252558ef0562e0ccaaf573e121eedf6ed625fc81",
+    "wasm": "4e852f5d8cd7a037ca354c91e2e48fad0c1541f4ac2bc7d88c540d985f0d3fc5"
+  }
+}

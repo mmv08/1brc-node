@@ -43,27 +43,35 @@ its optimized parsing loop:
 On an **AMD Ryzen 9 7900, 12 cores / 24 threads, 60 GiB RAM**, using Node
 **26.12.0**, the full **1,000,000,000-row / 13,795,455,110-byte** input measured:
 
-| Implementation | Seven-run trimmed mean | Best |
+| Implementation | Nine-run trimmed mean | Best |
 | --- | ---: | ---: |
-| Previous plain Node, `f5ed40a` | 1.245 s | 1.198 s |
-| **Optimized plain Node** | **1.165 s** | **1.137 s** |
-| **Wasm SIMD** | **0.505 s** | **0.499 s** |
+| Previous plain Node, `5769105` | 1.174 s | 1.155 s |
+| **Optimized plain Node** | **1.168 s** | **1.151 s** |
+| Previous Wasm, `5769105` | 0.511 s | 0.499 s |
+| **Optimized Wasm SIMD** | **0.490 s** | **0.480 s** |
 
-The plain version took **6.4% less elapsed time** than its previous implementation
-in this same-session comparison. These are warm-filesystem-cache, end-to-end
-measurements: startup, compilation, reads, parsing, aggregation, merging, sorting,
-output and shutdown all count. Two full-file warm-ups per case were excluded;
-then seven alternating rounds discarded each case's fastest and slowest run.
-All measured outputs were checked, and measured filesystem-input counters were zero.
-Both engines used 24 workers. Throughput was **11.84 GB/s** for Node and
-**27.32 GB/s** for Wasm. The existing Wasm implementation remains the fastest tested;
-four lanes, prefix prediction and sharing compiled code did not improve it.
+Wasm took **4.1% less elapsed time** in this same-session comparison.
+The smaller Node improvement was **0.5%** and remains sensitive to run-to-run
+noise; an earlier dedicated nine-round confirmation measured 1.0% and won eight
+rounds. These are warm-filesystem-cache, end-to-end measurements: startup,
+compilation, reads, parsing, aggregation, merging, sorting, output and shutdown
+all count. Three full-file warm-ups per case were excluded; then nine alternating
+rounds discarded each case's fastest and slowest run. All outputs were checked,
+and measured filesystem-input counters were zero. Both default cases used 24
+workers. Throughput was **11.81 GB/s** for Node and **28.13 GB/s** for Wasm.
 
-The earlier Wasm result of **0.866 s** was on a different Core Ultra 7 258V laptop;
-it is not a same-hardware comparison. The earlier loaded-machine plain-Node batch
-is also separate. See [BENCHMARKS.md](BENCHMARKS.md) and the
-[recorded comparison](benchmarks/2026-10-20-optimization-round.json) for evidence and caveats.
-These are local results, not official leaderboard scores.
+A 16-worker Wasm control measured 0.489 s, effectively tied with the default,
+with lower peak RSS on this machine. A read-only diagnostic took roughly
+0.34–0.36 s using the current reader. That is an empirical comparison without
+parsing, **not a theoretical limit**, and cannot be subtracted from solver time
+to estimate parsing cost. The new measured gains show that optimization was not
+exhausted; no theoretical optimum is claimed.
+
+Earlier laptop and loaded-machine results are separate batches. See
+[BENCHMARKS.md](BENCHMARKS.md) and the
+[recorded comparison](benchmarks/2026-10-20-round2-optimization.json) for evidence,
+all experiment checkpoints and caveats. These are local results, not official
+leaderboard scores.
 
 ## Input and design
 
@@ -84,9 +92,10 @@ Java-compatible. Temperatures are accumulated as exact integer tenths.
 Workers use 128 KiB chunks, four-byte delimiter scanning, typed-array hash tables
 and two independent parsing cursors. There are no per-measurement strings or objects.
 
-A 64 KiB worker-local cache predicts a station from its first five bytes; for a
-four-byte name, the fifth byte is its delimiter. A hit
-must match the **entire name and its delimiter** before it can skip scanning and
+A 64 KiB worker-local cache predicts a station from its first five bytes using
+a simple XOR and integer multiplication; for a four-byte name, the fifth byte
+is its delimiter. A hit must match the **entire name and its delimiter** before
+it can skip scanning and
 rolling-hash calculation. Cached entries supply their stored length directly;
 hash-table lookups check the scanned length before comparing bytes. Misses use
 the general hash-table parser; names shorter than four bytes are not cached.
@@ -100,9 +109,12 @@ exiting, allowing the main thread to merge results while threads shut down.
 
 ### WebAssembly
 
-The existing `calculate.mjs`, `wasm/` kernel and worker, and shared reader are
-unchanged. Workers use 512 KiB chunks, read directly into Wasm memory, and process
-three parsing lanes with complete name verification and exact signed 64-bit sums.
+The `calculate.mjs` entry and shared reader feed 512 KiB chunks directly into
+Wasm memory. The kernel uses three parsing lanes with complete name verification
+and exact signed 64-bit sums. A direct table maps each temperature spelling to
+its complete SIMD update vector, removing a dependent lookup. Storing a negated
+maximum lets one SIMD minimum operation update both extrema; long-name fallback
+is independent per lane.
 Details and build instructions: [wasm/README.md](wasm/README.md).
 
 ## Test and develop
@@ -114,9 +126,9 @@ git clone --depth 1 https://github.com/1brc/nodejs.git upstream
 npm ci --ignore-scripts
 npm test                 # Both versions and launcher/benchmark integration
 npm run test:node        # Plain-Node correctness suite
-npm run test:wasm        # Existing Wasm correctness suite
+npm run test:wasm        # Wasm correctness suite
 npm run check            # JavaScript/JSON formatting and lint
-npm run check:c          # Existing C format check; requires clang-format
+npm run check:c          # C format check; requires clang-format
 ```
 
 Tests cover official fixtures, every legal temperature spelling, Unicode/NUL and
@@ -132,13 +144,14 @@ solver needs neither an npm install nor a C toolchain. For Wasm development,
 remain available; no system tools are installed by these scripts. The C-format
 helper also detects a local `.runtimes/formatting/bin/clang-format`; version
 21.1.8 was used for the latest check. Pointer alignment is explicit so checking
-formatting does not rewrite the existing kernel's pointer style.
+formatting does not rewrite the kernel's pointer style.
 
 ## Generate, verify and benchmark
 
 ```sh
 node tools/generate.mjs 1000000000 measurements.txt
 node tools/verify-engines.mjs measurements.txt 1000000000
+WORKERS=12 node tools/read-bandwidth.mjs measurements.txt # Diagnostic, no parsing
 npm run bench:node -- measurements.txt
 npm run bench:wasm -- measurements.txt
 RUNS=7 WARMUP=2 node tools/compare.mjs node-vs-wasm measurements.txt

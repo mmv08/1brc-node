@@ -1,6 +1,173 @@
 # Benchmark and experiment log
 
-## Current: further Node optimization and Wasm trials, 2026-10-20
+## Current: direct Wasm deltas and simpler Node prediction, 2026-10-20
+
+Further experiments improved both selected implementations. The clearest gain is
+Wasm: **4.1% less elapsed time** in the final matched batch. Node's simpler
+prediction hash measured **0.5% less time**, a small gain sensitive to noise.
+The selected runtime is **`bf11dbb`** (the `7969ca6` selection with its build manifest
+formatted). There are still exactly two production solvers. Every experiment has
+an unsigned checkpoint; rejected source remains in history.
+
+### Final matched comparison
+
+- AMD Ryzen 9 7900, 12 physical cores / 24 logical CPUs, 60 GiB RAM,
+  Linux 7.0.0-38-generic; Node **26.12.0**.
+- Unchanged `powersave` governor and `balance_performance` preference. No power
+  settings or system-wide caches were changed.
+- **1,000,000,000 independently generated rows**, **13,795,455,110 bytes**,
+  413 stations; same seeded input as the preceding round, reused read-only.
+- Three excluded full-file warm-ups per case, then **nine alternating rounds**.
+  Each score drops the fastest and slowest run and averages the remaining seven.
+- Fresh processes include startup, compilation, reading, parsing, aggregation,
+  merging, sorting, complete output and shutdown. All **45 measured processes**
+  matched expected stdout and reported **zero filesystem inputs**: warm-cache results.
+- Default comparisons use 24 workers. Node keeps its two documented inlining
+  flags and 128 KiB chunks; Wasm uses no extra flags and 512 KiB chunks.
+  A fifth case checks Wasm with 16 workers. Sources are hashed before and after
+  every process, including warm-ups.
+
+| Implementation | Trimmed mean | Best | Throughput | Peak RSS |
+| --- | ---: | ---: | ---: | ---: |
+| Previous plain Node | 1.174 s | 1.155 s | 11.75 GB/s | 340,364 KiB |
+| Optimized plain Node | 1.168 s | 1.151 s | 11.81 GB/s | 341,192 KiB |
+| Previous Wasm | 0.511 s | 0.499 s | 26.98 GB/s | 319,728 KiB |
+| Optimized Wasm | 0.490 s | 0.480 s | 28.13 GB/s | 325,720 KiB |
+| Optimized Wasm 16 workers | 0.489 s | 0.480 s | 28.20 GB/s | 244,168 KiB |
+
+Both preceding versions are from **`5769105`**. The Node change won eight of nine
+rounds in its earlier dedicated confirmation (1.156 vs 1.168 s), but only four
+of nine in this final mixed-engine batch despite the slightly lower trimmed
+mean. Treat it as a modest workload-dependent improvement, not a large or
+uniform win. The direct Wasm table improved time in repeated seven-run screens
+and this final comparison. Sixteen workers are effectively tied with 24 in the
+final batch; the portable default remains the available CPU count.
+
+Raw timings, source hashes, tuning and resource counters:
+[`2026-10-20-round2-optimization.json`](benchmarks/2026-10-20-round2-optimization.json).
+Exact validation:
+[`2026-10-20-round2-exact-verification.json`](benchmarks/2026-10-20-round2-exact-verification.json).
+These are local measurements, not official challenge scores.
+
+### Selected changes and correctness
+
+Node's prediction hash now XORs the fifth byte directly into the first four
+before multiplication, removing three bit operations. Its 64 KiB cache still
+verifies every byte and the delimiter; cache collisions use the general parser.
+The previous round's smaller worker entry and early merging remain.
+
+Wasm stores each temperature spelling's complete 128-bit update vector in a
+sparse **1 MiB table**. A single load replaces the dependent offset-table and
+delta-table loads. The table is initialized from the legal temperature range,
+not station names or input data. Its extra address space is private per worker;
+the selected module starts with 4 MiB of memory.
+
+A negated maximum at raw station offset 14 allows one signed SIMD minimum to
+update both extrema. Host decoding preserves positive zero. A long name takes
+only its own lane through fallback, leaving the other lanes on their short-name
+path. Removing unused mask entries also folds table bases into load offsets.
+The selected kernel uses three lanes and is **9,442 bytes**, built with the
+available Clang/LLD **21.1.8**. The shipped baseline used Clang 22.1.8 / LLD 20.0.0;
+rebuild controls separate some toolchain effects, but final scores compare the
+complete artifacts, not a compiler-independent algorithm estimate.
+
+All **53 tests pass on Node 24.15.0 and 26.12.0**, including exhaustive legal
+spelling checks, official fixtures, long/Unicode/NUL names, collisions, 10,000
+stations, boundaries, CRLF, EOF and large exact sums. A focused test checks the
+negative-maximum ABI and zero. Both engines also match every exact station
+name/minimum/sum/maximum/count tuple across **all one billion rows**, and their
+complete stdout matches the generator's independent expected output. Biome and
+clang-format checks pass. A separate read-only code review found no correctness
+blocker in the selected indexing, SIMD update, fallback or benchmark hashing.
+
+### Headroom and experimental limits
+
+`tools/read-bandwidth.mjs` runs the production reader with a no-op parser. Full
+process times averaged **0.337 s at 12 workers** and **0.363 s at 24 workers**.
+It checks the number of consumed chunks; the saved diagnostic runs also include
+full-process IO/resource counters. It does not produce station aggregates. This is a diagnostic for one cached-file read path,
+**not a theoretical lower bound**. Reading and parsing overlap, so subtracting
+these values from solver time would not measure parsing cost. Hardware counters
+were unavailable under this machine's existing perf permissions.
+
+The one-core screen exposed a substantial regression in an apparently simpler
+row-advance loop. Other experiments lost to cache footprint, dependency chains
+or extra arithmetic. The measured Wasm gain establishes that the previous
+version was not the practical limit. These experiments do not prove that the
+current version is optimal, nor that every dataset will improve equally.
+
+### Experiment checkpoints
+
+The initial 31 checkpoints after `5769105` are grouped below; the final confirmation is recorded separately. Times are seconds for the same 1,000,000,000-row / 13,795,455,110-byte input on this machine with Node 26.12.0. Each comparison uses its own matched baseline; rows from separate batches must not be compared as though they were one controlled run. Screens used three or five runs, confirmations seven or nine; runs of five or more discard the fastest and slowest observation. Read-only figures below are the untrimmed mean of five full-process measurements.
+
+| Checkpoints | Experiment | Matched result and disposition |
+| --- | --- | --- |
+| `bd764ea` | Preserve the round-one result before new experiments | Baseline runtime is `5769105`; empty checkpoint records the starting point. |
+| `f8aa946` | Node lane count, temperature decoding, equality mode, table size, V8 inlining | Baseline 1.163; one/three/four lanes 1.178/1.234/1.293; compact/arithmetic temperatures 1.178/1.167; branchy equality 1.241; 14/16-bit tables 1.176/1.164; larger inlining budget 1.203. Keep existing settings. [N] |
+| `f7cdb99` | Read-only throughput diagnostic using the existing reader | Original reader: 0.337 at 12 workers and 0.363 at 24; batched reader: 0.342/0.373. Diagnostic retained; these measure one IO path without parsing, **not a theoretical bound**, and cannot be subtracted from solver time to isolate parsing cost. [R] |
+| `fd50916`, `a4b6d97` | WASM negated maximum; independent fallback for long names in each lane | Individually 0.508/0.507 vs shipped 0.506 and rebuilt Clang 21 control 0.517. No isolated win over shipped binary; combined and re-evaluated later. [P] |
+| `d3e89f0`, `cd9205a`, `c8e01ed` | Node grouped equality; decode temperatures before updates; pipeline next group | 1.190/1.211/1.202 vs 1.165. Rejected. [P] |
+| `6982b37` | WASM arithmetic combination of delimiter-presence checks | 0.522 vs shipped 0.506 / Clang 21 control 0.517. Rejected. [P] |
+| `c0d9600` | Claim sixteen WASM input chunks per atomic operation | 0.504 vs shipped 0.506; negligible solver difference, with no read-only improvement in a separate diagnostic. Rejected. [P, R] |
+| `ebb172a`, `89f8830` | Node fused Float64 statistics; colocated predictor metadata | 1.205/1.203 vs 1.167. Rejected. [L] |
+| `a5f6893`, `f7008a3` | WASM aligned 48-byte / 64-byte station records | 0.508/0.512 vs Clang 21 control 0.508 (shipped 0.511). No useful gain; rejected. [L] |
+| `2eed87d`, `33a1564` | Node two-way predictor, 64 KiB / 128 KiB | 1.209/1.200 vs 1.167. Rejected. [L] |
+| `54cd77f` | Node eight-byte UTF-8 name equality through Float64 loads | Correct but 1.379 vs 1.167. Rejected. [L] |
+| `1fc923c` | Combine WASM negated maximum and independent long-name fallback | Initially 0.493 vs shipped 0.511; repeat 0.503 vs 0.509 and later 0.504 vs 0.501. Isolated multicore gain was not stable. Retained as a base for subsequent combined candidates. [L, H, F] |
+| `1136725`, `393e5c8` | Node cheaper prefix hash; shifted-fifth-byte alternative | First screen 1.177/1.180 vs 1.171; later simple-hash confirmations 1.152 vs 1.175 and 1.156 vs 1.168 (wins eight of nine rounds). Select the simple XOR/multiply hash; reject shifted alternative. [H, F, NC] |
+| `1d06e80` | Node macro queue, async IO, private file descriptors; repeat combined WASM | Node 1.177/1.821/1.193 vs 1.171: reject IO changes. Combined WASM 0.503 at 24 workers / 0.491 at 12 vs baseline 0.509; later worker-count results differ. [H] |
+| `74149ef`, `992e8b8` | WASM folded SIMD mask addresses, alone and with combined lane changes | Folded baseline 0.512; folded combined 0.502 at 24 workers / 0.495 at 12 vs shipped 0.501 at 24 / 0.508 at 12. Small/noisy whole-process differences; folded addresses retained for later direct-table candidates. [F] |
+| `bdd0a18` | Seven-run confirmation of folded WASM loads and worker counts | Captures the matched repeat above, including simple Node hash. No broad, stable isolated WASM gain established by this batch. [F] |
+| `13cb56b`, `8349896` | Advance WASM rows from temperature width; isolate kernels on one CPU | One-core mean: shipped 4.349, folded combined 4.248, temperature advance 6.432. Reject temperature advance; retain newline scan. `8349896` also checkpoints the confirmed simple Node hash. These one-core timings do not predict the multicore gain directly. [S] |
+| `805a1c8` | Direct 1 MiB WASM temperature-to-SIMD-delta table, eliminating a dependent lookup | 0.483 vs shipped 0.496 / folded combined 0.501; repeat 0.487 vs shipped 0.503. Retained with three lanes and the existing worker default. [D, C] |
+| `fdc9c79` | Pack direct WASM deltas into a 128 KiB table | 0.502 vs direct 1 MiB 0.487 / shipped 0.503. Extra index work loses the direct-table gain; rejected. [C] |
+| `9124f4e`, `b7bf73a`, `7d1e99c` | Direct-table WASM with two/four lanes; rescreen 12/16/24 workers | Lane screen: two 0.488, three 0.491, four 0.497. Worker sweep: three lanes 0.501/0.489/0.493; two lanes 0.514/0.498/0.495. Four lanes rejected; two-lane and worker-count advantages did not repeat consistently. Retain three lanes and the existing worker default. [DL, DW] |
+
+Evidence key (individual runs and source hashes; solver reports also validate complete output):
+
+- N: `benchmarks/experiments/round2-node-tuning-results.json`.
+- R: `benchmarks/experiments/round2-read-original-results.json` and `round2-read-bandwidth-results.json`.
+- P: `benchmarks/experiments/round2-parser-io-results.json`.
+- L: `benchmarks/experiments/round2-layouts-results.json`.
+- H: `benchmarks/experiments/round2-hash-io-results.json`.
+- F: `benchmarks/experiments/round2-fold-confirm-results.json`.
+- NC: `benchmarks/experiments/round2-node-confirm-results.json`.
+- S: `benchmarks/experiments/round2-single-core-results.json`.
+- D: `benchmarks/experiments/round2-direct-deltas-results.json`.
+- C: `benchmarks/experiments/round2-compact-deltas-results.json`.
+- DL: `benchmarks/experiments/round2-direct-lanes-results.json`.
+- DW: `benchmarks/experiments/round2-direct-workers-results.json`.
+
+The shipped baseline was built with Clang 22.1.8, while this round's rebuilds use the available Clang 21.1.8. The rebuilt control is included where available; comparisons against the shipped baseline measure the complete artifact and do not isolate the compiler's contribution. Read-only reports contain source hashes but intentionally have no parsed output to verify. All reported performance is for cached input; filesystem input counters were zero. No theoretical optimum has been established.
+
+The final comparison configuration is checkpointed in `d53be12`, updated to the
+formatted runtime in `6fbe3d3`. An initial confirmation was interrupted to fix
+manifest whitespace before taking final source hashes; its incomplete report
+is excluded. The completed final batch and exact verification both describe
+`bf11dbb` byte-for-byte.
+
+Reproduce the selected solvers and exact validation:
+
+```sh
+RUNS=9 WARMUP=3 node tools/compare.mjs node-vs-wasm measurements.txt
+node tools/verify-engines.mjs measurements.txt 1000000000
+WORKERS=12 node tools/read-bandwidth.mjs measurements.txt
+```
+
+To reproduce the matched comparison against the start of this round:
+
+```sh
+git worktree add --detach results/round2-baseline 5769105
+CASES="$(cat benchmarks/experiments/round2-final.json)" \
+  RUNS=9 WARMUP=3 node tools/compare.mjs round2-final measurements.txt
+```
+
+Screening source paths under `results/` are ignored snapshots. Their checkpoint
+commits preserve the implementations; recreate snapshots or update `script`
+paths when reproducing those screens. Dataset, tools and local runtimes remain
+ignored. Historical batches below retain their original context and results.
+
+## Previous: further Node optimization and Wasm trials, 2026-10-20
 
 Both implementations remain available. The selected plain Node implementation
 is faster; the existing Wasm implementation was retained after its experimental

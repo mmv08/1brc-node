@@ -1,0 +1,228 @@
+{
+  "date": "2026-10-20T19:58:50.351Z",
+  "label": "round2-direct-deltas",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Wasm shipped baseline",
+      "round": 1,
+      "seconds": 0.516698574
+    },
+    {
+      "name": "Wasm folded combined",
+      "round": 1,
+      "seconds": 0.49786798700000007
+    },
+    {
+      "name": "Wasm direct deltas",
+      "round": 1,
+      "seconds": 0.4775333459999999
+    },
+    {
+      "name": "Wasm direct deltas",
+      "round": 2,
+      "seconds": 0.473026302
+    },
+    {
+      "name": "Wasm folded combined",
+      "round": 2,
+      "seconds": 0.49734169899999986
+    },
+    {
+      "name": "Wasm shipped baseline",
+      "round": 2,
+      "seconds": 0.503104355
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Wasm shipped baseline",
+      "script": "results/round2-baseline/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886",
+      "times": [
+        0.492837951, 0.49172597300000054, 0.5044846210000005, 0.5095835480000005,
+        0.4954428799999987, 0.49655344500000137, 0.4926582699999999
+      ],
+      "usage": [
+        {
+          "user": 8.49,
+          "system": 1.5,
+          "maxRssKiB": 318176,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.56,
+          "system": 1.5,
+          "maxRssKiB": 317988,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.75,
+          "system": 1.38,
+          "maxRssKiB": 318388,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.56,
+          "system": 1.43,
+          "maxRssKiB": 317668,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.53,
+          "system": 1.42,
+          "maxRssKiB": 318540,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.66,
+          "system": 1.42,
+          "maxRssKiB": 318592,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.56,
+          "system": 1.41,
+          "maxRssKiB": 318168,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.49639543340000003,
+      "best": 0.49172597300000054
+    },
+    {
+      "name": "Wasm folded combined",
+      "script": "results/round2-wasm/fold-negated-per-lane/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "72cdacdeb7989c9de7c575a6b6346ad6072db7d6f2d2bcc0085835a0ad372dc2",
+      "times": [
+        0.49527378, 0.49174128199999995, 0.5182991310000007, 0.4961030310000006, 0.5116372819999997,
+        0.5077717240000001, 0.49548952800000007
+      ],
+      "usage": [
+        {
+          "user": 8.37,
+          "system": 1.59,
+          "maxRssKiB": 319132,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.38,
+          "system": 1.68,
+          "maxRssKiB": 316768,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.33,
+          "system": 1.67,
+          "maxRssKiB": 317160,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.37,
+          "system": 1.64,
+          "maxRssKiB": 318940,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.4,
+          "system": 1.66,
+          "maxRssKiB": 316400,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.36,
+          "system": 1.67,
+          "maxRssKiB": 317424,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.37,
+          "system": 1.6,
+          "maxRssKiB": 318012,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.5012550690000002,
+      "best": 0.49174128199999995
+    },
+    {
+      "name": "Wasm direct deltas",
+      "script": "results/round2-direct-deltas/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "086f73369109333c68bdbc358b15dffd80082a61b6ab2acd9a4e7be919f4674a",
+      "times": [
+        0.4833485810000002, 0.5035322349999997, 0.4845687740000003, 0.47961451099999974,
+        0.4857776459999986, 0.481922888000001, 0.47832196100000146
+      ],
+      "usage": [
+        {
+          "user": 7.95,
+          "system": 1.71,
+          "maxRssKiB": 325576,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.13,
+          "system": 1.67,
+          "maxRssKiB": 325908,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.98,
+          "system": 1.67,
+          "maxRssKiB": 325048,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.03,
+          "system": 1.72,
+          "maxRssKiB": 325572,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8,
+          "system": 1.7,
+          "maxRssKiB": 323816,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.08,
+          "system": 1.67,
+          "maxRssKiB": 323724,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.04,
+          "system": 1.61,
+          "maxRssKiB": 325204,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.48304647999999994,
+      "best": 0.47832196100000146
+    }
+  ]
+}
