@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Wasm shipped baseline",
+    "script": "results/round2-baseline/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "1"
+    }
+  },
+  {
+    "name": "Wasm folded combined",
+    "script": "results/round2-wasm/fold-negated-per-lane/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "1"
+    }
+  },
+  {
+    "name": "Wasm temperature advance",
+    "script": "results/round2-wasm/temperature-advance/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "1"
+    }
+  }
+]
