@@ -14,7 +14,10 @@ const sort = (rows) => rows.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 :
 const nodeRows = sort(await plain(file));
 const wasmRows = sort(await wasm(file));
 assert.deepEqual(nodeRows, wasmRows, 'Station names and exact min/sum/max/count tuples differ');
-assert.equal(nodeRows.reduce((total, row) => total + row[4], 0), expectedRows);
+assert.equal(
+  nodeRows.reduce((total, row) => total + row[4], 0),
+  expectedRows,
+);
 assert.equal(format(nodeRows), readFileSync(`${file}.out`, 'utf8'));
 const report = {
   date: new Date().toISOString(),
@@ -29,5 +32,7 @@ const report = {
 mkdirSync('results', { recursive: true });
 const path = `results/${Date.now()}-${process.pid}-verify-engines.json`;
 writeFileSync(path, `${JSON.stringify(report, null, 2)}\n`);
-console.log(`Verified ${expectedRows} measurements and ${nodeRows.length} stations: exact tuples and complete output match.`);
+console.log(
+  `Verified ${expectedRows} measurements and ${nodeRows.length} stations: exact tuples and complete output match.`,
+);
 console.log(`Report: ${path}`);

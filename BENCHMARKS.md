@@ -1,6 +1,103 @@
 # Benchmark and experiment log
 
-## Current result: eleventh round, 2026-10-19
+## Current: both plain Node.js and Wasm, 2026-10-20
+
+The main branch now includes two selected implementations: the optimized plain
+Node.js solver under `plain/`, and the existing Wasm solver under `wasm/`.
+`ENGINE=node ./run.sh` selects plain JavaScript; `./run.sh` still defaults to Wasm.
+The existing Wasm entry, reader, formatter, kernel and build files are unchanged.
+
+### Matched quiet-machine comparison
+
+- AMD Ryzen 9 7900: 12 physical cores, 24 logical CPUs, 60 GiB RAM; Linux x86-64.
+- Node **26.12.0**, 24 workers, unchanged `powersave` / `balance_performance`
+  preferences. No competing build was observed during the run.
+- Exactly **1,000,000,000 independent measurements**, **13,795,455,110 bytes**,
+  413 stations; seeded repository generator and upstream station list.
+- Two complete warm-up processes **per case**, excluded from scoring, then five
+  alternating rounds. Each case discarded its fastest and slowest measurement.
+- Every process was fresh and validated complete expected stdout. Startup,
+  compilation, reads, parsing, aggregation, merging, sorting, output and shutdown count.
+- All **15 measured processes** reported zero filesystem input, confirming cached
+  input. No cached parser output, station dictionary or aggregates were reused.
+
+| Solver | Trimmed mean | Best | Default chunk |
+| --- | ---: | ---: | ---: |
+| Original Node.js, `6915b53` | 1.441 s | 1.419 s | 128 KiB |
+| **Optimized plain Node.js** | **1.242 s** | **1.212 s** | 128 KiB |
+| **Unchanged Wasm SIMD** | **0.497 s** | **0.495 s** | 512 KiB |
+
+The optimized plain solver took **13.8% less elapsed time**, or **1.160× throughput**,
+than the original Node implementation in this matched batch. Both Node cases used
+`--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000`;
+Wasm used no extra V8 flags. All three cases used their documented default parser
+settings. The original Node baseline came from an isolated worktree at
+`6915b53d2c919871095a59a645ee265fa9d3e019`.
+
+Raw measured seconds, in execution-round order:
+
+- Original Node: 1.428960, 1.446959, 1.446827, 1.419375, 1.468993.
+- Optimized Node: 1.240292, 1.217088, 1.281474, 1.212370, 1.269967.
+- Wasm: 0.494677, 0.520639, 0.494769, 0.495278, 0.500511.
+
+Full flags, source hashes, timings, CPU time, peak resident memory and filesystem
+counters are recorded in
+[`benchmarks/2026-10-20-both-engines.json`](benchmarks/2026-10-20-both-engines.json).
+Absolute local paths in that export are portable labels; measured values are unchanged.
+The Wasm source hash remains
+`2efc93726477dab9bb83e0ca8f2b2ebb257bb3f982fdfb14062dcf7d8cc61886`,
+identical to the previous selected Wasm solver.
+
+### Plain-Node change and checks
+
+The new worker-local prefix table predicts a station ID from its first four name
+bytes. The cached length is only a hint: the delimiter and **every name byte**
+must match before the hit skips scanning and rolling hashing. Misses retain the
+general parser and hash table. Names shorter than four bytes are not cached.
+This works with arbitrary valid station names, not a hardcoded station list.
+Prefix-heavy inputs can have fewer hits or regress; the fallback preserves correctness.
+
+The implementation was independently reviewed. Tests include exact tuples,
+collisions, all legal temperature spellings, Unicode/NUL/100-byte names, 10,000
+stations, chunk boundaries, CRLF/EOF and sums beyond 32-bit limits. Integration
+checks cover both launchers and prove plain Node runs without Wasm files or npm
+packages. `tools/verify-engines.mjs` compares every station's exact aggregates
+and total measurement count between both implementations on a supplied input.
+
+Reproduce the comparison of the two shipped versions:
+
+```sh
+RUNS=5 WARMUP=2 node tools/compare.mjs node-vs-wasm measurements.txt
+```
+
+For the original Node baseline as well, first check out `6915b53` separately and
+pass its `calculate.mjs` path through the generic comparison cases:
+
+```sh
+git worktree add --detach results/baseline-node 6915b53
+CASES='[{"name":"Original Node","script":"results/baseline-node/calculate.mjs","env":{"ENGINE":"phased"}},{"name":"Optimized Node","env":{"ENGINE":"node"}},{"name":"Wasm","env":{"ENGINE":"wasm"}}]' \
+  RUNS=5 WARMUP=2 node tools/compare.mjs original-node-and-both measurements.txt
+```
+
+`phased` is the historical Node implementation's engine name, accepted here only
+for external-worktree comparisons. The public launcher accepts `node` and `wasm`.
+The comparison tool requires Linux GNU `/usr/bin/time` for resource counters.
+
+### Earlier measurements and limits
+
+The first idle-machine original-Node batch measured 1.434 s. An earlier candidate
+comparison during unrelated Rust/C++ compilation measured 1.941 s original versus
+1.657 s optimized (14.6% less elapsed time). That loaded batch is **not** directly
+comparable with idle-machine results and is superseded by the quiet matched batch
+above. The previous 0.866 s Wasm result was measured on a different Core Ultra
+7 258V laptop; it remains documented below, not treated as a same-machine baseline.
+None of these are official leaderboard measurements or universal speed guarantees.
+
+## Historical Wasm result: eleventh round, 2026-10-19
+
+Entries below describe the checkouts and hardware used at the time. Historical
+statements about shipping one solver apply to those checkouts, not the current
+two-implementation tree. Current run and test commands are in [README.md](README.md).
 
 The eleventh round shortens each lane's dependency chain, makes the long-name
 fallback branch-free, retunes hash mixers away from first-bucket collisions and
