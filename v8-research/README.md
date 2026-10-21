@@ -172,8 +172,8 @@ Three independent experiments start from `fcc58178`; their patches must not be a
 | Experiment | Implementation and evidence | Validation / disposition |
 |---|---|---|
 | Field-name invalidation, `2e2b333a` | Check both name and object aliasing before constructing a replacement field cache; check the cheap name predicate first. | 81 selected checks passed. Full official results below show modest compiler improvements; retained separately. |
-| Outline reduction tracing, `2f98c1e2` | Move cold trace printing to a noinline helper. Native `GraphReducer::Reduce` shrinks from 1,458 to 370 bytes, removing unconditional stream setup; extra stack reservation falls from 328 to 8 bytes. | 52 checks passed and normalized trace events match. Total compilation-time interval includes zero; excluded from the leading candidate. |
-| Fresh-allocation lookup, `8944d358` + `87e3481b` | Use the existing Allocate-only alias invariant to look up the exact key in the field map, avoiding a full scan on a miss. | 83 selected checks passed. Full fixed official validation is in progress. |
+| Outline reduction tracing, `2f98c1e2` | Move cold trace printing to a noinline helper. Native `GraphReducer::Reduce` shrinks from 1,458 to 370 bytes, removing unconditional stream setup; extra stack reservation falls from 328 to 8 bytes. | 52 checks passed; normalized trace-event multisets match, with three independent constant-typing events reordered. Total compilation-time interval includes zero; excluded from the leading candidate. |
+| Fresh-allocation lookup, `8944d358` + `87e3481b` | Use the existing Allocate-only alias invariant to look up the exact key in the field map, avoiding a full scan on a miss. | 83 selected checks passed. Twelve official Compiler pairs are complete; stock runtime and remaining-cost validation follow. |
 
 The tracing experiment demonstrates why smaller native code is insufficient evidence of a speedup. Its separate cold helper is 930 bytes, and total pipeline time changed **+0.18%**, interval **−1.68% to +2.03%**. Source-position wrappers enabled by profiling also appeared in samples; their overhead was not treated as a stock-benchmark optimization target. The [trace equivalence evidence](compile-cost/trace-equivalence.json), [native/source review](compile-cost/outline-reduction-tracing-evidence.json) and [six-pair cost summary](compile-cost/outline-reduction-tracing-cost-summary.json) preserve the neutral result.
 
@@ -213,3 +213,32 @@ The completed field-name candidate's official results are below. Compiler uses t
 | TypedArray-LittleEndian | +0.01% | −0.11% to +0.15% |
 
 Every field-name runtime interval includes zero. Full raw records are [official Compiler](compile-cost/field-name-compiler-results.json) and [stock DataView](compile-cost/field-name-runtime-results.json). The field-name and tracing experiments are saved separately and are not part of the fresh-allocation binary.
+
+The fresh-allocation candidate completes the same twelve-pair official Compiler comparison with **Large-Copy +34.98%**, interval **+34.59% to +35.36%**, and twelve wins. This corresponds to about **25.92% less time per benchmark operation**. Both orders agree: AB +34.59%, BA +35.38%. The local nine-case geometric mean improves **3.03%** (interval **2.40–3.66%**). The eight other cases have intervals spanning zero; most point estimates are negative, so this is not evidence of universal or regression-free compiler improvement.
+
+| Official Compiler case | Fresh-allocation score change | 95% interval | Wins |
+|---|---:|---:|---:|
+| Small-Empty | -0.55% | -1.63% to +0.46% | 3/12 |
+| Small-Constant | -0.72% | -1.78% to +0.25% | 5/12 |
+| Small-Add | -0.42% | -1.20% to +0.27% | 3/12 |
+| Small-Load | -0.60% | -1.72% to +0.52% | 1/12 |
+| Medium-Copy | +0.17% | -0.06% to +0.42% | 6/12 |
+| Medium-Fact | -0.59% | -1.18% to +0.06% | 1/12 |
+| Medium-Prime | -0.18% | -0.69% to +0.43% | 3/12 |
+| Medium-Eratosthenes | -0.24% | -0.76% to +0.48% | 2/12 |
+| Large-Copy | +34.98% | +34.59% to +35.36% | 12/12 |
+
+All pairs are retained, including the broad positive movement in the fourth and negative movement in the twelfth. No cause is assigned to those movements. The [raw Compiler results](compile-cost/fresh-allocation-compiler-results.json) record unchanged input and executable hashes. The source changes touch two files that were unchanged by the earlier runtime patches, but these timings are incremental to `fcc58178`; standalone pristine-upstream timings have not been collected. Exact-key hits still copy the persistent field state, so the change specifically removes the avoidable miss scan and does not eliminate general state-copying or graph-growth cost.
+
+The fresh-allocation candidate also completed **21 fixed stock DataView pairs**. There is no measured runtime regression in these cases. The six-case geometric mean changes **+0.06%**, interval **−0.03% to +0.16%**. DataView BigEndian has a small positive result; its cause has not been isolated, so it is not attributed to the cache-lookup change.
+
+| Official DataView case | Fresh-allocation score change | 95% interval | Wins |
+|---|---:|---:|---:|
+| DataView-BigEndian | +0.30% | +0.12% to +0.50% | 15/21 |
+| DataView-Floats | -0.03% | -0.18% to +0.12% | 8/21 |
+| DataView-LittleEndian | +0.08% | -0.15% to +0.38% | 6/21 |
+| TypedArray-BigEndian | +0.06% | -0.07% to +0.20% | 10/21 |
+| TypedArray-Floats | -0.05% | -0.23% to +0.12% | 11/21 |
+| TypedArray-LittleEndian | -0.00% | -0.14% to +0.14% | 8/21 |
+
+The [raw runtime results](compile-cost/fresh-allocation-runtime-results.json) and [audited summary of both fully validated candidates](compile-cost/official-validation-summary.json) retain all observations and AB/BA splits. Confidence intervals are per case and are not adjusted for multiple comparisons. These local microbenchmark results do not establish whole-browser or whole-V8 performance.

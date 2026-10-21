@@ -23,6 +23,7 @@ def percent(logs):
 
 
 def summarize(path, rounds):
+    path = path.resolve()
     data = json.loads(path.read_text())
     assert data['status'] == 'complete'
     assert data['completed_pairs'] == data['requested_rounds'] == rounds
