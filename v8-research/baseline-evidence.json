@@ -1,0 +1,23 @@
+{
+  "upstream_revision": "293377af9f02c268362e5975b7af4baa25688323",
+  "v8_version": "15.8.0 (candidate)",
+  "baseline_build_args": "is_debug = false\ntarget_cpu = \"x64\"\nv8_target_cpu = \"x64\"\nv8_enable_disassembler = true\nv8_enable_object_print = true\nsymbol_level = 1\nuse_remoteexec = false\nuse_siso = false\n",
+  "candidate_build_args": "is_debug = false\ntarget_cpu = \"x64\"\nv8_target_cpu = \"x64\"\nv8_enable_disassembler = true\nv8_enable_object_print = true\nsymbol_level = 1\nuse_remoteexec = false\nuse_siso = false\n",
+  "profiler": "V8 --prof --prof-sampling-interval=250, official tools/linux-tick-processor",
+  "baseline_profile": {
+    "ticks": 19796,
+    "getter_ticks": 780,
+    "getter_percent": 3.940189937361083
+  },
+  "mechanism": {
+    "function": "doOneFloatIterationJS",
+    "baseline_last_turbofan_code_bytes": 1172,
+    "candidate_code_bytes": 768,
+    "baseline_getter_calls": 2,
+    "candidate_getter_calls": 0,
+    "baseline_typed_array_pointer_loads_after_TFLoadElimination": 4,
+    "candidate_typed_array_pointer_loads_after_TFLoadElimination": 2
+  },
+  "diagnostic_scores_are_not_benchmark_results": true,
+  "profiles_directory": "results/v8-general/profiles"
+}
