@@ -1,0 +1,18 @@
+{
+  "checkpoint": "915d3f1",
+  "baselineSeconds": 1.0867442857142853,
+  "candidateSeconds": 1.0985475317142863,
+  "pairedWins": 3,
+  "decision": "Initial specialization regresses; native evidence motivates one bounded-integer follow-up.",
+  "bytecodeBytes": {
+    "baseline": 693,
+    "candidate": 170
+  },
+  "nativeParserBytes": {
+    "baseline": 12520,
+    "candidateSteady": 13552
+  },
+  "observedNativeIssue": "Loop backedge includes Float64-to-int32 round-trip equality/NaN guards. Those guard instructions take 4280 ticks in the dominant body. This identifies emitted work, not an individual instruction latency.",
+  "nextExperiment": "Constrain chunk-local cursors and limits to int32: calculate validates chunk size <= 2^28 and buffers reserve only 256 lookahead bytes, so every valid cursor fits. Verify conversion guards disappear and rerun correctness and timing.",
+  "nativeCapture": "results/profiles/opt3-node-two-native1/capture.json"
+}

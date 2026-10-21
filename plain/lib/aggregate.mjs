@@ -156,14 +156,19 @@ export async function aggregate(config) {
     // lane counts or allocate a boundary closure for every chunk.
     if (streams === 2) {
       return function parseTwo(start, end) {
-        const endA = Math.min(end, buffer.indexOf(10, start + Math.floor((end - start) / 2)) + 1);
+        // calculate bounds chunks to 2^28 bytes, plus 256 bytes of lookahead.
+        // Keep chunk-local cursors integral without speculative Float64 guards.
+        start |= 0;
+        end |= 0;
+        const endA =
+          Math.min(end, buffer.indexOf(10, start + Math.floor((end - start) / 2)) + 1) | 0;
         let a = start;
         let b = endA;
         while (a < endA && b < end) {
           const idA = scan(a, 0);
           const idB = scan(b, 1);
-          a = update(temperatures[0], idA);
-          b = update(temperatures[1], idB);
+          a = update(temperatures[0], idA) | 0;
+          b = update(temperatures[1], idB) | 0;
         }
         remainder(a, endA);
         remainder(b, end);
