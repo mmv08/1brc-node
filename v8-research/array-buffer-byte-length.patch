@@ -1,7 +1,7 @@
 From 3eb4f01cf000164ffac1a01cadedc9ffd56bae12 Mon Sep 17 00:00:00 2001
 From: Mikhail Mikheev <16622558+mmv08@users.noreply.github.com>
 Date: Wed, 21 Oct 2026 08:05:50 +0000
-Subject: [PATCH] [compiler] Inline ArrayBuffer byteLength access
+Subject: [PATCH 1/2] [compiler] Inline ArrayBuffer byteLength access
 
 Load the mutable byte length after validating the receiver maps and
 shared bit. Preserve the builtin throw for shared buffers without
@@ -287,6 +287,64 @@ index 00000000..4452f57b
 +  }
 +  assertEquals(8, byteLength(buffer));
 +})();
+-- 
+2.53.0
+
+
+From f090ad58a364959de906f3098e43cf8b14918993 Mon Sep 17 00:00:00 2001
+From: Mikhail Mikheev <16622558+mmv08@users.noreply.github.com>
+Date: Wed, 21 Oct 2026 08:12:46 +0000
+Subject: [PATCH 2/2] [test] Cover ArrayBuffer getter exception realms
+
+Warm ordinary and shared buffers from a foreign realm before tier-up.
+Verify the optimized fallback preserves the builtin realm and stays
+optimized after throwing.
+
+TAG=agy
+CONV=01a15ac7-b7fe-7dc2-ab61-5d14a81b88b5
+---
+ .../compiler/array-buffer-byte-length.js      | 28 +++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/test/mjsunit/compiler/array-buffer-byte-length.js b/test/mjsunit/compiler/array-buffer-byte-length.js
+index 4452f57b..ecc3cff9 100644
+--- a/test/mjsunit/compiler/array-buffer-byte-length.js
++++ b/test/mjsunit/compiler/array-buffer-byte-length.js
+@@ -102,6 +102,34 @@
+   }
+ })();
+ 
++(function ForeignGetterException() {
++  const realm = Realm.create();
++  const buffer = Realm.eval(realm, 'new ArrayBuffer(8)');
++  const shared = Realm.eval(
++      realm, 'Reflect.construct(SharedArrayBuffer, [8], ArrayBuffer)');
++  const ForeignTypeError = Realm.eval(realm, 'TypeError');
++  function byteLength(buffer) {
++    try {
++      return buffer.byteLength;
++    } catch (error) {
++      return error;
++    }
++  }
++  %PrepareFunctionForOptimization(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertInstanceof(byteLength(shared), ForeignTypeError);
++  assertEquals(8, byteLength(buffer));
++  assertInstanceof(byteLength(shared), ForeignTypeError);
++  %OptimizeFunctionOnNextCall(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertOptimized(byteLength);
++  // The getter's realm, rather than the optimized caller's, owns this error.
++  const error = byteLength(shared);
++  assertInstanceof(error, ForeignTypeError);
++  assertFalse(error instanceof TypeError);
++  assertOptimized(byteLength);
++})();
++
+ (function ResizeInLoop() {
+   let resize = false;
+   function mutate(buffer, iteration) {
 -- 
 2.53.0
 

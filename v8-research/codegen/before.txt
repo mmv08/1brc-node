@@ -1,0 +1,388 @@
+Extracted from results/v8-general/profiles/current-dataview/native.txt
+
+optimization_id = 51
+source_position = 4121
+kind = TURBOFAN_JS
+name = doOneFloatIterationJS
+compiler = turbofan
+address = 0x23d20108b169
+
+Instructions (size = 1172)
+0x57c8a1648700     0  55                   push rbp
+0x57c8a1648701     1  488bec               REX.W movq rbp,rsp
+0x57c8a1648704     4  56                   push rsi
+0x57c8a1648705     5  57                   push rdi
+0x57c8a1648706     6  50                   push rax
+0x57c8a1648707     7  cc                   int3l
+0x57c8a1648708     8  4c8d542458           REX.W leaq r10,[rsp+0x58]
+0x57c8a164870d     d  4c3bd5               REX.W cmpq r10,rbp
+0x57c8a1648710    10  7401                 jz 0x57c8a1648713  <+0x13>
+0x57c8a1648712    12  cc                   int3l
+0x57c8a1648713    13  4883ec20             REX.W subq rsp,0x20
+0x57c8a1648717    17  488975a0             REX.W movq [rbp-0x60],rsi
+0x57c8a164871b    1b  493b65a0             REX.W cmpq rsp,[r13-0x60] (external value (StackGuard::address_of_jslimit()))
+0x57c8a164871f    1f  0f8645030000         jna 0x57c8a1648a6a  <+0x36a>
+0x57c8a1648725    25  488b4d18             REX.W movq rcx,[rbp+0x18]
+0x57c8a1648729    29  f6c101               testb rcx,0x1
+0x57c8a164872c    2c  0f84da030000         jz 0x57c8a1648b0c  <+0x40c>
+0x57c8a1648732    32  41b8f1190101         movl r8,0x10119f1    ;; (compressed) object: 0x28f6010119f1 <Map[52](HOLEY_ELEMENTS)>
+0x57c8a1648738    38  443941ff             cmpl [rcx-0x1],r8
+0x57c8a164873c    3c  0f85ce030000         jnz 0x57c8a1648b10  <+0x410>
+0x57c8a1648742    42  51                   push rcx
+0x57c8a1648743    43  498d5611             REX.W leaq rdx,[r14+0x11]
+0x57c8a1648747    47  4533ff               xorl r15,r15
+0x57c8a164874a    4a  48bfd51a0101f6280000 REX.W movq rdi,0x28f601011ad5    ;; object: 0x28f601011ad5 <JSFunction get byteLength (sfi = 0x28f6001f013d)>
+0x57c8a1648754    54  b801000000           movl rax,0x1
+0x57c8a1648759    59  48be294b0001f6280000 REX.W movq rsi,0x28f601004b29    ;; object: 0x28f601004b29 <NativeContext[304]>
+0x57c8a1648763    63  e8189810a0           call 0x57c841751f80  (ArrayBufferPrototypeGetByteLength)    ;; near builtin entry
+0x57c8a1648768    68  488b4db0             REX.W movq rcx,[rbp-0x50]
+0x57c8a164876c    6c  f6c101               testb rcx,0x1
+0x57c8a164876f    6f  0f859f030000         jnz 0x57c8a1648b14  <+0x414>
+0x57c8a1648775    75  a801                 test al,0x1
+0x57c8a1648777    77  0f859b030000         jnz 0x57c8a1648b18  <+0x418>
+0x57c8a164877d    7d  3bc8                 cmpl rcx,rax
+0x57c8a164877f    7f  0f8c1e000000         jl 0x57c8a16487a3  <+0xa3>
+0x57c8a1648785    85  498d4611             REX.W leaq rax,[r14+0x11]
+0x57c8a1648789    89  488b4de8             REX.W movq rcx,[rbp-0x18]
+0x57c8a164878d    8d  488be5               REX.W movq rsp,rbp
+0x57c8a1648790    90  5d                   pop rbp
+0x57c8a1648791    91  4883f902             REX.W cmpq rcx,0x2
+0x57c8a1648795    95  7f03                 jg 0x57c8a164879a  <+0x9a>
+0x57c8a1648797    97  c21000               ret 0x10
+0x57c8a164879a    9a  415a                 pop r10
+0x57c8a164879c    9c  488d24cc             REX.W leaq rsp,[rsp+rcx*8]
+0x57c8a16487a0    a0  4152                 push r10
+0x57c8a16487a2    a2  c3                   retl
+0x57c8a16487a3    a3  4c8bc1               REX.W movq r8,rcx
+0x57c8a16487a6    a6  41d1f8               sarl r8,1
+0x57c8a16487a9    a9  f6c10e               testb rcx,0xe
+0x57c8a16487ac    ac  0f856a030000         jnz 0x57c8a1648b1c  <+0x41c>
+0x57c8a16487b2    b2  4c8bc9               REX.W movq r9,rcx
+0x57c8a16487b5    b5  41c1f904             sarl r9,4
+0x57c8a16487b9    b9  4c8b5db8             REX.W movq r11,[rbp-0x48]
+0x57c8a16487bd    bd  41f6c301             testb r11,0x1
+0x57c8a16487c1    c1  0f8459030000         jz 0x57c8a1648b20  <+0x420>
+0x57c8a16487c7    c7  41bced7b0001         movl r12,0x1007bed    ;; (compressed) object: 0x28f601007bed <Map[60](FLOAT64ELEMENTS)>
+0x57c8a16487cd    cd  453963ff             cmpl [r11-0x1],r12
+0x57c8a16487d1    d1  0f854d030000         jnz 0x57c8a1648b24  <+0x424>
+0x57c8a16487d7    d7  418b5b37             movl rbx,[r11+0x37]
+0x57c8a16487db    db  498b532f             REX.W movq rdx,[r11+0x2f]
+0x57c8a16487df    df  48c1ea18             REX.W shrq rdx,24
+0x57c8a16487e3    e3  4903d6               REX.W addq rdx,r14
+0x57c8a16487e6    e6  418b7323             movl rsi,[r11+0x23]
+0x57c8a16487ea    ea  4d63c9               REX.W movsxlq r9,r9
+0x57c8a16487ed    ed  4c3bce               REX.W cmpq r9,rsi
+0x57c8a16487f0    f0  0f8332030000         jnc 0x57c8a1648b28  <+0x428>
+0x57c8a16487f6    f6  8bdb                 movl rbx,rbx
+0x57c8a16487f8    f8  4803da               REX.W addq rbx,rdx
+0x57c8a16487fb    fb  c4a17b1004cb         vmovsd xmm0,[rbx+r9*8]
+0x57c8a1648801   101  4c8b4dc8             REX.W movq r9,[rbp-0x38]
+0x57c8a1648805   105  41f6c101             testb r9,0x1
+0x57c8a1648809   109  0f850e000000         jnz 0x57c8a164881d  <+0x11d>
+0x57c8a164880f   10f  498bd9               REX.W movq rbx,r9
+0x57c8a1648812   112  d1fb                 sarl rbx,1
+0x57c8a1648814   114  c5832acb             vcvtlsi2sd xmm1,xmm15,rbx
+0x57c8a1648818   118  e919000000           jmp 0x57c8a1648836  <+0x136>
+0x57c8a164881d   11d  418b59ff             movl rbx,[r9-0x1]
+0x57c8a1648821   121  81eb9d040000         subl rbx,0x49d
+0x57c8a1648827   127  83fb78               cmpl rbx,0x78
+0x57c8a164882a   12a  0f87fc020000         ja 0x57c8a1648b2c  <+0x42c>
+0x57c8a1648830   130  c4c17b104903         vmovsd xmm1,[r9+0x3]
+0x57c8a1648836   136  f6c106               testb rcx,0x6
+0x57c8a1648839   139  0f85f1020000         jnz 0x57c8a1648b30  <+0x430>
+0x57c8a164883f   13f  488bd9               REX.W movq rbx,rcx
+0x57c8a1648842   142  c1fb03               sarl rbx,3
+0x57c8a1648845   145  488bd3               REX.W movq rdx,rbx
+0x57c8a1648848   148  83c202               addl rdx,0x2
+0x57c8a164884b   14b  0f80e3020000         jo 0x57c8a1648b34  <+0x434>
+0x57c8a1648851   151  488b75c0             REX.W movq rsi,[rbp-0x40]
+0x57c8a1648855   155  40f6c601             testb rsi,0x1
+0x57c8a1648859   159  0f84d9020000         jz 0x57c8a1648b38  <+0x438>
+0x57c8a164885f   15f  bfd1910001           movl rdi,0x10091d1    ;; (compressed) object: 0x28f6010091d1 <Map[60](FLOAT32ELEMENTS)>
+0x57c8a1648864   164  397eff               cmpl [rsi-0x1],rdi
+0x57c8a1648867   167  0f85cf020000         jnz 0x57c8a1648b3c  <+0x43c>
+0x57c8a164886d   16d  4c8b7e1f             REX.W movq r15,[rsi+0x1f]
+0x57c8a1648871   171  448b5e37             movl r11,[rsi+0x37]
+0x57c8a1648875   175  4c8b662f             REX.W movq r12,[rsi+0x2f]
+0x57c8a1648879   179  49c1ec18             REX.W shrq r12,24
+0x57c8a164887d   17d  4d03e6               REX.W addq r12,r14
+0x57c8a1648880   180  49c1ef1f             REX.W shrq r15,31
+0x57c8a1648884   184  4863d2               REX.W movsxlq rdx,rdx
+0x57c8a1648887   187  493bd7               REX.W cmpq rdx,r15
+0x57c8a164888a   18a  0f83b0020000         jnc 0x57c8a1648b40  <+0x440>
+0x57c8a1648890   190  418bf3               movl rsi,r11
+0x57c8a1648893   193  4903f4               REX.W addq rsi,r12
+0x57c8a1648896   196  c5fa101496           vmovss xmm2,[rsi+rdx*4]
+0x57c8a164889b   19b  83c303               addl rbx,0x3
+0x57c8a164889e   19e  0f80a0020000         jo 0x57c8a1648b44  <+0x444>
+0x57c8a16488a4   1a4  4863db               REX.W movsxlq rbx,rbx
+0x57c8a16488a7   1a7  493bdf               REX.W cmpq rbx,r15
+0x57c8a16488aa   1aa  0f8398020000         jnc 0x57c8a1648b48  <+0x448>
+0x57c8a16488b0   1b0  458bdb               movl r11,r11
+0x57c8a16488b3   1b3  4d03dc               REX.W addq r11,r12
+0x57c8a16488b6   1b6  c4c17a101c9b         vmovss xmm3,[r11+rbx*4]
+0x57c8a16488bc   1bc  c5ea5ad2             vcvtss2sd xmm2,xmm2,xmm2
+0x57c8a16488c0   1c0  c5fb58c1             vaddsd xmm0,xmm0,xmm1
+0x57c8a16488c4   1c4  c5e25acb             vcvtss2sd xmm1,xmm3,xmm3
+0x57c8a16488c8   1c8  c5eb58c0             vaddsd xmm0,xmm2,xmm0
+0x57c8a16488cc   1cc  4183c010             addl r8,0x10
+0x57c8a16488d0   1d0  0f8076020000         jo 0x57c8a1648b4c  <+0x44c>
+0x57c8a16488d6   1d6  c5f358c0             vaddsd xmm0,xmm1,xmm0
+0x57c8a16488da   1da  41807db100           cmpb [r13-0x4f] (external value (StackGuard::address_of_interrupt_request(StackGuard::InterruptLevel::kNoH
+0x57c8a16488df   1df  0f85ae010000         jnz 0x57c8a1648a93  <+0x393>
+0x57c8a16488e5   1e5  4c894588             REX.W movq [rbp-0x78],r8
+0x57c8a16488e9   1e9  e918000000           jmp 0x57c8a1648906  <+0x206>
+0x57c8a16488ee   1ee  660f1f840000000000   nop
+0x57c8a16488f7   1f7  660f1f840000000000   nop
+0x57c8a1648900   200  8bfa                 movl rdi,rdx
+0x57c8a1648902   202  48894d88             REX.W movq [rbp-0x78],rcx
+0x57c8a1648906   206  c5fb114590           vmovsd [rbp-0x70],xmm0
+0x57c8a164890b   20b  488b4d18             REX.W movq rcx,[rbp+0x18]
+0x57c8a164890f   20f  41b8f1190101         movl r8,0x10119f1    ;; (compressed) object: 0x28f6010119f1 <Map[52](HOLEY_ELEMENTS)>
+0x57c8a1648915   215  443941ff             cmpl [rcx-0x1],r8
+0x57c8a1648919   219  0f8531020000         jnz 0x57c8a1648b50  <+0x450>
+0x57c8a164891f   21f  51                   push rcx
+0x57c8a1648920   220  48bfd51a0101f6280000 REX.W movq rdi,0x28f601011ad5    ;; object: 0x28f601011ad5 <JSFunction get byteLength (sfi = 0x28f6001f013d)>
+0x57c8a164892a   22a  498d5611             REX.W leaq rdx,[r14+0x11]
+0x57c8a164892e   22e  b801000000           movl rax,0x1
+0x57c8a1648933   233  4533ff               xorl r15,r15
+0x57c8a1648936   236  48be294b0001f6280000 REX.W movq rsi,0x28f601004b29    ;; object: 0x28f601004b29 <NativeContext[304]>
+0x57c8a1648940   240  e83b9610a0           call 0x57c841751f80  (ArrayBufferPrototypeGetByteLength)    ;; near builtin entry
+0x57c8a1648945   245  a801                 test al,0x1
+0x57c8a1648947   247  0f8507020000         jnz 0x57c8a1648b54  <+0x454>
+0x57c8a164894d   24d  488bc8               REX.W movq rcx,rax
+0x57c8a1648950   250  d1f9                 sarl rcx,1
+0x57c8a1648952   252  448b4588             movl r8,[rbp-0x78]
+0x57c8a1648956   256  443bc1               cmpl r8,rcx
+0x57c8a1648959   259  0f8d02010000         jge 0x57c8a1648a61  <+0x361>
+0x57c8a164895f   25f  41f6c007             testb r8,0x7
+0x57c8a1648963   263  0f85ef010000         jnz 0x57c8a1648b58  <+0x458>
+0x57c8a1648969   269  418bc8               movl rcx,r8
+0x57c8a164896c   26c  c1f903               sarl rcx,3
+0x57c8a164896f   26f  4c8b4db8             REX.W movq r9,[rbp-0x48]
+0x57c8a1648973   273  41bbed7b0001         movl r11,0x1007bed    ;; (compressed) object: 0x28f601007bed <Map[60](FLOAT64ELEMENTS)>
+0x57c8a1648979   279  453959ff             cmpl [r9-0x1],r11
+0x57c8a164897d   27d  0f85d9010000         jnz 0x57c8a1648b5c  <+0x45c>
+0x57c8a1648983   283  458b6137             movl r12,[r9+0x37]
+0x57c8a1648987   287  498b592f             REX.W movq rbx,[r9+0x2f]
+0x57c8a164898b   28b  48c1eb18             REX.W shrq rbx,24
+0x57c8a164898f   28f  4903de               REX.W addq rbx,r14
+0x57c8a1648992   292  418b5123             movl rdx,[r9+0x23]
+0x57c8a1648996   296  4863c9               REX.W movsxlq rcx,rcx
+0x57c8a1648999   299  483bca               REX.W cmpq rcx,rdx
+0x57c8a164899c   29c  0f83be010000         jnc 0x57c8a1648b60  <+0x460>
+0x57c8a16489a2   2a2  458be4               movl r12,r12
+0x57c8a16489a5   2a5  4c03e3               REX.W addq r12,rbx
+0x57c8a16489a8   2a8  c4c17b1004cc         vmovsd xmm0,[r12+rcx*8]
+0x57c8a16489ae   2ae  41f6c003             testb r8,0x3
+0x57c8a16489b2   2b2  0f85ac010000         jnz 0x57c8a1648b64  <+0x464>
+0x57c8a16489b8   2b8  418bc8               movl rcx,r8
+0x57c8a16489bb   2bb  c1f902               sarl rcx,2
+0x57c8a16489be   2be  4c8be1               REX.W movq r12,rcx
+0x57c8a16489c1   2c1  4183c402             addl r12,0x2
+0x57c8a16489c5   2c5  0f809d010000         jo 0x57c8a1648b68  <+0x468>
+0x57c8a16489cb   2cb  488b5dc0             REX.W movq rbx,[rbp-0x40]
+0x57c8a16489cf   2cf  bad1910001           movl rdx,0x10091d1    ;; (compressed) object: 0x28f6010091d1 <Map[60](FLOAT32ELEMENTS)>
+0x57c8a16489d4   2d4  3953ff               cmpl [rbx-0x1],rdx
+0x57c8a16489d7   2d7  0f858f010000         jnz 0x57c8a1648b6c  <+0x46c>
+0x57c8a16489dd   2dd  488b731f             REX.W movq rsi,[rbx+0x1f]
+0x57c8a16489e1   2e1  8b7b37               movl rdi,[rbx+0x37]
+0x57c8a16489e4   2e4  4c8b7b2f             REX.W movq r15,[rbx+0x2f]
+0x57c8a16489e8   2e8  49c1ef18             REX.W shrq r15,24
+0x57c8a16489ec   2ec  4d03fe               REX.W addq r15,r14
+0x57c8a16489ef   2ef  48c1ee1f             REX.W shrq rsi,31
+0x57c8a16489f3   2f3  4d63e4               REX.W movsxlq r12,r12
+0x57c8a16489f6   2f6  4c3be6               REX.W cmpq r12,rsi
+0x57c8a16489f9   2f9  0f8371010000         jnc 0x57c8a1648b70  <+0x470>
+0x57c8a16489ff   2ff  448bcf               movl r9,rdi
+0x57c8a1648a02   302  4d03cf               REX.W addq r9,r15
+0x57c8a1648a05   305  c4817a100ca1         vmovss xmm1,[r9+r12*4]
+0x57c8a1648a0b   30b  83c103               addl rcx,0x3
+0x57c8a1648a0e   30e  0f8060010000         jo 0x57c8a1648b74  <+0x474>
+0x57c8a1648a14   314  4863c9               REX.W movsxlq rcx,rcx
+0x57c8a1648a17   317  483bce               REX.W cmpq rcx,rsi
+0x57c8a1648a1a   31a  0f8358010000         jnc 0x57c8a1648b78  <+0x478>
+0x57c8a1648a20   320  448bcf               movl r9,rdi
+0x57c8a1648a23   323  4d03cf               REX.W addq r9,r15
+0x57c8a1648a26   326  c4c17a101489         vmovss xmm2,[r9+rcx*4]
+0x57c8a1648a2c   32c  c5f25ac9             vcvtss2sd xmm1,xmm1,xmm1
+0x57c8a1648a30   330  c5fb105d90           vmovsd xmm3,[rbp-0x70]
+0x57c8a1648a35   335  c5fb58c3             vaddsd xmm0,xmm0,xmm3
+0x57c8a1648a39   339  c5ea5ad2             vcvtss2sd xmm2,xmm2,xmm2
+0x57c8a1648a3d   33d  c5f358c0             vaddsd xmm0,xmm1,xmm0
+0x57c8a1648a41   341  498bc8               REX.W movq rcx,r8
+0x57c8a1648a44   344  83c110               addl rcx,0x10
+0x57c8a1648a47   347  0f802f010000         jo 0x57c8a1648b7c  <+0x47c>
+0x57c8a1648a4d   34d  c5eb58c0             vaddsd xmm0,xmm2,xmm0
+0x57c8a1648a51   351  41807db100           cmpb [r13-0x4f] (external value (StackGuard::address_of_interrupt_request(StackGuard::InterruptLevel::kNoH
+0x57c8a1648a56   356  0f84a4feffff         jz 0x57c8a1648900  <+0x200>
+0x57c8a1648a5c   35c  e969000000           jmp 0x57c8a1648aca  <+0x3ca>
+0x57c8a1648a61   361  498d4611             REX.W leaq rax,[r14+0x11]
+0x57c8a1648a65   365  e91ffdffff           jmp 0x57c8a1648789  <+0x89>
+0x57c8a1648a6a   36a  b910000000           movl rcx,0x10
+0x57c8a1648a6f   36f  51                   push rcx
+0x57c8a1648a70   370  48be294b0001f6280000 REX.W movq rsi,0x28f601004b29    ;; object: 0x28f601004b29 <NativeContext[304]>
+0x57c8a1648a7a   37a  48bbd0106040c8570000 REX.W movq rbx,0x57c8406010d0
+0x57c8a1648a84   384  b801000000           movl rax,0x1
+0x57c8a1648a89   389  e8b26c0ba0           call 0x57c8416ff740  (CEntry_Return1_ArgvOnStack_NoBuiltinExit)    ;; near builtin entry
+0x57c8a1648a8e   38e  e992fcffff           jmp 0x57c8a1648725  <+0x25>
+0x57c8a1648a93   393  c5fb114590           vmovsd [rbp-0x70],xmm0
+0x57c8a1648a98   398  4c894588             REX.W movq [rbp-0x78],r8
+0x57c8a1648a9c   39c  48bb80106040c8570000 REX.W movq rbx,0x57c840601080
+0x57c8a1648aa6   3a6  33c0                 xorl rax,rax
+0x57c8a1648aa8   3a8  48be294b0001f6280000 REX.W movq rsi,0x28f601004b29    ;; object: 0x28f601004b29 <NativeContext[304]>
+0x57c8a1648ab2   3b2  e8896c0ba0           call 0x57c8416ff740  (CEntry_Return1_ArgvOnStack_NoBuiltinExit)    ;; near builtin entry
+0x57c8a1648ab7   3b7  bfd1910001           movl rdi,0x10091d1    ;; (compressed) object: 0x28f6010091d1 <Map[60](FLOAT32ELEMENTS)>
+0x57c8a1648abc   3bc  c5fb104590           vmovsd xmm0,[rbp-0x70]
+0x57c8a1648ac1   3c1  4c8b4588             REX.W movq r8,[rbp-0x78]
+0x57c8a1648ac5   3c5  e91bfeffff           jmp 0x57c8a16488e5  <+0x1e5>
+0x57c8a1648aca   3ca  c5fb114590           vmovsd [rbp-0x70],xmm0
+0x57c8a1648acf   3cf  48894d98             REX.W movq [rbp-0x68],rcx
+0x57c8a1648ad3   3d3  48be294b0001f6280000 REX.W movq rsi,0x28f601004b29    ;; object: 0x28f601004b29 <NativeContext[304]>
+0x57c8a1648add   3dd  488b1dbaffffff       REX.W movq rbx,[rip+0xffffffba]
+0x57c8a1648ae4   3e4  33c0                 xorl rax,rax
+0x57c8a1648ae6   3e6  4c8bc3               REX.W movq r8,rbx
+0x57c8a1648ae9   3e9  e8526c0ba0           call 0x57c8416ff740  (CEntry_Return1_ArgvOnStack_NoBuiltinExit)    ;; near builtin entry
+0x57c8a1648aee   3ee  c5fb104590           vmovsd xmm0,[rbp-0x70]
+0x57c8a1648af3   3f3  488b5dc0             REX.W movq rbx,[rbp-0x40]
+0x57c8a1648af7   3f7  488b4d98             REX.W movq rcx,[rbp-0x68]
+0x57c8a1648afb   3fb  bad1910001           movl rdx,0x10091d1    ;; (compressed) object: 0x28f6010091d1 <Map[60](FLOAT32ELEMENTS)>
+0x57c8a1648b00   400  41bbed7b0001         movl r11,0x1007bed    ;; (compressed) object: 0x28f601007bed <Map[60](FLOAT64ELEMENTS)>
+0x57c8a1648b06   406  e9f5fdffff           jmp 0x57c8a1648900  <+0x200>
+0x57c8a1648b0b   40b  90                   nop
+0x57c8a1648b0c   40c  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4270'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'Smi'
+                                                             ;; debug: deopt index 0
+0x57c8a1648b10   410  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4270'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'wrong map'
+                                                             ;; debug: deopt index 1
+0x57c8a1648b14   414  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4261'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'not a Smi'
+                                                             ;; debug: deopt index 2
+0x57c8a1648b18   418  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4261'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'not a Smi'
+                                                             ;; debug: deopt index 3
+0x57c8a1648b1c   41c  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4318'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'lost precision'
+                                                             ;; debug: deopt index 4
+0x57c8a1648b20   420  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4316'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'Smi'
+                                                             ;; debug: deopt index 5
+0x57c8a1648b24   424  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4316'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'wrong map'
+                                                             ;; debug: deopt index 6
+0x57c8a1648b28   428  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4316'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'out of bounds'
+                                                             ;; debug: deopt index 7
+0x57c8a1648b2c   42c  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4316'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'not a Number or Oddball'
+                                                             ;; debug: deopt index 8
+0x57c8a1648b30   430  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4348'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'lost precision'
+                                                             ;; debug: deopt index 9
+0x57c8a1648b34   434  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4351'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'overflow'
+                                                             ;; debug: deopt index 10
+0x57c8a1648b38   438  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4346'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'Smi'
+                                                             ;; debug: deopt index 11
+0x57c8a1648b3c   43c  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4346'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'wrong map'
+                                                             ;; debug: deopt index 12
+0x57c8a1648b40   440  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4346'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'out of bounds'
+                                                             ;; debug: deopt index 13
+0x57c8a1648b44   444  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4385'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'overflow'
+                                                             ;; debug: deopt index 14
+0x57c8a1648b48   448  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4380'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'out of bounds'
+                                                             ;; debug: deopt index 15
+0x57c8a1648b4c   44c  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4284'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'overflow'
+                                                             ;; debug: deopt index 16
+0x57c8a1648b50   450  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4270'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'wrong map'
+                                                             ;; debug: deopt index 17
+0x57c8a1648b54   454  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4261'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'not a Smi'
+                                                             ;; debug: deopt index 18
+0x57c8a1648b58   458  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4318'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'lost precision'
+                                                             ;; debug: deopt index 19
+0x57c8a1648b5c   45c  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4316'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'wrong map'
+                                                             ;; debug: deopt index 20
+0x57c8a1648b60   460  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4316'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'out of bounds'
+                                                             ;; debug: deopt index 21
+0x57c8a1648b64   464  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4348'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'lost precision'
+                                                             ;; debug: deopt index 22
+0x57c8a1648b68   468  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4351'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'overflow'
+                                                             ;; debug: deopt index 23
+0x57c8a1648b6c   46c  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4346'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'wrong map'
+                                                             ;; debug: deopt index 24
+0x57c8a1648b70   470  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4346'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'out of bounds'
+                                                             ;; debug: deopt index 25
+0x57c8a1648b74   474  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4385'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'overflow'
+                                                             ;; debug: deopt index 26
+0x57c8a1648b78   478  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4380'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'out of bounds'
+                                                             ;; debug: deopt index 27
+0x57c8a1648b7c   47c  41ff55d8             call [r13-0x28] (external value (IsolateData::builtin_tier0_entry_table_))    ;; debug: deopt position, script offset '4284'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason 'overflow'
+                                                             ;; debug: deopt index 28
+0x57c8a1648b80   480  41ff55e0             call [r13-0x20]    ;; debug: deopt position, script offset '4270'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason '(unknown)'
+                                                             ;; debug: deopt index 29
+0x57c8a1648b84   484  41ff55e0             call [r13-0x20]    ;; debug: deopt position, script offset '4270'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason '(unknown)'
+                                                             ;; debug: deopt index 30
+0x57c8a1648b88   488  41ff55e0             call [r13-0x20]    ;; debug: deopt position, script offset '4121'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason '(unknown)'
+                                                             ;; debug: deopt index 31
+0x57c8a1648b8c   48c  41ff55e0             call [r13-0x20]    ;; debug: deopt position, script offset '4243'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason '(unknown)'
+                                                             ;; debug: deopt index 32
+0x57c8a1648b90   490  41ff55e0             call [r13-0x20]    ;; debug: deopt position, script offset '4243'
+                                                             ;; debug: deopt position, inlining id '-1'
+                                                             ;; debug: deopt reason '(unknown)'
+                                                             ;; debug: deopt index 33

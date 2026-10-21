@@ -1,0 +1,190 @@
+{
+  "before": {
+    "V8.TFInlining": [
+      {
+        "id": 117,
+        "title": "JSCall[3, unknown, NOT_NULL_OR_UNDEFINED, SpeculationMode::kDisallowSpeculation, CallFeedbackRelation::kUnrelated]",
+        "opcode": "JSCall",
+        "origin": {
+          "nodeId": 47,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "properties": ""
+      },
+      {
+        "id": 125,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 62,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      },
+      {
+        "id": 144,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 80,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      },
+      {
+        "id": 135,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 71,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      }
+    ],
+    "V8.TFLoadElimination": [
+      {
+        "id": 149,
+        "title": "HeapConstant[0x33db001cb9c9 <Code BUILTIN ArrayBufferPrototypeGetByteLength>]",
+        "opcode": "HeapConstant",
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSTypedLowering",
+          "phase": "V8.TFTypedLowering"
+        },
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt"
+      },
+      {
+        "id": 178,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 125,
+          "reducer": "copy nodes",
+          "phase": "V8.TFLoopPeeling"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      },
+      {
+        "id": 125,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 62,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      },
+      {
+        "id": 169,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 135,
+          "reducer": "copy nodes",
+          "phase": "V8.TFLoopPeeling"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      },
+      {
+        "id": 135,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 71,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      }
+    ]
+  },
+  "after": {
+    "V8.TFInlining": [
+      {
+        "id": 143,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 62,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      },
+      {
+        "id": 133,
+        "title": "LoadField[JSArrayBufferByteLength, tagged base, 20, Range(0, 34359738367), kRepWord64|kTypeUint64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      },
+      {
+        "id": 162,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 80,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      },
+      {
+        "id": 153,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 71,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      }
+    ],
+    "V8.TFLoadElimination": [
+      {
+        "id": 133,
+        "title": "LoadField[JSArrayBufferByteLength, tagged base, 20, Range(0, 34359738367), kRepWord64|kTypeUint64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      },
+      {
+        "id": 143,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 62,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      },
+      {
+        "id": 153,
+        "title": "LoadField[JSTypedArrayExternalPointer, tagged base, 48, SandboxedPointer, kRepSandboxedPointer|kTypeInt64, NoWriteBarrier, mutable]",
+        "opcode": "LoadField",
+        "origin": {
+          "nodeId": 71,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "properties": "NoWrite, NoThrow, NoDeopt"
+      }
+    ]
+  }
+}

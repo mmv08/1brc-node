@@ -16,8 +16,26 @@
     "baseline_getter_calls": 2,
     "candidate_getter_calls": 0,
     "baseline_typed_array_pointer_loads_after_TFLoadElimination": 4,
-    "candidate_typed_array_pointer_loads_after_TFLoadElimination": 2
+    "candidate_typed_array_pointer_loads_after_TFLoadElimination": 2,
+    "pointer_load_count_caveat": "The static 4-to-2 count also reflects different loop peeling. Native code still loads the two view pointers in the loop; do not interpret this count as proof of loop-invariant load hoisting. Confirmed savings include getter calls and surrounding spills/tag conversions."
   },
   "diagnostic_scores_are_not_benchmark_results": true,
-  "profiles_directory": "results/v8-general/profiles"
+  "profiles_directory": "results/v8-general/profiles",
+  "upstream_patch_commits": [
+    "3eb4f01c",
+    "f090ad58"
+  ],
+  "candidate_profile": {
+    "ticks": 19739,
+    "getter_ticks": 110,
+    "getter_percent": 0.5572724048837328,
+    "caveat": "Time-budget benchmarks execute different amounts of work; sample fractions are not a fixed-work speedup measurement."
+  },
+  "validation": {
+    "mjsunit_scripts_passed": 22,
+    "selection": "ArrayBuffer, DataView, resizable/growable buffers, Wasm buffer growth; --run-skipped --variants=default",
+    "new_test": "test/mjsunit/compiler/array-buffer-byte-length.js",
+    "additional_new_coverage": "Foreign getter exception realm passed after the 22-script selection.",
+    "build": "Release x64, sandbox and pointer compression enabled; no full multi-platform or sanitizer validation."
+  }
 }
