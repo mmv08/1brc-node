@@ -82,7 +82,7 @@ for (const file of ['plain/worker.mjs', 'wasm/worker.mjs']) {
 edit('plain/lib/read.mjs', '../../profile-phase-runtime.mjs', [
   [
     '    parser(start, end);',
-      "    const parseStarted = phaseStart();\n    parser(start, end);\n    phaseEnd('parse', parseStarted, end - start);",
+    "    const parseStarted = phaseStart(parser);\n    parser(start, end);\n    phaseEnd('parse', parseStarted, end - start, parser);",
   ],
   [
     '          const n = readSync',
@@ -98,7 +98,7 @@ edit('lib/read.mjs', '../profile-phase-runtime.mjs', [
   ['      if (!n) throw', "      phaseEnd('read', readStarted, n);\n      if (!n) throw"],
   [
     '    parse(start, end);',
-      "    const parseStarted = phaseStart();\n    parse(start, end);\n    phaseEnd('parse', parseStarted, end - start);",
+    "    const parseStarted = phaseStart();\n    parse(start, end);\n    phaseEnd('parse', parseStarted, end - start);",
   ],
 ]);
 edit('plain/lib/aggregate.mjs', '../../profile-phase-runtime.mjs', [

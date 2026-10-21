@@ -8,6 +8,13 @@ const directory = process.env.PROFILE_PHASE_DIR;
 if (!directory) throw new Error('PROFILE_PHASE_DIR is required');
 if (!process.threadCpuUsage) throw new Error('This diagnostic needs process.threadCpuUsage');
 const now = () => Number(process.hrtime.bigint()) / 1e6;
+// Optional V8 diagnostic, requiring --allow-natives-syntax. This only observes
+// attached code before/after a call; it cannot identify on-stack replacement
+// within that call or measure background compiler CPU time.
+const tierStatus =
+  process.env.PROFILE_TIER === '1'
+    ? new Function('fn', 'return %GetOptimizationStatus(fn);')
+    : null;
 const marks = [];
 const phases = {};
 const workers = [];
@@ -17,12 +24,13 @@ export function phaseMark(name) {
   marks.push({ name, atMs: now(), userUs: cpu.user, systemUs: cpu.system });
 }
 
-export function phaseStart() {
+export function phaseStart(parser) {
+  const tier = tierStatus && parser ? tierStatus(parser) : undefined;
   const cpu = process.threadCpuUsage();
-  return { atMs: now(), userUs: cpu.user, systemUs: cpu.system };
+  return { atMs: now(), userUs: cpu.user, systemUs: cpu.system, tier };
 }
 
-export function phaseEnd(name, start, bytes = 0) {
+export function phaseEnd(name, start, bytes = 0, parser) {
   const cpu = process.threadCpuUsage();
   const end = now();
   phases[name] ??= {
@@ -62,6 +70,27 @@ export function phaseEnd(name, start, bytes = 0) {
     window.wallMs += end - start.atMs;
     window.userUs += cpu.user - start.userUs;
     window.systemUs += cpu.system - start.systemUs;
+  }
+  if (start.tier !== undefined) {
+    const after = tierStatus(parser);
+    phase.tiers ??= {};
+    const label = `${start.tier}->${after}`;
+    phase.tiers[label] ??= {
+      calls: 0,
+      bytes: 0,
+      wallMs: 0,
+      userUs: 0,
+      systemUs: 0,
+      firstMs: start.atMs,
+      lastMs: end,
+    };
+    const tier = phase.tiers[label];
+    tier.calls++;
+    tier.bytes += bytes;
+    tier.wallMs += end - start.atMs;
+    tier.userUs += cpu.user - start.userUs;
+    tier.systemUs += cpu.system - start.systemUs;
+    tier.lastMs = end;
   }
 }
 
