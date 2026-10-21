@@ -98,5 +98,10 @@
     "Initial test build needed an explicit Word32 conversion for IF(ScopedVar); production sources compiled.",
     "Initial negative diamond test was legitimately cloned into both arms; both arm guards implied its final guard. The corrected test preserves a large merge and uses an unrelated false-arm mask. 29 selected tests then pass."
   ],
-  "interpretation": "Matched native diagnostics remove the weaker i&3 guard while retaining i&7; hot function2368\u21922352bytes. Timing is separate and uses stock flags."
+  "interpretation": "Matched native diagnostics remove the weaker i&3 guard while retaining i&7; hot function2368\u21922352bytes. Timing is separate and uses stock flags.",
+  "benchmark": {
+    "file": "mask-implication-results.json",
+    "pairs": 21,
+    "decision": "Neutral: every individual confidence interval includes no change. Preserve patch and measurements; exclude from winning stack on this evidence."
+  }
 }

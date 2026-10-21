@@ -34,12 +34,17 @@
     {
       "id": "terminal-peeling",
       "scope": "safely clone bounded terminal-throw side exits",
-      "state": "isolated source worktree"
+      "state": "building after independent review of terminal-region and retained-input safety",
+      "source_commits": [
+        "6500a6d2",
+        "166b0ea4",
+        "2c9b4112"
+      ]
     },
     {
       "id": "mask-implication",
       "scope": "eliminate zero-mask guards implied by dominating guards",
-      "state": "29 tests pass; OSR entry confirmed; native weaker mask guard removed; 21-pair benchmark running",
+      "state": "completed: 29 tests pass; targeted native guard removed; no clear benchmark gain; preserved as neutral",
       "source_commits": [
         "5f9782e9",
         "4c5f3615",
