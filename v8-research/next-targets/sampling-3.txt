@@ -1,0 +1,149 @@
+Statistical profiling result from /home/mmv/projects/1brc-node/results/v8-general/profiles/next-targets-20261021/sampling-3/v8.log, (19635 ticks, 0 unaccounted, 0 excluded).
+
+ [Shared libraries]:
+   ticks  total  nonlib   name
+    232    1.2%          /usr/lib/x86_64-linux-gnu/libc.so.6
+
+ [JavaScript]:
+   ticks  total  nonlib   name
+   6232   31.7%   32.1%  JS: *doOneIterationJS dataviewtest.js:92:26
+   2562   13.0%   13.2%  JS: *Measure ../base.js:285:19
+   1937    9.9%   10.0%  JS: *doTestDataViewLittleEndian dataviewtest.js:33:36
+   1771    9.0%    9.1%  JS: *doFloatIterations dataviewtest.js:110:27
+   1312    6.7%    6.8%  JS: *doOneIterationDV dataviewtest.js:79:26
+    941    4.8%    4.8%  JS: +doFloatIterations dataviewtest.js:110:27
+    425    2.2%    2.2%  JS: *makeBuffer dataviewtest.js:65:20
+    399    2.0%    2.1%  JS: *doTestDataViewFloats dataviewtest.js:45:30
+    244    1.2%    1.3%  JS: *doTestTypedArrayFloats dataviewtest.js:49:32
+    141    0.7%    0.7%  JS: *makeFloatBuffer dataviewtest.js:122:25
+     36    0.2%    0.2%  JS: *doTestTypedArrayBigEndian dataviewtest.js:37:35
+     12    0.1%    0.1%  JS: +doOneIterationJS dataviewtest.js:92:26
+      6    0.0%    0.0%  JS: *doOneFloatIterationJS dataviewtest.js:143:31
+      4    0.0%    0.0%  JS: *doOneFloatIterationDV dataviewtest.js:133:31
+      2    0.0%    0.0%  JS: +doTestTypedArrayBigEndian dataviewtest.js:37:35
+      2    0.0%    0.0%  JS: +doTestDataViewLittleEndian dataviewtest.js:33:36
+      2    0.0%    0.0%  JS: +BigEndian.getInt8 dataviewtest.js:158:39
+      2    0.0%    0.0%  JS: *LittleEndian.getInt32 dataviewtest.js:199:43
+      1    0.0%    0.0%  JS: +doTestTypedArrayLittleEndian dataviewtest.js:41:38
+      1    0.0%    0.0%  JS: +doOneFloatIterationJS dataviewtest.js:143:31
+      1    0.0%    0.0%  JS: +Measure ../base.js:285:19
+      1    0.0%    0.0%  JS: +LittleEndian dataviewtest.js:183:22
+      1    0.0%    0.0%  JS: *LittleEndian.getInt16 dataviewtest.js:193:43
+      1    0.0%    0.0%  JS: *LittleEndian dataviewtest.js:183:22
+
+ [C++]:
+   ticks  total  nonlib   name
+   2107   10.7%   10.9%  __llvm_libc_cr::math::cos(double)
+    581    3.0%    3.0%  __llvm_libc_cr::math::log10(double)
+    105    0.5%    0.5%  Builtins_ArrayBufferPrototypeGetByteLength
+     90    0.5%    0.5%  syscall@@GLIBC_2.2.5
+     62    0.3%    0.3%  v8::internal::Builtin_DataViewConstructor(int, unsigned long*, v8::internal::Isolate*)
+     33    0.2%    0.2%  partition_alloc::internal::ThreadCache::FillBucket(unsigned long)
+     33    0.2%    0.2%  Builtins_CreateTypedArray
+     32    0.2%    0.2%  void* partition_alloc::PartitionRoot::Alloc<(partition_alloc::internal::AllocFlags)16>(unsigned long, char const*)
+     24    0.1%    0.1%  v8::internal::Factory::NewJSObjectFromMap(v8::internal::DirectHandle<v8::internal::Map>, v8::internal::AllocationType, v8::internal::MaybeDirectHandle<v8::internal::AllocationSite>, v8::internal::NewJSObjectType)
+     22    0.1%    0.1%  partition_alloc::internal::PartitionBucket::SlowPathAlloc(partition_alloc::PartitionRoot*, partition_alloc::internal::AllocFlags, unsigned long, unsigned long, partition_alloc::internal::SlotSpanMetadata**, bool*, bool*)
+     21    0.1%    0.1%  v8::internal::Factory::AllocateRawWithAllocationSite(v8::internal::DirectHandle<v8::internal::Map>, v8::internal::AllocationType, v8::internal::MaybeDirectHandle<v8::internal::AllocationSite>)
+     20    0.1%    0.1%  void* partition_alloc::PartitionRoot::Alloc<(partition_alloc::internal::AllocFlags)15>(unsigned long, char const*)
+     19    0.1%    0.1%  v8::base::ieee754::log10(double)
+     18    0.1%    0.1%  v8::internal::JSObject::InitializeBody(v8::internal::Tagged<v8::internal::Map>, int, bool, v8::internal::NewJSObjectType)
+     16    0.1%    0.1%  v8::internal::JSObject::New(v8::internal::DirectHandle<v8::internal::JSFunction>, v8::internal::DirectHandle<v8::internal::JSReceiver>, v8::internal::DirectHandle<v8::internal::AllocationSite>, v8::internal::NewJSObjectType)
+     16    0.1%    0.1%  v8::base::ieee754::cos(double)
+     15    0.1%    0.1%  v8::internal::JSFunction::EnsureHasInitialMap(v8::internal::Isolate*, v8::internal::DirectHandle<v8::internal::JSFunction>)
+     12    0.1%    0.1%  __mprotect@@GLIBC_PRIVATE
+     11    0.1%    0.1%  Builtins_JSBuiltinsConstructStub
+     10    0.1%    0.1%  v8::internal::JSFunction::GetDerivedMap(v8::internal::Isolate*, v8::internal::DirectHandle<v8::internal::JSFunction>, v8::internal::DirectHandle<v8::internal::JSReceiver>)
+     10    0.1%    0.1%  v8::internal::CompactibleExternalEntityTable<v8::internal::ExternalPointerTableEntry, 536870912ul>::SweepAndCompactSegment(v8::internal::CompactibleExternalEntityTable<v8::internal::ExternalPointerTableEntry, 536870912ul>::Space*, v8::internal::SegmentedTable<v8::internal::ExternalPointerTableEntry, 536870912ul>::Segment, unsigned int, bool, unsigned int*, unsigned int*)
+      9    0.0%    0.0%  v8::internal::BackingStore::Allocate(v8::internal::Isolate*, unsigned long, v8::base::StrongAlias<v8::internal::SharedFlagTag, bool>, v8::base::StrongAlias<v8::internal::InitializedFlagTag, bool>)
+      7    0.0%    0.0%  v8::internal::JSArrayBuffer::GetByteLength() const
+      6    0.0%    0.0%  Builtins_CEntry_Return1_ArgvOnStack_BuiltinExit
+      5    0.0%    0.0%  v8::internal::LookupIterator::GetAccessorIndex() const
+      5    0.0%    0.0%  v8::internal::Heap::AllocateExternalBackingStore(std::__Cr::function<void* (unsigned long)> const&, unsigned long)
+      3    0.0%    0.0%  v8::internal::JSDataViewOrRabGsabDataView::set_data_pointer(v8::internal::Isolate*, void*)
+      3    0.0%    0.0%  v8::internal::IsolateGroup::GetBackingStorePageAllocator()
+      3    0.0%    0.0%  v8::internal::Heap::UpdateExternalMemory(long)
+      3    0.0%    0.0%  v8::internal::Factory::InitializeJSObjectBody(v8::internal::Tagged<v8::internal::JSObject>, v8::internal::Tagged<v8::internal::Map>, int, v8::internal::NewJSObjectType)
+      3    0.0%    0.0%  v8::internal::ConsString::set_second(v8::internal::Tagged<v8::internal::String>, v8::internal::WriteBarrierMode)
+      3    0.0%    0.0%  v8::internal::(anonymous namespace)::ConstructBuffer(v8::internal::Isolate*, v8::internal::DirectHandle<v8::internal::JSFunction>, v8::internal::DirectHandle<v8::internal::JSReceiver>, v8::internal::DirectHandle<v8::internal::Object>, v8::internal::DirectHandle<v8::internal::Object>, v8::base::StrongAlias<v8::internal::InitializedFlagTag, bool>)
+      3    0.0%    0.0%  v8::ArrayBuffer::Allocator::MaxAllocationSize() const
+      3    0.0%    0.0%  partition_alloc::internal::DeducedRootIsValid(partition_alloc::internal::SlotSpanMetadata const*)
+      3    0.0%    0.0%  Builtins_Call_ReceiverIsNotNullOrUndefined
+      2    0.0%    0.0%  v8::internal::PerThreadAssertScope<true, (v8::internal::PerThreadAssertType)2>::IsAllowed()
+      2    0.0%    0.0%  v8::internal::JSObject::GetHeaderSize(v8::internal::InstanceType)
+      2    0.0%    0.0%  v8::internal::JSArrayBuffer::Setup(v8::base::StrongAlias<v8::internal::SharedFlagTag, bool>, v8::base::StrongAlias<v8::internal::ResizableFlagTag, bool>, std::__Cr::shared_ptr<v8::internal::BackingStore>, v8::internal::Isolate*, v8::internal::Tagged<v8::internal::Union<v8::internal::Smi, v8::internal::HeapObject, v8::internal::Weak<v8::internal::HeapObject> > >)
+      2    0.0%    0.0%  v8::internal::JSArrayBuffer::AttachView(v8::internal::Tagged<v8::internal::JSArrayBufferView>)
+      2    0.0%    0.0%  v8::internal::ExternalEntityTable<v8::internal::TrustedPointerTableEntry, 67108864ul>::TryAllocateEntry(v8::internal::ExternalEntityTable<v8::internal::TrustedPointerTableEntry, 67108864ul>::Space*)
+      2    0.0%    0.0%  v8::internal::DirectHandle<v8::internal::Union<v8::internal::Smi, v8::internal::HeapNumber> >::MaybeType v8::internal::Object::ConvertToIndex<v8::internal::DirectHandle>(v8::internal::Isolate*, v8::internal::DirectHandle<v8::internal::Object>, v8::internal::MessageTemplate) requires std::is_convertible_v<v8::internal::DirectHandle<v8::internal::Object>, v8::internal::DirectHandle<v8::internal::Object> >
+      2    0.0%    0.0%  v8::internal::ArrayBufferSweeper::Append(v8::internal::ArrayBufferExtension*)
+      2    0.0%    0.0%  partition_alloc::internal::PartitionBucket::SetNewActiveSlotSpan()
+      2    0.0%    0.0%  partition_alloc::TryRecommitSystemPages(unsigned long, unsigned long, partition_alloc::PageAccessibilityConfiguration, partition_alloc::PageAccessibilityDisposition)
+      2    0.0%    0.0%  Builtins_JSConstructStubGeneric
+      2    0.0%    0.0%  Builtins_ConstructFunction
+      2    0.0%    0.0%  Builtins_CallFunction_ReceiverIsNotNullOrUndefined
+      2    0.0%    0.0%  Builtins_BaselineOutOfLinePrologue
+      2    0.0%    0.0%  Builtins_Add_SignedSmall_Baseline
+      1    0.0%    0.0%  v8::internal::interpreter::BytecodeGenerator::VisitCompoundAssignment(v8::internal::CompoundAssignment*)
+      1    0.0%    0.0%  v8::internal::V8::GetCurrentPlatform()
+      1    0.0%    0.0%  v8::internal::TransitionsAccessor::InsertHelper(v8::internal::Isolate*, v8::internal::DirectHandle<v8::internal::Map>, v8::internal::DirectHandle<v8::internal::Name>, v8::internal::DirectHandle<v8::internal::Map>, v8::internal::TransitionKindFlag)
+      1    0.0%    0.0%  v8::internal::StackFrameIterator::Advance()
+      1    0.0%    0.0%  v8::internal::SafepointTable::SafepointTable(v8::internal::Isolate*, unsigned long, v8::internal::Tagged<v8::internal::GcSafeCode>)
+      1    0.0%    0.0%  v8::internal::ParserBase<v8::internal::PreParser>::ParseReturnStatement()
+      1    0.0%    0.0%  v8::internal::MainAllocator::ResetLab(unsigned long, unsigned long, unsigned long)
+      1    0.0%    0.0%  v8::internal::JSObject::ReadFromOptionsBag(v8::internal::DirectHandle<v8::internal::Object>, v8::internal::DirectHandle<v8::internal::String>, v8::internal::Isolate*)
+      1    0.0%    0.0%  v8::internal::JSArrayBuffer::CreateExtension(v8::internal::Isolate*, std::__Cr::shared_ptr<v8::internal::BackingStore>)
+      1    0.0%    0.0%  v8::internal::Heap::AppendArrayBufferExtension(v8::internal::ArrayBufferExtension*)
+      1    0.0%    0.0%  v8::internal::Factory::ObjectLiteralMapFromCache(v8::internal::DirectHandle<v8::internal::NativeContext>, int)
+      1    0.0%    0.0%  v8::internal::ArrayBufferSweeper::SweepingState::MergeTo(v8::internal::ArrayBufferSweeper*)
+      1    0.0%    0.0%  v8::PAInSandboxAllocator::Allocate(unsigned long)
+      1    0.0%    0.0%  std::__Cr::__shared_ptr_emplace[abi:sqn240000]<v8::internal::wasm::StreamingDecoder::SectionBuffer, std::__Cr::allocator<v8::internal::wasm::StreamingDecoder::SectionBuffer> >::__on_zero_shared()
+      1    0.0%    0.0%  pkey_set@@GLIBC_2.27
+      1    0.0%    0.0%  operator new[](unsigned long)
+      1    0.0%    0.0%  allocator_shim::(anonymous namespace)::DelegatedAllocFn(unsigned long, partition_alloc::internal::base::StrongAlias<allocator_shim::AllocTokenTag, unsigned long>, void*)
+      1    0.0%    0.0%  absl::Mutex::lock()
+      1    0.0%    0.0%  Builtins_LoadICConstantFromPrototypeBaseline
+      1    0.0%    0.0%  Builtins_GetProperty
+      1    0.0%    0.0%  Builtins_GetNamedPropertyHandler
+      1    0.0%    0.0%  Builtins_DataViewPrototypeSetUint32
+      1    0.0%    0.0%  Builtins_DataViewPrototypeGetFloat64
+
+ [Summary]:
+   ticks  total  nonlib   name
+  16036   81.7%   82.6%  JavaScript
+   3367   17.1%   17.4%  C++
+     58    0.3%    0.3%  GC
+    232    1.2%          Shared libraries
+
+ [C++ entry points]:
+   ticks    cpp   total   name
+   2107   59.6%   10.7%  __llvm_libc_cr::math::cos(double)
+    580   16.4%    3.0%  __llvm_libc_cr::math::log10(double)
+    439   12.4%    2.2%  v8::internal::Builtin_ArrayBufferConstructor(int, unsigned long*, v8::internal::Isolate*)
+    183    5.2%    0.9%  v8::internal::Builtin_DataViewConstructor(int, unsigned long*, v8::internal::Isolate*)
+    105    3.0%    0.5%  Builtins_ArrayBufferPrototypeGetByteLength
+     31    0.9%    0.2%  Builtins_CreateTypedArray
+     19    0.5%    0.1%  v8::base::ieee754::log10(double)
+     16    0.5%    0.1%  v8::base::ieee754::cos(double)
+     11    0.3%    0.1%  Builtins_JSBuiltinsConstructStub
+     10    0.3%    0.1%  v8::internal::Runtime_StartTurbofanOptimizeJob(int, unsigned long*, v8::internal::Isolate*)
+      4    0.1%    0.0%  v8::internal::Runtime_StartMaglevOptimizeJob(int, unsigned long*, v8::internal::Isolate*)
+      3    0.1%    0.0%  v8::internal::Runtime_CompileOptimizedOSR(int, unsigned long*, v8::internal::Isolate*)
+      3    0.1%    0.0%  Builtins_Call_ReceiverIsNotNullOrUndefined
+      2    0.1%    0.0%  v8::internal::Builtin_DateConstructor(int, unsigned long*, v8::internal::Isolate*)
+      2    0.1%    0.0%  Builtins_JSConstructStubGeneric
+      2    0.1%    0.0%  Builtins_ConstructFunction
+      2    0.1%    0.0%  Builtins_CallFunction_ReceiverIsNotNullOrUndefined
+      2    0.1%    0.0%  Builtins_CEntry_Return1_ArgvOnStack_BuiltinExit
+      2    0.1%    0.0%  Builtins_BaselineOutOfLinePrologue
+      2    0.1%    0.0%  Builtins_Add_SignedSmall_Baseline
+      1    0.0%    0.0%  v8::internal::Runtime_StoreIC_Miss(int, unsigned long*, v8::internal::Isolate*)
+      1    0.0%    0.0%  v8::internal::Runtime_CreateObjectLiteral(int, unsigned long*, v8::internal::Isolate*)
+      1    0.0%    0.0%  v8::internal::Runtime_CompileOptimizedOSRFromMaglev(int, unsigned long*, v8::internal::Isolate*)
+      1    0.0%    0.0%  v8::internal::Runtime_CompileLazy(int, unsigned long*, v8::internal::Isolate*)
+      1    0.0%    0.0%  v8::internal::Runtime_BytecodeBudgetInterrupt_Ignition(int, unsigned long*, v8::internal::Isolate*)
+      1    0.0%    0.0%  v8::internal::ParserBase<v8::internal::PreParser>::ParseReturnStatement()
+      1    0.0%    0.0%  Builtins_MathLog10
+      1    0.0%    0.0%  Builtins_LoadICConstantFromPrototypeBaseline
+      1    0.0%    0.0%  Builtins_GetNamedPropertyHandler
+      1    0.0%    0.0%  Builtins_DatePrototypeToPrimitive
+      1    0.0%    0.0%  Builtins_DataViewPrototypeSetUint32
+      1    0.0%    0.0%  Builtins_DataViewPrototypeGetFloat64

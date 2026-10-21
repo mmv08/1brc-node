@@ -89,6 +89,4 @@ The local unit-test launcher initially rejected a direct multi-test invocation b
 
 ## Remaining targets
 
-Maglev lacks the corresponding ArrayBuffer getter reduction. Adding equivalent semantic guards there would broaden tier coverage, but its benefit has not been measured.
-
-Loop-invariant array checks/loads and alignment checks for strided integer division remain in the optimized float loop. Their removal requires proofs about effects and induction ranges; no unchecked assumption or workload-specific shortcut is justified.
+The [fresh profiling investigation](next-targets/README.md) records three samples of the winning build (58,888 ticks), native code and compiler IR. It identifies redundant polymorphic dispatch, terminal exception paths that block loop peeling, and removable integer checks. The report distinguishes proven compiler gaps from unmeasured performance gains and ranks the next experiments. Hardware perf counters were unavailable; the evidence uses V8's sampling profiler.

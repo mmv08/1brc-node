@@ -1,0 +1,1294 @@
+{
+  "capture": {
+    "argv": [
+      "taskset",
+      "-c",
+      "2",
+      "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+      "--prof",
+      "--prof-sampling-interval=250",
+      "--log-source-code",
+      "--log-source-position",
+      "--no-logfile-per-isolate",
+      "--logfile=/home/mmv/projects/1brc-node/results/v8-general/profiles/next-targets-20261021/native/v8.log",
+      "--print-opt-code",
+      "run.js"
+    ],
+    "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+    "binary_sha256": "54fb47bc6772c7bf280ab63f37ffed06d6640d719b2d0f0ebf25c95473788dac",
+    "start": 1792572256.5351157,
+    "role": "diagnostic; not a performance comparison",
+    "returncode": 0,
+    "elapsed_s": 6.040023326873779
+  },
+  "total_ticks": 19663,
+  "raw_sha256": {
+    "v8.log": "bd50978e23e6abd60a468ee725917c89b1da3ee8012e5bf82a340d41f589b2bb",
+    "stdout.txt": "a7bcfd15bbdfdb1d3e4b033cbdc01e793bbdc8c54a5d1ebd6bff3998925cb1d7",
+    "profile.json": "74837b1c84552f6078116b57322197f29fb4d2122c26503725a1d1bd5f2dc7a5"
+  },
+  "interpretation": "Sampled PCs and inline source positions, not hardware instruction costs. Code lifetimes are resolved by the official V8 processor. Diagnostic native capture is separate from the three sampling-only runs.",
+  "excerpts": [
+    {
+      "title": "Unpeeled monomorphic integer loop: repeated field loads",
+      "code_id": 66330,
+      "name": "doOneIterationJS dataviewtest.js:92:26",
+      "kind": "Opt",
+      "ticks": 3068,
+      "percent": 15.60290901693536,
+      "address": "0x5587a1d0ba80",
+      "size": 1308,
+      "instructions": [
+        {
+          "address": 94041023757120,
+          "offset": 192,
+          "bytes": "458bc8",
+          "operation": "movl r9,r8",
+          "ticks": 2
+        },
+        {
+          "address": 94041023757123,
+          "offset": 195,
+          "bytes": "488b45c0",
+          "operation": "REX.W movq rax,[rbp-0x40]",
+          "ticks": 1
+        },
+        {
+          "address": 94041023757127,
+          "offset": 199,
+          "bytes": "4c8b6518",
+          "operation": "REX.W movq r12,[rbp+0x18]",
+          "ticks": 43
+        },
+        {
+          "address": 94041023757131,
+          "offset": 203,
+          "bytes": "41f6c401",
+          "operation": "testb r12,0x1",
+          "ticks": 1
+        },
+        {
+          "address": 94041023757135,
+          "offset": 207,
+          "bytes": "0f84b9030000",
+          "operation": "jz 0x5587a1d0bf0e  <+0x48e>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757141,
+          "offset": 213,
+          "bytes": "41bff1190101",
+          "operation": "movl r15,0x10119f1    ;; (compressed) object: 0x11e4010119f1 <Map[52](HOLEY_ELEMENTS)>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757147,
+          "offset": 219,
+          "bytes": "45397c24ff",
+          "operation": "cmpl [r12-0x1],r15",
+          "ticks": 2
+        },
+        {
+          "address": 94041023757152,
+          "offset": 224,
+          "bytes": "0f85ac030000",
+          "operation": "jnz 0x5587a1d0bf12  <+0x492>",
+          "ticks": 12
+        },
+        {
+          "address": 94041023757158,
+          "offset": 230,
+          "bytes": "41f644242f08",
+          "operation": "testb [r12+0x2f],0x8",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757164,
+          "offset": 236,
+          "bytes": "0f8569030000",
+          "operation": "jnz 0x5587a1d0bedb  <+0x45b>",
+          "ticks": 62
+        },
+        {
+          "address": 94041023757170,
+          "offset": 242,
+          "bytes": "4d8b7c2413",
+          "operation": "REX.W movq r15,[r12+0x13]",
+          "ticks": 24
+        },
+        {
+          "address": 94041023757175,
+          "offset": 247,
+          "bytes": "49c1ef1d",
+          "operation": "REX.W shrq r15,29",
+          "ticks": 6
+        },
+        {
+          "address": 94041023757179,
+          "offset": 251,
+          "bytes": "4981ffffffff7f",
+          "operation": "REX.W cmpq r15,0x7fffffff",
+          "ticks": 54
+        },
+        {
+          "address": 94041023757186,
+          "offset": 258,
+          "bytes": "0f878e030000",
+          "operation": "ja 0x5587a1d0bf16  <+0x496>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757192,
+          "offset": 264,
+          "bytes": "453bdf",
+          "operation": "cmpl r11,r15",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757195,
+          "offset": 267,
+          "bytes": "0f8d97020000",
+          "operation": "jge 0x5587a1d0be28  <+0x3a8>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757201,
+          "offset": 273,
+          "bytes": "41bf65f80201",
+          "operation": "movl r15,0x102f865    ;; (compressed) object: 0x11e40102f865 <Map[20](HOLEY_ELEMENTS)>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757207,
+          "offset": 279,
+          "bytes": "443978ff",
+          "operation": "cmpl [rax-0x1],r15",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757211,
+          "offset": 283,
+          "bytes": "0f8579030000",
+          "operation": "jnz 0x5587a1d0bf1a  <+0x49a>",
+          "ticks": 7
+        },
+        {
+          "address": 94041023757217,
+          "offset": 289,
+          "bytes": "448b780f",
+          "operation": "movl r15,[rax+0xf]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757221,
+          "offset": 293,
+          "bytes": "4d0bfe",
+          "operation": "REX.W orq r15,r14",
+          "ticks": 38
+        },
+        {
+          "address": 94041023757224,
+          "offset": 296,
+          "bytes": "498b5f1f",
+          "operation": "REX.W movq rbx,[r15+0x1f]",
+          "ticks": 9
+        },
+        {
+          "address": 94041023757228,
+          "offset": 300,
+          "bytes": "48c1eb1d",
+          "operation": "REX.W shrq rbx,29",
+          "ticks": 123
+        },
+        {
+          "address": 94041023757232,
+          "offset": 304,
+          "bytes": "418b5737",
+          "operation": "movl rdx,[r15+0x37]",
+          "ticks": 90
+        },
+        {
+          "address": 94041023757236,
+          "offset": 308,
+          "bytes": "498b4f2f",
+          "operation": "REX.W movq rcx,[r15+0x2f]",
+          "ticks": 9
+        },
+        {
+          "address": 94041023757240,
+          "offset": 312,
+          "bytes": "48c1e918",
+          "operation": "REX.W shrq rcx,24",
+          "ticks": 5
+        },
+        {
+          "address": 94041023757244,
+          "offset": 316,
+          "bytes": "4903ce",
+          "operation": "REX.W addq rcx,r14",
+          "ticks": 196
+        },
+        {
+          "address": 94041023757247,
+          "offset": 319,
+          "bytes": "4c3bdb",
+          "operation": "REX.W cmpq r11,rbx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757250,
+          "offset": 322,
+          "bytes": "0f8356030000",
+          "operation": "jnc 0x5587a1d0bf1e  <+0x49e>",
+          "ticks": 6
+        },
+        {
+          "address": 94041023757256,
+          "offset": 328,
+          "bytes": "8bf2",
+          "operation": "movl rsi,rdx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757258,
+          "offset": 330,
+          "bytes": "4803f1",
+          "operation": "REX.W addq rsi,rcx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757261,
+          "offset": 333,
+          "bytes": "420fbe341e",
+          "operation": "movsxbl rsi,[rsi+r11*1]",
+          "ticks": 99
+        },
+        {
+          "address": 94041023757266,
+          "offset": 338,
+          "bytes": "418bf9",
+          "operation": "movl rdi,r9",
+          "ticks": 564
+        },
+        {
+          "address": 94041023757269,
+          "offset": 341,
+          "bytes": "33fe",
+          "operation": "xorl rdi,rsi",
+          "ticks": 111
+        },
+        {
+          "address": 94041023757271,
+          "offset": 343,
+          "bytes": "4c895dd0",
+          "operation": "REX.W movq [rbp-0x30],r11",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757275,
+          "offset": 347,
+          "bytes": "4183c301",
+          "operation": "addl r11,0x1",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757279,
+          "offset": 351,
+          "bytes": "0f803d030000",
+          "operation": "jo 0x5587a1d0bf22  <+0x4a2>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757285,
+          "offset": 357,
+          "bytes": "448b480b",
+          "operation": "movl r9,[rax+0xb]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757289,
+          "offset": 361,
+          "bytes": "4d0bce",
+          "operation": "REX.W orq r9,r14",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757292,
+          "offset": 364,
+          "bytes": "498b711f",
+          "operation": "REX.W movq rsi,[r9+0x1f]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757296,
+          "offset": 368,
+          "bytes": "48c1ee1d",
+          "operation": "REX.W shrq rsi,29",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757300,
+          "offset": 372,
+          "bytes": "458b6137",
+          "operation": "movl r12,[r9+0x37]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757304,
+          "offset": 376,
+          "bytes": "498b412f",
+          "operation": "REX.W movq rax,[r9+0x2f]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757308,
+          "offset": 380,
+          "bytes": "48c1e818",
+          "operation": "REX.W shrq rax,24",
+          "ticks": 117
+        },
+        {
+          "address": 94041023757312,
+          "offset": 384,
+          "bytes": "4903c6",
+          "operation": "REX.W addq rax,r14",
+          "ticks": 2
+        },
+        {
+          "address": 94041023757315,
+          "offset": 387,
+          "bytes": "4c3bde",
+          "operation": "REX.W cmpq r11,rsi",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757318,
+          "offset": 390,
+          "bytes": "0f831a030000",
+          "operation": "jnc 0x5587a1d0bf26  <+0x4a6>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757324,
+          "offset": 396,
+          "bytes": "458bc4",
+          "operation": "movl r8,r12",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757327,
+          "offset": 399,
+          "bytes": "4c03c0",
+          "operation": "REX.W addq r8,rax",
+          "ticks": 1
+        },
+        {
+          "address": 94041023757330,
+          "offset": 402,
+          "bytes": "470fb60418",
+          "operation": "movzxbl r8,[r8+r11*1]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757335,
+          "offset": 407,
+          "bytes": "448bdf",
+          "operation": "movl r11,rdi",
+          "ticks": 21
+        },
+        {
+          "address": 94041023757338,
+          "offset": 410,
+          "bytes": "4533d8",
+          "operation": "xorl r11,r8",
+          "ticks": 38
+        },
+        {
+          "address": 94041023757341,
+          "offset": 413,
+          "bytes": "4c894dd8",
+          "operation": "REX.W movq [rbp-0x28],r9",
+          "ticks": 0
+        },
+        {
+          "address": 94041023757345,
+          "offset": 417,
+          "bytes": "4c8b4dd0",
+          "operation": "REX.W movq r9,[rbp-0x30]",
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "title": "Polymorphic dispatch: map choice followed by function comparison",
+      "code_id": 66367,
+      "name": "doOneIterationJS dataviewtest.js:92:26",
+      "kind": "Opt",
+      "ticks": 3182,
+      "percent": 16.18267812643035,
+      "address": "0x5587a1d41400",
+      "size": 3296,
+      "instructions": [
+        {
+          "address": 94041023977180,
+          "offset": 732,
+          "bytes": "443bfb",
+          "operation": "cmpl r15,rbx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977183,
+          "offset": 735,
+          "bytes": "0f8418000000",
+          "operation": "jz 0x5587a1d416fd  <+0x2fd>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977189,
+          "offset": 741,
+          "bytes": "b9c9060301",
+          "operation": "movl rcx,0x10306c9    ;; (compressed) object: 0x11e4010306c9 <Map[20](HOLEY_ELEMENTS)>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977194,
+          "offset": 746,
+          "bytes": "413bcf",
+          "operation": "cmpl rcx,r15",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977197,
+          "offset": 749,
+          "bytes": "0f85e2080000",
+          "operation": "jnz 0x5587a1d41fd5  <+0xbd5>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977203,
+          "offset": 755,
+          "bytes": "bee5190201",
+          "operation": "movl rsi,0x10219e5    ;; (compressed) object: 0x11e4010219e5 <JSFunction LittleEndian.getUint8 (sfi = 0x11e401020b75)>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977208,
+          "offset": 760,
+          "bytes": "e905000000",
+          "operation": "jmp 0x5587a1d41702  <+0x302>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977213,
+          "offset": 765,
+          "bytes": "befd180201",
+          "operation": "movl rsi,0x10218fd    ;; (compressed) object: 0x11e4010218fd <JSFunction BigEndian.getUint8 (sfi = 0x11e401020951)>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977218,
+          "offset": 770,
+          "bytes": "4533e1",
+          "operation": "xorl r12,r9",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977221,
+          "offset": 773,
+          "bytes": "4d8bcb",
+          "operation": "REX.W movq r9,r11",
+          "ticks": 51
+        },
+        {
+          "address": 94041023977224,
+          "offset": 776,
+          "bytes": "4183c101",
+          "operation": "addl r9,0x1",
+          "ticks": 20
+        },
+        {
+          "address": 94041023977228,
+          "offset": 780,
+          "bytes": "0f80c7080000",
+          "operation": "jo 0x5587a1d41fd9  <+0xbd9>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977234,
+          "offset": 786,
+          "bytes": "b9fd180201",
+          "operation": "movl rcx,0x10218fd    ;; (compressed) object: 0x11e4010218fd <JSFunction BigEndian.getUint8 (sfi = 0x11e401020951)>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977239,
+          "offset": 791,
+          "bytes": "3bce",
+          "operation": "cmpl rcx,rsi",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977241,
+          "offset": 793,
+          "bytes": "0f8442000000",
+          "operation": "jz 0x5587a1d41761  <+0x361>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977247,
+          "offset": 799,
+          "bytes": "b9c9060301",
+          "operation": "movl rcx,0x10306c9    ;; (compressed) object: 0x11e4010306c9 <Map[20](HOLEY_ELEMENTS)>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977252,
+          "offset": 804,
+          "bytes": "413bcf",
+          "operation": "cmpl rcx,r15",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977255,
+          "offset": 807,
+          "bytes": "0f85b0080000",
+          "operation": "jnz 0x5587a1d41fdd  <+0xbdd>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977261,
+          "offset": 813,
+          "bytes": "8b480b",
+          "operation": "movl rcx,[rax+0xb]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977264,
+          "offset": 816,
+          "bytes": "490bce",
+          "operation": "REX.W orq rcx,r14",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977267,
+          "offset": 819,
+          "bytes": "488b711f",
+          "operation": "REX.W movq rsi,[rcx+0x1f]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977271,
+          "offset": 823,
+          "bytes": "48c1ee1d",
+          "operation": "REX.W shrq rsi,29",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977275,
+          "offset": 827,
+          "bytes": "8b7937",
+          "operation": "movl rdi,[rcx+0x37]",
+          "ticks": 51
+        },
+        {
+          "address": 94041023977278,
+          "offset": 830,
+          "bytes": "4c8b592f",
+          "operation": "REX.W movq r11,[rcx+0x2f]",
+          "ticks": 12
+        },
+        {
+          "address": 94041023977282,
+          "offset": 834,
+          "bytes": "49c1eb18",
+          "operation": "REX.W shrq r11,24",
+          "ticks": 2
+        },
+        {
+          "address": 94041023977286,
+          "offset": 838,
+          "bytes": "4d03de",
+          "operation": "REX.W addq r11,r14",
+          "ticks": 3
+        },
+        {
+          "address": 94041023977289,
+          "offset": 841,
+          "bytes": "4c3bce",
+          "operation": "REX.W cmpq r9,rsi",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977292,
+          "offset": 844,
+          "bytes": "0f838f080000",
+          "operation": "jnc 0x5587a1d41fe1  <+0xbe1>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977298,
+          "offset": 850,
+          "bytes": "8bf7",
+          "operation": "movl rsi,rdi",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977300,
+          "offset": 852,
+          "bytes": "4c03de",
+          "operation": "REX.W addq r11,rsi",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977303,
+          "offset": 855,
+          "bytes": "470fb60c0b",
+          "operation": "movzxbl r9,[r11+r9*1]",
+          "ticks": 4
+        },
+        {
+          "address": 94041023977308,
+          "offset": 860,
+          "bytes": "e937000000",
+          "operation": "jmp 0x5587a1d41798  <+0x398>",
+          "ticks": 103
+        },
+        {
+          "address": 94041023977313,
+          "offset": 865,
+          "bytes": "85d2",
+          "operation": "testl rdx,rdx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977315,
+          "offset": 867,
+          "bytes": "0f847c080000",
+          "operation": "jz 0x5587a1d41fe5  <+0xbe5>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977321,
+          "offset": 873,
+          "bytes": "8b480b",
+          "operation": "movl rcx,[rax+0xb]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977324,
+          "offset": 876,
+          "bytes": "490bce",
+          "operation": "REX.W orq rcx,r14",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977327,
+          "offset": 879,
+          "bytes": "488b711f",
+          "operation": "REX.W movq rsi,[rcx+0x1f]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977331,
+          "offset": 883,
+          "bytes": "48c1ee1d",
+          "operation": "REX.W shrq rsi,29",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977335,
+          "offset": 887,
+          "bytes": "8b7937",
+          "operation": "movl rdi,[rcx+0x37]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977338,
+          "offset": 890,
+          "bytes": "4c8b592f",
+          "operation": "REX.W movq r11,[rcx+0x2f]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977342,
+          "offset": 894,
+          "bytes": "49c1eb18",
+          "operation": "REX.W shrq r11,24",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977346,
+          "offset": 898,
+          "bytes": "4d03de",
+          "operation": "REX.W addq r11,r14",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977349,
+          "offset": 901,
+          "bytes": "4c3bce",
+          "operation": "REX.W cmpq r9,rsi",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977352,
+          "offset": 904,
+          "bytes": "0f835b080000",
+          "operation": "jnc 0x5587a1d41fe9  <+0xbe9>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977358,
+          "offset": 910,
+          "bytes": "8bf7",
+          "operation": "movl rsi,rdi",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977360,
+          "offset": 912,
+          "bytes": "4c03de",
+          "operation": "REX.W addq r11,rsi",
+          "ticks": 0
+        },
+        {
+          "address": 94041023977363,
+          "offset": 915,
+          "bytes": "470fb60c0b",
+          "operation": "movzxbl r9,[r11+r9*1]",
+          "ticks": 0
+        }
+      ]
+    },
+    {
+      "title": "Hot inlined float loop: exactness and overflow guards",
+      "code_id": 66378,
+      "name": "doFloatIterations dataviewtest.js:110:27",
+      "kind": "Opt",
+      "ticks": 900,
+      "percent": 4.577124548644663,
+      "address": "0x5587a1d44e80",
+      "size": 2368,
+      "instructions": [
+        {
+          "address": 94041023992867,
+          "offset": 1443,
+          "bytes": "4533c0",
+          "operation": "xorl r8,r8",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992870,
+          "offset": 1446,
+          "bytes": "4c8b5db8",
+          "operation": "REX.W movq r11,[rbp-0x48]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992874,
+          "offset": 1450,
+          "bytes": "4c8b4db0",
+          "operation": "REX.W movq r9,[rbp-0x50]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992878,
+          "offset": 1454,
+          "bytes": "e9f9000000",
+          "operation": "jmp 0x5587a1d4552c  <+0x6ac>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992883,
+          "offset": 1459,
+          "bytes": "660f1f840000000000",
+          "operation": "nop",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992892,
+          "offset": 1468,
+          "bytes": "0f1f4000",
+          "operation": "nop",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992896,
+          "offset": 1472,
+          "bytes": "41f6c007",
+          "operation": "testb r8,0x7",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992900,
+          "offset": 1476,
+          "bytes": "0f852c030000",
+          "operation": "jnz 0x5587a1d45776  <+0x8f6>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992906,
+          "offset": 1482,
+          "bytes": "458be0",
+          "operation": "movl r12,r8",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992909,
+          "offset": 1485,
+          "bytes": "41c1fc03",
+          "operation": "sarl r12,3",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992913,
+          "offset": 1489,
+          "bytes": "41bfed7b0001",
+          "operation": "movl r15,0x1007bed    ;; (compressed) object: 0x11e401007bed <Map[60](FLOAT64ELEMENTS)>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992919,
+          "offset": 1495,
+          "bytes": "443978ff",
+          "operation": "cmpl [rax-0x1],r15",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992923,
+          "offset": 1499,
+          "bytes": "0f8519030000",
+          "operation": "jnz 0x5587a1d4577a  <+0x8fa>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992929,
+          "offset": 1505,
+          "bytes": "448b7837",
+          "operation": "movl r15,[rax+0x37]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992933,
+          "offset": 1509,
+          "bytes": "488b582f",
+          "operation": "REX.W movq rbx,[rax+0x2f]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992937,
+          "offset": 1513,
+          "bytes": "48c1eb18",
+          "operation": "REX.W shrq rbx,24",
+          "ticks": 73
+        },
+        {
+          "address": 94041023992941,
+          "offset": 1517,
+          "bytes": "4903de",
+          "operation": "REX.W addq rbx,r14",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992944,
+          "offset": 1520,
+          "bytes": "8b5023",
+          "operation": "movl rdx,[rax+0x23]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992947,
+          "offset": 1523,
+          "bytes": "4d63e4",
+          "operation": "REX.W movsxlq r12,r12",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992950,
+          "offset": 1526,
+          "bytes": "4c3be2",
+          "operation": "REX.W cmpq r12,rdx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992953,
+          "offset": 1529,
+          "bytes": "0f83ff020000",
+          "operation": "jnc 0x5587a1d4577e  <+0x8fe>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992959,
+          "offset": 1535,
+          "bytes": "458bff",
+          "operation": "movl r15,r15",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992962,
+          "offset": 1538,
+          "bytes": "4c03fb",
+          "operation": "REX.W addq r15,rbx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992965,
+          "offset": 1541,
+          "bytes": "c4817b1014e7",
+          "operation": "vmovsd xmm2,[r15+r12*8]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992971,
+          "offset": 1547,
+          "bytes": "41f6c003",
+          "operation": "testb r8,0x3",
+          "ticks": 2
+        },
+        {
+          "address": 94041023992975,
+          "offset": 1551,
+          "bytes": "0f85ed020000",
+          "operation": "jnz 0x5587a1d45782  <+0x902>",
+          "ticks": 70
+        },
+        {
+          "address": 94041023992981,
+          "offset": 1557,
+          "bytes": "458be0",
+          "operation": "movl r12,r8",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992984,
+          "offset": 1560,
+          "bytes": "41c1fc02",
+          "operation": "sarl r12,2",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992988,
+          "offset": 1564,
+          "bytes": "4d8bfc",
+          "operation": "REX.W movq r15,r12",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992991,
+          "offset": 1567,
+          "bytes": "4183c702",
+          "operation": "addl r15,0x2",
+          "ticks": 0
+        },
+        {
+          "address": 94041023992995,
+          "offset": 1571,
+          "bytes": "0f80dd020000",
+          "operation": "jo 0x5587a1d45786  <+0x906>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993001,
+          "offset": 1577,
+          "bytes": "bbd1910001",
+          "operation": "movl rbx,0x10091d1    ;; (compressed) object: 0x11e4010091d1 <Map[60](FLOAT32ELEMENTS)>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993006,
+          "offset": 1582,
+          "bytes": "41395bff",
+          "operation": "cmpl [r11-0x1],rbx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993010,
+          "offset": 1586,
+          "bytes": "0f85d2020000",
+          "operation": "jnz 0x5587a1d4578a  <+0x90a>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993016,
+          "offset": 1592,
+          "bytes": "498b5b1f",
+          "operation": "REX.W movq rbx,[r11+0x1f]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993020,
+          "offset": 1596,
+          "bytes": "418b5337",
+          "operation": "movl rdx,[r11+0x37]",
+          "ticks": 1
+        },
+        {
+          "address": 94041023993024,
+          "offset": 1600,
+          "bytes": "498b4b2f",
+          "operation": "REX.W movq rcx,[r11+0x2f]",
+          "ticks": 1
+        },
+        {
+          "address": 94041023993028,
+          "offset": 1604,
+          "bytes": "48c1e918",
+          "operation": "REX.W shrq rcx,24",
+          "ticks": 85
+        },
+        {
+          "address": 94041023993032,
+          "offset": 1608,
+          "bytes": "4903ce",
+          "operation": "REX.W addq rcx,r14",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993035,
+          "offset": 1611,
+          "bytes": "48c1eb1f",
+          "operation": "REX.W shrq rbx,31",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993039,
+          "offset": 1615,
+          "bytes": "4d63ff",
+          "operation": "REX.W movsxlq r15,r15",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993042,
+          "offset": 1618,
+          "bytes": "4c3bfb",
+          "operation": "REX.W cmpq r15,rbx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993045,
+          "offset": 1621,
+          "bytes": "0f83b3020000",
+          "operation": "jnc 0x5587a1d4578e  <+0x90e>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993051,
+          "offset": 1627,
+          "bytes": "8bf2",
+          "operation": "movl rsi,rdx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993053,
+          "offset": 1629,
+          "bytes": "4803f1",
+          "operation": "REX.W addq rsi,rcx",
+          "ticks": 1
+        },
+        {
+          "address": 94041023993056,
+          "offset": 1632,
+          "bytes": "c4a17a101cbe",
+          "operation": "vmovss xmm3,[rsi+r15*4]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993062,
+          "offset": 1638,
+          "bytes": "4183c403",
+          "operation": "addl r12,0x3",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993066,
+          "offset": 1642,
+          "bytes": "0f8026020000",
+          "operation": "jo 0x5587a1d45716  <+0x896>",
+          "ticks": 1
+        },
+        {
+          "address": 94041023993072,
+          "offset": 1648,
+          "bytes": "4d63e4",
+          "operation": "REX.W movsxlq r12,r12",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993075,
+          "offset": 1651,
+          "bytes": "4c3be3",
+          "operation": "REX.W cmpq r12,rbx",
+          "ticks": 91
+        },
+        {
+          "address": 94041023993078,
+          "offset": 1654,
+          "bytes": "0f8376020000",
+          "operation": "jnc 0x5587a1d45772  <+0x8f2>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993084,
+          "offset": 1660,
+          "bytes": "448bfa",
+          "operation": "movl r15,rdx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993087,
+          "offset": 1663,
+          "bytes": "4c03f9",
+          "operation": "REX.W addq r15,rcx",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993090,
+          "offset": 1666,
+          "bytes": "c4817a1024a7",
+          "operation": "vmovss xmm4,[r15+r12*4]",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993096,
+          "offset": 1672,
+          "bytes": "c5e25adb",
+          "operation": "vcvtss2sd xmm3,xmm3,xmm3",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993100,
+          "offset": 1676,
+          "bytes": "c5eb58d1",
+          "operation": "vaddsd xmm2,xmm2,xmm1",
+          "ticks": 1
+        },
+        {
+          "address": 94041023993104,
+          "offset": 1680,
+          "bytes": "c5da5ae4",
+          "operation": "vcvtss2sd xmm4,xmm4,xmm4",
+          "ticks": 3
+        },
+        {
+          "address": 94041023993108,
+          "offset": 1684,
+          "bytes": "c5e358d2",
+          "operation": "vaddsd xmm2,xmm3,xmm2",
+          "ticks": 32
+        },
+        {
+          "address": 94041023993112,
+          "offset": 1688,
+          "bytes": "4d8be0",
+          "operation": "REX.W movq r12,r8",
+          "ticks": 119
+        },
+        {
+          "address": 94041023993115,
+          "offset": 1691,
+          "bytes": "4183c410",
+          "operation": "addl r12,0x10",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993119,
+          "offset": 1695,
+          "bytes": "0f8049020000",
+          "operation": "jo 0x5587a1d4576e  <+0x8ee>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993125,
+          "offset": 1701,
+          "bytes": "c5db58ca",
+          "operation": "vaddsd xmm1,xmm4,xmm2",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993129,
+          "offset": 1705,
+          "bytes": "4d8bc4",
+          "operation": "REX.W movq r8,r12",
+          "ticks": 244
+        },
+        {
+          "address": 94041023993132,
+          "offset": 1708,
+          "bytes": "41bcf1190101",
+          "operation": "movl r12,0x10119f1    ;; (compressed) object: 0x11e4010119f1 <Map[52](HOLEY_ELEMENTS)>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993138,
+          "offset": 1714,
+          "bytes": "453961ff",
+          "operation": "cmpl [r9-0x1],r12",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993142,
+          "offset": 1718,
+          "bytes": "0f8502020000",
+          "operation": "jnz 0x5587a1d4573e  <+0x8be>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993148,
+          "offset": 1724,
+          "bytes": "41f6412f08",
+          "operation": "testb [r9+0x2f],0x8",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993153,
+          "offset": 1729,
+          "bytes": "0f85a0010000",
+          "operation": "jnz 0x5587a1d456e7  <+0x867>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993159,
+          "offset": 1735,
+          "bytes": "4d8b6113",
+          "operation": "REX.W movq r12,[r9+0x13]",
+          "ticks": 1
+        },
+        {
+          "address": 94041023993163,
+          "offset": 1739,
+          "bytes": "49c1ec1d",
+          "operation": "REX.W shrq r12,29",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993167,
+          "offset": 1743,
+          "bytes": "4981fcffffff7f",
+          "operation": "REX.W cmpq r12,0x7fffffff",
+          "ticks": 80
+        },
+        {
+          "address": 94041023993174,
+          "offset": 1750,
+          "bytes": "0f87be010000",
+          "operation": "ja 0x5587a1d4571a  <+0x89a>",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993180,
+          "offset": 1756,
+          "bytes": "453bc4",
+          "operation": "cmpl r8,r12",
+          "ticks": 0
+        },
+        {
+          "address": 94041023993183,
+          "offset": 1759,
+          "bytes": "0f8cdbfeffff",
+          "operation": "jl 0x5587a1d45440  <+0x5c0>",
+          "ticks": 0
+        }
+      ]
+    }
+  ]
+}

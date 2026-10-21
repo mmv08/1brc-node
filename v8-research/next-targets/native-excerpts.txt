@@ -1,0 +1,189 @@
+Same-process sampled PC counts, resolved by the official V8 log processor.
+Counts are sampled PCs, not instruction costs or predicted savings.
+
+Unpeeled monomorphic integer loop: repeated field loads
+doOneIterationJS dataviewtest.js:92:26: 1308 bytes, 3068 samples in this code version
+ticks  offset  instruction
+    2  00c0    movl r9,r8
+    1  00c3    REX.W movq rax,[rbp-0x40]
+   43  00c7    REX.W movq r12,[rbp+0x18]
+    1  00cb    testb r12,0x1
+    0  00cf    jz 0x5587a1d0bf0e  <+0x48e>
+    0  00d5    movl r15,0x10119f1    ;; (compressed) object: 0x11e4010119f1 <Map[52](HOLEY_ELEMENTS)>
+    2  00db    cmpl [r12-0x1],r15
+   12  00e0    jnz 0x5587a1d0bf12  <+0x492>
+    0  00e6    testb [r12+0x2f],0x8
+   62  00ec    jnz 0x5587a1d0bedb  <+0x45b>
+   24  00f2    REX.W movq r15,[r12+0x13]
+    6  00f7    REX.W shrq r15,29
+   54  00fb    REX.W cmpq r15,0x7fffffff
+    0  0102    ja 0x5587a1d0bf16  <+0x496>
+    0  0108    cmpl r11,r15
+    0  010b    jge 0x5587a1d0be28  <+0x3a8>
+    0  0111    movl r15,0x102f865    ;; (compressed) object: 0x11e40102f865 <Map[20](HOLEY_ELEMENTS)>
+    0  0117    cmpl [rax-0x1],r15
+    7  011b    jnz 0x5587a1d0bf1a  <+0x49a>
+    0  0121    movl r15,[rax+0xf]
+   38  0125    REX.W orq r15,r14
+    9  0128    REX.W movq rbx,[r15+0x1f]
+  123  012c    REX.W shrq rbx,29
+   90  0130    movl rdx,[r15+0x37]
+    9  0134    REX.W movq rcx,[r15+0x2f]
+    5  0138    REX.W shrq rcx,24
+  196  013c    REX.W addq rcx,r14
+    0  013f    REX.W cmpq r11,rbx
+    6  0142    jnc 0x5587a1d0bf1e  <+0x49e>
+    0  0148    movl rsi,rdx
+    0  014a    REX.W addq rsi,rcx
+   99  014d    movsxbl rsi,[rsi+r11*1]
+  564  0152    movl rdi,r9
+  111  0155    xorl rdi,rsi
+    0  0157    REX.W movq [rbp-0x30],r11
+    0  015b    addl r11,0x1
+    0  015f    jo 0x5587a1d0bf22  <+0x4a2>
+    0  0165    movl r9,[rax+0xb]
+    0  0169    REX.W orq r9,r14
+    0  016c    REX.W movq rsi,[r9+0x1f]
+    0  0170    REX.W shrq rsi,29
+    0  0174    movl r12,[r9+0x37]
+    0  0178    REX.W movq rax,[r9+0x2f]
+  117  017c    REX.W shrq rax,24
+    2  0180    REX.W addq rax,r14
+    0  0183    REX.W cmpq r11,rsi
+    0  0186    jnc 0x5587a1d0bf26  <+0x4a6>
+    0  018c    movl r8,r12
+    1  018f    REX.W addq r8,rax
+    0  0192    movzxbl r8,[r8+r11*1]
+   21  0197    movl r11,rdi
+   38  019a    xorl r11,r8
+    0  019d    REX.W movq [rbp-0x28],r9
+    1  01a1    REX.W movq r9,[rbp-0x30]
+
+Polymorphic dispatch: map choice followed by function comparison
+doOneIterationJS dataviewtest.js:92:26: 3296 bytes, 3182 samples in this code version
+ticks  offset  instruction
+    0  02dc    cmpl r15,rbx
+    0  02df    jz 0x5587a1d416fd  <+0x2fd>
+    0  02e5    movl rcx,0x10306c9    ;; (compressed) object: 0x11e4010306c9 <Map[20](HOLEY_ELEMENTS)>
+    0  02ea    cmpl rcx,r15
+    0  02ed    jnz 0x5587a1d41fd5  <+0xbd5>
+    0  02f3    movl rsi,0x10219e5    ;; (compressed) object: 0x11e4010219e5 <JSFunction LittleEndian.getUint8 (sfi = 0x11e401020b75)>
+    0  02f8    jmp 0x5587a1d41702  <+0x302>
+    0  02fd    movl rsi,0x10218fd    ;; (compressed) object: 0x11e4010218fd <JSFunction BigEndian.getUint8 (sfi = 0x11e401020951)>
+    0  0302    xorl r12,r9
+   51  0305    REX.W movq r9,r11
+   20  0308    addl r9,0x1
+    0  030c    jo 0x5587a1d41fd9  <+0xbd9>
+    0  0312    movl rcx,0x10218fd    ;; (compressed) object: 0x11e4010218fd <JSFunction BigEndian.getUint8 (sfi = 0x11e401020951)>
+    0  0317    cmpl rcx,rsi
+    0  0319    jz 0x5587a1d41761  <+0x361>
+    0  031f    movl rcx,0x10306c9    ;; (compressed) object: 0x11e4010306c9 <Map[20](HOLEY_ELEMENTS)>
+    0  0324    cmpl rcx,r15
+    0  0327    jnz 0x5587a1d41fdd  <+0xbdd>
+    0  032d    movl rcx,[rax+0xb]
+    0  0330    REX.W orq rcx,r14
+    0  0333    REX.W movq rsi,[rcx+0x1f]
+    0  0337    REX.W shrq rsi,29
+   51  033b    movl rdi,[rcx+0x37]
+   12  033e    REX.W movq r11,[rcx+0x2f]
+    2  0342    REX.W shrq r11,24
+    3  0346    REX.W addq r11,r14
+    0  0349    REX.W cmpq r9,rsi
+    0  034c    jnc 0x5587a1d41fe1  <+0xbe1>
+    0  0352    movl rsi,rdi
+    0  0354    REX.W addq r11,rsi
+    4  0357    movzxbl r9,[r11+r9*1]
+  103  035c    jmp 0x5587a1d41798  <+0x398>
+    0  0361    testl rdx,rdx
+    0  0363    jz 0x5587a1d41fe5  <+0xbe5>
+    0  0369    movl rcx,[rax+0xb]
+    0  036c    REX.W orq rcx,r14
+    0  036f    REX.W movq rsi,[rcx+0x1f]
+    0  0373    REX.W shrq rsi,29
+    0  0377    movl rdi,[rcx+0x37]
+    0  037a    REX.W movq r11,[rcx+0x2f]
+    0  037e    REX.W shrq r11,24
+    0  0382    REX.W addq r11,r14
+    0  0385    REX.W cmpq r9,rsi
+    0  0388    jnc 0x5587a1d41fe9  <+0xbe9>
+    0  038e    movl rsi,rdi
+    0  0390    REX.W addq r11,rsi
+    0  0393    movzxbl r9,[r11+r9*1]
+
+Hot inlined float loop: exactness and overflow guards
+doFloatIterations dataviewtest.js:110:27: 2368 bytes, 900 samples in this code version
+ticks  offset  instruction
+    0  05a3    xorl r8,r8
+    0  05a6    REX.W movq r11,[rbp-0x48]
+    0  05aa    REX.W movq r9,[rbp-0x50]
+    0  05ae    jmp 0x5587a1d4552c  <+0x6ac>
+    0  05b3    nop
+    0  05bc    nop
+    0  05c0    testb r8,0x7
+    0  05c4    jnz 0x5587a1d45776  <+0x8f6>
+    0  05ca    movl r12,r8
+    0  05cd    sarl r12,3
+    0  05d1    movl r15,0x1007bed    ;; (compressed) object: 0x11e401007bed <Map[60](FLOAT64ELEMENTS)>
+    0  05d7    cmpl [rax-0x1],r15
+    0  05db    jnz 0x5587a1d4577a  <+0x8fa>
+    0  05e1    movl r15,[rax+0x37]
+    0  05e5    REX.W movq rbx,[rax+0x2f]
+   73  05e9    REX.W shrq rbx,24
+    0  05ed    REX.W addq rbx,r14
+    0  05f0    movl rdx,[rax+0x23]
+    0  05f3    REX.W movsxlq r12,r12
+    0  05f6    REX.W cmpq r12,rdx
+    0  05f9    jnc 0x5587a1d4577e  <+0x8fe>
+    0  05ff    movl r15,r15
+    0  0602    REX.W addq r15,rbx
+    0  0605    vmovsd xmm2,[r15+r12*8]
+    2  060b    testb r8,0x3
+   70  060f    jnz 0x5587a1d45782  <+0x902>
+    0  0615    movl r12,r8
+    0  0618    sarl r12,2
+    0  061c    REX.W movq r15,r12
+    0  061f    addl r15,0x2
+    0  0623    jo 0x5587a1d45786  <+0x906>
+    0  0629    movl rbx,0x10091d1    ;; (compressed) object: 0x11e4010091d1 <Map[60](FLOAT32ELEMENTS)>
+    0  062e    cmpl [r11-0x1],rbx
+    0  0632    jnz 0x5587a1d4578a  <+0x90a>
+    0  0638    REX.W movq rbx,[r11+0x1f]
+    1  063c    movl rdx,[r11+0x37]
+    1  0640    REX.W movq rcx,[r11+0x2f]
+   85  0644    REX.W shrq rcx,24
+    0  0648    REX.W addq rcx,r14
+    0  064b    REX.W shrq rbx,31
+    0  064f    REX.W movsxlq r15,r15
+    0  0652    REX.W cmpq r15,rbx
+    0  0655    jnc 0x5587a1d4578e  <+0x90e>
+    0  065b    movl rsi,rdx
+    1  065d    REX.W addq rsi,rcx
+    0  0660    vmovss xmm3,[rsi+r15*4]
+    0  0666    addl r12,0x3
+    1  066a    jo 0x5587a1d45716  <+0x896>
+    0  0670    REX.W movsxlq r12,r12
+   91  0673    REX.W cmpq r12,rbx
+    0  0676    jnc 0x5587a1d45772  <+0x8f2>
+    0  067c    movl r15,rdx
+    0  067f    REX.W addq r15,rcx
+    0  0682    vmovss xmm4,[r15+r12*4]
+    0  0688    vcvtss2sd xmm3,xmm3,xmm3
+    1  068c    vaddsd xmm2,xmm2,xmm1
+    3  0690    vcvtss2sd xmm4,xmm4,xmm4
+   32  0694    vaddsd xmm2,xmm3,xmm2
+  119  0698    REX.W movq r12,r8
+    0  069b    addl r12,0x10
+    0  069f    jo 0x5587a1d4576e  <+0x8ee>
+    0  06a5    vaddsd xmm1,xmm4,xmm2
+  244  06a9    REX.W movq r8,r12
+    0  06ac    movl r12,0x10119f1    ;; (compressed) object: 0x11e4010119f1 <Map[52](HOLEY_ELEMENTS)>
+    0  06b2    cmpl [r9-0x1],r12
+    0  06b6    jnz 0x5587a1d4573e  <+0x8be>
+    0  06bc    testb [r9+0x2f],0x8
+    0  06c1    jnz 0x5587a1d456e7  <+0x867>
+    1  06c7    REX.W movq r12,[r9+0x13]
+    0  06cb    REX.W shrq r12,29
+   80  06cf    REX.W cmpq r12,0x7fffffff
+    0  06d6    ja 0x5587a1d4571a  <+0x89a>
+    0  06dc    cmpl r8,r12
+    0  06df    jl 0x5587a1d45440  <+0x5c0>

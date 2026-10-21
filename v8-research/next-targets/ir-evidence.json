@@ -1,0 +1,3121 @@
+[
+  {
+    "trace": "integer-ir-retry/turbo-doOneIterationJS-51.json",
+    "sha256": "cabcb9b1fc1b2867be3a1f5cfb935609f4f103670d0f960ee36f268236503636",
+    "phase": "V8.TFTurboshaftLoopUnrolling",
+    "notes": "B26 chooses between constant functions and compares the Phi to one constant. 12 actual operations, OpCountUpperBound18; two independent branch-threading blockers in source.",
+    "nodes": [
+      {
+        "id": 255,
+        "title": "Constant",
+        "block_id": 23,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 189,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3070,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 266,
+        "title": "Constant",
+        "block_id": 24,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 196,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        }
+      },
+      {
+        "id": 269,
+        "title": "Phi",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 199,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3070,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 270,
+        "title": "WordBinop",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc6a\u2003_ _",
+        "origin": {
+          "nodeId": 200,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3040,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 271,
+        "title": "FrameState",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 201,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3081,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 275,
+        "title": "OverflowCheckedBinop",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 205,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3081,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 276,
+        "title": "Projection",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 205,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3081,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 277,
+        "title": "Projection",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 205,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3081,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 278,
+        "title": "MakeTuple",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 205,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3081,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 279,
+        "title": "DeoptimizeIf",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc64\ud83c\udc64\u2003\ud83c\udc6a\ud83c\udc6a\u2003\ud83c\udc64\ud83c\udc6a\u2003\ud83c\udc6b\u2003_ _",
+        "origin": {
+          "nodeId": 205,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3081,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 280,
+        "title": "FrameState",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 208,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3070,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 283,
+        "title": "Change",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 211,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4744,
+          "inliningId": 2
+        }
+      },
+      {
+        "id": 284,
+        "title": "Comparison",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 212,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3070,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 285,
+        "title": "Branch",
+        "block_id": 26,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc6a\ud83c\udc6a\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc64\u2003_ _",
+        "origin": {
+          "nodeId": 213,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3070,
+          "inliningId": -1
+        }
+      }
+    ],
+    "inputs": [
+      {
+        "id": 0,
+        "title": "Parameter",
+        "block_id": 0,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 0,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 2804,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 1,
+        "title": "Parameter",
+        "block_id": 0,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 1,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 2804,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 3,
+        "title": "Parameter",
+        "block_id": 0,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 3,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 2804,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 4,
+        "title": "Parameter",
+        "block_id": 0,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 4,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 2804,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 6,
+        "title": "Constant",
+        "block_id": 0,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 6,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 2804,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 14,
+        "title": "Constant",
+        "block_id": 0,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 14,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 2860,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 164,
+        "title": "Phi",
+        "block_id": 17,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 116,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 2985,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 170,
+        "title": "Phi",
+        "block_id": 18,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 126,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 171,
+        "title": "Phi",
+        "block_id": 18,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 127,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 251,
+        "title": "Phi",
+        "block_id": 23,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 185,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftBuildGraph"
+        },
+        "sourcePosition": {
+          "scriptOffset": 3040,
+          "inliningId": -1
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": 266,
+        "target": 269
+      },
+      {
+        "source": 255,
+        "target": 269
+      },
+      {
+        "source": 171,
+        "target": 270
+      },
+      {
+        "source": 251,
+        "target": 270
+      },
+      {
+        "source": 6,
+        "target": 271
+      },
+      {
+        "source": 3,
+        "target": 271
+      },
+      {
+        "source": 0,
+        "target": 271
+      },
+      {
+        "source": 4,
+        "target": 271
+      },
+      {
+        "source": 1,
+        "target": 271
+      },
+      {
+        "source": 270,
+        "target": 271
+      },
+      {
+        "source": 164,
+        "target": 271
+      },
+      {
+        "source": 170,
+        "target": 271
+      },
+      {
+        "source": 269,
+        "target": 271
+      },
+      {
+        "source": 170,
+        "target": 271
+      },
+      {
+        "source": 170,
+        "target": 275
+      },
+      {
+        "source": 14,
+        "target": 275
+      },
+      {
+        "source": 275,
+        "target": 276
+      },
+      {
+        "source": 275,
+        "target": 277
+      },
+      {
+        "source": 276,
+        "target": 278
+      },
+      {
+        "source": 277,
+        "target": 278
+      },
+      {
+        "source": 277,
+        "target": 279
+      },
+      {
+        "source": 271,
+        "target": 279
+      },
+      {
+        "source": 6,
+        "target": 280
+      },
+      {
+        "source": 3,
+        "target": 280
+      },
+      {
+        "source": 0,
+        "target": 280
+      },
+      {
+        "source": 4,
+        "target": 280
+      },
+      {
+        "source": 1,
+        "target": 280
+      },
+      {
+        "source": 270,
+        "target": 280
+      },
+      {
+        "source": 164,
+        "target": 280
+      },
+      {
+        "source": 170,
+        "target": 280
+      },
+      {
+        "source": 276,
+        "target": 283
+      },
+      {
+        "source": 269,
+        "target": 284
+      },
+      {
+        "source": 255,
+        "target": 284
+      },
+      {
+        "source": 284,
+        "target": 285
+      }
+    ],
+    "blocks": [
+      {
+        "id": 26,
+        "type": "MERGE",
+        "predecessors": [
+          24,
+          25
+        ]
+      }
+    ],
+    "properties": [
+      {
+        "key": 0,
+        "value": "[1]"
+      },
+      {
+        "key": 1,
+        "value": "[6, %context]"
+      },
+      {
+        "key": 3,
+        "value": "[0, %this]"
+      },
+      {
+        "key": 4,
+        "value": "[2]"
+      },
+      {
+        "key": 6,
+        "value": "[heap object: 0x1fab010212b1 <JSFunction doOneIterationJS (sfi = 0x1fab010207a9)>]"
+      },
+      {
+        "key": 14,
+        "value": "[word32: 1]"
+      },
+      {
+        "key": 164,
+        "value": "[Tagged]"
+      },
+      {
+        "key": 170,
+        "value": "[Word32]"
+      },
+      {
+        "key": 171,
+        "value": "[Word32]"
+      },
+      {
+        "key": 251,
+        "value": "[Word32]"
+      },
+      {
+        "key": 255,
+        "value": "[heap object: 0x1fab010218fd <JSFunction BigEndian.getUint8 (sfi = 0x1fab01020951)>]"
+      },
+      {
+        "key": 266,
+        "value": "[heap object: 0x1fab010219e5 <JSFunction LittleEndian.getUint8 (sfi = 0x1fab01020b75)>]"
+      },
+      {
+        "key": 269,
+        "value": "[Tagged]"
+      },
+      {
+        "key": 270,
+        "value": "[BitwiseXor, Word32]"
+      },
+      {
+        "key": 271,
+        "value": "[not inlined, UNOPTIMIZED_FRAME, 67, Ignore, 0x1fab010207a9 <SharedFunctionInfo doOneIterationJS>, state values: #6(kRepTagged|kTypeAny) #3(kRepTagged|kTypeAny) #0(kRepTagged|kTypeAny) #4(kRepTagged|kTypeAny) #1(kRepTagged|kTypeAny) #270(kRepWord32|kTypeInt32) #164(kRepTagged|kTypeAny) #170(kRepWord32|kTypeInt32) . #269(kRepTagged|kTypeAny) . . #170(kRepWord32|kTypeInt32)]"
+      },
+      {
+        "key": 275,
+        "value": "[signed add, Word32]"
+      },
+      {
+        "key": 276,
+        "value": "[0, Word32]"
+      },
+      {
+        "key": 277,
+        "value": "[1, Word32]"
+      },
+      {
+        "key": 278,
+        "value": ""
+      },
+      {
+        "key": 279,
+        "value": "[Overflow, FeedbackSource(INVALID)]"
+      },
+      {
+        "key": 280,
+        "value": "[not inlined, UNOPTIMIZED_FRAME, 71, PokeAt(0), 0x1fab010207a9 <SharedFunctionInfo doOneIterationJS>, state values: #6(kRepTagged|kTypeAny) #3(kRepTagged|kTypeAny) #0(kRepTagged|kTypeAny) #4(kRepTagged|kTypeAny) #1(kRepTagged|kTypeAny) #270(kRepWord32|kTypeInt32) #164(kRepTagged|kTypeAny) #170(kRepWord32|kTypeInt32) . . . . .]"
+      },
+      {
+        "key": 283,
+        "value": "[ZeroExtend, NoAssumption, Word32, Word64]"
+      },
+      {
+        "key": 284,
+        "value": "[Equal, Word32]"
+      },
+      {
+        "key": 285,
+        "value": "[B28, B27, None]"
+      }
+    ],
+    "phase_counts": {
+      "V8.TFTypedLowering": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 13,
+        "Loop": 1,
+        "NumberConstant": 14,
+        "HeapConstant": 28,
+        "LoopExitEffect": 1,
+        "LoopExit": 1,
+        "Unreachable": 1,
+        "Call": 2,
+        "Checkpoint": 31,
+        "TypeGuard": 1,
+        "Merge": 12,
+        "JSStackCheck": 2,
+        "Phi": 14,
+        "Branch": 14,
+        "LoadField": 114,
+        "CheckMaps": 67,
+        "JSCreateTypedArray": 2,
+        "StateValues": 54,
+        "StoreField": 9,
+        "FinishRegion": 3,
+        "FrameState": 50,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 14,
+        "Parameter": 4,
+        "IfTrue": 14,
+        "SpeculativeSmallIntegerAdd": 28,
+        "CheckBounds": 28,
+        "Word32And": 1,
+        "EnterMachineGraph": 30,
+        "SpeculativeNumberBitwiseXor": 6,
+        "Allocate": 1,
+        "ExitMachineGraph": 29,
+        "CompareMaps": 6,
+        "Start": 1,
+        "MapGuard": 6,
+        "LoadTypedElement": 28,
+        "Int32Constant": 1,
+        "BeginRegion": 3,
+        "SpeculativeNumberBitwiseOr": 10,
+        "SpeculativeNumberMultiply": 2,
+        "Uint64Div": 28,
+        "SpeculativeNumberShiftLeft": 14,
+        "ReferenceEqual": 5,
+        "ToBoolean": 1,
+        "Int64Constant": 1
+      },
+      "V8.TFLoopPeeling": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 13,
+        "Loop": 1,
+        "NumberConstant": 14,
+        "HeapConstant": 28,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 14,
+        "Unreachable": 1,
+        "Call": 2,
+        "Checkpoint": 31,
+        "TypeGuard": 1,
+        "Merge": 12,
+        "JSStackCheck": 2,
+        "Phi": 14,
+        "Branch": 14,
+        "LoadField": 114,
+        "CheckMaps": 67,
+        "JSCreateTypedArray": 2,
+        "StateValues": 54,
+        "StoreField": 9,
+        "FinishRegion": 3,
+        "FrameState": 50,
+        "ExitMachineGraph": 29,
+        "CompareMaps": 6,
+        "Parameter": 4,
+        "IfTrue": 14,
+        "SpeculativeSmallIntegerAdd": 28,
+        "CheckBounds": 28,
+        "Word32And": 1,
+        "EnterMachineGraph": 30,
+        "SpeculativeNumberBitwiseXor": 6,
+        "Allocate": 1,
+        "MapGuard": 6,
+        "Start": 1,
+        "LoadTypedElement": 28,
+        "Int32Constant": 1,
+        "BeginRegion": 3,
+        "Uint64Div": 28,
+        "SpeculativeNumberBitwiseOr": 10,
+        "SpeculativeNumberMultiply": 2,
+        "SpeculativeNumberShiftLeft": 14,
+        "ReferenceEqual": 5,
+        "ToBoolean": 1,
+        "Int64Constant": 1
+      },
+      "V8.TFLoadElimination": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 13,
+        "Loop": 1,
+        "NumberConstant": 14,
+        "HeapConstant": 28,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 14,
+        "Unreachable": 1,
+        "Call": 2,
+        "Checkpoint": 31,
+        "TypeGuard": 1,
+        "Merge": 12,
+        "JSStackCheck": 2,
+        "Phi": 14,
+        "Branch": 14,
+        "LoadField": 66,
+        "CheckMaps": 21,
+        "JSCreateTypedArray": 2,
+        "StateValues": 34,
+        "StoreField": 9,
+        "FinishRegion": 3,
+        "FrameState": 50,
+        "ExitMachineGraph": 17,
+        "CompareMaps": 6,
+        "Parameter": 4,
+        "IfTrue": 14,
+        "SpeculativeSmallIntegerAdd": 28,
+        "CheckBounds": 28,
+        "Word32And": 1,
+        "EnterMachineGraph": 18,
+        "SpeculativeNumberBitwiseXor": 6,
+        "Allocate": 1,
+        "MapGuard": 6,
+        "Start": 1,
+        "LoadTypedElement": 28,
+        "Int32Constant": 1,
+        "BeginRegion": 3,
+        "Uint64Div": 16,
+        "SpeculativeNumberBitwiseOr": 10,
+        "SpeculativeNumberMultiply": 2,
+        "SpeculativeNumberShiftLeft": 14,
+        "ReferenceEqual": 5,
+        "ToBoolean": 1,
+        "Int64Constant": 1
+      }
+    }
+  },
+  {
+    "trace": "integer-ir-retry/turbo-doOneIterationJS-51.json",
+    "sha256": "cabcb9b1fc1b2867be3a1f5cfb935609f4f103670d0f960ee36f268236503636",
+    "phase": "V8.TFTypedLowering",
+    "notes": "Terminal slow path exits the natural loop without LoopExit markers. The throwing call does not lie on the continuing backedge effect chain.",
+    "nodes": [
+      {
+        "id": 151,
+        "label": "End",
+        "title": "End",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 3234,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 186,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "End",
+        "control": true,
+        "opinfo": "0 v 0 eff 3 ctrl in, 0 v 0 eff 0 ctrl out"
+      },
+      {
+        "id": 171,
+        "label": "Throw",
+        "title": "Throw",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 159,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "Throw",
+        "control": true,
+        "opinfo": "0 v 1 eff 1 ctrl in, 0 v 0 eff 1 ctrl out"
+      },
+      {
+        "id": 46,
+        "label": "Loop[FeedbackSource(#34)]",
+        "title": "Loop[FeedbackSource(#34)]",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0
+        ],
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 34,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Loop",
+        "control": true,
+        "opinfo": "0 v 0 eff 2 ctrl in, 0 v 0 eff 1 ctrl out"
+      },
+      {
+        "id": 170,
+        "label": "Unreachable",
+        "title": "Unreachable",
+        "live": true,
+        "properties": "NoRead, NoWrite",
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 159,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "Unreachable",
+        "control": false,
+        "opinfo": "0 v 1 eff 1 ctrl in, 1 v 1 eff 0 ctrl out",
+        "type": "None"
+      },
+      {
+        "id": 169,
+        "label": "Call[Code:CallTrampoline Descriptor:r1s1i5f1]",
+        "title": "Call[Code:CallTrampoline Descriptor:r1s1i5f1]",
+        "live": true,
+        "properties": "",
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 159,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "Call",
+        "control": false,
+        "opinfo": "6 v 1 eff 1 ctrl in, 1 v 1 eff 2 ctrl out",
+        "type": "Any"
+      },
+      {
+        "id": 164,
+        "label": "Branch[Machine, False]",
+        "title": "Branch[Machine, False]",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0
+        ],
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 159,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "Branch",
+        "control": true,
+        "opinfo": "1 v 0 eff 1 ctrl in, 0 v 0 eff 2 ctrl out"
+      },
+      {
+        "id": 160,
+        "label": "LoadField[+48]",
+        "title": "LoadField[JSArrayBufferBitField, tagged base, 48, Range(0, 255), kRepWord32|kTypeUint32, NoWriteBarrier, mutable]",
+        "live": true,
+        "properties": "NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 159,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "LoadField",
+        "control": false,
+        "opinfo": "1 v 1 eff 1 ctrl in, 1 v 1 eff 0 ctrl out",
+        "type": "Range(0, 255)"
+      },
+      {
+        "id": 56,
+        "label": "FrameState[UNOPTIMIZED_FRAME, 34, PokeAt(0), 0x1fab010207a9 <SharedFunctionInfo doOneIterationJS>]",
+        "title": "FrameState[UNOPTIMIZED_FRAME, 34, PokeAt(0), 0x1fab010207a9 <SharedFunctionInfo doOneIterationJS>]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 34,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "FrameState",
+        "control": false,
+        "opinfo": "5 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Internal"
+      },
+      {
+        "id": 165,
+        "label": "IfTrue",
+        "title": "IfTrue",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0
+        ],
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 159,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "IfTrue",
+        "control": true,
+        "opinfo": "0 v 0 eff 1 ctrl in, 0 v 0 eff 1 ctrl out"
+      },
+      {
+        "id": 53,
+        "label": "StateValues[sparse:^^^....]",
+        "title": "StateValues[sparse:^^^....]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 34,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "StateValues",
+        "control": false,
+        "opinfo": "3 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Internal"
+      },
+      {
+        "id": 166,
+        "label": "IfFalse",
+        "title": "IfFalse",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0
+        ],
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 159,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "IfFalse",
+        "control": true,
+        "opinfo": "0 v 0 eff 1 ctrl in, 0 v 0 eff 1 ctrl out"
+      }
+    ],
+    "inputs": [
+      {
+        "id": 51,
+        "label": "Terminate",
+        "title": "Terminate",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 34,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Terminate",
+        "control": true,
+        "opinfo": "0 v 1 eff 1 ctrl in, 0 v 0 eff 1 ctrl out"
+      },
+      {
+        "id": 150,
+        "label": "Return",
+        "title": "Return",
+        "live": true,
+        "properties": "NoThrow",
+        "sourcePosition": {
+          "scriptOffset": 3234,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 186,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Return",
+        "control": true,
+        "opinfo": "2 v 1 eff 1 ctrl in, 0 v 0 eff 1 ctrl out"
+      },
+      {
+        "id": 31,
+        "label": "Merge",
+        "title": "Merge",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2893,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 18,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Merge",
+        "control": true,
+        "opinfo": "0 v 0 eff 2 ctrl in, 0 v 0 eff 1 ctrl out"
+      },
+      {
+        "id": 145,
+        "label": "JSStackCheck[JSIterationBody]",
+        "title": "JSStackCheck[JSIterationBody]",
+        "live": true,
+        "properties": "NoWrite",
+        "sourcePosition": {
+          "scriptOffset": 2972,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 181,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "JSStackCheck",
+        "control": false,
+        "opinfo": "0 v 1 eff 1 ctrl in, 0 v 1 eff 2 ctrl out"
+      },
+      {
+        "id": 50,
+        "label": "Phi[kRepTagged]",
+        "title": "Phi[kRepTagged]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0,
+          2
+        ],
+        "rankWithInput": [
+          2
+        ],
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 34,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Phi",
+        "control": false,
+        "opinfo": "2 v 0 eff 1 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Range(0, 34359738380)"
+      },
+      {
+        "id": 157,
+        "label": "CheckMaps[None, 0x214c007b9e30, FeedbackSource(INVALID)]",
+        "title": "CheckMaps[None, 0x214c007b9e30, FeedbackSource(INVALID)]",
+        "live": true,
+        "properties": "NoWrite, NoThrow",
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 55,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "CheckMaps",
+        "control": false,
+        "opinfo": "1 v 1 eff 1 ctrl in, 0 v 1 eff 0 ctrl out"
+      },
+      {
+        "id": 49,
+        "label": "Phi[kRepTagged]",
+        "title": "Phi[kRepTagged]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0,
+          2
+        ],
+        "rankWithInput": [
+          2
+        ],
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 34,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Phi",
+        "control": false,
+        "opinfo": "2 v 0 eff 1 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Signed32"
+      },
+      {
+        "id": 168,
+        "label": "HeapConstant[0x1fab001b73dd <Code BUILTIN CallFunction_ReceiverIsNotNullOrUndefined>]",
+        "title": "HeapConstant[0x1fab001b73dd <Code BUILTIN CallFunction_ReceiverIsNotNullOrUndefined>]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 159,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "HeapConstant",
+        "control": false,
+        "opinfo": "0 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "HeapConstant(0x214c0033bea8 {0x1fab001b73dd <Code BUILTIN CallFunction_ReceiverIsNotNullOrUndefined>})"
+      },
+      {
+        "id": 158,
+        "label": "HeapConstant[0x1fab01011ad5 <JSFunction get byteLength (sfi = 0x1fab001f013d)>]",
+        "title": "HeapConstant[0x1fab01011ad5 <JSFunction get byteLength (sfi = 0x1fab001f013d)>]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 55,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "HeapConstant",
+        "control": false,
+        "opinfo": "0 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "HeapConstant(0x214c007b9fa8)"
+      },
+      {
+        "id": 84,
+        "label": "NumberConstant[1]",
+        "title": "NumberConstant[1]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 3081,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 67,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "NumberConstant",
+        "control": false,
+        "opinfo": "0 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Range(1, 1)"
+      },
+      {
+        "id": 2,
+        "label": "Parameter[1]",
+        "title": "Parameter[1]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2804,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 0,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Parameter",
+        "control": false,
+        "opinfo": "1 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "(StringOrOddball | SymbolOrReceiver | NumberOrHole | BigInt)"
+      },
+      {
+        "id": 5,
+        "label": "Parameter[6, debug name: %context]",
+        "title": "Parameter[6, debug name: %context]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2804,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 0,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Parameter",
+        "control": false,
+        "opinfo": "1 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "OtherInternal"
+      },
+      {
+        "id": 42,
+        "label": "Phi[kRepTagged]",
+        "title": "Phi[kRepTagged]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0,
+          2
+        ],
+        "rankWithInput": [
+          2
+        ],
+        "sourcePosition": {
+          "scriptOffset": 2985,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 32,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Phi",
+        "control": false,
+        "opinfo": "2 v 0 eff 1 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Receiver"
+      },
+      {
+        "id": 163,
+        "label": "Word32And",
+        "title": "Word32And",
+        "live": true,
+        "properties": "Commutative, Associative, Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2999,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 159,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "Word32And",
+        "control": false,
+        "opinfo": "2 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Machine"
+      },
+      {
+        "id": 0,
+        "label": "Start",
+        "title": "Start",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow",
+        "sourcePosition": {
+          "scriptOffset": 2804,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 0,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Start",
+        "control": true,
+        "opinfo": "0 v 0 eff 0 ctrl in, 8 v 1 eff 1 ctrl out",
+        "type": "Internal"
+      },
+      {
+        "id": 10,
+        "label": "StateValues[dense]",
+        "title": "StateValues[dense]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2804,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 0,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "StateValues",
+        "control": false,
+        "opinfo": "3 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Internal"
+      },
+      {
+        "id": 12,
+        "label": "HeapConstant[0x1fab0012fffd <optimized_out>]",
+        "title": "HeapConstant[0x1fab0012fffd <optimized_out>]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2804,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 0,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "HeapConstant",
+        "control": false,
+        "opinfo": "0 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Hole"
+      },
+      {
+        "id": 154,
+        "label": "HeapConstant[0x1fab010212b1 <JSFunction doOneIterationJS (sfi = 0x1fab010207a9)>]",
+        "title": "HeapConstant[0x1fab010212b1 <JSFunction doOneIterationJS (sfi = 0x1fab010207a9)>]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 2804,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 13,
+          "reducer": "JSContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "HeapConstant",
+        "control": false,
+        "opinfo": "0 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "HeapConstant(0x214c007b9b70)"
+      }
+    ],
+    "edges": [
+      {
+        "source": 51,
+        "target": 151,
+        "index": 0,
+        "type": "control"
+      },
+      {
+        "source": 150,
+        "target": 151,
+        "index": 1,
+        "type": "control"
+      },
+      {
+        "source": 171,
+        "target": 151,
+        "index": 2,
+        "type": "control"
+      },
+      {
+        "source": 170,
+        "target": 171,
+        "index": 0,
+        "type": "effect"
+      },
+      {
+        "source": 169,
+        "target": 171,
+        "index": 1,
+        "type": "control"
+      },
+      {
+        "source": 31,
+        "target": 46,
+        "index": 0,
+        "type": "control"
+      },
+      {
+        "source": 145,
+        "target": 46,
+        "index": 1,
+        "type": "control"
+      },
+      {
+        "source": 169,
+        "target": 170,
+        "index": 0,
+        "type": "effect"
+      },
+      {
+        "source": 169,
+        "target": 170,
+        "index": 1,
+        "type": "control"
+      },
+      {
+        "source": 168,
+        "target": 169,
+        "index": 0,
+        "type": "value"
+      },
+      {
+        "source": 158,
+        "target": 169,
+        "index": 1,
+        "type": "value"
+      },
+      {
+        "source": 84,
+        "target": 169,
+        "index": 2,
+        "type": "value"
+      },
+      {
+        "source": 2,
+        "target": 169,
+        "index": 3,
+        "type": "value"
+      },
+      {
+        "source": 5,
+        "target": 169,
+        "index": 4,
+        "type": "value"
+      },
+      {
+        "source": 56,
+        "target": 169,
+        "index": 5,
+        "type": "value"
+      },
+      {
+        "source": 160,
+        "target": 169,
+        "index": 6,
+        "type": "effect"
+      },
+      {
+        "source": 165,
+        "target": 169,
+        "index": 7,
+        "type": "control"
+      },
+      {
+        "source": 163,
+        "target": 164,
+        "index": 0,
+        "type": "value"
+      },
+      {
+        "source": 46,
+        "target": 164,
+        "index": 1,
+        "type": "control"
+      },
+      {
+        "source": 2,
+        "target": 160,
+        "index": 0,
+        "type": "value"
+      },
+      {
+        "source": 157,
+        "target": 160,
+        "index": 1,
+        "type": "effect"
+      },
+      {
+        "source": 46,
+        "target": 160,
+        "index": 2,
+        "type": "control"
+      },
+      {
+        "source": 10,
+        "target": 56,
+        "index": 0,
+        "type": "value"
+      },
+      {
+        "source": 53,
+        "target": 56,
+        "index": 1,
+        "type": "value"
+      },
+      {
+        "source": 12,
+        "target": 56,
+        "index": 2,
+        "type": "value"
+      },
+      {
+        "source": 5,
+        "target": 56,
+        "index": 3,
+        "type": "value"
+      },
+      {
+        "source": 154,
+        "target": 56,
+        "index": 4,
+        "type": "value"
+      },
+      {
+        "source": 0,
+        "target": 56,
+        "index": 5,
+        "type": "frame-state"
+      },
+      {
+        "source": 164,
+        "target": 165,
+        "index": 0,
+        "type": "control"
+      },
+      {
+        "source": 49,
+        "target": 53,
+        "index": 0,
+        "type": "value"
+      },
+      {
+        "source": 42,
+        "target": 53,
+        "index": 1,
+        "type": "value"
+      },
+      {
+        "source": 50,
+        "target": 53,
+        "index": 2,
+        "type": "value"
+      },
+      {
+        "source": 164,
+        "target": 166,
+        "index": 0,
+        "type": "control"
+      }
+    ],
+    "phase_counts": {
+      "V8.TFTypedLowering": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 13,
+        "Loop": 1,
+        "NumberConstant": 14,
+        "HeapConstant": 28,
+        "LoopExitEffect": 1,
+        "LoopExit": 1,
+        "Unreachable": 1,
+        "Call": 2,
+        "Checkpoint": 31,
+        "TypeGuard": 1,
+        "Merge": 12,
+        "JSStackCheck": 2,
+        "Phi": 14,
+        "Branch": 14,
+        "LoadField": 114,
+        "CheckMaps": 67,
+        "JSCreateTypedArray": 2,
+        "StateValues": 54,
+        "StoreField": 9,
+        "FinishRegion": 3,
+        "FrameState": 50,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 14,
+        "Parameter": 4,
+        "IfTrue": 14,
+        "SpeculativeSmallIntegerAdd": 28,
+        "CheckBounds": 28,
+        "Word32And": 1,
+        "EnterMachineGraph": 30,
+        "SpeculativeNumberBitwiseXor": 6,
+        "Allocate": 1,
+        "ExitMachineGraph": 29,
+        "CompareMaps": 6,
+        "Start": 1,
+        "MapGuard": 6,
+        "LoadTypedElement": 28,
+        "Int32Constant": 1,
+        "BeginRegion": 3,
+        "SpeculativeNumberBitwiseOr": 10,
+        "SpeculativeNumberMultiply": 2,
+        "Uint64Div": 28,
+        "SpeculativeNumberShiftLeft": 14,
+        "ReferenceEqual": 5,
+        "ToBoolean": 1,
+        "Int64Constant": 1
+      },
+      "V8.TFLoopPeeling": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 13,
+        "Loop": 1,
+        "NumberConstant": 14,
+        "HeapConstant": 28,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 14,
+        "Unreachable": 1,
+        "Call": 2,
+        "Checkpoint": 31,
+        "TypeGuard": 1,
+        "Merge": 12,
+        "JSStackCheck": 2,
+        "Phi": 14,
+        "Branch": 14,
+        "LoadField": 114,
+        "CheckMaps": 67,
+        "JSCreateTypedArray": 2,
+        "StateValues": 54,
+        "StoreField": 9,
+        "FinishRegion": 3,
+        "FrameState": 50,
+        "ExitMachineGraph": 29,
+        "CompareMaps": 6,
+        "Parameter": 4,
+        "IfTrue": 14,
+        "SpeculativeSmallIntegerAdd": 28,
+        "CheckBounds": 28,
+        "Word32And": 1,
+        "EnterMachineGraph": 30,
+        "SpeculativeNumberBitwiseXor": 6,
+        "Allocate": 1,
+        "MapGuard": 6,
+        "Start": 1,
+        "LoadTypedElement": 28,
+        "Int32Constant": 1,
+        "BeginRegion": 3,
+        "Uint64Div": 28,
+        "SpeculativeNumberBitwiseOr": 10,
+        "SpeculativeNumberMultiply": 2,
+        "SpeculativeNumberShiftLeft": 14,
+        "ReferenceEqual": 5,
+        "ToBoolean": 1,
+        "Int64Constant": 1
+      },
+      "V8.TFLoadElimination": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 13,
+        "Loop": 1,
+        "NumberConstant": 14,
+        "HeapConstant": 28,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 14,
+        "Unreachable": 1,
+        "Call": 2,
+        "Checkpoint": 31,
+        "TypeGuard": 1,
+        "Merge": 12,
+        "JSStackCheck": 2,
+        "Phi": 14,
+        "Branch": 14,
+        "LoadField": 66,
+        "CheckMaps": 21,
+        "JSCreateTypedArray": 2,
+        "StateValues": 34,
+        "StoreField": 9,
+        "FinishRegion": 3,
+        "FrameState": 50,
+        "ExitMachineGraph": 17,
+        "CompareMaps": 6,
+        "Parameter": 4,
+        "IfTrue": 14,
+        "SpeculativeSmallIntegerAdd": 28,
+        "CheckBounds": 28,
+        "Word32And": 1,
+        "EnterMachineGraph": 18,
+        "SpeculativeNumberBitwiseXor": 6,
+        "Allocate": 1,
+        "MapGuard": 6,
+        "Start": 1,
+        "LoadTypedElement": 28,
+        "Int32Constant": 1,
+        "BeginRegion": 3,
+        "Uint64Div": 16,
+        "SpeculativeNumberBitwiseOr": 10,
+        "SpeculativeNumberMultiply": 2,
+        "SpeculativeNumberShiftLeft": 14,
+        "ReferenceEqual": 5,
+        "ToBoolean": 1,
+        "Int64Constant": 1
+      }
+    }
+  },
+  {
+    "trace": "float-ir/turbo-doOneFloatIterationJS-50.json",
+    "sha256": "6321acd4cb9df1844fbc475d63d87b66de6cb4e33f2d2a4bac240c3a85f66402",
+    "phase": "V8.TFTypedLowering",
+    "notes": "Normal-entry float loop: same unmarked terminal exit.",
+    "nodes": [
+      {
+        "id": 94,
+        "label": "End",
+        "title": "End",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4395,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 99,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "End",
+        "control": true,
+        "opinfo": "0 v 0 eff 3 ctrl in, 0 v 0 eff 0 ctrl out"
+      },
+      {
+        "id": 130,
+        "label": "Throw",
+        "title": "Throw",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "Throw",
+        "control": true,
+        "opinfo": "0 v 1 eff 1 ctrl in, 0 v 0 eff 1 ctrl out"
+      },
+      {
+        "id": 38,
+        "label": "Loop[FeedbackSource(#16)]",
+        "title": "Loop[FeedbackSource(#16)]",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0
+        ],
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 28,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Loop",
+        "control": true,
+        "opinfo": "0 v 0 eff 2 ctrl in, 0 v 0 eff 1 ctrl out"
+      },
+      {
+        "id": 129,
+        "label": "Unreachable",
+        "title": "Unreachable",
+        "live": true,
+        "properties": "NoRead, NoWrite",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "Unreachable",
+        "control": false,
+        "opinfo": "0 v 1 eff 1 ctrl in, 1 v 1 eff 0 ctrl out",
+        "type": "None"
+      },
+      {
+        "id": 128,
+        "label": "Call[Code:CallTrampoline Descriptor:r1s1i5f1]",
+        "title": "Call[Code:CallTrampoline Descriptor:r1s1i5f1]",
+        "live": true,
+        "properties": "",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "Call",
+        "control": false,
+        "opinfo": "6 v 1 eff 1 ctrl in, 1 v 1 eff 2 ctrl out",
+        "type": "Any"
+      },
+      {
+        "id": 122,
+        "label": "Branch[Machine, False]",
+        "title": "Branch[Machine, False]",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0
+        ],
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "Branch",
+        "control": true,
+        "opinfo": "1 v 0 eff 1 ctrl in, 0 v 0 eff 2 ctrl out"
+      },
+      {
+        "id": 118,
+        "label": "LoadField[+48]",
+        "title": "LoadField[JSArrayBufferBitField, tagged base, 48, Range(0, 255), kRepWord32|kTypeUint32, NoWriteBarrier, mutable]",
+        "live": true,
+        "properties": "NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "LoadField",
+        "control": false,
+        "opinfo": "1 v 1 eff 1 ctrl in, 1 v 1 eff 0 ctrl out",
+        "type": "Range(0, 255)"
+      },
+      {
+        "id": 48,
+        "label": "FrameState[UNOPTIMIZED_FRAME, 28, PokeAt(0), 0x151101020869 <SharedFunctionInfo doOneFloatIterationJS>]",
+        "title": "FrameState[UNOPTIMIZED_FRAME, 28, PokeAt(0), 0x151101020869 <SharedFunctionInfo doOneFloatIterationJS>]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 28,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "FrameState",
+        "control": false,
+        "opinfo": "5 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Internal"
+      },
+      {
+        "id": 123,
+        "label": "IfTrue",
+        "title": "IfTrue",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0
+        ],
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "IfTrue",
+        "control": true,
+        "opinfo": "0 v 0 eff 1 ctrl in, 0 v 0 eff 1 ctrl out"
+      },
+      {
+        "id": 45,
+        "label": "StateValues[sparse:^^^^.]",
+        "title": "StateValues[sparse:^^^^.]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 28,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "StateValues",
+        "control": false,
+        "opinfo": "4 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Internal"
+      },
+      {
+        "id": 124,
+        "label": "IfFalse",
+        "title": "IfFalse",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0
+        ],
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "IfFalse",
+        "control": true,
+        "opinfo": "0 v 0 eff 1 ctrl in, 0 v 0 eff 1 ctrl out"
+      }
+    ],
+    "inputs": [
+      {
+        "id": 43,
+        "label": "Terminate",
+        "title": "Terminate",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 28,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Terminate",
+        "control": true,
+        "opinfo": "0 v 1 eff 1 ctrl in, 0 v 0 eff 1 ctrl out"
+      },
+      {
+        "id": 93,
+        "label": "Return",
+        "title": "Return",
+        "live": true,
+        "properties": "NoThrow",
+        "sourcePosition": {
+          "scriptOffset": 4395,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 99,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Return",
+        "control": true,
+        "opinfo": "2 v 1 eff 1 ctrl in, 0 v 0 eff 1 ctrl out"
+      },
+      {
+        "id": 114,
+        "label": "JSCreateTypedArray",
+        "title": "JSCreateTypedArray",
+        "live": true,
+        "properties": "",
+        "sourcePosition": {
+          "scriptOffset": 4215,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 33,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "JSCreateTypedArray",
+        "control": false,
+        "opinfo": "5 v 1 eff 1 ctrl in, 1 v 1 eff 2 ctrl out",
+        "type": "TypedArray"
+      },
+      {
+        "id": 88,
+        "label": "JSStackCheck[JSIterationBody]",
+        "title": "JSStackCheck[JSIterationBody]",
+        "live": true,
+        "properties": "NoWrite",
+        "sourcePosition": {
+          "scriptOffset": 4243,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 94,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "JSStackCheck",
+        "control": false,
+        "opinfo": "0 v 1 eff 1 ctrl in, 0 v 1 eff 2 ctrl out"
+      },
+      {
+        "id": 42,
+        "label": "Phi[kRepTagged]",
+        "title": "Phi[kRepTagged]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0,
+          2
+        ],
+        "rankWithInput": [
+          2
+        ],
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 28,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Phi",
+        "control": false,
+        "opinfo": "2 v 0 eff 1 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Range(0, 34359738382)"
+      },
+      {
+        "id": 115,
+        "label": "CheckMaps[None, 0x7c00678328, FeedbackSource(INVALID)]",
+        "title": "CheckMaps[None, 0x7c00678328, FeedbackSource(INVALID)]",
+        "live": true,
+        "properties": "NoWrite, NoThrow",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 47,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "CheckMaps",
+        "control": false,
+        "opinfo": "1 v 1 eff 1 ctrl in, 0 v 1 eff 0 ctrl out"
+      },
+      {
+        "id": 41,
+        "label": "Phi[kRepTagged]",
+        "title": "Phi[kRepTagged]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "rankInputs": [
+          0,
+          2
+        ],
+        "rankWithInput": [
+          2
+        ],
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 28,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Phi",
+        "control": false,
+        "opinfo": "2 v 0 eff 1 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "(PlainNumber | NaN)"
+      },
+      {
+        "id": 107,
+        "label": "JSCreateTypedArray",
+        "title": "JSCreateTypedArray",
+        "live": true,
+        "properties": "",
+        "sourcePosition": {
+          "scriptOffset": 4168,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 23,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "JSCreateTypedArray",
+        "control": false,
+        "opinfo": "5 v 1 eff 1 ctrl in, 1 v 1 eff 2 ctrl out",
+        "type": "TypedArray"
+      },
+      {
+        "id": 126,
+        "label": "HeapConstant[0x1511001b73dd <Code BUILTIN CallFunction_ReceiverIsNotNullOrUndefined>]",
+        "title": "HeapConstant[0x1511001b73dd <Code BUILTIN CallFunction_ReceiverIsNotNullOrUndefined>]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "HeapConstant",
+        "control": false,
+        "opinfo": "0 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "HeapConstant(0x7c00678bb8 {0x1511001b73dd <Code BUILTIN CallFunction_ReceiverIsNotNullOrUndefined>})"
+      },
+      {
+        "id": 116,
+        "label": "HeapConstant[0x151101011ad5 <JSFunction get byteLength (sfi = 0x1511001f013d)>]",
+        "title": "HeapConstant[0x151101011ad5 <JSFunction get byteLength (sfi = 0x1511001f013d)>]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 47,
+          "reducer": "JSNativeContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "HeapConstant",
+        "control": false,
+        "opinfo": "0 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "HeapConstant(0x7c006784a0)"
+      },
+      {
+        "id": 127,
+        "label": "NumberConstant[1]",
+        "title": "NumberConstant[1]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "NumberConstant",
+        "control": false,
+        "opinfo": "0 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Range(1, 1)"
+      },
+      {
+        "id": 2,
+        "label": "Parameter[1]",
+        "title": "Parameter[1]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4121,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 0,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Parameter",
+        "control": false,
+        "opinfo": "1 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "(StringOrOddball | SymbolOrReceiver | NumberOrHole | BigInt)"
+      },
+      {
+        "id": 4,
+        "label": "Parameter[5, debug name: %context]",
+        "title": "Parameter[5, debug name: %context]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4121,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 0,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Parameter",
+        "control": false,
+        "opinfo": "1 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "OtherInternal"
+      },
+      {
+        "id": 121,
+        "label": "Word32And",
+        "title": "Word32And",
+        "live": true,
+        "properties": "Commutative, Associative, Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 117,
+          "reducer": "JSCallReducer",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "Word32And",
+        "control": false,
+        "opinfo": "2 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Machine"
+      },
+      {
+        "id": 0,
+        "label": "Start",
+        "title": "Start",
+        "live": true,
+        "properties": "NoRead, NoWrite, NoThrow",
+        "sourcePosition": {
+          "scriptOffset": 4121,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 0,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "Start",
+        "control": true,
+        "opinfo": "0 v 0 eff 0 ctrl in, 7 v 1 eff 1 ctrl out",
+        "type": "Internal"
+      },
+      {
+        "id": 9,
+        "label": "StateValues[dense]",
+        "title": "StateValues[dense]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4121,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 0,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "StateValues",
+        "control": false,
+        "opinfo": "2 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Internal"
+      },
+      {
+        "id": 11,
+        "label": "HeapConstant[0x15110012fffd <optimized_out>]",
+        "title": "HeapConstant[0x15110012fffd <optimized_out>]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4121,
+          "inliningId": -1
+        },
+        "origin": {
+          "bytecodePosition": 0,
+          "reducer": "",
+          "phase": "V8.TFBytecodeGraphBuilder"
+        },
+        "opcode": "HeapConstant",
+        "control": false,
+        "opinfo": "0 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "Hole"
+      },
+      {
+        "id": 97,
+        "label": "HeapConstant[0x151101021381 <JSFunction doOneFloatIterationJS (sfi = 0x151101020869)>]",
+        "title": "HeapConstant[0x151101021381 <JSFunction doOneFloatIterationJS (sfi = 0x151101020869)>]",
+        "live": true,
+        "properties": "Idempotent, NoRead, NoWrite, NoThrow, NoDeopt",
+        "sourcePosition": {
+          "scriptOffset": 4121,
+          "inliningId": -1
+        },
+        "origin": {
+          "nodeId": 12,
+          "reducer": "JSContextSpecialization",
+          "phase": "V8.TFInlining"
+        },
+        "opcode": "HeapConstant",
+        "control": false,
+        "opinfo": "0 v 0 eff 0 ctrl in, 1 v 0 eff 0 ctrl out",
+        "type": "HeapConstant(0x7c00677cf0)"
+      }
+    ],
+    "edges": [
+      {
+        "source": 43,
+        "target": 94,
+        "index": 0,
+        "type": "control"
+      },
+      {
+        "source": 93,
+        "target": 94,
+        "index": 1,
+        "type": "control"
+      },
+      {
+        "source": 130,
+        "target": 94,
+        "index": 2,
+        "type": "control"
+      },
+      {
+        "source": 129,
+        "target": 130,
+        "index": 0,
+        "type": "effect"
+      },
+      {
+        "source": 128,
+        "target": 130,
+        "index": 1,
+        "type": "control"
+      },
+      {
+        "source": 114,
+        "target": 38,
+        "index": 0,
+        "type": "control"
+      },
+      {
+        "source": 88,
+        "target": 38,
+        "index": 1,
+        "type": "control"
+      },
+      {
+        "source": 128,
+        "target": 129,
+        "index": 0,
+        "type": "effect"
+      },
+      {
+        "source": 128,
+        "target": 129,
+        "index": 1,
+        "type": "control"
+      },
+      {
+        "source": 126,
+        "target": 128,
+        "index": 0,
+        "type": "value"
+      },
+      {
+        "source": 116,
+        "target": 128,
+        "index": 1,
+        "type": "value"
+      },
+      {
+        "source": 127,
+        "target": 128,
+        "index": 2,
+        "type": "value"
+      },
+      {
+        "source": 2,
+        "target": 128,
+        "index": 3,
+        "type": "value"
+      },
+      {
+        "source": 4,
+        "target": 128,
+        "index": 4,
+        "type": "value"
+      },
+      {
+        "source": 48,
+        "target": 128,
+        "index": 5,
+        "type": "value"
+      },
+      {
+        "source": 118,
+        "target": 128,
+        "index": 6,
+        "type": "effect"
+      },
+      {
+        "source": 123,
+        "target": 128,
+        "index": 7,
+        "type": "control"
+      },
+      {
+        "source": 121,
+        "target": 122,
+        "index": 0,
+        "type": "value"
+      },
+      {
+        "source": 38,
+        "target": 122,
+        "index": 1,
+        "type": "control"
+      },
+      {
+        "source": 2,
+        "target": 118,
+        "index": 0,
+        "type": "value"
+      },
+      {
+        "source": 115,
+        "target": 118,
+        "index": 1,
+        "type": "effect"
+      },
+      {
+        "source": 38,
+        "target": 118,
+        "index": 2,
+        "type": "control"
+      },
+      {
+        "source": 9,
+        "target": 48,
+        "index": 0,
+        "type": "value"
+      },
+      {
+        "source": 45,
+        "target": 48,
+        "index": 1,
+        "type": "value"
+      },
+      {
+        "source": 11,
+        "target": 48,
+        "index": 2,
+        "type": "value"
+      },
+      {
+        "source": 4,
+        "target": 48,
+        "index": 3,
+        "type": "value"
+      },
+      {
+        "source": 97,
+        "target": 48,
+        "index": 4,
+        "type": "value"
+      },
+      {
+        "source": 0,
+        "target": 48,
+        "index": 5,
+        "type": "frame-state"
+      },
+      {
+        "source": 122,
+        "target": 123,
+        "index": 0,
+        "type": "control"
+      },
+      {
+        "source": 41,
+        "target": 45,
+        "index": 0,
+        "type": "value"
+      },
+      {
+        "source": 107,
+        "target": 45,
+        "index": 1,
+        "type": "value"
+      },
+      {
+        "source": 114,
+        "target": 45,
+        "index": 2,
+        "type": "value"
+      },
+      {
+        "source": 42,
+        "target": 45,
+        "index": 3,
+        "type": "value"
+      },
+      {
+        "source": 122,
+        "target": 124,
+        "index": 0,
+        "type": "control"
+      }
+    ],
+    "phase_counts": {
+      "V8.TFTypedLowering": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 1,
+        "Loop": 1,
+        "NumberConstant": 8,
+        "HeapConstant": 9,
+        "LoopExitEffect": 1,
+        "LoopExit": 1,
+        "Unreachable": 1,
+        "Call": 1,
+        "Checkpoint": 4,
+        "TypeGuard": 1,
+        "JSCreateTypedArray": 2,
+        "JSStackCheck": 2,
+        "Phi": 2,
+        "Branch": 2,
+        "LoadField": 11,
+        "CheckMaps": 4,
+        "StateValues": 14,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 2,
+        "Parameter": 3,
+        "FrameState": 13,
+        "IfTrue": 2,
+        "SpeculativeSmallIntegerAdd": 3,
+        "LoadTypedElement": 3,
+        "SpeculativeNumberDivide": 3,
+        "Word32And": 1,
+        "EnterMachineGraph": 5,
+        "NumberAdd": 3,
+        "ExitMachineGraph": 4,
+        "Start": 1,
+        "CheckBounds": 3,
+        "Uint64Div": 3,
+        "Int32Constant": 1,
+        "Int64Constant": 2
+      },
+      "V8.TFLoopPeeling": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 1,
+        "Loop": 1,
+        "NumberConstant": 8,
+        "HeapConstant": 9,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 2,
+        "Unreachable": 1,
+        "Call": 1,
+        "Checkpoint": 4,
+        "TypeGuard": 1,
+        "JSCreateTypedArray": 2,
+        "JSStackCheck": 2,
+        "Phi": 2,
+        "Branch": 2,
+        "LoadField": 11,
+        "CheckMaps": 4,
+        "StateValues": 14,
+        "ExitMachineGraph": 4,
+        "SpeculativeNumberDivide": 3,
+        "Parameter": 3,
+        "FrameState": 13,
+        "IfTrue": 2,
+        "SpeculativeSmallIntegerAdd": 3,
+        "LoadTypedElement": 3,
+        "Word32And": 1,
+        "EnterMachineGraph": 5,
+        "NumberAdd": 3,
+        "CheckBounds": 3,
+        "Start": 1,
+        "Uint64Div": 3,
+        "Int32Constant": 1,
+        "Int64Constant": 2
+      },
+      "V8.TFLoadElimination": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 1,
+        "Loop": 1,
+        "NumberConstant": 8,
+        "HeapConstant": 9,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 2,
+        "Unreachable": 1,
+        "Call": 1,
+        "Checkpoint": 4,
+        "TypeGuard": 1,
+        "JSCreateTypedArray": 2,
+        "JSStackCheck": 2,
+        "Phi": 2,
+        "Branch": 2,
+        "LoadField": 8,
+        "CheckMaps": 3,
+        "StateValues": 12,
+        "ExitMachineGraph": 3,
+        "SpeculativeNumberDivide": 3,
+        "Parameter": 3,
+        "FrameState": 13,
+        "IfTrue": 2,
+        "SpeculativeSmallIntegerAdd": 3,
+        "LoadTypedElement": 3,
+        "Word32And": 1,
+        "EnterMachineGraph": 4,
+        "NumberAdd": 3,
+        "CheckBounds": 3,
+        "Start": 1,
+        "Uint64Div": 2,
+        "Int32Constant": 1,
+        "Int64Constant": 2
+      }
+    }
+  },
+  {
+    "trace": "float-ir/turbo-doOneFloatIterationJS-50.json",
+    "sha256": "6321acd4cb9df1844fbc475d63d87b66de6cb4e33f2d2a4bac240c3a85f66402",
+    "phase": "V8.TFTurboshaftCodeEliminationAndSimplification",
+    "notes": "Same SSA induction value feeds two mask guards. Shift by2 feeds checked additions2/3. See hot inlined native evidence separately; standalone function itself is scarcely sampled.",
+    "nodes": [
+      {
+        "id": 62,
+        "title": "Phi",
+        "block_id": 4,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 47,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 91,
+        "title": "WordBinop",
+        "block_id": 6,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc6a\u2003_ _",
+        "origin": {
+          "nodeId": 76,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4318,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 92,
+        "title": "DeoptimizeIf",
+        "block_id": 6,
+        "op_effects": "\ud83c\udc64\ud83c\udc64\u2003\ud83c\udc6a\ud83c\udc6a\u2003\ud83c\udc64\ud83c\udc6a\u2003\ud83c\udc6b\u2003_ _",
+        "origin": {
+          "nodeId": 77,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4318,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 115,
+        "title": "WordBinop",
+        "block_id": 6,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc6a\u2003_ _",
+        "origin": {
+          "nodeId": 100,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4348,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 116,
+        "title": "DeoptimizeIf",
+        "block_id": 6,
+        "op_effects": "\ud83c\udc64\ud83c\udc64\u2003\ud83c\udc6a\ud83c\udc6a\u2003\ud83c\udc64\ud83c\udc6a\u2003\ud83c\udc6b\u2003_ _",
+        "origin": {
+          "nodeId": 101,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4348,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 118,
+        "title": "Shift",
+        "block_id": 6,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 103,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4348,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 119,
+        "title": "OverflowCheckedBinop",
+        "block_id": 6,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 104,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4351,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 144,
+        "title": "OverflowCheckedBinop",
+        "block_id": 6,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 129,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4385,
+          "inliningId": -1
+        }
+      }
+    ],
+    "inputs": [
+      {
+        "id": 60,
+        "title": "Constant",
+        "block_id": 3,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 45,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 64,
+        "title": "FrameState",
+        "block_id": 4,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 49,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4270,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 90,
+        "title": "Constant",
+        "block_id": 6,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 75,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4318,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 93,
+        "title": "Constant",
+        "block_id": 6,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 78,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4318,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 117,
+        "title": "Constant",
+        "block_id": 6,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 102,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4348,
+          "inliningId": -1
+        }
+      },
+      {
+        "id": 166,
+        "title": "Projection",
+        "block_id": 6,
+        "op_effects": "\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\ud83c\udc63\u2003\ud83c\udc63\u2003_ _",
+        "origin": {
+          "nodeId": 150,
+          "reducer": "",
+          "phase": "V8.TFTurboshaftMemoryOptimization"
+        },
+        "sourcePosition": {
+          "scriptOffset": 4284,
+          "inliningId": -1
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": 60,
+        "target": 62
+      },
+      {
+        "source": 166,
+        "target": 62
+      },
+      {
+        "source": 62,
+        "target": 91
+      },
+      {
+        "source": 90,
+        "target": 91
+      },
+      {
+        "source": 91,
+        "target": 92
+      },
+      {
+        "source": 64,
+        "target": 92
+      },
+      {
+        "source": 62,
+        "target": 115
+      },
+      {
+        "source": 93,
+        "target": 115
+      },
+      {
+        "source": 115,
+        "target": 116
+      },
+      {
+        "source": 64,
+        "target": 116
+      },
+      {
+        "source": 62,
+        "target": 118
+      },
+      {
+        "source": 117,
+        "target": 118
+      },
+      {
+        "source": 118,
+        "target": 119
+      },
+      {
+        "source": 117,
+        "target": 119
+      },
+      {
+        "source": 118,
+        "target": 144
+      },
+      {
+        "source": 93,
+        "target": 144
+      }
+    ],
+    "blocks": [],
+    "properties": [
+      {
+        "key": 60,
+        "value": "[word32: 0]"
+      },
+      {
+        "key": 62,
+        "value": "[Word32]"
+      },
+      {
+        "key": 64,
+        "value": "[not inlined, UNOPTIMIZED_FRAME, 28, Ignore, 0x151101020869 <SharedFunctionInfo doOneFloatIterationJS>, state values: #5(kRepTagged|kTypeAny) #3(kRepTagged|kTypeAny) #0(kRepTagged|kTypeAny) #1(kRepTagged|kTypeAny) #63(kRepFloat64|kTypeAny) #42(kRepTagged|kTypeAny) #56(kRepTagged|kTypeAny) #62(kRepWord32|kTypeInt32) . .]"
+      },
+      {
+        "key": 90,
+        "value": "[word32: 7]"
+      },
+      {
+        "key": 91,
+        "value": "[BitwiseAnd, Word32]"
+      },
+      {
+        "key": 92,
+        "value": "[LostPrecision, FeedbackSource(INVALID)]"
+      },
+      {
+        "key": 93,
+        "value": "[word32: 3]"
+      },
+      {
+        "key": 115,
+        "value": "[BitwiseAnd, Word32]"
+      },
+      {
+        "key": 116,
+        "value": "[LostPrecision, FeedbackSource(INVALID)]"
+      },
+      {
+        "key": 117,
+        "value": "[word32: 2]"
+      },
+      {
+        "key": 118,
+        "value": "[ShiftRightArithmeticShiftOutZeros, Word32]"
+      },
+      {
+        "key": 119,
+        "value": "[signed add, Word32]"
+      },
+      {
+        "key": 144,
+        "value": "[signed add, Word32]"
+      },
+      {
+        "key": 166,
+        "value": "[0, Word32]"
+      }
+    ],
+    "phase_counts": {
+      "V8.TFTypedLowering": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 1,
+        "Loop": 1,
+        "NumberConstant": 8,
+        "HeapConstant": 9,
+        "LoopExitEffect": 1,
+        "LoopExit": 1,
+        "Unreachable": 1,
+        "Call": 1,
+        "Checkpoint": 4,
+        "TypeGuard": 1,
+        "JSCreateTypedArray": 2,
+        "JSStackCheck": 2,
+        "Phi": 2,
+        "Branch": 2,
+        "LoadField": 11,
+        "CheckMaps": 4,
+        "StateValues": 14,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 2,
+        "Parameter": 3,
+        "FrameState": 13,
+        "IfTrue": 2,
+        "SpeculativeSmallIntegerAdd": 3,
+        "LoadTypedElement": 3,
+        "SpeculativeNumberDivide": 3,
+        "Word32And": 1,
+        "EnterMachineGraph": 5,
+        "NumberAdd": 3,
+        "ExitMachineGraph": 4,
+        "Start": 1,
+        "CheckBounds": 3,
+        "Uint64Div": 3,
+        "Int32Constant": 1,
+        "Int64Constant": 2
+      },
+      "V8.TFLoopPeeling": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 1,
+        "Loop": 1,
+        "NumberConstant": 8,
+        "HeapConstant": 9,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 2,
+        "Unreachable": 1,
+        "Call": 1,
+        "Checkpoint": 4,
+        "TypeGuard": 1,
+        "JSCreateTypedArray": 2,
+        "JSStackCheck": 2,
+        "Phi": 2,
+        "Branch": 2,
+        "LoadField": 11,
+        "CheckMaps": 4,
+        "StateValues": 14,
+        "ExitMachineGraph": 4,
+        "SpeculativeNumberDivide": 3,
+        "Parameter": 3,
+        "FrameState": 13,
+        "IfTrue": 2,
+        "SpeculativeSmallIntegerAdd": 3,
+        "LoadTypedElement": 3,
+        "Word32And": 1,
+        "EnterMachineGraph": 5,
+        "NumberAdd": 3,
+        "CheckBounds": 3,
+        "Start": 1,
+        "Uint64Div": 3,
+        "Int32Constant": 1,
+        "Int64Constant": 2
+      },
+      "V8.TFLoadElimination": {
+        "End": 1,
+        "Terminate": 1,
+        "Return": 1,
+        "Throw": 1,
+        "EffectPhi": 1,
+        "Loop": 1,
+        "NumberConstant": 8,
+        "HeapConstant": 9,
+        "SpeculativeNumberLessThan": 1,
+        "IfFalse": 2,
+        "Unreachable": 1,
+        "Call": 1,
+        "Checkpoint": 4,
+        "TypeGuard": 1,
+        "JSCreateTypedArray": 2,
+        "JSStackCheck": 2,
+        "Phi": 2,
+        "Branch": 2,
+        "LoadField": 8,
+        "CheckMaps": 3,
+        "StateValues": 12,
+        "ExitMachineGraph": 3,
+        "SpeculativeNumberDivide": 3,
+        "Parameter": 3,
+        "FrameState": 13,
+        "IfTrue": 2,
+        "SpeculativeSmallIntegerAdd": 3,
+        "LoadTypedElement": 3,
+        "Word32And": 1,
+        "EnterMachineGraph": 4,
+        "NumberAdd": 3,
+        "CheckBounds": 3,
+        "Start": 1,
+        "Uint64Div": 2,
+        "Int32Constant": 1,
+        "Int64Constant": 2
+      }
+    }
+  }
+]
