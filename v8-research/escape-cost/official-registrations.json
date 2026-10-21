@@ -1,0 +1,102 @@
+{
+  "Compiler": {
+    "registration": "results/v8-general/v8/test/js-perf-test/JSTests4.json",
+    "sha256": "91f48cc08e1bb1cc9aab5b72a61d68f31b5384d70d8280a8a5a1b38162288ab8",
+    "root_flags": [],
+    "suite": {
+      "name": "Compiler",
+      "path": [
+        "Compiler"
+      ],
+      "main": "run.js",
+      "resources": [
+        "small.js",
+        "medium.js",
+        "large.js"
+      ],
+      "run_count": 1,
+      "timeout": 360,
+      "flags": [
+        "--allow-natives-syntax"
+      ],
+      "variants": [
+        {
+          "name": "default",
+          "flags": []
+        },
+        {
+          "name": "turboshaft",
+          "flags": [
+            "--turboshaft"
+          ]
+        }
+      ],
+      "results_regexp": "^%s-Compile\\(Score\\): (.+)$",
+      "tests": [
+        {
+          "name": "Small-Empty"
+        },
+        {
+          "name": "Small-Constant"
+        },
+        {
+          "name": "Small-Add"
+        },
+        {
+          "name": "Small-Load"
+        },
+        {
+          "name": "Medium-Copy"
+        },
+        {
+          "name": "Medium-Fact"
+        },
+        {
+          "name": "Medium-Prime"
+        },
+        {
+          "name": "Medium-Eratosthenes"
+        },
+        {
+          "name": "Large-Copy"
+        }
+      ]
+    }
+  },
+  "DataView": {
+    "registration": "results/v8-general/v8/test/js-perf-test/JSTests5.json",
+    "sha256": "c8e42c6bcb32484ac34de794ae12e5265b7974d315cf9ccd05bd27b2a77616e9",
+    "root_flags": [],
+    "suite": {
+      "name": "DataView",
+      "path": [
+        "DataView"
+      ],
+      "main": "run.js",
+      "resources": [
+        "dataviewtest.js"
+      ],
+      "results_regexp": "^DataView\\-%s\\(Score\\): (.+)$",
+      "tests": [
+        {
+          "name": "DataViewTest-DataView-BigEndian"
+        },
+        {
+          "name": "DataViewTest-DataView-LittleEndian"
+        },
+        {
+          "name": "DataViewTest-DataView-Floats"
+        },
+        {
+          "name": "DataViewTest-TypedArray-BigEndian"
+        },
+        {
+          "name": "DataViewTest-TypedArray-LittleEndian"
+        },
+        {
+          "name": "DataViewTest-TypedArray-Floats"
+        }
+      ]
+    }
+  }
+}

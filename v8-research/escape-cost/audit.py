@@ -53,6 +53,8 @@ def audit(experiment):
         assert summary['binaries']['baseline']['sha256'] == manifest['baseline_sha256']
         assert summary['binaries']['candidate']['sha256'] == manifest['files']['d8']['sha256']
         raw = json.loads(path.read_text())
+        expected_flags = ['--allow-natives-syntax', 'run.js'] if suite == 'compiler' else ['run.js']
+        assert raw['d8_args'] == expected_flags
         assert source_hashes(Path(raw['cwd']), raw['d8_args']) == raw['source_sha256']
         results[suite] = summary
     cost_path = HERE / f'{experiment}-cost-results.json'
@@ -122,9 +124,15 @@ def main():
         profiles[path.name] = {'sha256': sha256(path),
                                'included_compiler_ticks': profile['profile']['included_ticks'],
                                'unaccounted_ticks': 0}
+    registrations = json.loads((HERE / 'official-registrations.json').read_text())
+    for name, record in registrations.items():
+        assert sha256(ROOT / record['registration']) == record['sha256']
+        flags = record['root_flags'] + record['suite'].get('flags', [])
+        assert flags == (['--allow-natives-syntax'] if name == 'Compiler' else [])
     output = {'experiments': {name: audit(name) for name in args.experiments},
               'diagnostic_compilations': {'Compiler': 441, 'DataView': 25},
               'profiles': profiles,
+              'official_default_configurations_verified': True,
               'statistics': 'Fixed alternating pairs, seed 20261021, 10000 bootstrap '
                             'resamples. Per-case intervals are not corrected for multiple comparisons.',
               'limits': 'Single-machine results for these suites. Zone allocation is not RSS. '
