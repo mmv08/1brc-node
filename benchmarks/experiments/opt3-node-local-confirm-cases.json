@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Node baseline",
+    "script": "results/opt3-base/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24",
+      "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000"
+    }
+  },
+  {
+    "name": "Node local integers pool 4",
+    "script": "plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24",
+      "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000"
+    }
+  },
+  {
+    "name": "Node local integers pool 8",
+    "script": "plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24",
+      "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000 --v8-pool-size=8"
+    }
+  }
+]
