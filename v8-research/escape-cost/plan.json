@@ -42,10 +42,11 @@
     },
     {
       "id": "standalone-fresh-allocation",
-      "state": "twelve Compiler pairs complete: Large-Copy +35.17%, nine-case mean +3.29%; twenty-one runtime pairs running",
+      "state": "complete, retained independently: 58 checks; twelve Compiler pairs with Large-Copy +35.17%; twenty-one runtime pairs neutral; generated function names and sizes match pristine",
       "source_commit": "e6293c24"
     }
   ],
   "limits": "Hardware perf remains unavailable (perf_event_paranoid=4). Use the native sampler, phase statistics, counters and disassembly. Sample shares are not promised gains. Preserve default/reference semantics, traversal, safepoints, allocation budgets and generated-program behavior.",
-  "pristine_baseline_sha256": "542379894b54399a99a8d00325d39ea0890c7b8fa36766b20a305cb77cf7f790"
+  "pristine_baseline_sha256": "542379894b54399a99a8d00325d39ea0890c7b8fa36766b20a305cb77cf7f790",
+  "status": "complete"
 }

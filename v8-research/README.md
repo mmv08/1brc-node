@@ -346,3 +346,13 @@ The [post-change native profile](reducer-cost/safepoint-predicate-post-profile.j
 Both experiments and their full results have unsigned checkpoints. Neither is stacked with the other. The marker branch is the preferred follow-up for further validation; neither change removes the earlier loop/dispatch graph-growth cost, and no new comparison against the historical getter-only build is claimed. The production Node and Wasm programs remain unchanged.
 
 The [final artifact audit](reducer-cost/final-artifact-audit.json) checks both saved patches against their committed diffs, preserved build hashes, all six completed fixed runs, raw diagnostic parsing, profile report accounting, test-log identities and the marker test-only refinement. It also verifies unsigned checkpoints and that this follow-up changed no production programs.
+
+## Escape-analysis tables and pristine validation
+
+The [next measured round](escape-cost/README.md) confirms escape-analysis table hashing as a compiler hotspot, measures table density and merge lookup counts, and tests two independent changes against the retained marker build. Lazy 64-entry chunks improve official Compiler Large-Copy **10.70%** (95% interval **+10.50% to +10.89%**) and Medium-Copy **9.40%** (**+9.18% to +9.61%**); the nine-case mean improves **2.29%**. All 122 selected checks pass. Large-Copy total zone allocation falls **1.08%**, while the smaller DataView diagnostic uses **0.13%** more. The 21-pair DataView runtime comparison is neutral.
+
+The independent merge-input cache improves the copy cases but regresses three small Compiler cases by **0.9–1.1%**, with negative intervals in each case. It is rejected as-is, with its 119 passing checks, source, binary and every measured round preserved.
+
+The earlier fresh-allocation lookup patch is also validated **alone on pristine V8 `293377af`**, at source checkpoint `e6293c24`. Its official Large-Copy gain is **35.17%** (**+34.82% to +35.59%**), with twelve wins; the nine-case mean is **+3.29%**. All 58 selected checks pass, generated DataView function names/sizes match pristine, and the 21-pair runtime control is neutral. This isolates the gain from the other optimizations. The chunked-storage and pristine-lookup gains have different baselines and must not be added together.
+
+The [full report](escape-cost/README.md) contains every case, order split, uncertainty interval, memory tradeoff and retained/rejected disposition. The [artifact audit](escape-cost/artifact-audit.json) verifies source and binary identities, all seven fixed campaigns, official default configurations and unsigned checkpoints. Production Node and Wasm programs remain unchanged; no upstream publication has occurred.

@@ -16,7 +16,7 @@ The merge-cache candidate starts independently from the same baseline. It snapsh
 
 ## Measurement protocol
 
-[Fixed protocol](plan.json), with commands checked against the [official default registrations](official-registrations.json): AMD Ryzen 9 7900, Linux x64 release builds, CPU 2, fresh processes, one warmup per binary, six alternating DataView compilation-cost pairs and twelve alternating official Compiler pairs for each correctness-valid candidate. Retained candidates receive twenty-one stock DataView pairs. Builds, tests, profiles and benchmark workloads run serially. Every observation is retained. Intervals use 10,000 paired bootstrap resamples, seed 20261021, and are not corrected for multiple comparisons. The nine-case mean summarizes this Compiler group, not whole-V8 or browser performance.
+[Fixed protocol](plan.json), with commands checked against the [official default registrations](official-registrations.json): AMD Ryzen 9 7900, Linux x64 release builds, CPU 2, fresh processes, one warmup per binary, six alternating DataView compilation-cost pairs and twelve alternating official Compiler pairs for each correctness-valid escape-analysis candidate. Retained candidates receive twenty-one stock DataView pairs. The separate pristine confirmation uses twelve Compiler and twenty-one DataView pairs. Builds, tests, profiles and benchmark workloads run serially. Every observation is retained. Intervals use 10,000 paired bootstrap resamples, seed 20261021, and are not corrected for multiple comparisons. The nine-case mean summarizes this Compiler group, not whole-V8 or browser performance.
 
 The separate one-compilation Large-Copy diagnostic compares zone allocation only. Its durations are not paired timing evidence. Zone allocation is not RSS. Instrumented DataView scores are not used as stock throughput evidence.
 
@@ -101,6 +101,19 @@ The standalone build passes **58 selected checks**, including all four new fresh
 | Small-Empty | -0.58% | -1.91% to +0.60% | -0.67% / -0.50% | 5/12 |
 | Small-Load | -0.68% | -1.57% to +0.15% | -0.91% / -0.44% | 2/12 |
 
-The fixed twenty-one-pair stock DataView control is running. Its full result will complete this validation.
+The completed [twenty-one-pair DataView control](standalone-fresh-allocation-runtime-summary.json) is neutral: the six-case mean is **−0.034%**, interval **−0.129% to +0.042%**. Every individual interval spans zero. The second and all other pairs remain in the analysis; small runtime movements have not been causally attributed to the compiler change.
 
+| Official DataView case | Score change | 95% interval | AB / BA | Wins |
+|---|---:|---:|---:|---:|
+| DataView-BigEndian | +0.00% | -0.18% to +0.19% | +0.07% / -0.07% | 10/21 |
+| DataView-Floats | -0.10% | -0.38% to +0.12% | -0.10% / -0.09% | 13/21 |
+| DataView-LittleEndian | -0.03% | -0.15% to +0.14% | +0.05% / -0.11% | 5/21 |
+| TypedArray-BigEndian | +0.03% | -0.06% to +0.12% | +0.05% / +0.01% | 11/21 |
+| TypedArray-Floats | -0.11% | -0.38% to +0.09% | +0.03% / -0.26% | 8/21 |
+| TypedArray-LittleEndian | -0.01% | -0.10% to +0.08% | +0.08% / -0.11% | 7/21 |
 
+**Disposition:** retain the fresh-allocation lookup as an independently validated candidate on pristine V8. Its strong Large-Copy gain does not depend on the other patches. This is local Linux x64 release validation, not a claim about all workloads or platforms. It has not been published upstream.
+
+The final checkout is `compiler-standalone-fresh-allocation` at `e6293c24`; the retained indexed-storage source remains on `compiler-escape-indexed-storage` at `cefc3a78`. Preserved executables are `results/v8-general/v8/out/x64.release-escape-standalone-fresh-allocation/d8` and `results/v8-general/v8/out/x64.release-escape-indexed-storage/d8`. The rejected cache remains on `compiler-escape-merge-input-cache` at `b6943c13` with its preserved executable and full measurements.
+
+The [final artifact audit](artifact-audit.json) checks all three patches, preserved binaries and configurations, positive test counts, all seven fixed campaigns, native/profile and allocation captures, official benchmark registrations, local report links and unsigned checkpoints. It also verifies that this round changed no production Node or Wasm program. The two retained gains use different baselines and must not be added together.

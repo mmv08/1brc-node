@@ -132,6 +132,14 @@ def main():
         assert sha256(ROOT / record['registration']) == record['sha256']
         flags = record['root_flags'] + record['suite'].get('flags', [])
         assert flags == (['--allow-natives-syntax'] if name == 'Compiler' else [])
+    loops = json.loads((HERE / 'merge-loop-evidence.json').read_text())
+    for label, filename in [('baseline', 'marker-merge-inputs.txt'),
+                            ('candidate', 'merge-input-cache-native.txt')]:
+        assert sha256(HERE / filename) == loops[label]['disassembly_sha256']
+    assert len(loops['baseline']['inlined_divisions']) == 3
+    assert not loops['candidate']['inlined_divisions']
+    assert sorted(len(call['loop_headers']) for call in loops['baseline']['table_read_calls']) == [0, 1]
+    assert sorted(len(call['loop_headers']) for call in loops['candidate']['table_read_calls']) == [0, 0, 1]
     plan = json.loads((HERE / 'plan.json').read_text())
     source_checkpoints = set()
     for experiment in plan['experiments']:
@@ -149,14 +157,19 @@ def main():
         ['git', 'ls-files', '--others', '--exclude-standard'], cwd=ROOT, text=True).splitlines()
     assert all(path.startswith('v8-research/escape-cost/') or path == 'v8-research/README.md'
                for path in changed + untracked)
+    report_links = re.findall(r'\[[^\]]+\]\(([^)]+)\)', (HERE / 'README.md').read_text())
+    for target in report_links:
+        assert (HERE / target.split('#', 1)[0]).is_file(), target
     output = {'experiments': {name: audit(name) for name in args.experiments},
               'diagnostic_compilations': {'Compiler': 441, 'DataView': 25},
               'profiles': profiles,
               'official_default_configurations_verified': True,
+              'native_merge_loop_evidence_verified': True,
               'unsigned_source_checkpoints': sorted(source_checkpoints),
               'root_history_checked_through': root_head,
               'unsigned_root_checkpoints_checked': len(root_signatures),
               'production_programs_unchanged_since': '20e333d',
+              'local_report_links_verified': len(report_links),
               'statistics': 'Fixed alternating pairs, seed 20261021, 10000 bootstrap '
                             'resamples. Per-case intervals are not corrected for multiple comparisons.',
               'limits': 'Single-machine results for these suites. Zone allocation is not RSS. '
