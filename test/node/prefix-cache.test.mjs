@@ -5,6 +5,38 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { calculate } from '../../plain/calculate.mjs';
 
+test('colliding predictions distinguish different first words with identical remaining bytes', async () => {
+  const directory = mkdtempSync(join(tmpdir(), '1brc-prefix-head-'));
+  const file = join(directory, 'input.txt');
+  // Both names map to predictor slot 9591; only their first four bytes differ.
+  const names = ['00y0SAMEtail', '010lSAMEtail'];
+  const lines = [];
+  for (let i = 0; i < 256; i++) {
+    lines.push(`${names[0]};-99.9\n${names[0]};2.5\r\n`);
+    lines.push(`${names[1]};99.9\r\n${names[1]};-1.2\n`);
+  }
+  writeFileSync(file, lines.join('').slice(0, -1));
+  const expected = [
+    [names[0], -999, (-999 + 25) * 256, 25, 512],
+    [names[1], -12, (999 - 12) * 256, 999, 512],
+  ];
+  const saved = process.env.STREAMS;
+  try {
+    for (const streams of [1, 2, 3, 4]) {
+      process.env.STREAMS = String(streams);
+      const rows = await calculate(file, { workers: 1, chunkSize: 256 });
+      assert.deepEqual(
+        rows.sort((a, b) => (a[0] < b[0] ? -1 : 1)),
+        expected,
+      );
+    }
+  } finally {
+    if (saved === undefined) delete process.env.STREAMS;
+    else process.env.STREAMS = saved;
+    rmSync(directory, { recursive: true });
+  }
+});
+
 test('prefix predictions preserve exact tuples across lengths, NULs, tails and delimiters', async () => {
   const directory = mkdtempSync(join(tmpdir(), '1brc-prefix-'));
   const file = join(directory, 'input.txt');
