@@ -1,0 +1,19 @@
+{
+  "checkpoint": "0fd4e2a",
+  "defaultSeconds": 1.0936580974,
+  "candidates": [
+    {
+      "name": "Node pool 2",
+      "seconds": 1.1897530281999997,
+      "lessTimePercent": -8.786560537379117,
+      "pairedWins": 0
+    },
+    {
+      "name": "Node pool 8",
+      "seconds": 1.0844893124,
+      "lessTimePercent": 0.838359357627172,
+      "pairedWins": 5
+    }
+  ],
+  "decision": "Reject pool size 2. Pool size 8 is a small preliminary improvement; needs independent pairwise confirmation. No production flags changed."
+}

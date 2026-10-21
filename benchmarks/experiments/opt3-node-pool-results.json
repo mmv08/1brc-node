@@ -1,0 +1,242 @@
+{
+  "date": "2026-10-21T07:06:39.484Z",
+  "label": "opt3-node-pool",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Node default pool 4",
+      "round": 1,
+      "seconds": 1.100408105
+    },
+    {
+      "name": "Node pool 2",
+      "round": 1,
+      "seconds": 1.14973185
+    },
+    {
+      "name": "Node pool 8",
+      "round": 1,
+      "seconds": 1.0936060940000003
+    },
+    {
+      "name": "Node pool 8",
+      "round": 2,
+      "seconds": 1.1059744029999996
+    },
+    {
+      "name": "Node pool 2",
+      "round": 2,
+      "seconds": 1.1411562619999995
+    },
+    {
+      "name": "Node default pool 4",
+      "round": 2,
+      "seconds": 1.0636844979999995
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Node default pool 4",
+      "script": "plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "WORKERS": "24",
+        "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "times": [
+        1.0964466699999993, 1.1104644160000008, 1.0949798690000008, 1.0827452540000013,
+        1.0486566380000004, 1.0836542779999982, 1.112900834
+      ],
+      "usage": [
+        {
+          "user": 22.85,
+          "system": 1.28,
+          "maxRssKiB": 341816,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.84,
+          "system": 1.35,
+          "maxRssKiB": 338972,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.47,
+          "system": 1.38,
+          "maxRssKiB": 339968,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.33,
+          "system": 1.32,
+          "maxRssKiB": 339800,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.8,
+          "system": 1.31,
+          "maxRssKiB": 339100,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.51,
+          "system": 1.42,
+          "maxRssKiB": 340072,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 23.1,
+          "system": 1.41,
+          "maxRssKiB": 340380,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.0936580974,
+      "best": 1.0486566380000004
+    },
+    {
+      "name": "Node pool 2",
+      "script": "plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "WORKERS": "24",
+        "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000 --v8-pool-size=2"
+      },
+      "flags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--v8-pool-size=2"
+      ],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "times": [
+        1.1782708059999996, 1.212006261999999, 1.221129879, 1.1986956879999997, 1.174889145000001,
+        1.1849032399999997, 1.173440897999997
+      ],
+      "usage": [
+        {
+          "user": 24.99,
+          "system": 1.37,
+          "maxRssKiB": 336860,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.69,
+          "system": 1.35,
+          "maxRssKiB": 338744,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.94,
+          "system": 1.36,
+          "maxRssKiB": 338036,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 25.14,
+          "system": 1.38,
+          "maxRssKiB": 339184,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.47,
+          "system": 1.41,
+          "maxRssKiB": 338380,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.86,
+          "system": 1.35,
+          "maxRssKiB": 335548,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 24.47,
+          "system": 1.39,
+          "maxRssKiB": 338372,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.1897530281999997,
+      "best": 1.173440897999997
+    },
+    {
+      "name": "Node pool 8",
+      "script": "plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "WORKERS": "24",
+        "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000 --v8-pool-size=8"
+      },
+      "flags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--v8-pool-size=8"
+      ],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "times": [
+        1.0559264189999995, 1.0919735790000014, 1.0938382939999993, 1.1025289210000009,
+        1.064089336000001, 1.0791497170000002, 1.0933956359999975
+      ],
+      "usage": [
+        {
+          "user": 21.77,
+          "system": 1.52,
+          "maxRssKiB": 338736,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.14,
+          "system": 1.37,
+          "maxRssKiB": 343232,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.5,
+          "system": 1.45,
+          "maxRssKiB": 341540,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.72,
+          "system": 1.43,
+          "maxRssKiB": 340644,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.94,
+          "system": 1.44,
+          "maxRssKiB": 341116,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.13,
+          "system": 1.44,
+          "maxRssKiB": 340708,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.49,
+          "system": 1.47,
+          "maxRssKiB": 340296,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.0844893124,
+      "best": 1.0559264189999995
+    }
+  ]
+}
