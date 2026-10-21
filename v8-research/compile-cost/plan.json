@@ -12,7 +12,7 @@
     "checkpoints": "Unsigned source and result commits for every experiment, including rejected candidates.",
     "acceptance": "Report both cost and runtime changes, native code size, count differences, and confidence intervals. Fewer allocations alone are not evidence of faster compilation."
   },
-  "state": "field-name-invalidation selected for full validation before any official Compiler measurement",
+  "state": "first candidate full validation continues; instruction-level profile identifies a third experiment",
   "experiments": [
     {
       "id": "field-name-invalidation",
@@ -27,6 +27,16 @@
       "hypothesis": "GraphReducer::Reduce native code has a 0x148-byte stack frame and unconditional ostream vtable setup despite trace_turbo_reduction being false. Move cold trace branches to a noinline helper; keep behavior identical.",
       "source_commit": "2f98c1e2",
       "disposition": "Retain independently; do not add to leading candidate on code-size evidence alone."
+    },
+    {
+      "id": "fresh-allocation-invalidation",
+      "base_commit": "fcc58178",
+      "source_checkpoint": "8944d358",
+      "state": "source and five targeted tests authored; builds wait for active measurements",
+      "evidence": "fresh-allocation-pc-evidence.json",
+      "hypothesis": "Replace linear field-cache scans with exact-key map lookup when the existing Allocate alias rule already restricts aliases to that one node. 89.4% of sampled AbstractField::Kill self time is first-scan dead checks/tree iteration; almost all distinguishable alias-check samples use the Allocate identity path.",
+      "safety": "Do not resolve renames before selecting the fast path. Preserve name wildcard behavior, dead-key skip, immutable states and cache counts.",
+      "protocol": "Six fixed cost pairs versus fcc; if correctness/native checks pass, twelve fixed official Compiler pairs and twenty-one fixed stock DataView pairs. Previous fixed experiment continues to completion; no early stop on scores."
     }
   ]
 }
