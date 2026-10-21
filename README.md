@@ -193,6 +193,12 @@ are changed. Reports include inherited parser/runtime tuning and verify source
 hashes before and after each run. Every experiment in the latest round has an
 unsigned checkpoint commit; rejected implementations remain in git history.
 
+## Upstream V8 investigation
+
+The [V8 research report](v8-research/README.md) contains general compiler patches,
+profiling evidence, and measurements on unchanged official V8 benchmarks. These
+experiments use a separate upstream checkout; the two solvers above use stock Node.
+
 ## Attribution
 
 The solvers are new implementations. The challenge, fixtures, station list and

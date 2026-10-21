@@ -22,5 +22,7 @@
     "mjsunit_scripts_passed": 12,
     "new_wasm_test": "store-bitcast.js; signed zero, subnormals, infinities, NaN payloads, unaligned addresses, explicit OOB traps"
   },
-  "invocation_note": "Current v8_unittests permits one test per process. A multi-test direct invocation fails platform reinitialization; tools/run-tests.py runs these tests successfully in separate processes."
+  "invocation_note": "Current v8_unittests permits one test per process. A multi-test direct invocation fails platform reinitialization; tools/run-tests.py runs these tests successfully in separate processes.",
+  "source_review_caveat": "Changing the stored representation can prevent subsequent cross-representation load forwarding; the existing load elimination pass checks register/memory representation compatibility. This preserves correctness but needs broader performance coverage before upstream use.",
+  "outcome": "Rejected: 21 paired runs regress DataView-Floats by 4.06% and TypedArray-Floats by 2.56%; zero wins for either."
 }

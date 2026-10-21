@@ -8,7 +8,7 @@ On V8 15.8.0 candidate at `293377af9f02c268362e5975b7af4baa25688323`, the ordina
 
 The patch adds a mutable, sandbox-aware UintPtr field load after receiver validation and a shared-bit check. The shared case calls the original getter through V8’s CallFunction trampoline, preserving its exception and realm without a speculative deoptimization loop. Resizing and detachment update the loaded field. No benchmark, station name, input size, or 1BRC-specific behavior is encoded in V8.
 
-The final optimized `doOneFloatIterationJS` body shrank from 1,172 to 768 bytes; its two getter call sites disappeared. Native code shows fewer call-related spills and number conversions. Static pointer-load counts also decrease, but different loop peeling contributes: loads remain in the loop, so this is not evidence of full invariant-load hoisting.
+With identical diagnostic flags on both binaries, the optimized `doOneFloatIterationJS` body shrank from 1,100 to 768 bytes; its two getter call sites disappeared. The earlier sampling capture emitted a later 1,172-byte baseline version; matching the tracing configuration avoids conflating different compilation histories. Native code shows fewer call-related spills and number conversions. Static pointer-load counts also decrease, but different loop peeling contributes: loads remain in the loop, so this is not evidence of full invariant-load hoisting.
 
 ## Official benchmark measurements
 
@@ -66,8 +66,29 @@ python3 v8-research/paired_benchmark.py \
 
 V8 registers these unchanged tests in `test/js-perf-test/JSTests5.json`. Its official `tools/run_perf.py` runner also executed the candidate successfully: six test scores plus the group total, with no errors ([output](official-run-perf-byte-length.json)). Use the pinned `vpython3` environment and `--filter=JSTests/DataView` (no trailing slash). The official testing documentation describes `tools/run_perf.py`: https://v8.dev/docs/test.
 
-## Further source targets
+## Experiment 2: fold bitcasts into numeric stores
 
-Current baseline `makeFloatBuffer` disassembly contains `bswap → vmovd/q GPR-to-XMM → vmovss/sd store`. A general same-width store-of-bitcast reduction can remove the register transfer. This is being evaluated as an independent experiment; source presence alone is not a performance result.
+Current baseline `makeFloatBuffer` disassembly contains `bswap → vmovd/q GPR-to-XMM → vmovss/sd store`. An independent general store-of-bitcast experiment removed all three extra register transfers and reduced the function from 1,052 to 1,032 bytes. It preserves same-width bits and store metadata; atomic, trapping and incompatible-alignment accesses are excluded.
+
+**Rejected on this machine:** the same 21-pair protocol showed lower scores in both floating-point tests, with zero wins in either. Fewer instructions did not yield a speedup. The cause of the regression has not been isolated; no microarchitectural explanation is assumed.
+
+| Official DataView test | Paired score change | 95% interval | Wins |
+|---|---:|---:|---:|
+| DataView-BigEndian | +0.02% | -0.15% to +0.20% | 12/21 |
+| DataView-Floats | -4.06% | -4.36% to -3.66% | 0/21 |
+| DataView-LittleEndian | +0.09% | -0.10% to +0.32% | 11/21 |
+| TypedArray-BigEndian | -0.02% | -0.13% to +0.09% | 6/21 |
+| TypedArray-Floats | -2.56% | -2.73% to -2.37% | 0/21 |
+| TypedArray-LittleEndian | +0.04% | -0.06% to +0.14% | 10/21 |
+
+The six-test geometric mean fell 1.09%. The branch is based directly on the same untouched upstream revision, independently of the getter patch. Its 39 compiler unit tests (including three new graph tests) and 12 semantic mjsunit scripts passed. New Wasm coverage checks exact signed-zero, subnormal, infinity and NaN payload bits, unaligned accesses, and explicit out-of-bounds traps. These passing semantic checks do not override the performance result.
+
+The rejected experiment is retained in [store-bitcast.patch](store-bitcast.patch), [raw results](store-bitcast-results.json), [validation evidence](store-bitcast-evidence.json), and native excerpts [before](codegen/store-before.txt) / [after](codegen/store-after.txt). Local upstream checkpoints are `f2ab8d37` and `be68467f`; the original isolated source draft is `7abc6b4`. Do not stack this patch onto the recommended getter change based on these results.
+
+The local unit-test launcher initially rejected a direct multi-test invocation because current V8 requires a fresh process per test. `tools/run-tests.py` provided the supported isolation and all 39 selected tests passed.
+
+## Remaining targets
+
+Maglev lacks the corresponding ArrayBuffer getter reduction. Adding equivalent semantic guards there would broaden tier coverage, but its benefit has not been measured.
 
 Loop-invariant array checks/loads and alignment checks for strided integer division remain in the optimized float loop. Their removal requires proofs about effects and induction ranges; no unchecked assumption or workload-specific shortcut is justified.

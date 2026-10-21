@@ -37,5 +37,25 @@
     "new_test": "test/mjsunit/compiler/array-buffer-byte-length.js",
     "additional_new_coverage": "Foreign getter exception realm passed after the 22-script selection.",
     "build": "Release x64, sandbox and pointer compression enabled; no full multi-platform or sanitizer validation."
+  },
+  "matched_diagnostic_capture": {
+    "flags": [
+      "--print-opt-code",
+      "--print-opt-code-filter=doOneFloatIterationJS",
+      "--trace-turbo",
+      "--trace-turbo-filter=doOneFloatIterationJS",
+      "--trace-turbo-path=<per-binary output directory>"
+    ],
+    "native": {
+      "before": {
+        "code_size_bytes": 1100,
+        "getter_calls": 2
+      },
+      "after": {
+        "code_size_bytes": 768,
+        "getter_calls": 0
+      }
+    },
+    "note": "Trace-turbo disables concurrent recompilation; use this matched capture for direct code-size comparison. The earlier untraced sampling capture also emitted a 1172-byte later version of the baseline function."
   }
 }
