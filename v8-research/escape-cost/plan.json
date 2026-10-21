@@ -42,7 +42,7 @@
     },
     {
       "id": "standalone-fresh-allocation",
-      "state": "building exact standalone patch on pristine base",
+      "state": "58 checks passed; generated names and sizes match pristine; twelve Compiler and twenty-one runtime pairs running serially",
       "source_commit": "e6293c24"
     }
   ],

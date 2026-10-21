@@ -1,0 +1,215 @@
+{
+  "command": [
+    "taskset",
+    "-c",
+    "2",
+    "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-escape-standalone-fresh-allocation/d8",
+    "--no-concurrent-recompilation",
+    "--print-opt-code",
+    "run.js"
+  ],
+  "raw_directory": "results/v8-general/escape-standalone-fresh-allocation-native",
+  "generated_sha256": "195ab9bc6b469b312f56ec0f9db495a3e7057f5df162c323ea880a69a19c5c75",
+  "code_objects": [
+    {
+      "name": "doOneIterationDV",
+      "instruction_bytes": 1140
+    },
+    {
+      "name": "makeBuffer",
+      "instruction_bytes": 1328
+    },
+    {
+      "name": "doTestDataViewBigEndian",
+      "instruction_bytes": 1504
+    },
+    {
+      "name": "doTestDataViewLittleEndian",
+      "instruction_bytes": 1416
+    },
+    {
+      "name": "doOneFloatIterationDV",
+      "instruction_bytes": 776
+    },
+    {
+      "name": "makeFloatBuffer",
+      "instruction_bytes": 1052
+    },
+    {
+      "name": "doFloatIterations",
+      "instruction_bytes": 1716
+    },
+    {
+      "name": "doTestDataViewFloats",
+      "instruction_bytes": 1592
+    },
+    {
+      "name": "BigEndian.getUint32",
+      "instruction_bytes": 440
+    },
+    {
+      "name": "BigEndian.getInt32",
+      "instruction_bytes": 468
+    },
+    {
+      "name": "BigEndian.getInt16",
+      "instruction_bytes": 372
+    },
+    {
+      "name": "BigEndian.getUint16",
+      "instruction_bytes": 344
+    },
+    {
+      "name": "BigEndian.getInt8",
+      "instruction_bytes": 288
+    },
+    {
+      "name": "BigEndian.getUint8",
+      "instruction_bytes": 288
+    },
+    {
+      "name": "doOneIterationJS",
+      "instruction_bytes": 2520
+    },
+    {
+      "name": "LittleEndian.getUint32",
+      "instruction_bytes": 524
+    },
+    {
+      "name": "LittleEndian.getInt32",
+      "instruction_bytes": 552
+    },
+    {
+      "name": "LittleEndian.getInt16",
+      "instruction_bytes": 452
+    },
+    {
+      "name": "LittleEndian.getUint16",
+      "instruction_bytes": 424
+    },
+    {
+      "name": "doOneIterationJS",
+      "instruction_bytes": 5120
+    },
+    {
+      "name": "LittleEndian",
+      "instruction_bytes": 1164
+    },
+    {
+      "name": "doOneFloatIterationJS",
+      "instruction_bytes": 1100
+    },
+    {
+      "name": "doFloatIterations",
+      "instruction_bytes": 2740
+    }
+  ],
+  "names_and_sizes_match_marker": false,
+  "limits": "Names and sizes are not proof of byte-identical generated code.",
+  "baseline_command": [
+    "taskset",
+    "-c",
+    "2",
+    "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-baseline/d8",
+    "--no-concurrent-recompilation",
+    "--print-opt-code",
+    "run.js"
+  ],
+  "baseline_binary_sha256": "542379894b54399a99a8d00325d39ea0890c7b8fa36766b20a305cb77cf7f790",
+  "baseline_generated_sha256": "7e17c4589eef2bcdff9fb62c468d892ad426b4de1dcdae02ac243b9e729e6140",
+  "baseline_code_objects": [
+    {
+      "name": "doOneIterationDV",
+      "instruction_bytes": 1140
+    },
+    {
+      "name": "makeBuffer",
+      "instruction_bytes": 1328
+    },
+    {
+      "name": "doTestDataViewBigEndian",
+      "instruction_bytes": 1504
+    },
+    {
+      "name": "doTestDataViewLittleEndian",
+      "instruction_bytes": 1416
+    },
+    {
+      "name": "doOneFloatIterationDV",
+      "instruction_bytes": 776
+    },
+    {
+      "name": "makeFloatBuffer",
+      "instruction_bytes": 1052
+    },
+    {
+      "name": "doFloatIterations",
+      "instruction_bytes": 1716
+    },
+    {
+      "name": "doTestDataViewFloats",
+      "instruction_bytes": 1592
+    },
+    {
+      "name": "BigEndian.getUint32",
+      "instruction_bytes": 440
+    },
+    {
+      "name": "BigEndian.getInt32",
+      "instruction_bytes": 468
+    },
+    {
+      "name": "BigEndian.getInt16",
+      "instruction_bytes": 372
+    },
+    {
+      "name": "BigEndian.getUint16",
+      "instruction_bytes": 344
+    },
+    {
+      "name": "BigEndian.getInt8",
+      "instruction_bytes": 288
+    },
+    {
+      "name": "BigEndian.getUint8",
+      "instruction_bytes": 288
+    },
+    {
+      "name": "doOneIterationJS",
+      "instruction_bytes": 2520
+    },
+    {
+      "name": "LittleEndian.getUint32",
+      "instruction_bytes": 524
+    },
+    {
+      "name": "LittleEndian.getInt32",
+      "instruction_bytes": 552
+    },
+    {
+      "name": "LittleEndian.getInt16",
+      "instruction_bytes": 452
+    },
+    {
+      "name": "LittleEndian.getUint16",
+      "instruction_bytes": 424
+    },
+    {
+      "name": "doOneIterationJS",
+      "instruction_bytes": 5120
+    },
+    {
+      "name": "LittleEndian",
+      "instruction_bytes": 1164
+    },
+    {
+      "name": "doOneFloatIterationJS",
+      "instruction_bytes": 1100
+    },
+    {
+      "name": "doFloatIterations",
+      "instruction_bytes": 2740
+    }
+  ],
+  "names_and_sizes_match_pristine": true
+}
