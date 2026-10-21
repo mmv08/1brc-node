@@ -1,0 +1,1406 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "started_at": "2026-10-21T09:56:59.496308+00:00",
+  "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+  "d8_args": [
+    "run.js"
+  ],
+  "requested_rounds": 21,
+  "cpu": 2,
+  "higher_is_better": true,
+  "machine": {
+    "hostname": "mmv-devbox",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "uname": [
+      "Linux",
+      "mmv-devbox",
+      "7.0.0-38-generic",
+      "#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026",
+      "x86_64",
+      ""
+    ],
+    "cpu_model": "AMD Ryzen 9 7900 12-Core Processor",
+    "logical_cpus": 24,
+    "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "runner_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "governor": "powersave"
+  },
+  "binaries": {
+    "baseline": {
+      "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+      "sha256": "54fb47bc6772c7bf280ab63f37ffed06d6640d719b2d0f0ebf25c95473788dac",
+      "size_bytes": 204237400
+    },
+    "candidate": {
+      "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+      "sha256": "37a9939ccc1da41a16bb102410d12cc9d96cf1d0a8d6d8daaf21f2a1022cccc6",
+      "size_bytes": 204250544
+    }
+  },
+  "runs": [
+    {
+      "binary": "baseline",
+      "round": 0,
+      "warmup": true,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:56:59.710984+00:00",
+      "ended_at": "2026-10-21T09:57:05.730974+00:00",
+      "wall_seconds": 6.019998483126983,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 4680\nDataView-DataViewTest-DataView-LittleEndian(Score): 6020\nDataView-DataViewTest-DataView-Floats(Score): 2470\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1846\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1128\nDataView-DataViewTest-TypedArray-Floats(Score): 2248\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 4680.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6020.0,
+        "DataView-DataViewTest-DataView-Floats": 2470.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1846.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1128.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2248.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 0,
+      "warmup": true,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:57:05.740360+00:00",
+      "ended_at": "2026-10-21T09:57:11.758534+00:00",
+      "wall_seconds": 6.018184002954513,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5260\nDataView-DataViewTest-DataView-LittleEndian(Score): 6220\nDataView-DataViewTest-DataView-Floats(Score): 2460\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1848\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1266\nDataView-DataViewTest-TypedArray-Floats(Score): 2248\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5260.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6220.0,
+        "DataView-DataViewTest-DataView-Floats": 2460.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1848.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1266.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2248.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 1,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:57:11.767984+00:00",
+      "ended_at": "2026-10-21T09:57:17.793571+00:00",
+      "wall_seconds": 6.025597330182791,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5190\nDataView-DataViewTest-DataView-LittleEndian(Score): 6010\nDataView-DataViewTest-DataView-Floats(Score): 2465\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1843\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1125\nDataView-DataViewTest-TypedArray-Floats(Score): 2246\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5190.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6010.0,
+        "DataView-DataViewTest-DataView-Floats": 2465.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1843.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1125.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2246.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 1,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:57:17.803066+00:00",
+      "ended_at": "2026-10-21T09:57:23.827434+00:00",
+      "wall_seconds": 6.024377966998145,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5230\nDataView-DataViewTest-DataView-LittleEndian(Score): 6180\nDataView-DataViewTest-DataView-Floats(Score): 2475\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1860\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1262\nDataView-DataViewTest-TypedArray-Floats(Score): 2246\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5230.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6180.0,
+        "DataView-DataViewTest-DataView-Floats": 2475.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1860.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1262.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2246.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 2,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:57:23.836954+00:00",
+      "ended_at": "2026-10-21T09:57:29.860720+00:00",
+      "wall_seconds": 6.023774973815307,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5225\nDataView-DataViewTest-DataView-LittleEndian(Score): 6180\nDataView-DataViewTest-DataView-Floats(Score): 2475\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1853\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1269\nDataView-DataViewTest-TypedArray-Floats(Score): 2246\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5225.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6180.0,
+        "DataView-DataViewTest-DataView-Floats": 2475.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1853.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1269.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2246.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 2,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:57:29.870162+00:00",
+      "ended_at": "2026-10-21T09:57:35.896945+00:00",
+      "wall_seconds": 6.026792815886438,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5165\nDataView-DataViewTest-DataView-LittleEndian(Score): 5974\nDataView-DataViewTest-DataView-Floats(Score): 2468\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1836\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1122\nDataView-DataViewTest-TypedArray-Floats(Score): 2243\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5165.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5974.0,
+        "DataView-DataViewTest-DataView-Floats": 2468.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1836.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1122.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2243.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 3,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:57:35.897832+00:00",
+      "ended_at": "2026-10-21T09:57:41.916333+00:00",
+      "wall_seconds": 6.018511133035645,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5185\nDataView-DataViewTest-DataView-LittleEndian(Score): 5974\nDataView-DataViewTest-DataView-Floats(Score): 2463\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1848\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1120\nDataView-DataViewTest-TypedArray-Floats(Score): 2248\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5185.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5974.0,
+        "DataView-DataViewTest-DataView-Floats": 2463.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1848.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1120.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2248.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 3,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:57:41.925852+00:00",
+      "ended_at": "2026-10-21T09:57:47.946382+00:00",
+      "wall_seconds": 6.02054071193561,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5195\nDataView-DataViewTest-DataView-LittleEndian(Score): 6170\nDataView-DataViewTest-DataView-Floats(Score): 2460\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1846\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1255\nDataView-DataViewTest-TypedArray-Floats(Score): 2238\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5195.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6170.0,
+        "DataView-DataViewTest-DataView-Floats": 2460.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1846.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1255.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2238.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 4,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:57:47.956020+00:00",
+      "ended_at": "2026-10-21T09:57:53.983819+00:00",
+      "wall_seconds": 6.027808933053166,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5175\nDataView-DataViewTest-DataView-LittleEndian(Score): 6170\nDataView-DataViewTest-DataView-Floats(Score): 2460\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1834\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1264\nDataView-DataViewTest-TypedArray-Floats(Score): 2238\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5175.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6170.0,
+        "DataView-DataViewTest-DataView-Floats": 2460.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1834.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1264.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2238.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 4,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:57:53.993310+00:00",
+      "ended_at": "2026-10-21T09:58:00.015566+00:00",
+      "wall_seconds": 6.022266414016485,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5155\nDataView-DataViewTest-DataView-LittleEndian(Score): 5970\nDataView-DataViewTest-DataView-Floats(Score): 2468\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1848\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1117\nDataView-DataViewTest-TypedArray-Floats(Score): 2233\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5155.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5970.0,
+        "DataView-DataViewTest-DataView-Floats": 2468.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1848.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1117.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2233.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 5,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:58:00.025185+00:00",
+      "ended_at": "2026-10-21T09:58:06.042401+00:00",
+      "wall_seconds": 6.017223733011633,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5180\nDataView-DataViewTest-DataView-LittleEndian(Score): 5950\nDataView-DataViewTest-DataView-Floats(Score): 2465\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1840\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1117\nDataView-DataViewTest-TypedArray-Floats(Score): 2230\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5180.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5950.0,
+        "DataView-DataViewTest-DataView-Floats": 2465.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1840.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1117.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2230.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 5,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:58:06.051948+00:00",
+      "ended_at": "2026-10-21T09:58:12.069450+00:00",
+      "wall_seconds": 6.017512839986011,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5210\nDataView-DataViewTest-DataView-LittleEndian(Score): 6144\nDataView-DataViewTest-DataView-Floats(Score): 2470\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1830\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1254\nDataView-DataViewTest-TypedArray-Floats(Score): 2230\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5210.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6144.0,
+        "DataView-DataViewTest-DataView-Floats": 2470.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1830.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1254.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2230.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 6,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:58:12.078941+00:00",
+      "ended_at": "2026-10-21T09:58:18.102302+00:00",
+      "wall_seconds": 6.0233719300013036,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5205\nDataView-DataViewTest-DataView-LittleEndian(Score): 6144\nDataView-DataViewTest-DataView-Floats(Score): 2430\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1828\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1254\nDataView-DataViewTest-TypedArray-Floats(Score): 2186\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5205.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6144.0,
+        "DataView-DataViewTest-DataView-Floats": 2430.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1828.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1254.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2186.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 6,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:58:18.111860+00:00",
+      "ended_at": "2026-10-21T09:58:24.134307+00:00",
+      "wall_seconds": 6.022457086015493,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5175\nDataView-DataViewTest-DataView-LittleEndian(Score): 5954\nDataView-DataViewTest-DataView-Floats(Score): 2470\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1844\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1117\nDataView-DataViewTest-TypedArray-Floats(Score): 2236\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5175.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5954.0,
+        "DataView-DataViewTest-DataView-Floats": 2470.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1844.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1117.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2236.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 7,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:58:24.143899+00:00",
+      "ended_at": "2026-10-21T09:58:30.173000+00:00",
+      "wall_seconds": 6.029110000003129,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5140\nDataView-DataViewTest-DataView-LittleEndian(Score): 5960\nDataView-DataViewTest-DataView-Floats(Score): 2465\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1825\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1112\nDataView-DataViewTest-TypedArray-Floats(Score): 2233\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5140.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5960.0,
+        "DataView-DataViewTest-DataView-Floats": 2465.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1825.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1112.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2233.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 7,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:58:30.182559+00:00",
+      "ended_at": "2026-10-21T09:58:36.202643+00:00",
+      "wall_seconds": 6.02009365404956,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5180\nDataView-DataViewTest-DataView-LittleEndian(Score): 6130\nDataView-DataViewTest-DataView-Floats(Score): 2465\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1836\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1256\nDataView-DataViewTest-TypedArray-Floats(Score): 2228\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5180.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6130.0,
+        "DataView-DataViewTest-DataView-Floats": 2465.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1836.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1256.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2228.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 8,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:58:36.212233+00:00",
+      "ended_at": "2026-10-21T09:58:42.234622+00:00",
+      "wall_seconds": 6.022399266017601,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5160\nDataView-DataViewTest-DataView-LittleEndian(Score): 6150\nDataView-DataViewTest-DataView-Floats(Score): 2468\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1820\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1261\nDataView-DataViewTest-TypedArray-Floats(Score): 2230\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5160.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6150.0,
+        "DataView-DataViewTest-DataView-Floats": 2468.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1820.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1261.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2230.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 8,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:58:42.244143+00:00",
+      "ended_at": "2026-10-21T09:58:48.269597+00:00",
+      "wall_seconds": 6.025463697034866,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5145\nDataView-DataViewTest-DataView-LittleEndian(Score): 5950\nDataView-DataViewTest-DataView-Floats(Score): 2468\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1823\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1113\nDataView-DataViewTest-TypedArray-Floats(Score): 2230\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5145.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5950.0,
+        "DataView-DataViewTest-DataView-Floats": 2468.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1823.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1113.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2230.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 9,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:58:48.279054+00:00",
+      "ended_at": "2026-10-21T09:58:54.300406+00:00",
+      "wall_seconds": 6.0213622520677745,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5160\nDataView-DataViewTest-DataView-LittleEndian(Score): 5920\nDataView-DataViewTest-DataView-Floats(Score): 2470\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1838\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1114\nDataView-DataViewTest-TypedArray-Floats(Score): 2230\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5160.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5920.0,
+        "DataView-DataViewTest-DataView-Floats": 2470.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1838.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1114.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2230.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 9,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:58:54.309972+00:00",
+      "ended_at": "2026-10-21T09:59:00.337128+00:00",
+      "wall_seconds": 6.027166486019269,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5160\nDataView-DataViewTest-DataView-LittleEndian(Score): 6140\nDataView-DataViewTest-DataView-Floats(Score): 2463\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1838\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1251\nDataView-DataViewTest-TypedArray-Floats(Score): 2233\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5160.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6140.0,
+        "DataView-DataViewTest-DataView-Floats": 2463.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1838.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1251.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2233.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 10,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:59:00.346724+00:00",
+      "ended_at": "2026-10-21T09:59:06.363577+00:00",
+      "wall_seconds": 6.016863189172,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5170\nDataView-DataViewTest-DataView-LittleEndian(Score): 6124\nDataView-DataViewTest-DataView-Floats(Score): 2465\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1836\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1250\nDataView-DataViewTest-TypedArray-Floats(Score): 2230\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5170.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6124.0,
+        "DataView-DataViewTest-DataView-Floats": 2465.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1836.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1250.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2230.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 10,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:59:06.373093+00:00",
+      "ended_at": "2026-10-21T09:59:12.398897+00:00",
+      "wall_seconds": 6.025814170949161,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5140\nDataView-DataViewTest-DataView-LittleEndian(Score): 5924\nDataView-DataViewTest-DataView-Floats(Score): 2465\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1820\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1113\nDataView-DataViewTest-TypedArray-Floats(Score): 2223\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5140.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5924.0,
+        "DataView-DataViewTest-DataView-Floats": 2465.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1820.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1113.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2223.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 11,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:59:12.408506+00:00",
+      "ended_at": "2026-10-21T09:59:18.435375+00:00",
+      "wall_seconds": 6.02687861979939,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5140\nDataView-DataViewTest-DataView-LittleEndian(Score): 5934\nDataView-DataViewTest-DataView-Floats(Score): 2473\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1830\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1111\nDataView-DataViewTest-TypedArray-Floats(Score): 2233\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5140.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5934.0,
+        "DataView-DataViewTest-DataView-Floats": 2473.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1830.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1111.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2233.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 11,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:59:18.445072+00:00",
+      "ended_at": "2026-10-21T09:59:24.464968+00:00",
+      "wall_seconds": 6.019904394866899,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5140\nDataView-DataViewTest-DataView-LittleEndian(Score): 6140\nDataView-DataViewTest-DataView-Floats(Score): 2468\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1834\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1250\nDataView-DataViewTest-TypedArray-Floats(Score): 2228\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5140.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6140.0,
+        "DataView-DataViewTest-DataView-Floats": 2468.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1834.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1250.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2228.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 12,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:59:24.474566+00:00",
+      "ended_at": "2026-10-21T09:59:30.492439+00:00",
+      "wall_seconds": 6.017883273074403,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5165\nDataView-DataViewTest-DataView-LittleEndian(Score): 6124\nDataView-DataViewTest-DataView-Floats(Score): 2465\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1816\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1250\nDataView-DataViewTest-TypedArray-Floats(Score): 2230\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5165.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6124.0,
+        "DataView-DataViewTest-DataView-Floats": 2465.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1816.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1250.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2230.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 12,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:59:30.502054+00:00",
+      "ended_at": "2026-10-21T09:59:36.534071+00:00",
+      "wall_seconds": 6.032027602894232,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5155\nDataView-DataViewTest-DataView-LittleEndian(Score): 5924\nDataView-DataViewTest-DataView-Floats(Score): 2460\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1836\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1111\nDataView-DataViewTest-TypedArray-Floats(Score): 2233\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5155.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5924.0,
+        "DataView-DataViewTest-DataView-Floats": 2460.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1836.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1111.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2233.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 13,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:59:36.543608+00:00",
+      "ended_at": "2026-10-21T09:59:42.567583+00:00",
+      "wall_seconds": 6.02398603502661,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5120\nDataView-DataViewTest-DataView-LittleEndian(Score): 5900\nDataView-DataViewTest-DataView-Floats(Score): 2468\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1836\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1111\nDataView-DataViewTest-TypedArray-Floats(Score): 2228\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5120.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5900.0,
+        "DataView-DataViewTest-DataView-Floats": 2468.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1836.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1111.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2228.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 13,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:59:42.577149+00:00",
+      "ended_at": "2026-10-21T09:59:48.597501+00:00",
+      "wall_seconds": 6.020362613955513,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5185\nDataView-DataViewTest-DataView-LittleEndian(Score): 6130\nDataView-DataViewTest-DataView-Floats(Score): 2465\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1834\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1250\nDataView-DataViewTest-TypedArray-Floats(Score): 2230\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5185.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6130.0,
+        "DataView-DataViewTest-DataView-Floats": 2465.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1834.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1250.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2230.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 14,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:59:48.607151+00:00",
+      "ended_at": "2026-10-21T09:59:54.632868+00:00",
+      "wall_seconds": 6.025727658066899,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5185\nDataView-DataViewTest-DataView-LittleEndian(Score): 6120\nDataView-DataViewTest-DataView-Floats(Score): 2463\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1820\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1252\nDataView-DataViewTest-TypedArray-Floats(Score): 2233\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5185.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6120.0,
+        "DataView-DataViewTest-DataView-Floats": 2463.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1820.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1252.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2233.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 14,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T09:59:54.642427+00:00",
+      "ended_at": "2026-10-21T10:00:00.667172+00:00",
+      "wall_seconds": 6.024754391983151,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5160\nDataView-DataViewTest-DataView-LittleEndian(Score): 5920\nDataView-DataViewTest-DataView-Floats(Score): 2465\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1838\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1114\nDataView-DataViewTest-TypedArray-Floats(Score): 2233\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5160.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5920.0,
+        "DataView-DataViewTest-DataView-Floats": 2465.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1838.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1114.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2233.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 15,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:00:00.676855+00:00",
+      "ended_at": "2026-10-21T10:00:06.702216+00:00",
+      "wall_seconds": 6.025371421827003,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5125\nDataView-DataViewTest-DataView-LittleEndian(Score): 5940\nDataView-DataViewTest-DataView-Floats(Score): 2473\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1820\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1112\nDataView-DataViewTest-TypedArray-Floats(Score): 2220\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5125.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5940.0,
+        "DataView-DataViewTest-DataView-Floats": 2473.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1820.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1112.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2220.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 15,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:00:06.711922+00:00",
+      "ended_at": "2026-10-21T10:00:12.732900+00:00",
+      "wall_seconds": 6.02098518400453,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5150\nDataView-DataViewTest-DataView-LittleEndian(Score): 6110\nDataView-DataViewTest-DataView-Floats(Score): 2460\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1834\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1248\nDataView-DataViewTest-TypedArray-Floats(Score): 2233\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5150.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6110.0,
+        "DataView-DataViewTest-DataView-Floats": 2460.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1834.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1248.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2233.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 16,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:00:12.742514+00:00",
+      "ended_at": "2026-10-21T10:00:18.764067+00:00",
+      "wall_seconds": 6.021563020069152,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5165\nDataView-DataViewTest-DataView-LittleEndian(Score): 6130\nDataView-DataViewTest-DataView-Floats(Score): 2470\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1813\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1249\nDataView-DataViewTest-TypedArray-Floats(Score): 2226\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5165.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6130.0,
+        "DataView-DataViewTest-DataView-Floats": 2470.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1813.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1249.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2226.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 16,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:00:18.773710+00:00",
+      "ended_at": "2026-10-21T10:00:24.797308+00:00",
+      "wall_seconds": 6.023607907118276,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5120\nDataView-DataViewTest-DataView-LittleEndian(Score): 5940\nDataView-DataViewTest-DataView-Floats(Score): 2305\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1818\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1113\nDataView-DataViewTest-TypedArray-Floats(Score): 2228\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5120.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5940.0,
+        "DataView-DataViewTest-DataView-Floats": 2305.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1818.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1113.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2228.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 17,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:00:24.806980+00:00",
+      "ended_at": "2026-10-21T10:00:30.833905+00:00",
+      "wall_seconds": 6.026935036061332,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5120\nDataView-DataViewTest-DataView-LittleEndian(Score): 5920\nDataView-DataViewTest-DataView-Floats(Score): 2463\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1818\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1113\nDataView-DataViewTest-TypedArray-Floats(Score): 2233\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5120.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5920.0,
+        "DataView-DataViewTest-DataView-Floats": 2463.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1818.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1113.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2233.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 17,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:00:30.843559+00:00",
+      "ended_at": "2026-10-21T10:00:36.863448+00:00",
+      "wall_seconds": 6.019898514030501,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5180\nDataView-DataViewTest-DataView-LittleEndian(Score): 6084\nDataView-DataViewTest-DataView-Floats(Score): 2463\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1818\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1257\nDataView-DataViewTest-TypedArray-Floats(Score): 2230\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5180.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6084.0,
+        "DataView-DataViewTest-DataView-Floats": 2463.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1818.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1257.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2230.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 18,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:00:36.873123+00:00",
+      "ended_at": "2026-10-21T10:00:42.897667+00:00",
+      "wall_seconds": 6.024554162053391,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5185\nDataView-DataViewTest-DataView-LittleEndian(Score): 6124\nDataView-DataViewTest-DataView-Floats(Score): 2463\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1834\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1248\nDataView-DataViewTest-TypedArray-Floats(Score): 2228\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5185.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6124.0,
+        "DataView-DataViewTest-DataView-Floats": 2463.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1834.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1248.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2228.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 18,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:00:42.907347+00:00",
+      "ended_at": "2026-10-21T10:00:48.934460+00:00",
+      "wall_seconds": 6.027122432133183,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5140\nDataView-DataViewTest-DataView-LittleEndian(Score): 5920\nDataView-DataViewTest-DataView-Floats(Score): 2475\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1818\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1112\nDataView-DataViewTest-TypedArray-Floats(Score): 2226\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5140.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5920.0,
+        "DataView-DataViewTest-DataView-Floats": 2475.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1818.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1112.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2226.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 19,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:00:48.944181+00:00",
+      "ended_at": "2026-10-21T10:00:54.973492+00:00",
+      "wall_seconds": 6.029321071924642,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5145\nDataView-DataViewTest-DataView-LittleEndian(Score): 5930\nDataView-DataViewTest-DataView-Floats(Score): 2463\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1836\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1112\nDataView-DataViewTest-TypedArray-Floats(Score): 2233\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5145.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5930.0,
+        "DataView-DataViewTest-DataView-Floats": 2463.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1836.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1112.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2233.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 19,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:00:54.983203+00:00",
+      "ended_at": "2026-10-21T10:01:01.002929+00:00",
+      "wall_seconds": 6.019735995912924,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5190\nDataView-DataViewTest-DataView-LittleEndian(Score): 6110\nDataView-DataViewTest-DataView-Floats(Score): 2465\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1818\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1255\nDataView-DataViewTest-TypedArray-Floats(Score): 2230\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5190.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6110.0,
+        "DataView-DataViewTest-DataView-Floats": 2465.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1818.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1255.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2230.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 20,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:01:01.012665+00:00",
+      "ended_at": "2026-10-21T10:01:07.032618+00:00",
+      "wall_seconds": 6.019962856080383,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5180\nDataView-DataViewTest-DataView-LittleEndian(Score): 6100\nDataView-DataViewTest-DataView-Floats(Score): 2468\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1823\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1249\nDataView-DataViewTest-TypedArray-Floats(Score): 2230\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5180.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6100.0,
+        "DataView-DataViewTest-DataView-Floats": 2468.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1823.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1249.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2230.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 20,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:01:07.042316+00:00",
+      "ended_at": "2026-10-21T10:01:13.059252+00:00",
+      "wall_seconds": 6.016945473849773,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5145\nDataView-DataViewTest-DataView-LittleEndian(Score): 5904\nDataView-DataViewTest-DataView-Floats(Score): 2448\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1820\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1109\nDataView-DataViewTest-TypedArray-Floats(Score): 2210\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5145.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5904.0,
+        "DataView-DataViewTest-DataView-Floats": 2448.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1820.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1109.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2210.0
+      }
+    },
+    {
+      "binary": "baseline",
+      "round": 21,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:01:13.069109+00:00",
+      "ended_at": "2026-10-21T10:01:19.095054+00:00",
+      "wall_seconds": 6.025951521936804,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5120\nDataView-DataViewTest-DataView-LittleEndian(Score): 5924\nDataView-DataViewTest-DataView-Floats(Score): 2465\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1808\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1111\nDataView-DataViewTest-TypedArray-Floats(Score): 2168\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5120.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 5924.0,
+        "DataView-DataViewTest-DataView-Floats": 2465.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1808.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1111.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2168.0
+      }
+    },
+    {
+      "binary": "candidate",
+      "round": 21,
+      "warmup": false,
+      "command": [
+        "/usr/bin/taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-bounded-dispatch-cloning/d8",
+        "run.js"
+      ],
+      "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+      "started_at": "2026-10-21T10:01:19.104819+00:00",
+      "ended_at": "2026-10-21T10:01:25.121850+00:00",
+      "wall_seconds": 6.017041045008227,
+      "returncode": 0,
+      "stdout": "DataView-DataViewTest-DataView-BigEndian(Score): 5145\nDataView-DataViewTest-DataView-LittleEndian(Score): 6080\nDataView-DataViewTest-DataView-Floats(Score): 2470\nDataView-DataViewTest-TypedArray-BigEndian(Score): 1820\nDataView-DataViewTest-TypedArray-LittleEndian(Score): 1246\nDataView-DataViewTest-TypedArray-Floats(Score): 2210\n",
+      "stderr": "",
+      "sources_unchanged": true,
+      "scores": {
+        "DataView-DataViewTest-DataView-BigEndian": 5145.0,
+        "DataView-DataViewTest-DataView-LittleEndian": 6080.0,
+        "DataView-DataViewTest-DataView-Floats": 2470.0,
+        "DataView-DataViewTest-TypedArray-BigEndian": 1820.0,
+        "DataView-DataViewTest-TypedArray-LittleEndian": 1246.0,
+        "DataView-DataViewTest-TypedArray-Floats": 2210.0
+      }
+    }
+  ],
+  "statistics": {
+    "ratio": "candidate / baseline",
+    "bootstrap_seed": 20261021,
+    "bootstrap_resamples": 10000,
+    "resampling_unit": "paired round"
+  },
+  "expected_scores": [
+    "DataView-DataViewTest-DataView-BigEndian",
+    "DataView-DataViewTest-DataView-Floats",
+    "DataView-DataViewTest-DataView-LittleEndian",
+    "DataView-DataViewTest-TypedArray-BigEndian",
+    "DataView-DataViewTest-TypedArray-Floats",
+    "DataView-DataViewTest-TypedArray-LittleEndian"
+  ],
+  "source_sha256": {
+    "dataviewtest.js": "4344ee14a720332c908c5b629282611914ff8275d605379c1ccf2082462da95a",
+    "run.js": "a694941550458891a1711a2bbc6f38f7ba16e1845e3b646ab0a653221c7032a9",
+    "../base.js": "5ed309eef1538495cdca40cf8349ce85c41ad24d3c0620d3ea9d2a88c30e01e1"
+  },
+  "summary": {
+    "DataView-DataViewTest-DataView-BigEndian": {
+      "rounds": 21,
+      "baseline_median_score": 5145.0,
+      "candidate_median_score": 5180.0,
+      "paired_geometric_mean_score_ratio": 1.0060560770383298,
+      "score_change_percent": 0.6056077038329777,
+      "candidate_wins": 19,
+      "ties": 2,
+      "paired_bootstrap_95_percent_ci": [
+        1.0045736510842722,
+        1.0075823792109015
+      ]
+    },
+    "DataView-DataViewTest-DataView-Floats": {
+      "rounds": 21,
+      "baseline_median_score": 2465.0,
+      "candidate_median_score": 2465.0,
+      "paired_geometric_mean_score_ratio": 1.0025382965730116,
+      "score_change_percent": 0.25382965730116336,
+      "candidate_wins": 8,
+      "ties": 4,
+      "paired_bootstrap_95_percent_ci": [
+        0.9976564012933486,
+        1.010197614866839
+      ]
+    },
+    "DataView-DataViewTest-DataView-LittleEndian": {
+      "rounds": 21,
+      "baseline_median_score": 5934.0,
+      "candidate_median_score": 6130.0,
+      "paired_geometric_mean_score_ratio": 1.0324026427116852,
+      "score_change_percent": 3.240264271168525,
+      "candidate_wins": 21,
+      "ties": 0,
+      "paired_bootstrap_95_percent_ci": [
+        1.0310765556303791,
+        1.033707522077211
+      ]
+    },
+    "DataView-DataViewTest-TypedArray-BigEndian": {
+      "rounds": 21,
+      "baseline_median_score": 1836.0,
+      "candidate_median_score": 1834.0,
+      "paired_geometric_mean_score_ratio": 1.0000496179115157,
+      "score_change_percent": 0.0049617911515698054,
+      "candidate_wins": 9,
+      "ties": 2,
+      "paired_bootstrap_95_percent_ci": [
+        0.9971206426083098,
+        1.0028876838879548
+      ]
+    },
+    "DataView-DataViewTest-TypedArray-Floats": {
+      "rounds": 21,
+      "baseline_median_score": 2233.0,
+      "candidate_median_score": 2230.0,
+      "paired_geometric_mean_score_ratio": 1.0003526415223192,
+      "score_change_percent": 0.03526415223191748,
+      "candidate_wins": 9,
+      "ties": 4,
+      "paired_bootstrap_95_percent_ci": [
+        0.9972225617028856,
+        1.0032796504918537
+      ]
+    },
+    "DataView-DataViewTest-TypedArray-LittleEndian": {
+      "rounds": 21,
+      "baseline_median_score": 1113.0,
+      "candidate_median_score": 1252.0,
+      "paired_geometric_mean_score_ratio": 1.125256664336343,
+      "score_change_percent": 12.525666433634308,
+      "candidate_wins": 21,
+      "ties": 0,
+      "paired_bootstrap_95_percent_ci": [
+        1.123764559944391,
+        1.126875233369602
+      ]
+    }
+  },
+  "binary_sha256_after": {
+    "baseline": "54fb47bc6772c7bf280ab63f37ffed06d6640d719b2d0f0ebf25c95473788dac",
+    "candidate": "37a9939ccc1da41a16bb102410d12cc9d96cf1d0a8d6d8daaf21f2a1022cccc6"
+  },
+  "completed_pairs": 21,
+  "ended_at": "2026-10-21T10:01:25.383383+00:00",
+  "wall_seconds": 265.88456691615283
+}

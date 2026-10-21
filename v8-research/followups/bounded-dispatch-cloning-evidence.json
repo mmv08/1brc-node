@@ -337,5 +337,15 @@
       ]
     }
   },
-  "interpretation": "Under identical synchronous compilation diagnostics, helper-only leaves the two emitted function sizes and method constants unchanged. Full bounded cloning removes all 15 integer-method constants from the polymorphic function and shrinks it from3296 to3080 bytes. Performance is measured separately with stock flags."
+  "interpretation": "Under identical synchronous compilation diagnostics, helper-only leaves the two emitted function sizes and method constants unchanged. Full bounded cloning removes all 15 integer-method constants from the polymorphic function and shrinks it from3296 to3080 bytes. Performance is measured separately with stock flags.",
+  "benchmark": {
+    "file": "bounded-dispatch-cloning-results.json",
+    "pairs": 21,
+    "geometric_mean_score_change_percent": 2.6832853597789086,
+    "paired_bootstrap_95_percent_ci": [
+      2.534012148137932,
+      2.83927288632293
+    ],
+    "interpretation": "Retain pending compilation-cost and runtime controls. TypedArray LittleEndian +12.526% and DataView LittleEndian +3.240%, 21/21 wins each; DataView BigEndian +0.606%,19/21wins. Other cases have intervals crossing zero. This is this six-case official microbenchmark group, not overall V8 performance."
+  }
 }

@@ -28,7 +28,7 @@
     {
       "id": "bounded-dispatch-cloning",
       "scope": "bounded actual-operation budget including separate metadata bound",
-      "state": "20 tests pass; native method dispatch eliminated; 21-pair benchmark running",
+      "state": "completed: positive official benchmark result; retain pending controls",
       "source_commit": "c4f4ccdb"
     },
     {
@@ -39,7 +39,11 @@
     {
       "id": "mask-implication",
       "scope": "eliminate zero-mask guards implied by dominating guards",
-      "state": "isolated source worktree"
+      "state": "building isolated candidate",
+      "source_commits": [
+        "5f9782e9",
+        "4c5f3615"
+      ]
     }
   ]
 }
