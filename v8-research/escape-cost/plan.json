@@ -3,8 +3,8 @@
   "baseline_commit": "c281a2f9e3fb9ece0b455153ae45579b7b4108ad",
   "baseline_binary": "results/v8-general/v8/out/x64.release-encoded-marker/d8",
   "baseline_sha256": "e50dd57bcd9a2c6f1a2c4bd10c2bee4ab6a3e45140c59bd64dfd34d58bdc1ddb",
-  "baseline_provenance": "Production binary built at428ce5ce; c281a2f9 changes only the marker test. The recorded refinement verifies byte-identical d8 and passing tests.",
-  "initial_evidence": "The preceding fresh-allocation official Compiler profile has5400 State Get and3511 VirtualObject Get self ticks out of168883 compiler ticks. Native PCs match the hash bucket/chain code. This round refreshes that profile on the retained marker binary before editing.",
+  "baseline_provenance": "Production binary built at 428ce5ce; c281a2f9 changes only the marker test. The recorded refinement verifies byte-identical d8 and passing tests.",
+  "initial_evidence": "The preceding fresh-allocation official Compiler profile has 5,400 State Get and 3,511 VirtualObject Get self ticks out of 168,883 compiler ticks. Native PCs match hash bucket/chain code. The refreshed marker profile has 5,749 and 3,443 self ticks out of 169,430 compiler ticks (5.425% combined), with zero unaccounted ticks.",
   "protocol": {
     "cpu": 2,
     "isolation": "Builds, tests, profiles and timed benchmarks run serially. Independent source review may overlap.",
@@ -13,15 +13,28 @@
     "cost": "Each correctness-validated candidate gets six fixed alternating DataView compilation-cost pairs, including every round.",
     "compiler": "Each correctness-validated candidate gets twelve fixed alternating official Compiler pairs regardless of cost-diagnostic outcome; report all nine cases and AB/BA splits.",
     "runtime": "Each retained candidate gets twenty-one fixed stock DataView pairs.",
-    "statistics": "One warmup per binary, fresh processes, paired bootstrap with10000 resamples and seed20261021. Per-case intervals are not corrected for multiple comparisons.",
+    "statistics": "One warmup per binary, fresh processes, paired bootstrap with 10000 resamples and seed 20261021. Per-case intervals are not corrected for multiple comparisons.",
     "checkpoints": "Unsigned source and evidence commits for every experiment, including diagnostics and rejected candidates. Preserve original binaries and all measured rounds.",
-    "upstream_validation": "After the bounded escape-analysis round, apply the existing fresh-allocation lookup patch alone on pristine293377af. Validate correctness and collect twelve fixed official Compiler pairs and twenty-one stock DataView pairs against the preserved pristine build. No upload or publication."
+    "upstream_validation": "After the bounded escape-analysis round, apply the existing fresh-allocation lookup patch alone on pristine 293377af. Validate correctness and collect twelve fixed official Compiler pairs and twenty-one stock DataView pairs against the preserved pristine build. No upload or publication."
   },
   "experiments": [
-    {"id": "table-diagnostics", "state": "planned"},
-    {"id": "indexed-storage", "state": "awaiting occupancy measurements"},
-    {"id": "merge-input-cache", "state": "awaiting lookup attribution"},
-    {"id": "standalone-fresh-allocation", "state": "planned after escape-analysis experiments"}
+    {
+      "id": "table-diagnostics",
+      "state": "instrumented source committed; build in progress",
+      "source_commit": "285d9486"
+    },
+    {
+      "id": "indexed-storage",
+      "state": "awaiting occupancy measurements"
+    },
+    {
+      "id": "merge-input-cache",
+      "state": "awaiting lookup attribution"
+    },
+    {
+      "id": "standalone-fresh-allocation",
+      "state": "planned after escape-analysis experiments"
+    }
   ],
-  "limits": "Hardware perf remains unavailable (perf_event_paranoid4). Use the native sampler, phase statistics, counters and disassembly. Sample shares are not promised gains. Preserve default/reference semantics, traversal, safepoints, allocation budgets and generated-program behavior."
+  "limits": "Hardware perf remains unavailable (perf_event_paranoid=4). Use the native sampler, phase statistics, counters and disassembly. Sample shares are not promised gains. Preserve default/reference semantics, traversal, safepoints, allocation budgets and generated-program behavior."
 }

@@ -1,0 +1,154 @@
+{
+  "capture": {
+    "command": [
+      "taskset",
+      "-c",
+      "2",
+      "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8",
+      "--allow-natives-syntax",
+      "--prof",
+      "--prof-sampling-interval=250",
+      "--no-logfile-per-isolate",
+      "--logfile=/home/mmv/projects/1brc-node/results/v8-general/profiles/escape-cost/marker-baseline/v8.log",
+      "run.js"
+    ],
+    "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/Compiler",
+    "elapsed_seconds": 52.86744106980041,
+    "source_commit": "c281a2f9e3fb9ece0b455153ae45579b7b4108ad",
+    "binary_sha256": "e50dd57bcd9a2c6f1a2c4bd10c2bee4ab6a3e45140c59bd64dfd34d58bdc1ddb",
+    "source_sha256": {
+      "large.js": "520c87a2469b3d22a0c968b0a4f6b572590a726feb0d44f6bdfbfa3794312115",
+      "medium.js": "c297630555819b13f3a1a65bd24355199489511fa0f659c3cd6b0539b6801e46",
+      "run.js": "4da89999215f19571347248aba9db6f20b61a944b2a986a1bd4d153baae80ae5",
+      "small.js": "d11ead865918d71b50df8d52571f9c1e5985584479a6becae5e7017b7e8b6edf",
+      "../base.js": "5ed309eef1538495cdca40cf8349ce85c41ad24d3c0620d3ea9d2a88c30e01e1"
+    },
+    "log_sha256": "df50d9b80ef426aad0797ab1dc8c3c00bf99bbbdd87c12b3acd2aae4169da5ca",
+    "processor_command": [
+      "tools/linux-tick-processor",
+      "--compiler",
+      "/home/mmv/projects/1brc-node/results/v8-general/profiles/escape-cost/marker-baseline/v8.log"
+    ],
+    "processor_D8_PATH": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8",
+    "diagnostic_scores": {
+      "Small-Empty-Compile": 12900.0,
+      "Small-Constant-Compile": 14000.0,
+      "Small-Add-Compile": 5360.0,
+      "Small-Load-Compile": 8610.0,
+      "Medium-Copy-Compile": 6610.0,
+      "Medium-Fact-Compile": 34800.0,
+      "Medium-Prime-Compile": 23100.0,
+      "Medium-Eratosthenes-Compile": 17600.0,
+      "Large-Copy-Compile": 240.0
+    },
+    "returncode": 0
+  },
+  "profile": {
+    "report": "results/v8-general/profiles/escape-cost/marker-baseline/compiler-report.txt",
+    "sha256": "626a4e2a0898312245d74e33c26166c3029688744ca6a914af121170fbd3de26",
+    "total_ticks": 169655,
+    "excluded_ticks": 225,
+    "included_ticks": 169430,
+    "unaccounted_ticks": 0,
+    "selected_symbols": [
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::ReduceTop()",
+        "self_ticks": 6373,
+        "percent_of_included_ticks": 3.7614354010505813
+      },
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::Reduce(v8::internal::compiler::Node*)",
+        "self_ticks": 4030,
+        "percent_of_included_ticks": 2.378563418520923
+      },
+      {
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Kill(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const",
+        "self_ticks": 2157,
+        "percent_of_included_ticks": 1.2730921324440772
+      },
+      {
+        "symbol": "v8::internal::compiler::LoadElimination::AliasStateInfo::MayAlias(v8::internal::compiler::Node*) const",
+        "self_ticks": 157,
+        "percent_of_included_ticks": 0.09266363690019477
+      }
+    ],
+    "top_cpp_symbols": [
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::ReduceTop()",
+        "self_ticks": 6373,
+        "percent_of_included_ticks": 3.7614354010505813
+      },
+      {
+        "symbol": "v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const",
+        "self_ticks": 5749,
+        "percent_of_included_ticks": 3.39314171044089
+      },
+      {
+        "symbol": "std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>* std::__Cr::__tree<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, std::__Cr::__map_value_compare<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType>, std::__Cr::less<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> > >, v8::internal::ZoneAllocator<std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> > >::__construct_from_tree[abi:sqn240000]<std::__Cr::__tree<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, std::__Cr::__map_value_compare<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType>, std::__Cr::less<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> > >, v8::internal::ZoneAllocator<std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> > >::__copy_construct_tree[abi:sqn240000](std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>*)::{lambda(std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> const&)#1}>(std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>*, std::__Cr::__tree<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, std::__Cr::__map_value_compare<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType>, std::__Cr::less<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> > >, v8::internal::ZoneAllocator<std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> > >::__copy_construct_tree[abi:sqn240000](std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>*)::{lambda(std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> const&)#1})",
+        "self_ticks": 5369,
+        "percent_of_included_ticks": 3.1688602962875523
+      },
+      {
+        "symbol": "std::__Cr::optional<std::__Cr::pair<v8::internal::compiler::UseInterval, v8::internal::compiler::UseInterval> > v8::internal::compiler::AreUseIntervalsIntersecting<v8::internal::ZoneVector<v8::internal::compiler::UseInterval>, v8::internal::ZoneVector<v8::internal::compiler::UseInterval> >(v8::internal::ZoneVector<v8::internal::compiler::UseInterval> const&, v8::internal::ZoneVector<v8::internal::compiler::UseInterval> const&)",
+        "self_ticks": 4641,
+        "percent_of_included_ticks": 2.739184323909579
+      },
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::Reduce(v8::internal::compiler::Node*)",
+        "self_ticks": 4030,
+        "percent_of_included_ticks": 2.378563418520923
+      },
+      {
+        "symbol": "v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)",
+        "self_ticks": 4026,
+        "percent_of_included_ticks": 2.3762025615298352
+      },
+      {
+        "symbol": "__madvise@@GLIBC_PRIVATE",
+        "self_ticks": 3849,
+        "percent_of_included_ticks": 2.2717346396742015
+      },
+      {
+        "symbol": "v8::internal::compiler::turboshaft::RedundantStoreAnalysis::ProcessBlock(v8::internal::compiler::turboshaft::Block const&)",
+        "self_ticks": 3736,
+        "percent_of_included_ticks": 2.2050404296759725
+      },
+      {
+        "symbol": "v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const",
+        "self_ticks": 3443,
+        "percent_of_included_ticks": 2.0321076550787938
+      },
+      {
+        "symbol": "v8::internal::compiler::EffectGraphReducer::ReduceFrom(v8::internal::compiler::Node*)",
+        "self_ticks": 2801,
+        "percent_of_included_ticks": 1.6531901080092073
+      },
+      {
+        "symbol": "v8::internal::compiler::SpillRange::TryMerge(v8::internal::compiler::SpillRange*)",
+        "self_ticks": 2668,
+        "percent_of_included_ticks": 1.574691613055539
+      },
+      {
+        "symbol": "v8::internal::Map::FindFieldOwner(v8::internal::InternalIndex) const",
+        "self_ticks": 2646,
+        "percent_of_included_ticks": 1.5617068996045564
+      },
+      {
+        "symbol": "v8::internal::compiler::GraphTrimmer::TrimGraph()",
+        "self_ticks": 2407,
+        "percent_of_included_ticks": 1.4206456943870625
+      },
+      {
+        "symbol": "v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::FindLeftmost(v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::FocusedTree const*, int*, std::__Cr::array<v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::FocusedTree const*, 32ul>*)",
+        "self_ticks": 2318,
+        "percent_of_included_ticks": 1.3681166263353597
+      },
+      {
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Kill(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const",
+        "self_ticks": 2157,
+        "percent_of_included_ticks": 1.2730921324440772
+      }
+    ]
+  },
+  "limits": "Compiler-state self samples, not timing evidence. Profiling enables source-position wrappers absent from stock benchmarks. Shared native addresses can have multiple template symbols."
+}

@@ -1,0 +1,168 @@
+diff --git a/src/compiler/escape-analysis.cc b/src/compiler/escape-analysis.cc
+index 87757ff5..4bb4fc43 100644
+--- a/src/compiler/escape-analysis.cc
++++ b/src/compiler/escape-analysis.cc
+@@ -4,6 +4,8 @@
+ 
+ #include "src/compiler/escape-analysis.h"
+ 
++#include <set>
++
+ #include "src/codegen/tick-counter.h"
+ #include "src/compiler/frame-states.h"
+ #include "src/compiler/node-matchers.h"
+@@ -27,6 +29,9 @@ namespace v8 {
+ namespace internal {
+ namespace compiler {
+ 
++// Diagnostic-only counters; this branch is never used for timing comparisons.
++thread_local size_t escape_diagnostic_merge_depth = 0;
++
+ template <class T>
+ class Sidetable {
+  public:
+@@ -49,6 +54,8 @@ class SparseSidetable {
+   explicit SparseSidetable(Zone* zone, T def_value = T())
+       : def_value_(std::move(def_value)), map_(zone) {}
+   void Set(const Node* node, T value) {
++    ++sets_;
++    if (!(value != def_value_)) ++default_sets_;
+     auto iter = map_.find(node->id());
+     if (iter != map_.end()) {
+       iter->second = std::move(value);
+@@ -57,13 +64,56 @@ class SparseSidetable {
+     }
+   }
+   const T& Get(const Node* node) const {
++    ++gets_;
++    max_read_id_ = std::max(max_read_id_, static_cast<size_t>(node->id()));
++    if (escape_diagnostic_merge_depth) ++merge_gets_;
+     auto iter = map_.find(node->id());
++    if (iter != map_.end()) {
++      ++hits_;
++    } else {
++      ++missing_gets_;
++      if (escape_diagnostic_merge_depth) ++merge_missing_gets_;
++    }
+     return iter != map_.end() ? iter->second : def_value_;
+   }
+ 
++  void PrintDiagnostics(const char* table, const char* stage, int id,
++                        size_t graph_nodes) const {
++    size_t max_stored_id = 0;
++    size_t nondefault = 0;
++    std::set<size_t> pages64, pages256, pages1024;
++    for (const auto& [node_id, value] : map_) {
++      max_stored_id = std::max(max_stored_id, static_cast<size_t>(node_id));
++      if (value != def_value_) ++nondefault;
++      pages64.insert(node_id / 64);
++      pages256.insert(node_id / 256);
++      pages1024.insert(node_id / 1024);
++    }
++    PrintF(
++        "EA_TABLE {\"id\":%d,\"stage\":\"%s\",\"table\":\"%s\","
++        "\"graph_nodes\":%zu,\"value_bytes\":%zu,\"entries\":%zu,"
++        "\"nondefault_entries\":%zu,\"max_stored_id\":%zu,"
++        "\"max_read_id\":%zu,\"buckets\":%zu,\"gets\":%zu,"
++        "\"hits\":%zu,\"missing_gets\":%zu,\"merge_gets\":%zu,"
++        "\"merge_missing_gets\":%zu,\"sets\":%zu,\"default_sets\":%zu,"
++        "\"pages64\":%zu,\"pages256\":%zu,\"pages1024\":%zu}\n",
++        id, stage, table, graph_nodes, sizeof(T), map_.size(), nondefault,
++        max_stored_id, max_read_id_, map_.bucket_count(), gets_, hits_,
++        missing_gets_, merge_gets_, merge_missing_gets_, sets_, default_sets_,
++        pages64.size(), pages256.size(), pages1024.size());
++  }
++
+  private:
+   T def_value_;
+   ZoneUnorderedMap<NodeId, T> map_;
++  size_t sets_ = 0;
++  size_t default_sets_ = 0;
++  mutable size_t gets_ = 0;
++  mutable size_t hits_ = 0;
++  mutable size_t missing_gets_ = 0;
++  mutable size_t merge_gets_ = 0;
++  mutable size_t merge_missing_gets_ = 0;
++  mutable size_t max_read_id_ = 0;
+ };
+ 
+ // Keeps track of the changes to the current node during reduction.
+@@ -129,6 +179,10 @@ class VariableTracker {
+   Node* Get(Variable var, Node* effect) { return table_.Get(effect).Get(var); }
+   Zone* zone() { return zone_; }
+ 
++  void PrintDiagnostics(const char* stage, int id, size_t graph_nodes) const {
++    table_.PrintDiagnostics("state", stage, id, graph_nodes);
++  }
++
+   class V8_NODISCARD Scope : public ReduceScope {
+    public:
+     Scope(VariableTracker* tracker, Node* node, Reduction* reduction);
+@@ -167,6 +221,11 @@ class VariableTracker {
+ // invariants regarding changes and re-visitation.
+ class EscapeAnalysisTracker : public ZoneObject {
+  public:
++  void PrintDiagnostics(const char* stage, int id, size_t graph_nodes) const {
++    virtual_objects_.PrintDiagnostics("virtual", stage, id, graph_nodes);
++    variable_states_.PrintDiagnostics(stage, id, graph_nodes);
++  }
++
+   EscapeAnalysisTracker(JSGraph* jsgraph, EffectGraphReducer* reducer,
+                         Zone* zone)
+       : virtual_objects_(zone),
+@@ -438,6 +497,10 @@ VariableTracker::Scope::~Scope() {
+ }
+ 
+ VariableTracker::State VariableTracker::MergeInputs(Node* effect_phi) {
++  struct DiagnosticMergeScope {
++    DiagnosticMergeScope() { ++escape_diagnostic_merge_depth; }
++    ~DiagnosticMergeScope() { --escape_diagnostic_merge_depth; }
++  } diagnostic_merge_scope;
+   // A variable that is mapped to [nullptr] was not assigned a value on every
+   // execution path to the current effect phi. Relying on the invariant that
+   // every variable is initialized (at least with a sentinel like the Dead
+@@ -943,6 +1006,10 @@ EscapeAnalysis::EscapeAnalysis(JSGraph* jsgraph, TickCounter* tick_counter,
+       tracker_(zone->New<EscapeAnalysisTracker>(jsgraph, this, zone)),
+       jsgraph_(jsgraph) {}
+ 
++void EscapeAnalysis::PrintDiagnostics(const char* stage, int id) const {
++  tracker_->PrintDiagnostics(stage, id, jsgraph_->graph()->NodeCount());
++}
++
+ Node* EscapeAnalysisResult::GetReplacementOf(Node* node) {
+   Node* replacement = tracker_->GetReplacementOf(node);
+   // Replacements cannot have replacements. This is important to ensure
+diff --git a/src/compiler/escape-analysis.h b/src/compiler/escape-analysis.h
+index c2650e75..75a4b15e 100644
+--- a/src/compiler/escape-analysis.h
++++ b/src/compiler/escape-analysis.h
+@@ -178,6 +178,8 @@ class V8_EXPORT_PRIVATE EscapeAnalysis final
+  public:
+   EscapeAnalysis(JSGraph* jsgraph, TickCounter* tick_counter, Zone* zone);
+ 
++  void PrintDiagnostics(const char* stage, int id) const;
++
+   EscapeAnalysisResult analysis_result() {
+     DCHECK(Complete());
+     return EscapeAnalysisResult(tracker_);
+diff --git a/src/compiler/pipeline.cc b/src/compiler/pipeline.cc
+index e5e2dceb..3eae8372 100644
+--- a/src/compiler/pipeline.cc
++++ b/src/compiler/pipeline.cc
+@@ -1144,6 +1144,8 @@ struct EscapeAnalysisPhase {
+     EscapeAnalysis escape_analysis(data->jsgraph(),
+                                    &data->info()->tick_counter(), temp_zone);
+     escape_analysis.ReduceGraph();
++    escape_analysis.PrintDiagnostics("analysis",
++                                     data->info()->optimization_id());
+ 
+     GraphReducer reducer(temp_zone, data->graph(),
+                          &data->info()->tick_counter(), data->broker(),
+@@ -1161,6 +1163,7 @@ struct EscapeAnalysisPhase {
+     // TODO(turbofan): Turn this into a debug mode check once we have
+     // confidence.
+     escape_reducer.VerifyReplacement();
++    escape_analysis.PrintDiagnostics("final", data->info()->optimization_id());
+   }
+ };
+ 
