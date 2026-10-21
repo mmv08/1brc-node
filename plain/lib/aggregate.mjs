@@ -1,15 +1,26 @@
-import { BYTE_MASKS, chooseTemperatureParser, MAX_STATIONS } from './parse-utils.mjs';
-import { consume } from './read.mjs';
+import { consume } from '../../lib/read.mjs';
+
+const BYTE_MASKS = [0, 0xff, 0xffff, 0xffffff];
+const MAX_STATIONS = 10000;
+const TABLE_SIZE = 32768;
+const temperaturePrefixes = new Uint16Array(4096);
+for (let first = 0; first <= 9; first++) {
+  temperaturePrefixes[0xe00 | first] = first * 10;
+  for (let second = 0; second <= 9; second++) {
+    temperaturePrefixes[(second << 8) | first] = first * 100 + second * 10;
+  }
+}
+
+function temperatureBase(digits) {
+  return temperaturePrefixes[digits & 0x0f0f];
+}
 
 // Scan independent station names before updating either aggregate. This breaks
 // the next-row dependency chain and lets the CPU overlap more work. Two cursors
-// won the full-file comparison; 1/3/4 remain selectable for reproducible tests.
+// won the full-file comparison.
 // Keep cold insertion out of the hot functions to make V8 inlining affordable.
-export async function aggregate(config) {
-  const tableSize = 2 ** Number(process.env.TABLE_BITS ?? 15);
-  if (![16384, 32768, 65536].includes(tableSize))
-    throw new Error('TABLE_BITS must be 14, 15, or 16');
-  const table = new Uint16Array(tableSize);
+export function aggregate(config) {
+  const table = new Uint16Array(TABLE_SIZE);
   // Worker-local, direct-mapped predictions; the hash table remains authoritative.
   // Carry the name length with its ID to avoid a dependent record load on hits.
   const prefixCache = new Uint32Array(32768);
@@ -20,8 +31,6 @@ export async function aggregate(config) {
   const counts = new Uint32Array(MAX_STATIONS);
   const arena = Buffer.allocUnsafe(MAX_STATIONS * 104 + 16);
   const keys = new DataView(arena.buffer, arena.byteOffset, arena.byteLength);
-  const temperatureBase = chooseTemperatureParser();
-  const branchlessNames = (process.env.NAME_COMPARE ?? 'branchless') === 'branchless';
   let used = 0;
   let keyOffset = 0;
 
@@ -39,8 +48,7 @@ export async function aggregate(config) {
     records[r] = hash;
     records[r + 1] = head;
     records[r + 2] = length > 4 ? view.getInt32(end - 4, true) : 0;
-    // For short names the middle word overlaps the tail. This permits testing
-    // an unconditional middle-word comparison instead of a length > 8 branch.
+    // For short names the middle word overlaps the tail, avoiding a length > 8 branch.
     records[r + 3] = length > 4 ? view.getInt32(start + Math.min(4, length - 4), true) : 0;
     records[r + 4] = length;
     records[r + 5] = keyOffset;
@@ -55,9 +63,7 @@ export async function aggregate(config) {
     if (records[r + 1] !== head) return false;
     if (length <= 4) return true;
     if (view.getInt32(start + length - 4, true) !== records[r + 2]) return false;
-    if (branchlessNames) {
-      if (view.getInt32(start + Math.min(4, length - 4), true) !== records[r + 3]) return false;
-    } else if (length > 8 && view.getInt32(start + 4, true) !== records[r + 3]) return false;
+    if (view.getInt32(start + Math.min(4, length - 4), true) !== records[r + 3]) return false;
     const offset = records[r + 5];
     for (let i = 8; i < length - 4; i += 4) {
       if (view.getInt32(start + i, true) !== keys.getInt32(offset + i, true)) return false;
@@ -67,12 +73,10 @@ export async function aggregate(config) {
 
   function makeParser(buffer) {
     const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
-    const temperatures = new Int32Array(4);
-    const streams = Number(process.env.STREAMS ?? 2);
-    if (![1, 2, 3, 4].includes(streams)) throw new Error('STREAMS must be 1..4');
+    const temperatures = new Int32Array(2);
 
     function find(start, end, hash, head) {
-      let slot = (hash ^ (hash >>> 16)) & (tableSize - 1);
+      let slot = (hash ^ (hash >>> 16)) & (TABLE_SIZE - 1);
       for (;;) {
         const id = table[slot] - 1;
         if (id < 0) return insert(buffer, view, start, end, hash, head, slot);
@@ -80,7 +84,7 @@ export async function aggregate(config) {
         const length = end - start;
         if (records[r] === hash && records[r + 4] === length && equal(view, start, length, r, head))
           return id;
-        slot = (slot + 1) & (tableSize - 1);
+        slot = (slot + 1) & (TABLE_SIZE - 1);
       }
     }
 
@@ -153,55 +157,23 @@ export async function aggregate(config) {
     }
 
     return (start, end) => {
-      if (streams === 1) return remainder(start, end);
-      // Buffer-local bounds fit in int32. Keep these locals outside the
-      // boundary closure so hot-loop limits do not need context-cell loads.
+      // Buffer-local bounds fit in int32; file offsets remain full JS numbers.
       const limit = end | 0;
-      const boundary = (part) =>
-        Math.min(end, buffer.indexOf(10, start + Math.floor(((end - start) * part) / streams)) + 1);
-      const endA = boundary(1) | 0;
-      const endB = (streams > 2 ? boundary(2) : limit) | 0;
-      const endC = (streams > 3 ? boundary(3) : limit) | 0;
+      const endA = Math.min(end, buffer.indexOf(10, start + Math.floor((end - start) / 2)) + 1) | 0;
       let a = start | 0;
       let b = endA;
-      let c = endB;
-      let d = endC;
-      if (streams === 2) {
-        while (a < endA && b < limit) {
-          const idA = scan(a, 0);
-          const idB = scan(b, 1);
-          a = update(temperatures[0], idA) | 0;
-          b = update(temperatures[1], idB) | 0;
-        }
-      } else if (streams === 3) {
-        while (a < endA && b < endB && c < limit) {
-          const idA = scan(a, 0);
-          const idB = scan(b, 1);
-          const idC = scan(c, 2);
-          a = update(temperatures[0], idA) | 0;
-          b = update(temperatures[1], idB) | 0;
-          c = update(temperatures[2], idC) | 0;
-        }
-      } else {
-        while (a < endA && b < endB && c < endC && d < limit) {
-          const idA = scan(a, 0);
-          const idB = scan(b, 1);
-          const idC = scan(c, 2);
-          const idD = scan(d, 3);
-          a = update(temperatures[0], idA) | 0;
-          b = update(temperatures[1], idB) | 0;
-          c = update(temperatures[2], idC) | 0;
-          d = update(temperatures[3], idD) | 0;
-        }
+      while (a < endA && b < limit) {
+        const idA = scan(a, 0);
+        const idB = scan(b, 1);
+        a = update(temperatures[0], idA) | 0;
+        b = update(temperatures[1], idB) | 0;
       }
       remainder(a, endA);
-      remainder(b, endB);
-      if (streams > 2) remainder(c, endC);
-      if (streams > 3) remainder(d, end);
+      remainder(b, limit);
     };
   }
 
-  await consume(config, makeParser);
+  consume(config, makeParser);
   return Array.from({ length: used }, (_, id) => {
     const r = id * 8;
     const offset = records[r + 5];

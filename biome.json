@@ -5,6 +5,7 @@
       "**",
       "!upstream",
       "!results",
+      "!v8-research",
       "!.runtimes",
       "!measurements*.txt",
       "!measurements*.out"

@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-21T19:20:53.641582+00:00",
+  "baselineCommit": "351f07f0f89962514d46324f717e0318ad56a4f8",
+  "method": {
+    "roundsPerEngine": 21,
+    "fullFileWarmupsPerCase": 3,
+    "workers": 24,
+    "order": "Alternating before/after and after/before in fresh processes. Node campaign completed before Wasm.",
+    "score": "Trimmed mean excluding fastest and slowest; paired statistics use all measured rounds.",
+    "uncertainty": "95% percentile bootstrap of mean paired log elapsed-time ratios, 10000 resamples, seed 20261021. Negative changes are faster.",
+    "limitations": "Single machine and dataset with warm filesystem cache; intervals are not proof of equivalence on all workloads."
+  },
+  "engines": {
+    "node": {
+      "rawReport": "benchmarks/cleanup-node.json",
+      "beforeSeconds": 1.0248824484736843,
+      "afterSeconds": 1.0192868888421054,
+      "pairedElapsedChangePercent": -0.5079670655859347,
+      "paired95PercentInterval": [-1.1693445653596424, 0.20702001969787887],
+      "abChangePercent": -0.7730306564882494,
+      "baChangePercent": -0.21557923282661262,
+      "fasterRounds": 13,
+      "baselineSourceSha256": "2f45bac2f84616fd8c17ccb036779dc229ae6b5fbd104aa28da1a28f2a0e07cf",
+      "candidateSourceSha256": "a8a55fc4215d6d4c39c02368af306fabd4d12e3261cb7454ffa4436893594de9",
+      "allOutputsCorrect": true,
+      "allMeasuredFilesystemInputsZero": true
+    },
+    "wasm": {
+      "rawReport": "benchmarks/cleanup-wasm.json",
+      "beforeSeconds": 0.48366066910526295,
+      "afterSeconds": 0.4826259553684209,
+      "pairedElapsedChangePercent": -0.2071133505169631,
+      "paired95PercentInterval": [-1.2959518079536547, 0.9630448187542218],
+      "abChangePercent": 0.011169949664968648,
+      "baChangePercent": -0.4466747524650705,
+      "fasterRounds": 13,
+      "baselineSourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+      "candidateSourceSha256": "f45ccb0c85a278f63e341b71fbb115969de3b0745c488ff88f4d3594feeafea0",
+      "allOutputsCorrect": true,
+      "allMeasuredFilesystemInputsZero": true
+    }
+  },
+  "exactVerification": {
+    "date": "2026-10-21T19:20:07.997Z",
+    "nodeVersion": "v26.12.0",
+    "file": "measurements.txt",
+    "measurements": 1000000000,
+    "stations": 413,
+    "exactTuplesMatch": true,
+    "expectedStdoutMatches": true,
+    "sources": {
+      "node": "a8a55fc4215d6d4c39c02368af306fabd4d12e3261cb7454ffa4436893594de9",
+      "wasm": "f45ccb0c85a278f63e341b71fbb115969de3b0745c488ff88f4d3594feeafea0"
+    }
+  },
+  "checks": {
+    "node24": {
+      "passed": 57,
+      "failed": 0,
+      "log": "results/cleanup-tests-node24.txt",
+      "sha256": "55c1f5e9a9bef98057658d60a4a6e01b46182062b54650cde3a1cfe47155fbfd"
+    },
+    "node26": {
+      "passed": 57,
+      "failed": 0,
+      "log": "results/cleanup-tests-node26.txt",
+      "sha256": "15a3975eef6a293ea49bca78cb7bcd400c4dc12232c6391962bf41d99aa3772d"
+    },
+    "biome": "pass; solver/tooling files; immutable research artifacts excluded",
+    "clangFormat": "pass; existing local Clang 21.1.8 formatter",
+    "v8ResearchAudit": {
+      "passed": true,
+      "log": "results/cleanup-v8-audit.txt",
+      "report": "results/cleanup-v8-audit.json",
+      "sha256": "a7be292111165c057b7ebbfc548218b46d57fe7c2e9c66987998291cb09b9796",
+      "rootHistoryCheckedThrough": "351f07f0f89962514d46324f717e0318ad56a4f8",
+      "experiments": ["indexed-storage", "merge-input-cache", "standalone-fresh-allocation"]
+    }
+  },
+  "wasmKernel": {
+    "wasm/kernel.c": {
+      "unchangedFromBaseline": true,
+      "sha256": "e2a6b2b11d7063fecd8525b99c4f2ef2790f5c1e0a8825161b6a322023dc6dbc"
+    },
+    "wasm/kernel.wasm": {
+      "unchangedFromBaseline": true,
+      "sha256": "16a79f116e95d722aba3b2e43ea917e68be199af9490c729714b3f198b703641"
+    },
+    "wasm/build.json": {
+      "unchangedFromBaseline": true,
+      "sha256": "67d26bba8b8d47b0642209408cefe4c376c9e85bd852679e20323f8a7da88db5"
+    }
+  }
+}

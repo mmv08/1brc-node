@@ -1,0 +1,345 @@
+{
+  "date": "2026-10-21T19:19:20.348Z",
+  "label": "cleanup-wasm",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "wasm before cleanup",
+      "round": 1,
+      "seconds": 0.5158453059999999
+    },
+    {
+      "name": "wasm after cleanup",
+      "round": 1,
+      "seconds": 0.4989147300000001
+    },
+    {
+      "name": "wasm after cleanup",
+      "round": 2,
+      "seconds": 0.4999092250000001
+    },
+    {
+      "name": "wasm before cleanup",
+      "round": 2,
+      "seconds": 0.47391383900000006
+    },
+    {
+      "name": "wasm before cleanup",
+      "round": 3,
+      "seconds": 0.4597094430000002
+    },
+    {
+      "name": "wasm after cleanup",
+      "round": 3,
+      "seconds": 0.48397388600000024
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "wasm before cleanup",
+      "script": "/home/mmv/projects/1brc-node/results/cleanup-baseline-351f07f/calculate.mjs",
+      "revision": "351f07f",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "24"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+      "times": [
+        0.47542725900000005, 0.4708253320000003, 0.4950008680000001, 0.4879476319999994,
+        0.48704749599999925, 0.49465196599999944, 0.48416473899999984, 0.48186809399999947,
+        0.47822532600000156, 0.4928363730000001, 0.4855294569999987, 0.47189657400000035,
+        0.48791970799999945, 0.4847406110000011, 0.481821014000001, 0.474200202,
+        0.47958322999999653, 0.47363474000000133, 0.4851305199999988, 0.48792690399999994,
+        0.5000642499999994
+      ],
+      "usage": [
+        {
+          "user": 8.07,
+          "system": 1.62,
+          "maxRssKiB": 325264,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.79,
+          "system": 1.85,
+          "maxRssKiB": 324196,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.91,
+          "system": 1.74,
+          "maxRssKiB": 324316,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.88,
+          "system": 1.7,
+          "maxRssKiB": 324392,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.75,
+          "system": 1.83,
+          "maxRssKiB": 324684,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.84,
+          "system": 1.77,
+          "maxRssKiB": 326216,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.89,
+          "system": 1.79,
+          "maxRssKiB": 325300,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.82,
+          "system": 1.79,
+          "maxRssKiB": 324692,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.9,
+          "system": 1.68,
+          "maxRssKiB": 325992,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.9,
+          "system": 1.71,
+          "maxRssKiB": 325204,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.98,
+          "system": 1.71,
+          "maxRssKiB": 324404,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.82,
+          "system": 1.88,
+          "maxRssKiB": 324380,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.08,
+          "system": 1.56,
+          "maxRssKiB": 326368,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.93,
+          "system": 1.77,
+          "maxRssKiB": 326164,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.93,
+          "system": 1.79,
+          "maxRssKiB": 323124,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.86,
+          "system": 1.69,
+          "maxRssKiB": 324180,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8,
+          "system": 1.69,
+          "maxRssKiB": 324468,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.94,
+          "system": 1.68,
+          "maxRssKiB": 323920,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.92,
+          "system": 1.75,
+          "maxRssKiB": 324016,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.97,
+          "system": 1.63,
+          "maxRssKiB": 326024,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.84,
+          "system": 1.73,
+          "maxRssKiB": 323256,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.48366066910526295,
+      "best": 0.4708253320000003
+    },
+    {
+      "name": "wasm after cleanup",
+      "script": "calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "24"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "f45ccb0c85a278f63e341b71fbb115969de3b0745c488ff88f4d3594feeafea0",
+      "times": [
+        0.4719834890000002, 0.5009678240000003, 0.4799683509999995, 0.4908204400000004,
+        0.4849552169999997, 0.4692149289999998, 0.47785810899999887, 0.47694946600000004,
+        0.4952357730000003, 0.4756966709999997, 0.49218267399999965, 0.4691266209999994, 0.48244218,
+        0.48332591800000047, 0.48451925200000184, 0.464513332999999, 0.48003158099999926,
+        0.484119703999997, 0.5058690779999997, 0.48467409399999817, 0.4858208590000031
+      ],
+      "usage": [
+        {
+          "user": 7.78,
+          "system": 1.68,
+          "maxRssKiB": 324432,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.04,
+          "system": 1.61,
+          "maxRssKiB": 324708,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.82,
+          "system": 1.77,
+          "maxRssKiB": 324112,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.94,
+          "system": 1.73,
+          "maxRssKiB": 324536,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.8,
+          "system": 1.85,
+          "maxRssKiB": 325700,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.86,
+          "system": 1.72,
+          "maxRssKiB": 324340,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.99,
+          "system": 1.69,
+          "maxRssKiB": 325924,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.83,
+          "system": 1.74,
+          "maxRssKiB": 326504,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.87,
+          "system": 1.76,
+          "maxRssKiB": 325132,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.92,
+          "system": 1.67,
+          "maxRssKiB": 326000,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.93,
+          "system": 1.74,
+          "maxRssKiB": 324880,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.9,
+          "system": 1.72,
+          "maxRssKiB": 325032,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.95,
+          "system": 1.74,
+          "maxRssKiB": 324576,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.87,
+          "system": 1.71,
+          "maxRssKiB": 326044,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.92,
+          "system": 1.71,
+          "maxRssKiB": 325112,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.94,
+          "system": 1.69,
+          "maxRssKiB": 323840,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.96,
+          "system": 1.7,
+          "maxRssKiB": 325036,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.92,
+          "system": 1.7,
+          "maxRssKiB": 325944,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.87,
+          "system": 1.74,
+          "maxRssKiB": 325644,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.8,
+          "system": 1.82,
+          "maxRssKiB": 324596,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.91,
+          "system": 1.74,
+          "maxRssKiB": 325852,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4826259553684209,
+      "best": 0.464513332999999
+    }
+  ]
+}

@@ -73,9 +73,9 @@ test('launcher selects both engines, defaults to wasm, and rejects unknown engin
 test('plain launcher runs without any wasm files or npm dependencies', async () => {
   await fixture(async ({ directory, file, expected }) => {
     const copy = join(directory, 'portable');
-    mkdirSync(join(copy, 'lib'), { recursive: true });
+    mkdirSync(copy);
     cpSync(join(root, 'plain'), join(copy, 'plain'), { recursive: true });
-    cpSync(join(root, 'lib/format.mjs'), join(copy, 'lib/format.mjs'));
+    cpSync(join(root, 'lib'), join(copy, 'lib'), { recursive: true });
     cpSync(join(root, 'run.sh'), join(copy, 'run.sh'));
     const child = spawnSync('sh', [join(copy, 'run.sh'), file], {
       env: { ...cleanEnv(), ENGINE: 'node' },
@@ -86,7 +86,7 @@ test('plain launcher runs without any wasm files or npm dependencies', async () 
   });
 });
 
-test('benchmark config selects the right flags and hashes the shared formatter', async () => {
+test('benchmark config selects the right flags and hashes shared code and workers', async () => {
   assert.equal(entryScript(), 'calculate.mjs');
   assert.equal(entryScript('node'), 'plain/calculate.mjs');
   assert.throws(() => entryScript('invalid'), /ENGINE/);
@@ -94,8 +94,8 @@ test('benchmark config selects the right flags and hashes the shared formatter',
   assert.equal(nodeFlags({ ENGINE: 'node' }).length, 3);
   assert.deepEqual(nodeFlags({ ENGINE: 'node', FLAGS: '' }), []);
   assert.deepEqual(
-    benchmarkEnv({ ENGINE: 'node', STREAMS: '3', IO: 'macro', NODE_OPTIONS: '', OTHER: 'ignored' }),
-    { ENGINE: 'node', STREAMS: '3', IO: 'macro', NODE_OPTIONS: '' },
+    benchmarkEnv({ ENGINE: 'node', WORKERS: '3', NODE_OPTIONS: '', OTHER: 'ignored' }),
+    { ENGINE: 'node', WORKERS: '3', NODE_OPTIONS: '' },
   );
   await fixture(async ({ directory }) => {
     const fake = join(directory, 'plain');
@@ -103,11 +103,13 @@ test('benchmark config selects the right flags and hashes the shared formatter',
     mkdirSync(join(directory, 'lib'));
     writeFileSync(join(fake, 'calculate.mjs'), '// entry\n');
     writeFileSync(join(fake, 'lib/aggregate.mjs'), '// parser\n');
-    const formatter = join(directory, 'lib/format.mjs');
-    writeFileSync(formatter, '// original\n');
-    const first = sourceHash('node', join(fake, 'calculate.mjs'));
-    writeFileSync(formatter, '// changed\n');
-    assert.notEqual(sourceHash('node', join(fake, 'calculate.mjs')), first);
+    for (const name of ['format', 'read', 'calculate']) {
+      const shared = join(directory, `lib/${name}.mjs`);
+      writeFileSync(shared, '// original\n');
+      const first = sourceHash('node', join(fake, 'calculate.mjs'));
+      writeFileSync(shared, '// changed\n');
+      assert.notEqual(sourceHash('node', join(fake, 'calculate.mjs')), first, name);
+    }
     const withoutWorker = sourceHash('node', join(fake, 'calculate.mjs'));
     writeFileSync(join(fake, 'worker.mjs'), '// worker\n');
     assert.notEqual(sourceHash('node', join(fake, 'calculate.mjs')), withoutWorker);
@@ -116,7 +118,7 @@ test('benchmark config selects the right flags and hashes the shared formatter',
 
 test('comparison warms up both versions and records engine-specific defaults', async () => {
   await fixture(async ({ file }) => {
-    const env = { ...cleanEnv(), RUNS: '1', WARMUP: '1', STREAMS: '3' };
+    const env = { ...cleanEnv(), RUNS: '1', WARMUP: '1' };
     delete env.CHUNK_BYTES;
     const child = spawnSync(process.execPath, ['tools/compare.mjs', 'integration', file], {
       cwd: root,
@@ -140,7 +142,7 @@ test('comparison warms up both versions and records engine-specific defaults', a
         [131072, 524288],
       );
       for (const entry of report.cases) {
-        assert.equal(entry.env.STREAMS, '3');
+        assert.equal(entry.env.WORKERS, '4');
         assert.equal(entry.times.length, 1);
         assert.equal(entry.usage.length, 1);
         assert.equal(entry.sourceSha256, sourceHash(entry.env.ENGINE, entry.script));

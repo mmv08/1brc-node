@@ -2,7 +2,7 @@
 
 One production implementation: `kernel.c` → `kernel.wasm`. Rejected alternatives
 live in git history or the benchmark log. [BENCHMARKS.md](../BENCHMARKS.md)
-records matched comparisons, checkpoint commits and local raw reports.
+links the final measurements and the historical experiment archive.
 
 ```sh
 ./run.sh measurements.txt
@@ -127,7 +127,7 @@ repeatable gain and was rejected. The four-way loop hint, existing `cold`,
 `noinline`, `always_inline` attributes and branch-hint policy remain. Extra
 `hot` and `__builtin_expect` annotations produced identical Wasm with this
 toolchain, and other tested hint policies did not improve the matched results.
-See [BENCHMARKS.md](../BENCHMARKS.md) for the full experiment record.
+See [BENCHMARKS.md](../BENCHMARKS.md) for final results and the historical experiment record.
 
 Build and inspect:
 

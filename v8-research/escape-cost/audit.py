@@ -12,6 +12,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 V8 = ROOT / 'results/v8-general/v8'
+# This completed research round precedes later solver maintenance.
+RESEARCH_END = '351f07f'
 sys.path.insert(0, str(ROOT / 'v8-research'))
 from paired_benchmark import sha256, source_hashes
 from compilation_cost import parse_run
@@ -103,6 +105,7 @@ def audit(experiment):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('experiments', nargs='+')
+    parser.add_argument('--output', type=Path, default=HERE / 'artifact-audit.json')
     args = parser.parse_args()
     diagnostic = json.loads((HERE / 'table-diagnostics.json').read_text())
     for name, info in diagnostic['files'].items():
@@ -147,16 +150,14 @@ def main():
         source_checkpoints.update(experiment.get('source_checkpoints', []))
     for commit in source_checkpoints:
         assert '\ngpgsig ' not in git('cat-file', '-p', commit)
-    root_head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    root_head = subprocess.check_output(['git', 'rev-parse', RESEARCH_END], cwd=ROOT, text=True).strip()
     root_signatures = subprocess.check_output(
-        ['git', 'log', '--format=%H %G?', '20e333d..HEAD'], cwd=ROOT, text=True).splitlines()
+        ['git', 'log', '--format=%H %G?', f'20e333d..{RESEARCH_END}'], cwd=ROOT, text=True).splitlines()
     assert root_signatures and all(line.endswith(' N') for line in root_signatures)
     changed = subprocess.check_output(
-        ['git', 'diff', '--name-only', '20e333d'], cwd=ROOT, text=True).splitlines()
-    untracked = subprocess.check_output(
-        ['git', 'ls-files', '--others', '--exclude-standard'], cwd=ROOT, text=True).splitlines()
+        ['git', 'diff', '--name-only', '20e333d', RESEARCH_END], cwd=ROOT, text=True).splitlines()
     assert all(path.startswith('v8-research/escape-cost/') or path == 'v8-research/README.md'
-               for path in changed + untracked)
+               for path in changed)
     report_links = re.findall(r'\[[^\]]+\]\(([^)]+)\)', (HERE / 'README.md').read_text())
     for target in report_links:
         assert (HERE / target.split('#', 1)[0]).is_file(), target
@@ -174,7 +175,7 @@ def main():
                             'resamples. Per-case intervals are not corrected for multiple comparisons.',
               'limits': 'Single-machine results for these suites. Zone allocation is not RSS. '
                         'Diagnostic phase times and sampled self shares are distinct from official scores.'}
-    (HERE / 'artifact-audit.json').write_text(json.dumps(output, indent=2) + '\n')
+    args.output.write_text(json.dumps(output, indent=2) + '\n')
     print('Verified', ', '.join(args.experiments))
 
 

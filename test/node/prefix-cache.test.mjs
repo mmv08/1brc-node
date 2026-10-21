@@ -20,19 +20,15 @@ test('colliding predictions distinguish different first words with identical rem
     [names[0], -999, (-999 + 25) * 256, 25, 512],
     [names[1], -12, (999 - 12) * 256, 999, 512],
   ];
-  const saved = process.env.STREAMS;
   try {
-    for (const streams of [1, 2, 3, 4]) {
-      process.env.STREAMS = String(streams);
-      const rows = await calculate(file, { workers: 1, chunkSize: 256 });
+    for (const workers of [1, 4]) {
+      const rows = await calculate(file, { workers, chunkSize: 256 });
       assert.deepEqual(
         rows.sort((a, b) => (a[0] < b[0] ? -1 : 1)),
         expected,
       );
     }
   } finally {
-    if (saved === undefined) delete process.env.STREAMS;
-    else process.env.STREAMS = saved;
     rmSync(directory, { recursive: true });
   }
 });
@@ -98,31 +94,17 @@ test('prefix predictions preserve exact tuples across lengths, NULs, tails and d
   writeFileSync(file, input);
   const sorted = (rows) => rows.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
   const wanted = sorted([...expected.values()]);
-  const settings = ['NAME_COMPARE', 'STREAMS', 'IO', 'MACRO_BYTES'];
-  const saved = Object.fromEntries(settings.map((key) => [key, process.env[key]]));
   try {
-    for (const compare of ['branchy', 'branchless']) {
-      for (const streams of [1, 2, 3, 4]) {
-        for (const io of ['sync', 'async', 'macro']) {
-          process.env.NAME_COMPARE = compare;
-          process.env.STREAMS = String(streams);
-          process.env.IO = io;
-          process.env.MACRO_BYTES = '4096';
-          for (const workers of [1, 4]) {
-            assert.deepEqual(
-              sorted(await calculate(file, { engine: 'phased', workers, chunkSize: 128 })),
-              wanted,
-              `${compare}, streams=${streams}, io=${io}, workers=${workers}`,
-            );
-          }
-        }
+    for (const chunkSize of [128, 129, 251, 4096]) {
+      for (const workers of [1, 4]) {
+        assert.deepEqual(
+          sorted(await calculate(file, { workers, chunkSize })),
+          wanted,
+          `workers=${workers}, chunkSize=${chunkSize}`,
+        );
       }
     }
   } finally {
-    for (const [key, value] of Object.entries(saved)) {
-      if (value === undefined) delete process.env[key];
-      else process.env[key] = value;
-    }
     rmSync(directory, { recursive: true });
   }
 });

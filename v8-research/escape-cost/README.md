@@ -117,3 +117,12 @@ The completed [twenty-one-pair DataView control](standalone-fresh-allocation-run
 The final checkout is `compiler-standalone-fresh-allocation` at `e6293c24`; the retained indexed-storage source remains on `compiler-escape-indexed-storage` at `cefc3a78`. Preserved executables are `results/v8-general/v8/out/x64.release-escape-standalone-fresh-allocation/d8` and `results/v8-general/v8/out/x64.release-escape-indexed-storage/d8`. The rejected cache remains on `compiler-escape-merge-input-cache` at `b6943c13` with its preserved executable and full measurements.
 
 The [final artifact audit](artifact-audit.json) checks all three patches, preserved binaries and configurations, positive test counts, all seven fixed campaigns, native/profile and allocation captures, official benchmark registrations, local report links and unsigned checkpoints. It also verifies that this round changed no production Node or Wasm program. The two retained gains use different baselines and must not be added together.
+
+The audit's Git scope ends at the completed research checkpoint `351f07f`, so later
+solver maintenance does not change that historical claim. With the preserved local
+builds and captures available, rerun it without replacing the recorded audit:
+
+```sh
+python3 -B v8-research/escape-cost/audit.py indexed-storage merge-input-cache \
+  standalone-fresh-allocation --output results/escape-cost-audit.json
+```
