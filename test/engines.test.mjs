@@ -91,7 +91,10 @@ test('benchmark config selects the right flags and hashes shared code and worker
   assert.equal(entryScript('node'), 'plain/calculate.mjs');
   assert.throws(() => entryScript('invalid'), /ENGINE/);
   assert.deepEqual(nodeFlags({ ENGINE: 'wasm' }), []);
-  assert.equal(nodeFlags({ ENGINE: 'node' }).length, 3);
+  // The benchmark runner must time the same flags that the launcher passes.
+  const launcher = readFileSync(join(root, 'run.sh'), 'utf8');
+  assert.equal(nodeFlags({ ENGINE: 'node' }).length, 5);
+  for (const flag of nodeFlags({ ENGINE: 'node' })) assert.ok(launcher.includes(`${flag} \\\n`));
   assert.deepEqual(nodeFlags({ ENGINE: 'node', FLAGS: '' }), []);
   assert.deepEqual(
     benchmarkEnv({ ENGINE: 'node', WORKERS: '3', NODE_OPTIONS: '', OTHER: 'ignored' }),

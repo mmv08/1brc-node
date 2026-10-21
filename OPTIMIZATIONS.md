@@ -161,6 +161,76 @@ A change rejected alone may later appear in a measured winning combination.
 Timing values without units in these tables are seconds. The full original
 protocols and measurements remain accessible through the history references below.
 
+### Retained: Node tier-up, deopt fix and leaner hit path, 2026-10-21
+
+Per-chunk timing inside each worker showed steady 128 KiB chunks at 0.16 ms but
+warm-up chunks at 0.55–0.6 ms (Maglev) and 2–26 ms (interpreter): about 78 ms
+lost per worker. 24 isolates queued their TurboFan jobs on the shared pool, and
+`--trace-deopt` showed `(end - start) / 2` deoptimizing `parseChunk` ("lost
+precision") whenever a chunk had odd length, forcing a recompilation. Machine
+code then showed a per-row identity check on the module-level `temperatureBase`
+function, overflow checks from `* 8` and the branchless negate, and an
+always-loaded arena offset. All rows use the presized descriptor table; Node
+26.12.0, 24 workers, three-run trimmed means of alternating runs.
+
+| Experiment | Measured result | Decision |
+| --- | --- | --- |
+| `--no-concurrent-recompilation` alone | 0.9647 vs 0.9455 s | Reject alone |
+| `--no-maglev` alone | 0.9597 vs 0.9455 s | Reject alone |
+| Both: each worker compiles TurboFan once on its own thread | 0.9455 → 0.8920 s; warm-up loss 70 → 30 ms per worker | Retain |
+| `>> 1` midpoint instead of `/ 2` (removes deopt and recompile) | Neutral with background compilation; 0.8894 → 0.8784 s with the flags above | Retain |
+| `--invocation-count-for-turbofan=1000` / OSR 100 / `--always-sparkplug` / default pool | 1.0317 / 0.8855 / 0.8856 / 0.8839 vs 0.8854 s | Reject |
+| Inlining budgets 1000/2500, 1000/1800, defaults | 0.8834 / 0.9671 / 1.0552 vs 0.8828 s | Keep 1000/4000 |
+| `--min-inlining-frequency` 0.3 / 0.6 / 0.95 / 100 / 1000 | Frequencies are per-invocation counts (hot calls ~4,700, `find` ~409); no gain | Reject |
+| Chunks 64K / 256K / 512K | 0.8866 / 0.8815 / 0.9408 vs 128K 0.8711 s | Keep 128 KiB |
+| Tail word ends with the delimiter, replacing the delimiter load, with a `length < 8` middle branch | 0.9443 vs 0.8788 s, 0/15 | Reject: name lengths make the branch unpredictable |
+| Same, branch-free middle word at `min(4, length - 3)` | 0.8773 → 0.8692 s, 10/11 | Retain |
+| Prediction misses fall back to the other three slots of an aligned group | Full misses 420K → 141K per 14.5M rows, but 0.9089 vs 0.8742 s | Reject |
+| Shifts instead of `* 8`; load the arena offset only inside the long-name loop | 0.8750 → 0.8631 s, 11/11 | Retain |
+| Inline the temperature table; truncate the branchless negate | 0.8612 → 0.8468 s, 11/11 | Retain |
+| Verification words stored beside each prediction | 0.8538 vs 0.8468 s, 0/11 | Reject, as before |
+| Confirmation: previous retained version vs this round via `run.sh` | 0.9475 → 0.8497 s, **−10.3%, 21/21 wins** | Combined result |
+| Original `main`, direct launch, vs this round via `run.sh` | 1.0429 → 0.8506 s, −18.4%, 11/11 | Cumulative |
+
+Prediction misses come from three-byte names (`Jos`, `Wau`, never cached),
+shared five-byte prefixes (`San J`, `Port `, `Alexa`, `Lake `) and two slot
+collisions, about 2.9% of rows. Remaining warm-up is about 23 ms per worker,
+mostly one 11 ms synchronous compilation of a graph that also inlines the cold
+lookup and insertion paths. All 57 tests pass on Node 24.15.0 and 26.12.0, and
+billion-row output matches on both.
+
+### Retained: presized descriptor table and packed Node scan results, 2026-10-21
+
+Startup instrumentation showed Wasm workers reaching their first chunk 58–100 ms
+after launch. Under `strace`, descriptor-creating calls in booting workers took
+milliseconds (`epoll_create1` averaged 5.5 ms) because each growth of a threaded
+process's descriptor table waits for an RCU grace period; 141 descriptors at 24
+workers force two growths. Opening 500 descriptors from JavaScript alone took
+37–56 ms. Holding descriptor 1023 across `exec` sizes the table before Node
+starts any thread. All timings below include process startup; `multi`/paired
+runs alternate order, Node 26.12.0, 24 workers, three-run trimmed means.
+
+| Experiment | Measured result | Decision |
+| --- | --- | --- |
+| Descriptor 1023 held across `exec` | Wasm 0.4827 → 0.4638 s, 15/15 wins; Node 1.0383 → 1.0149 s, 13/15 | Retain in `run.sh` and the benchmark runner |
+| `--min-semi-space-size=16` (main-thread 21 ms startup scavenge) | Spawn loop 28 → 4 ms, but end-to-end 0.4660 vs 0.4687 s, 4/11 wins | Reject |
+| `UV_USE_IO_URING=0` | 0.4646 vs 0.4670 s, 4/11 wins | Reject |
+| Wasm chunks 128K / 256K / 384K / 1M with presized table | 0.4696 / 0.4665 / 0.4665 / 0.4673 vs 512K 0.4638 s | Keep 512 KiB |
+| `--no-memory-pool`, `--no-memory-pool-share-memory-on-teardown` | 0.4733 / 0.4708 vs 0.4631 s | Reject |
+| Indexed merge loop without destructuring | Merge 5–7 → 2.5–4.5 ms, end-to-end 0.4652 vs 0.4647 s | Reject: overlaps worker teardown |
+| WASI `proc_exit` after output, waiting for worker exits | Correct in 600 stress runs, but 0.4650 vs 0.4660 s; `exit_group` still spends ~17 ms freeing ~320 MB RSS | Reject; exiting before workers finish teardown aborts |
+| Node: return ID and temperature offset packed instead of via `Int32Array(2)` | 1.0170 → 0.9608 s | Retain |
+| Node: branchless sign on top | 0.9632 → 0.9472 s | Retain |
+| Node: prediction cache stores packed result | 0.9623 vs 0.9632 s | Reject |
+| Node: three lanes on top | 0.9654 vs 0.9524 s | Reject |
+| Node: CR skip from LF/CR parity | 0.9540 vs 0.9438 s | Reject |
+| Node packed result + branchless sign, confirmation | 1.0221 → 0.9507 s, **−7.0%, 21/21 wins** | Retain |
+| End-to-end, original direct launch vs new `run.sh` | Wasm 0.4857 → 0.4705 s, 14/15; Node 1.0336 → 0.9588 s, 15/15 | Combined result |
+
+A no-op parser with the same reads and startup takes about 0.36 s at 24 workers
+(0.32 s at 12, with 6 s of system time copying), so Wasm parsing now adds roughly
+0.1 s above the read path. All 57 tests pass on Node 24.15.0 and 26.12.0.
+
 ### Retained: integer Node loops and background pool, 2026-10-21
 
 | Experiment | Checkpoint(s) | Measured result / decision |

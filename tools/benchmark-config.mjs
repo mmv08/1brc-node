@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, openSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 export function nodeRuntime() {
@@ -13,6 +13,14 @@ export function entryScript(engine = 'wasm') {
   throw new Error('ENGINE must be node or wasm');
 }
 
+// Match run.sh: an inherited descriptor 1023 presizes the child's descriptor
+// table before its worker threads start opening their own.
+let devNull;
+export function launchStdio(stdio) {
+  devNull ??= openSync('/dev/null', 'r');
+  return [...stdio, ...Array(1023 - stdio.length).fill('ignore'), devNull];
+}
+
 export function nodeFlags(env) {
   if (env.FLAGS !== undefined) return env.FLAGS.split(/\s+/).filter(Boolean);
   return env.ENGINE === 'node'
@@ -20,6 +28,8 @@ export function nodeFlags(env) {
         '--max-inlined-bytecode-size=1000',
         '--max-inlined-bytecode-size-cumulative=4000',
         '--v8-pool-size=8',
+        '--no-maglev',
+        '--no-concurrent-recompilation',
       ]
     : [];
 }

@@ -11,10 +11,6 @@ for (let first = 0; first <= 9; first++) {
   }
 }
 
-function temperatureBase(digits) {
-  return temperaturePrefixes[digits & 0x0f0f];
-}
-
 // Scan independent station names before updating either aggregate. This breaks
 // the next-row dependency chain and lets the CPU overlap more work. Two cursors
 // won the full-file comparison.
@@ -47,9 +43,11 @@ export function aggregate(config) {
     buffer.copy(arena, keyOffset, start, end);
     records[r] = hash;
     records[r + 1] = head;
-    records[r + 2] = length > 4 ? view.getInt32(end - 4, true) : 0;
-    // For short names the middle word overlaps the tail, avoiding a length > 8 branch.
-    records[r + 3] = length > 4 ? view.getInt32(start + Math.min(4, length - 4), true) : 0;
+    // The tail word ends with the delimiter, so matching it also confirms a
+    // predicted length. Shorter names are covered by their masked head.
+    records[r + 2] = length >= 4 ? view.getInt32(end - 3, true) : 0;
+    // Below eight bytes the middle word overlaps the tail, avoiding a length branch.
+    records[r + 3] = length >= 4 ? view.getInt32(start + Math.min(4, length - 3), true) : 0;
     records[r + 4] = length;
     records[r + 5] = keyOffset;
     records[r + 6] = 999;
@@ -59,28 +57,27 @@ export function aggregate(config) {
   }
 
   // Cache predictions supply the stored length; hash lookups validate it first.
+  // Head, middle and the delimiter-terminated tail cover names below 12 bytes.
   function equal(view, start, length, r, head) {
     if (records[r + 1] !== head) return false;
-    if (length <= 4) return true;
-    if (view.getInt32(start + length - 4, true) !== records[r + 2]) return false;
-    if (view.getInt32(start + Math.min(4, length - 4), true) !== records[r + 3]) return false;
-    const offset = records[r + 5];
-    for (let i = 8; i < length - 4; i += 4) {
-      if (view.getInt32(start + i, true) !== keys.getInt32(offset + i, true)) return false;
+    if (length < 4) return true;
+    if (view.getInt32(start + length - 3, true) !== records[r + 2]) return false;
+    if (view.getInt32(start + Math.min(4, length - 3), true) !== records[r + 3]) return false;
+    for (let i = 8; i < length - 3; i += 4) {
+      if (view.getInt32(start + i, true) !== keys.getInt32(records[r + 5] + i, true)) return false;
     }
     return true;
   }
 
   function makeParser(buffer) {
     const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
-    const temperatures = new Int32Array(2);
 
     function find(start, end, hash, head) {
       let slot = (hash ^ (hash >>> 16)) & (TABLE_SIZE - 1);
       for (;;) {
         const id = table[slot] - 1;
         if (id < 0) return insert(buffer, view, start, end, hash, head, slot);
-        const r = id * 8;
+        const r = id << 3;
         const length = end - start;
         if (records[r] === hash && records[r + 4] === length && equal(view, start, length, r, head))
           return id;
@@ -88,7 +85,10 @@ export function aggregate(config) {
       }
     }
 
-    function scan(p, lane) {
+    // Return the ID in the low 14 bits and the temperature's offset from the row
+    // start above them. Passing the position through a typed array instead put
+    // a store and reload on each lane's dependency chain.
+    function scan(p) {
       const start = p;
       let head = view.getInt32(p, true);
       // A fifth byte is stable even for four-byte names: it is their delimiter.
@@ -97,16 +97,14 @@ export function aggregate(config) {
       const prediction = prefixCache[prefixSlot];
       const predicted = (prediction & 0xffff) - 1;
       if (predicted >= 0) {
-        const r = predicted * 8;
+        const r = predicted << 3;
         const length = prediction >>> 16;
-        const end = start + length;
         // The largest prediction is 100 bytes; the reader reserves 256 bytes of
-        // lookahead. Full equality plus the delimiter rejects a wrong length,
-        // another row, stale padding, or a short name whose first word includes
-        // its delimiter. Only names of at least four bytes enter this cache.
-        if (buffer[end] === 59 && equal(view, start, length, r, head)) {
-          temperatures[lane] = end + 1;
-          return predicted;
+        // lookahead. Full equality including the delimiter rejects a wrong
+        // length, another row, stale padding, or a short name whose first word
+        // includes its delimiter. Only names of at least four bytes are cached.
+        if (equal(view, start, length, r, head)) {
+          return ((length + 1) << 14) | predicted;
         }
       }
       let word = head;
@@ -125,23 +123,23 @@ export function aggregate(config) {
         word = view.getInt32(p, true);
       }
       if (p - start < 4) head &= BYTE_MASKS[p - start];
-      temperatures[lane] = p + 1;
       const id = find(start, p, hash, head);
       // Never cache a short name: its initial word includes temperature bytes.
       if (p - start >= 4) prefixCache[prefixSlot] = ((p - start) << 16) | (id + 1);
-      return id;
+      return ((p + 1 - start) << 14) | id;
     }
 
     function update(p, id) {
       const word = view.getUint32(p, true);
       const negative = (~word & 0x10) >>> 4;
-      const digits = word >>> (negative * 8);
+      const digits = word >>> (negative << 3);
       const width = 4 + negative + ((digits >>> 12) & 1);
-      let value = temperatureBase(digits) + (buffer[p + width - 2] & 15);
-      if (negative) value = -value;
+      // Signs are unpredictable: negate with arithmetic instead of a branch.
+      const magnitude = temperaturePrefixes[digits & 0x0f0f] + (buffer[p + width - 2] & 15);
+      const value = ((magnitude ^ -negative) + negative) | 0;
       p += width;
       if (buffer[p - 1] === 13) p++;
-      const r = id * 8;
+      const r = id << 3;
       if (value < records[r + 6]) records[r + 6] = value;
       if (value > records[r + 7]) records[r + 7] = value;
       sums[id] += value;
@@ -151,22 +149,22 @@ export function aggregate(config) {
 
     function remainder(p, end) {
       while (p < end) {
-        const id = scan(p, 0);
-        p = update(temperatures[0], id);
+        const row = scan(p);
+        p = update(p + (row >>> 14), row & 0x3fff);
       }
     }
 
     return (start, end) => {
       // Buffer-local bounds fit in int32; file offsets remain full JS numbers.
       const limit = end | 0;
-      const endA = Math.min(end, buffer.indexOf(10, start + Math.floor((end - start) / 2)) + 1) | 0;
+      const endA = Math.min(end, buffer.indexOf(10, start + ((end - start) >> 1)) + 1) | 0;
       let a = start | 0;
       let b = endA;
       while (a < endA && b < limit) {
-        const idA = scan(a, 0);
-        const idB = scan(b, 1);
-        a = update(temperatures[0], idA) | 0;
-        b = update(temperatures[1], idB) | 0;
+        const rowA = scan(a);
+        const rowB = scan(b);
+        a = update(a + (rowA >>> 14), rowA & 0x3fff) | 0;
+        b = update(b + (rowB >>> 14), rowB & 0x3fff) | 0;
       }
       remainder(a, endA);
       remainder(b, limit);

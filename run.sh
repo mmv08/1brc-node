@@ -14,13 +14,17 @@ fi
 
 case "${ENGINE:-wasm}" in
   wasm)
-    exec "$runtime" "$root/calculate.mjs" "$@"
+    set -- "$root/calculate.mjs" "$@"
     ;;
   node)
-    exec "$runtime" \
+    # Each worker compiles its parser once, synchronously and without Maglev,
+    # instead of queueing every isolate's compilations on the shared pool.
+    set -- \
       --max-inlined-bytecode-size=1000 \
       --max-inlined-bytecode-size-cumulative=4000 \
       --v8-pool-size=8 \
+      --no-maglev \
+      --no-concurrent-recompilation \
       "$root/plain/calculate.mjs" "$@"
     ;;
   *)
@@ -28,3 +32,12 @@ case "${ENGINE:-wasm}" in
     exit 2
     ;;
 esac
+
+# Linux grows a threaded process's descriptor table behind an RCU grace period
+# that stalls every thread opening a descriptor, and each worker opens several.
+# A high descriptor held across exec sizes the table before any thread exists.
+# Dash cannot name it, so use Bash when present; failure only loses the gain.
+if command -v bash >/dev/null 2>&1; then
+  exec bash -c '{ exec 1023</dev/null; } 2>/dev/null; exec "$@"' bash "$runtime" "$@"
+fi
+exec "$runtime" "$@"

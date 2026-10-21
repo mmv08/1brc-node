@@ -28,10 +28,16 @@ launcher prefers `.runtimes/node-v26.12.0/bin/node`, then `node` on PATH;
 CPUs, limited by input size. `CHUNK_BYTES` defaults to 131072 for Node and
 524288 for Wasm.
 
+On Linux, worker startup stalls while the kernel grows a threaded process's
+descriptor table. When Bash is available, the launcher holds descriptor 1023
+open across `exec` so the table is sized before any thread starts; the benchmark
+runner does the same. Running the entry points directly works but forgoes this.
+
 The Node launcher supplies the measured flags
 `--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000
---v8-pool-size=8`. The entry points `plain/calculate.mjs` and `calculate.mjs`
-export `calculate(file, { workers, chunkSize })`, returning exact
+--v8-pool-size=8 --no-maglev --no-concurrent-recompilation`. The entry points
+`plain/calculate.mjs` and `calculate.mjs` export
+`calculate(file, { workers, chunkSize })`, returning exact
 `[name, min, sum, max, count]` tuples; temperatures are integer tenths.
 
 Input supports valid UTF-8 names of 1–100 bytes, up to 10,000 stations and

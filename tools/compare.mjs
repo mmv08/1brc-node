@@ -5,6 +5,7 @@ import { availableParallelism, cpus } from 'node:os';
 import {
   benchmarkEnv,
   entryScript,
+  launchStdio,
   nodeFlags,
   nodeRuntime,
   sourceHash,
@@ -101,7 +102,7 @@ for (let round = 0; round < runs; round++) {
         entry.script,
         file,
       ],
-      { env, stdio: ['ignore', 'pipe', 'inherit'] },
+      { env, stdio: launchStdio(['ignore', 'pipe', 'inherit']) },
     );
     let output = '';
     child.stdout.setEncoding('utf8');
