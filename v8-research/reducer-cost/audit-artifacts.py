@@ -101,6 +101,10 @@ def main():
             assert len(data['runs']) == 2 + 2 * pairs
             assert data['binaries']['baseline']['sha256'] == plan['baseline_sha256']
             assert data['binaries']['candidate']['sha256'] == manifest['files']['d8']['sha256']
+            reference = read(f'encoded-marker-{suite}-results.json')
+            assert data['source_sha256'] == reference['source_sha256']
+            assert data['d8_args'] == reference['d8_args']
+            assert data['expected_scores'] == reference['expected_scores']
             assert all(record['returncode'] == 0 and record['sources_unchanged']
                        for record in data['runs'])
             if suite != 'cost':

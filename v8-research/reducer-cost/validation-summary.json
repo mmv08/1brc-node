@@ -350,6 +350,231 @@
         "target_osr_compilations": 0,
         "aborted_compilations": 0
       }
+    },
+    "safepoint-predicate": {
+      "compiler": {
+        "raw_results": "v8-research/reducer-cost/safepoint-predicate-compiler-results.json",
+        "sha256": "0c21ec3b7421adc610c3ba86dd835f1de7628ab99524310b590c35745eb8e1b5",
+        "pairs": 12,
+        "binaries": {
+          "baseline": {
+            "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-fresh-allocation/d8",
+            "sha256": "33127a72e7381aa41dbe855f30e551fa8531eb1be51ffd54f7e784e336356d87",
+            "size_bytes": 204279320
+          },
+          "candidate": {
+            "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-safepoint-predicate/d8",
+            "sha256": "7ac2a1ab906dfe6fc545426a122f3f4845d463f70eaeff994562e7a55fe999e4",
+            "size_bytes": 204274904
+          }
+        },
+        "d8_args": [
+          "--allow-natives-syntax",
+          "run.js"
+        ],
+        "source_sha256": {
+          "large.js": "520c87a2469b3d22a0c968b0a4f6b572590a726feb0d44f6bdfbfa3794312115",
+          "medium.js": "c297630555819b13f3a1a65bd24355199489511fa0f659c3cd6b0539b6801e46",
+          "run.js": "4da89999215f19571347248aba9db6f20b61a944b2a986a1bd4d153baae80ae5",
+          "small.js": "d11ead865918d71b50df8d52571f9c1e5985584479a6becae5e7017b7e8b6edf",
+          "../base.js": "5ed309eef1538495cdca40cf8349ce85c41ad24d3c0620d3ea9d2a88c30e01e1"
+        },
+        "cases": {
+          "Large-Copy-Compile": {
+            "score_change_percent": 0.3953133167578393,
+            "ci95_percent": [
+              -0.42388565039942483,
+              0.9011105819726639
+            ],
+            "ab_change_percent": 0.7448815307047854,
+            "ba_change_percent": 0.046958047174357684,
+            "wins": 11,
+            "ties": 0
+          },
+          "Medium-Copy-Compile": {
+            "score_change_percent": 0.723932727127341,
+            "ci95_percent": [
+              -0.49701690279123634,
+              1.41934660875922
+            ],
+            "ab_change_percent": 1.3952710224907787,
+            "ba_change_percent": 0.05703936398092311,
+            "wins": 11,
+            "ties": 0
+          },
+          "Medium-Eratosthenes-Compile": {
+            "score_change_percent": 0.9950802460562791,
+            "ci95_percent": [
+              0.14384808591934028,
+              1.6460329498133364
+            ],
+            "ab_change_percent": 1.6058008674752484,
+            "ba_change_percent": 0.38803047486675746,
+            "wins": 10,
+            "ties": 1
+          },
+          "Medium-Fact-Compile": {
+            "score_change_percent": 0.01667723031752999,
+            "ci95_percent": [
+              -0.8147665078160005,
+              0.6455777955903796
+            ],
+            "ab_change_percent": 0.4034939039633995,
+            "ba_change_percent": -0.368649185039594,
+            "wins": 8,
+            "ties": 2
+          },
+          "Medium-Prime-Compile": {
+            "score_change_percent": -0.2456376854633735,
+            "ci95_percent": [
+              -1.0071540301940685,
+              0.3359443270031015
+            ],
+            "ab_change_percent": 0.24316607287098907,
+            "ba_change_percent": -0.7320579485080194,
+            "wins": 5,
+            "ties": 1
+          },
+          "Small-Add-Compile": {
+            "score_change_percent": -0.04081514731065772,
+            "ci95_percent": [
+              -0.7714217133218404,
+              0.5945890370020912
+            ],
+            "ab_change_percent": 0.643639549170225,
+            "ba_change_percent": -0.720615021751775,
+            "wins": 7,
+            "ties": 0
+          },
+          "Small-Constant-Compile": {
+            "score_change_percent": 0.4259860181508479,
+            "ci95_percent": [
+              -0.4775772255325994,
+              1.2073416603411102
+            ],
+            "ab_change_percent": 1.1175565159278267,
+            "ba_change_percent": -0.2608546407151388,
+            "wins": 9,
+            "ties": 0
+          },
+          "Small-Empty-Compile": {
+            "score_change_percent": 0.25185751125742506,
+            "ci95_percent": [
+              -0.6778495527490769,
+              1.0201999153676589
+            ],
+            "ab_change_percent": 0.850066245686029,
+            "ba_change_percent": -0.34280284979604514,
+            "wins": 8,
+            "ties": 1
+          },
+          "Small-Load-Compile": {
+            "score_change_percent": -0.0002449195645293223,
+            "ci95_percent": [
+              -1.0597276823438029,
+              0.9245492421568136
+            ],
+            "ab_change_percent": 0.9217040955871867,
+            "ba_change_percent": -0.9137716632716899,
+            "wins": 8,
+            "ties": 0
+          }
+        },
+        "case_geometric_mean": {
+          "score_change_percent": 0.2795355921203958,
+          "ci95_percent": [
+            -0.541111066806204,
+            0.8494694643106643
+          ],
+          "ab_change_percent": 0.8797624514344022,
+          "ba_change_percent": -0.3171199633573691,
+          "per_pair_change_percent": [
+            0.7645391241488869,
+            1.003843060499005,
+            0.8548757619141539,
+            0.8443176089330796,
+            0.8548073016607001,
+            -3.5454803703997873,
+            0.854776486523865,
+            0.7527580355720083,
+            0.6812058455469295,
+            -0.21626861539701406,
+            1.2693914579604548,
+            -0.6666993117041451
+          ]
+        }
+      },
+      "cost": {
+        "summary_file": "v8-research/reducer-cost/safepoint-predicate-cost-summary.json",
+        "sha256": "6d3d1ceae5c410826218991c5bced26a5e9755990daad387c646efcc677fc080",
+        "pairs": 6,
+        "metrics": {
+          "pipeline_time_ms": {
+            "baseline_median": 20.2605,
+            "candidate_median": 20.0315,
+            "paired_cost_change_percent": -1.8974412417692377,
+            "paired_bootstrap_95_percent_interval": [
+              -2.830747241629572,
+              -1.0382013652875943
+            ],
+            "ab_cost_change_percent": -2.4865215967725285,
+            "ba_cost_change_percent": -1.3048022436908169
+          },
+          "pipeline_zone_bytes": {
+            "baseline_median": 18813096.0,
+            "candidate_median": 18813204.0,
+            "paired_cost_change_percent": 0.0027073469281546636,
+            "paired_bootstrap_95_percent_interval": [
+              -0.000276389793918419,
+              0.006456617684058585
+            ],
+            "ab_cost_change_percent": 0.0005953059029506491,
+            "ba_cost_change_percent": 0.004819432560254633
+          },
+          "peeling_time_ms": {
+            "baseline_median": 0.6145,
+            "candidate_median": 0.5965,
+            "paired_cost_change_percent": -2.5805783423276996,
+            "paired_bootstrap_95_percent_interval": [
+              -3.170900197968607,
+              -1.9931140062443897
+            ],
+            "ab_cost_change_percent": -2.545533578284298,
+            "ba_cost_change_percent": -2.6156105042243527
+          },
+          "peeling_zone_bytes": {
+            "baseline_median": 991280.0,
+            "candidate_median": 991280.0,
+            "paired_cost_change_percent": 0.0,
+            "paired_bootstrap_95_percent_interval": [
+              0.0,
+              0.0
+            ],
+            "ab_cost_change_percent": 0.0,
+            "ba_cost_change_percent": 0.0
+          },
+          "target_normal_time_ms": {
+            "baseline_median": 3.8449999999999998,
+            "candidate_median": 3.801,
+            "paired_cost_change_percent": -1.3341658261527778,
+            "paired_bootstrap_95_percent_interval": [
+              -2.035163897681791,
+              -0.7593957792850548
+            ],
+            "ab_cost_change_percent": -1.3841745254052795,
+            "ba_cost_change_percent": -1.2841317671774322
+          },
+          "target_osr_time_ms": {
+            "baseline_median": 0.0,
+            "candidate_median": 0.0,
+            "ratio_note": "Ratio undefined with zero-valued observations."
+          }
+        },
+        "pipeline_count_per_run": 25,
+        "normal_target_compilations_per_run": 2,
+        "target_osr_compilations": 0,
+        "aborted_compilations": 0
+      }
     }
   },
   "statistics": {
