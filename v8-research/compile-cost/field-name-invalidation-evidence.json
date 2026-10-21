@@ -26,5 +26,7 @@
   "native_validation": "native-code-validation.json",
   "all_25_function_names_and_instruction_sizes_match": true,
   "phase_summary": "field-name-invalidation-phase-summary.json",
-  "measurement_caveat": "Several unchanged phases also move in the short diagnostic. Do not assign the full observed DataView time change to the named-cache fast path; official Compiler validation and post-change profiling provide separate evidence."
+  "measurement_caveat": "Several unchanged phases also move in the short diagnostic. Do not assign the full observed DataView time change to the named-cache fast path; official Compiler validation and post-change profiling provide separate evidence.",
+  "official_compiler_result": "field-name-compiler-results.json",
+  "hotspot_interpretation": "Subsequent instruction-level analysis shows the dominant official Large-Copy hotspot is first-scan iteration with exact Allocate identity checks. The disjoint-name shortcut does not remove that scan; its official score movements must not be interpreted as removing the profiled bottleneck."
 }
