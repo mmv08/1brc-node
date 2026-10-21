@@ -4551,5 +4551,15 @@
       ]
     }
   },
-  "interpretation": "Peeling occurs. At legacy load elimination, monomorphic loop-controlled field loads8\u21920 and map checks3\u21920; polymorphic field loads66\u219264 and map checks17\u219216. Native code grows, especially polymorphic3296\u21925116bytes. Benefit and compile costs must be measured separately; no blanket hoisting claim."
+  "interpretation": "Peeling occurs. At legacy load elimination, monomorphic loop-controlled field loads8\u21920 and map checks3\u21920; polymorphic field loads66\u219264 and map checks17\u219216. Native code grows, especially polymorphic3296\u21925116bytes. Benefit and compile costs must be measured separately; no blanket hoisting claim.",
+  "benchmark": {
+    "file": "terminal-peeling-results.json",
+    "pairs": 21,
+    "geometric_mean_score_change_percent": 6.067767396484713,
+    "paired_bootstrap_95_percent_ci": [
+      5.872239421244596,
+      6.240618784979457
+    ],
+    "interpretation": "Retain pending combined runtime and compile-cost controls. TypedArray BigEndian+29.744%,LittleEndian+5.959%,Floats+3.953%. DataView BigEndian-0.263% (CI[-0.467,-0.059]); native doOneIterationDV size unchanged in matched diagnostics, no cause assigned. Other DataView intervals include zero."
+  }
 }

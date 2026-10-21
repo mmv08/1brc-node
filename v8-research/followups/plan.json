@@ -10,7 +10,8 @@
     "isolation": "no concurrent build/test/profile/benchmark processes",
     "controls": "For retained gains: unchanged official Compiler (9 cases), ForLoops (2), TypedArrays construct-buffer (1); 12 fixed alternating pairs per suite, 6 AB and 6 BA. No extending based on significance.",
     "acceptance": "No speedup inferred from fewer instructions; report regressions and preserve rejected patches.",
-    "score_validation": "Exact expected score sets and numerical errors checked; complete earlier six-case runs audited retrospectively."
+    "score_validation": "Exact expected score sets and numerical errors checked; complete earlier six-case runs audited retrospectively.",
+    "target_compile_cost": "If terminal peeling is retained: 6 fixed AB/BA pairs after one warmup per binary, unchanged DataView/run.js with --no-concurrent-recompilation --turbo-stats --turbo-stats-nvp --trace-opt. Report pipeline counts, elapsed compiler time and compiler-zone allocations; do not use these runs for throughput claims."
   },
   "experiments": [
     {
@@ -34,7 +35,7 @@
     {
       "id": "terminal-peeling",
       "scope": "safely clone bounded terminal-throw side exits",
-      "state": "37 tests pass; IR and native peeling confirmed with code growth; 21-pair benchmark running",
+      "state": "completed: positive typed-array results, small DataView-BigEndian decline; retain pending combination and compile-cost controls",
       "source_commits": [
         "6500a6d2",
         "166b0ea4",
@@ -51,6 +52,12 @@
         "6d8fa4c9",
         "99263a08"
       ]
+    },
+    {
+      "id": "winning-followups",
+      "source_commit": "fcc58178",
+      "scope": "combine measured dispatch and terminal-peeling candidates; excludes neutral shift/mask experiments",
+      "state": "building; 21-pair interaction check and declared controls next"
     }
   ]
 }
