@@ -86,55 +86,6 @@ static const uint64_t short_masks[16][2] __attribute__((aligned(16))) = {
     {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff)},
 };
 
-// Entry n keeps n name bytes plus the delimiter in a 32-byte key.
-static const uint64_t wide_masks[32][4] __attribute__((aligned(16))) = {
-    {UINT64_C(0xff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xff), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffff), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffff), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffff),
-     UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffff),
-     UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffff),
-     UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffff),
-     UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffffffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffffffffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffffffffffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffffffffffffff)},
-};
-
 // Freestanding memory helpers: the module imports neither libc nor WASI.
 void *memcpy(void *destination, const void *source, size_t length) {
   uint8_t *out = destination;
@@ -380,22 +331,20 @@ INLINE uint32_t same_key(v128_t key, const uint8_t *p) {
   return (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(key, wasm_v128_load(p)));
 }
 
-// Names below 32 bytes compare both vectors of their canonical arena key, so
-// short and longer names share one branch-free path.
-INLINE const uint8_t *process_wide(const uint8_t *start, uint32_t matches, v128_t low,
+// The first vector contains no delimiter; the second contains one. These names
+// are 16..31 bytes, so only the high vector needs masking and both hashes apply.
+INLINE const uint8_t *process_wide(const uint8_t *start, uint32_t high_matches, v128_t low,
                                    v128_t high) {
-  uint32_t length = (uint32_t)__builtin_ctz(matches);
-  const uint64_t *mask = wide_masks[length];
-  v128_t key_low = wasm_v128_and(low, wasm_v128_load(mask));
-  v128_t key_high = wasm_v128_and(high, wasm_v128_load(mask + 2));
-  uint64_t first = mix_pair(0, (uint64_t)wasm_i64x2_extract_lane(key_low, 0),
-                            (uint64_t)wasm_i64x2_extract_lane(key_low, 1), mixers);
-  uint64_t second = mix_pair(first, (uint64_t)wasm_i64x2_extract_lane(key_high, 0),
-                             (uint64_t)wasm_i64x2_extract_lane(key_high, 1), mixers);
-  uint64_t hash = length < 16 ? first : second;
+  uint32_t suffix = (uint32_t)__builtin_ctz(high_matches);
+  uint32_t length = 16 + suffix;
+  v128_t key_high = wasm_v128_and(high, wasm_v128_load(short_masks[suffix]));
+  uint64_t first = mix_pair(0, (uint64_t)wasm_i64x2_extract_lane(low, 0),
+                            (uint64_t)wasm_i64x2_extract_lane(low, 1), mixers);
+  uint64_t hash = mix_pair(first, (uint64_t)wasm_i64x2_extract_lane(key_high, 0),
+                           (uint64_t)wasm_i64x2_extract_lane(key_high, 1), mixers);
   Station *station = (Station *)(uintptr_t)buckets[hash >> 49];
   const uint8_t *key = names + (station->key & OFFSET_MASK);
-  if ((same_key(key_low, key) & same_key(key_high, key + 16)) != 0xffff) station = find_name(start);
+  if ((same_key(low, key) & same_key(key_high, key + 16)) != 0xffff) station = find_name(start);
   return update_row((ParsedRow){start + length + 1, station});
 }
 
@@ -414,8 +363,7 @@ INLINE const uint8_t *advance_short(const uint8_t *start, uint32_t matches, v128
 __attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *start,
                                                                    v128_t low) {
   v128_t high = wasm_v128_load(start + 16);
-  uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high, wasm_v128_load(&separators)))
-                     << 16;
+  uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high, wasm_v128_load(&separators)));
   return matches ? process_wide(start, matches, low, high) : process_row(start);
 }
 
