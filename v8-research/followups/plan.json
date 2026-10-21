@@ -22,13 +22,13 @@
     {
       "id": "constant-phi-expression",
       "scope": "repair expression-wide foldability proof",
-      "state": "completed: 10 tests pass, primary native target unchanged; benchmark recorded, prerequisite for budget experiment",
+      "state": "completed: 10 tests pass; primary redundant dispatch remains; benchmark recorded; prerequisite for budget experiment",
       "source_commit": "d7fff2e2"
     },
     {
       "id": "bounded-dispatch-cloning",
       "scope": "bounded actual-operation budget including separate metadata bound",
-      "state": "building on constant-Phi fix",
+      "state": "20 tests pass; native method dispatch eliminated; 21-pair benchmark running",
       "source_commit": "c4f4ccdb"
     },
     {
