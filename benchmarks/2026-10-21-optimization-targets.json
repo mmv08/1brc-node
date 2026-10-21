@@ -1,0 +1,3438 @@
+{
+  "date": "2026-10-21",
+  "baseline": "338c04c",
+  "planCheckpoint": "33d732c",
+  "scope": "Profile the current production solvers, identify removable work and rank next experiments. No solver or tuning changes; no new speedup claim.",
+  "machine": {
+    "cpu": "AMD Ryzen 9 7900",
+    "physicalCores": 12,
+    "logicalCpus": 24,
+    "linux": "7.0.0-38-generic",
+    "governor": "powersave",
+    "energyPerformancePreference": "balance_performance",
+    "node": "v26.12.0"
+  },
+  "input": {
+    "path": "measurements.txt",
+    "rows": 1000000000,
+    "bytes": 13795455110,
+    "stations": 413,
+    "expectedOutputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5"
+  },
+  "sourceSha256": {
+    "node": "32d47a915fbe732a16745499278ec860ca58f3f84c030413cbf10795ed0a6aa1",
+    "wasm": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce"
+  },
+  "method": {
+    "cpu": "Three complete-file captures per engine, alternating engine order by round; 24 workers plus the main isolate, 1000 us sampling interval. Report raw self samples, with each capture kept separate.",
+    "native": "One complete-file single-worker V8 raw-tick capture per engine at 250 us, joined to native disassembly from that same process. Node source positions resolve inlined function origins; Wasm uses actual tick PCs, not CPU-profile function columns.",
+    "correctness": "All eight captures matched complete expected stdout, with unchanged source hashes checked before and after each process. Every capture reported zero filesystem inputs.",
+    "limits": [
+      "CPU percentages include main-isolate idle samples. They are sample shares, not independent elapsed-time components.",
+      "Single-worker native samples locate code regions; their percentages are not the 24-worker sample distribution.",
+      "PC sampling is imprecise. A sample on a comparison or instruction after a load does not establish cache latency, misprediction cost or that individual instruction's execution time.",
+      "Overlapping region counts must not be added. Removing work in a sampled block need not save its sample percentage.",
+      "Profiling durations are diagnostic only; no uninstrumented candidate benchmark was run in this pass.",
+      "Hardware counters are unavailable with the existing perf_event_paranoid=4. No system settings were changed."
+    ],
+    "hardwareCounterCheck": {
+      "command": ["perf", "stat", "-e", "task-clock,cycles,instructions", "--", "true"],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "Error:\nNo supported events found.\nAccess to performance monitoring and observability operations is limited.\nConsider adjusting /proc/sys/kernel/perf_event_paranoid setting to open\naccess to performance monitoring and observability operations for processes\nwithout CAP_PERFMON, CAP_SYS_PTRACE or CAP_SYS_ADMIN Linux capability.\nMore information can be found at 'Perf events and tool security' document:\nhttps://www.kernel.org/doc/html/latest/admin-guide/perf-security.html\nperf_event_paranoid setting is 4:\n  -1: Allow use of (almost) all events by all users\n      Ignore mlock limit after perf_event_mlock_kb without CAP_IPC_LOCK\n>= 0: Disallow raw and ftrace function tracepoint access\n>= 1: Disallow CPU event access\n>= 2: Disallow kernel profiling\nTo make the adjusted perf_event_paranoid setting permanent preserve it\nin /etc/sysctl.conf (e.g. kernel.perf_event_paranoid = <setting>)\n",
+      "perfEventParanoid": "4"
+    }
+  },
+  "cpuProfiles": [
+    {
+      "capture": "targets-20261021-node-cpu24-1",
+      "profiles": 25,
+      "samples": 22542,
+      "self": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 9112,
+          "percentSamples": 40.42232277526395
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 5970,
+          "percentSamples": 26.483896726111258
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 1873,
+          "percentSamples": 8.308934433501907
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 1414,
+          "percentSamples": 6.272735338479283
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1175,
+          "percentSamples": 5.21249223671369
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "samples": 1105,
+          "percentSamples": 4.901960784313726
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 971,
+          "percentSamples": 4.307514861148079
+        },
+        {
+          "functionName": "find",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 298,
+          "percentSamples": 1.3219767545027061
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 97,
+          "percentSamples": 0.4303078697542365
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 81,
+          "percentSamples": 0.3593292520628161
+        },
+        {
+          "functionName": "claim",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 51,
+          "percentSamples": 0.22624434389140272
+        },
+        {
+          "functionName": "parse",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 47,
+          "percentSamples": 0.2084996894685476
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 38,
+          "percentSamples": 0.16857421701712358
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/targets-20261021/targets-20261021-node-cpu24-1-summary.json",
+        "bytes": 762599,
+        "sha256": "4fcf03ab6f7902d3d2c4e64ffafec45541c132b4527a2f78ee810951d2e7d97b"
+      },
+      "sourcePositions": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 95,
+          "ticks": 2437,
+          "percentSamples": 10.810930707124479
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 92,
+          "ticks": 2351,
+          "percentSamples": 10.429420637033093
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 141,
+          "ticks": 1751,
+          "percentSamples": 7.7677224736048265
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 101,
+          "ticks": 1427,
+          "percentSamples": 6.330405465353563
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1175,
+          "percentSamples": 5.21249223671369
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "lineOneBased": 20,
+          "ticks": 1105,
+          "percentSamples": 4.901960784313726
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 165,
+          "ticks": 904,
+          "percentSamples": 4.010291899565256
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 134,
+          "ticks": 856,
+          "percentSamples": 3.797356046490995
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 58,
+          "ticks": 710,
+          "percentSamples": 3.149676160056783
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 102,
+          "ticks": 661,
+          "percentSamples": 2.9323041433768076
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 91,
+          "ticks": 628,
+          "percentSamples": 2.785910744388253
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 139,
+          "ticks": 615,
+          "percentSamples": 2.7282406175139737
+        }
+      ],
+      "predictorAndLengthSamples": 4788,
+      "predictorAndLengthPercentSamples": 21.240351344157574
+    },
+    {
+      "capture": "targets-20261021-node-cpu24-2",
+      "profiles": 25,
+      "samples": 21673,
+      "self": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 8950,
+          "percentSamples": 41.295621279933556
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 5757,
+          "percentSamples": 26.563004660176258
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 1863,
+          "percentSamples": 8.59594887648226
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1117,
+          "percentSamples": 5.153878097171596
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 1113,
+          "percentSamples": 5.1354219535827985
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "samples": 1081,
+          "percentSamples": 4.987772804872422
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 916,
+          "percentSamples": 4.22645688183454
+        },
+        {
+          "functionName": "find",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 287,
+          "percentSamples": 1.3242283024961934
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 88,
+          "percentSamples": 0.40603515895353665
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 70,
+          "percentSamples": 0.32298251280394963
+        },
+        {
+          "functionName": "claim",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 40,
+          "percentSamples": 0.18456143588797122
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 38,
+          "percentSamples": 0.17533336409357264
+        },
+        {
+          "functionName": "remainder",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 35,
+          "percentSamples": 0.16149125640197481
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/targets-20261021/targets-20261021-node-cpu24-2-summary.json",
+        "bytes": 754091,
+        "sha256": "9ec8ae7bcc0d3dae4df61f5e1e4b40106402134757c81b431175da49dd06d281"
+      },
+      "sourcePositions": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 92,
+          "ticks": 2373,
+          "percentSamples": 10.949107184053892
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 95,
+          "ticks": 2313,
+          "percentSamples": 10.672265030221935
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 141,
+          "ticks": 1704,
+          "percentSamples": 7.862317168827573
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 101,
+          "ticks": 1417,
+          "percentSamples": 6.53808886633138
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1117,
+          "percentSamples": 5.153878097171596
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "lineOneBased": 20,
+          "ticks": 1081,
+          "percentSamples": 4.987772804872422
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 134,
+          "ticks": 872,
+          "percentSamples": 4.023439302357772
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 165,
+          "ticks": 723,
+          "percentSamples": 3.33594795367508
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 58,
+          "ticks": 675,
+          "percentSamples": 3.114474230609514
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 102,
+          "ticks": 629,
+          "percentSamples": 2.902228579338347
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 139,
+          "ticks": 609,
+          "percentSamples": 2.809947861394362
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 91,
+          "ticks": 606,
+          "percentSamples": 2.7961057537027636
+        }
+      ],
+      "predictorAndLengthSamples": 4686,
+      "predictorAndLengthPercentSamples": 21.621372214275826
+    },
+    {
+      "capture": "targets-20261021-node-cpu24-3",
+      "profiles": 25,
+      "samples": 22061,
+      "self": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 9062,
+          "percentSamples": 41.07701373464485
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 5682,
+          "percentSamples": 25.75585875526948
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 1832,
+          "percentSamples": 8.304247314264993
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 1516,
+          "percentSamples": 6.871855310276053
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1127,
+          "percentSamples": 5.108562621821314
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "samples": 1056,
+          "percentSamples": 4.786727709532659
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 916,
+          "percentSamples": 4.152123657132496
+        },
+        {
+          "functionName": "find",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 249,
+          "percentSamples": 1.128688636054576
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 81,
+          "percentSamples": 0.36716377317438015
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 70,
+          "percentSamples": 0.3173020262000816
+        },
+        {
+          "functionName": "claim",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 46,
+          "percentSamples": 0.20851276007433933
+        },
+        {
+          "functionName": "remainder",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 45,
+          "percentSamples": 0.20397987398576672
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 40,
+          "percentSamples": 0.18131544354290377
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/targets-20261021/targets-20261021-node-cpu24-3-summary.json",
+        "bytes": 762720,
+        "sha256": "73d6ca404383883bd43823e4ad65fc3fbac18914d0406c0630e598a094d934ec"
+      },
+      "sourcePositions": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 95,
+          "ticks": 2401,
+          "percentSamples": 10.883459498662798
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 92,
+          "ticks": 2275,
+          "percentSamples": 10.312315851502651
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 141,
+          "ticks": 1638,
+          "percentSamples": 7.424867413081909
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 101,
+          "ticks": 1466,
+          "percentSamples": 6.645211005847423
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1127,
+          "percentSamples": 5.108562621821314
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "lineOneBased": 20,
+          "ticks": 1056,
+          "percentSamples": 4.786727709532659
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 165,
+          "ticks": 979,
+          "percentSamples": 4.43769548071257
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 134,
+          "ticks": 855,
+          "percentSamples": 3.875617605729568
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 58,
+          "ticks": 669,
+          "percentSamples": 3.0325007932550654
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 91,
+          "ticks": 654,
+          "percentSamples": 2.9645075019264766
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 102,
+          "ticks": 636,
+          "percentSamples": 2.88291555233217
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 94,
+          "ticks": 590,
+          "percentSamples": 2.6744027922578306
+        }
+      ],
+      "predictorAndLengthSamples": 4676,
+      "predictorAndLengthPercentSamples": 21.19577535016545
+    },
+    {
+      "capture": "targets-20261021-wasm-cpu24-1",
+      "profiles": 25,
+      "samples": 9003,
+      "self": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/4f5e6066",
+          "samples": 6236,
+          "percentSamples": 69.26580028879262
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1411,
+          "percentSamples": 15.672553593246695
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/4f5e6066",
+          "samples": 528,
+          "percentSamples": 5.864711762745752
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 411,
+          "percentSamples": 4.565144951682773
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "samples": 61,
+          "percentSamples": 0.6775519271353994
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 51,
+          "percentSamples": 0.56647784071976
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 38,
+          "percentSamples": 0.4220815283794291
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "samples": 21,
+          "percentSamples": 0.2332555814728424
+        },
+        {
+          "functionName": "calculate",
+          "url": "file:///home/mmv/projects/1brc-node/calculate.mjs",
+          "samples": 18,
+          "percentSamples": 0.19993335554815062
+        },
+        {
+          "functionName": "(program)",
+          "url": "",
+          "samples": 17,
+          "percentSamples": 0.1888259469065867
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "samples": 15,
+          "percentSamples": 0.16661112962345884
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/worker.mjs",
+          "samples": 13,
+          "percentSamples": 0.144396312340331
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "samples": 12,
+          "percentSamples": 0.13328890369876709
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/targets-20261021/targets-20261021-wasm-cpu24-1-summary.json",
+        "bytes": 468374,
+        "sha256": "0da769569219a17ebbadfdda50170033353f353088f72e9c3ccae0f3dfe2ecd3"
+      }
+    },
+    {
+      "capture": "targets-20261021-wasm-cpu24-2",
+      "profiles": 25,
+      "samples": 8890,
+      "self": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/4f5e6066",
+          "samples": 6096,
+          "percentSamples": 68.57142857142857
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1434,
+          "percentSamples": 16.130483689538806
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/4f5e6066",
+          "samples": 510,
+          "percentSamples": 5.736782902137233
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 405,
+          "percentSamples": 4.555680539932508
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "samples": 58,
+          "percentSamples": 0.6524184476940382
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 56,
+          "percentSamples": 0.6299212598425197
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 38,
+          "percentSamples": 0.42744656917885265
+        },
+        {
+          "functionName": "(program)",
+          "url": "",
+          "samples": 19,
+          "percentSamples": 0.21372328458942633
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "samples": 19,
+          "percentSamples": 0.21372328458942633
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "samples": 18,
+          "percentSamples": 0.20247469066366705
+        },
+        {
+          "functionName": "calculate",
+          "url": "file:///home/mmv/projects/1brc-node/calculate.mjs",
+          "samples": 16,
+          "percentSamples": 0.17997750281214847
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "samples": 16,
+          "percentSamples": 0.17997750281214847
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/worker.mjs",
+          "samples": 15,
+          "percentSamples": 0.1687289088863892
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/targets-20261021/targets-20261021-wasm-cpu24-2-summary.json",
+        "bytes": 484926,
+        "sha256": "0280781e27c2ecd6124c165d33ca76b9762c6e3c6761cd348f86f61367293843"
+      }
+    },
+    {
+      "capture": "targets-20261021-wasm-cpu24-3",
+      "profiles": 25,
+      "samples": 9038,
+      "self": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/4f5e6066",
+          "samples": 6265,
+          "percentSamples": 69.3184332816995
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1368,
+          "percentSamples": 15.13609205576455
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/4f5e6066",
+          "samples": 569,
+          "percentSamples": 6.295640628457623
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 407,
+          "percentSamples": 4.5032086744855055
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 60,
+          "percentSamples": 0.6638636866563399
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "samples": 55,
+          "percentSamples": 0.6085417127683116
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 35,
+          "percentSamples": 0.3872538172161983
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "samples": 23,
+          "percentSamples": 0.2544810798849303
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "samples": 18,
+          "percentSamples": 0.19915910599690198
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "samples": 18,
+          "percentSamples": 0.19915910599690198
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/worker.mjs",
+          "samples": 17,
+          "percentSamples": 0.1880947112192963
+        },
+        {
+          "functionName": "readSync",
+          "url": "node:fs",
+          "samples": 16,
+          "percentSamples": 0.17703031644169065
+        },
+        {
+          "functionName": "calculate",
+          "url": "file:///home/mmv/projects/1brc-node/calculate.mjs",
+          "samples": 13,
+          "percentSamples": 0.14383713210887364
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/targets-20261021/targets-20261021-wasm-cpu24-3-summary.json",
+        "bytes": 476994,
+        "sha256": "f7e6739e4f8384fad17b1f5f80da2bf0fc30a3e9c0d4f306dcea42550770ba14"
+      }
+    }
+  ],
+  "nodeNative": {
+    "totalTicks": 32723,
+    "mappedOptimizedTicks": 29677,
+    "dominantParser": {
+      "name": " file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:153:12",
+      "start": "0x7aac96808ec0",
+      "size": 12884,
+      "createdUs": 99708,
+      "ticks": 29565
+    },
+    "sourcePositions": [
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "lineOneBased": 95,
+        "source": "const length = records[r + 4];",
+        "samples": 4295,
+        "percentAllTicks": 13.125324695168535
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "lineOneBased": 141,
+        "source": "sums[id] += value;",
+        "samples": 3252,
+        "percentAllTicks": 9.937964123093849
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "lineOneBased": 101,
+        "source": "if (buffer[end] === 59 && equal(view, start, length, r, head)) {",
+        "samples": 2914,
+        "percentAllTicks": 8.905051492833786
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "lineOneBased": 92,
+        "source": "const predicted = prefixCache[prefixSlot] - 1;",
+        "samples": 2152,
+        "percentAllTicks": 6.576414142957553
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "lineOneBased": 134,
+        "source": "let value = temperatureBase(digits) + (buffer[p + width - 2] & 15);",
+        "samples": 1401,
+        "percentAllTicks": 4.281392292882682
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "lineOneBased": 58,
+        "source": "if (view.getInt32(start + Math.min(4, length - 4), true) !== records[r + 3]) return false;",
+        "samples": 1193,
+        "percentAllTicks": 3.6457537511841824
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "lineOneBased": 102,
+        "source": "temperatures[lane] = end + 1;",
+        "samples": 1158,
+        "percentAllTicks": 3.5387953427253
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+        "lineOneBased": 20,
+        "source": "return temperaturePrefixes[digits & 0x0f0f];",
+        "samples": 1114,
+        "percentAllTicks": 3.4043333435198484
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "lineOneBased": 62,
+        "source": "if (view.getInt32(start + i, true) !== keys.getInt32(offset + i, true)) return false;",
+        "samples": 996,
+        "percentAllTicks": 3.0437307092870456
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "lineOneBased": 93,
+        "source": "if (predicted >= 0) {",
+        "samples": 954,
+        "percentAllTicks": 2.9153806191363874
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "lineOneBased": 139,
+        "source": "if (value < records[r + 6]) records[r + 6] = value;",
+        "samples": 903,
+        "percentAllTicks": 2.759526938239159
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "lineOneBased": 133,
+        "source": "const width = 4 + negative + ((digits >>> 12) & 1);",
+        "samples": 850,
+        "percentAllTicks": 2.5975613482871376
+      }
+    ],
+    "predictorLengthDelimiterRegions": [
+      {
+        "startOffset": 494,
+        "endOffsetExclusive": 536,
+        "line": 92,
+        "source": "const predicted = prefixCache[prefixSlot] - 1;",
+        "ticks": 1817,
+        "instructions": [
+          {
+            "address": 134881677971630,
+            "offset": 494,
+            "operation": "REX.W movq [rbp-0x70],rsi",
+            "ticks": 89
+          },
+          {
+            "address": 134881677971634,
+            "offset": 498,
+            "operation": "REX.W movq [rbp-0xa0],rcx",
+            "ticks": 3
+          },
+          {
+            "address": 134881677971641,
+            "offset": 505,
+            "operation": "cmpl rcx,0x8000",
+            "ticks": 224
+          },
+          {
+            "address": 134881677971647,
+            "offset": 511,
+            "operation": "jnc 0x7aac9680b9ac  <+0x2aec>",
+            "ticks": 54
+          },
+          {
+            "address": 134881677971653,
+            "offset": 517,
+            "operation": "movzxwl r14,[rcx*2+0x21a2bd30]",
+            "ticks": 0
+          },
+          {
+            "address": 134881677971662,
+            "offset": 526,
+            "operation": "REX.W movq rcx,0x17b687525871    ;; object: 0x17b687525871 <Uint16Array map = 0xba91d0d5c9>",
+            "ticks": 1447
+          }
+        ]
+      },
+      {
+        "startOffset": 536,
+        "endOffsetExclusive": 540,
+        "line": 92,
+        "source": "const predicted = prefixCache[prefixSlot] - 1;",
+        "ticks": 1,
+        "instructions": [
+          {
+            "address": 134881677971672,
+            "offset": 536,
+            "operation": "subl r14,0x1",
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "startOffset": 540,
+        "endOffsetExclusive": 568,
+        "line": 93,
+        "source": "if (predicted >= 0) {",
+        "ticks": 535,
+        "instructions": [
+          {
+            "address": 134881677971676,
+            "offset": 540,
+            "operation": "testl r14,r14",
+            "ticks": 264
+          },
+          {
+            "address": 134881677971679,
+            "offset": 543,
+            "operation": "jge 0x7aac968090f8  <+0x238>",
+            "ticks": 131
+          },
+          {
+            "address": 134881677971685,
+            "offset": 549,
+            "operation": "REX.W movq [rbp-0xa8],r9",
+            "ticks": 0
+          },
+          {
+            "address": 134881677971692,
+            "offset": 556,
+            "operation": "REX.W movq [rbp-0x90],rbx",
+            "ticks": 140
+          },
+          {
+            "address": 134881677971699,
+            "offset": 563,
+            "operation": "jmp 0x7aac968093a6  <+0x4e6>",
+            "ticks": 0
+          }
+        ]
+      },
+      {
+        "startOffset": 568,
+        "endOffsetExclusive": 585,
+        "line": 94,
+        "source": "const r = predicted * 8;",
+        "ticks": 2,
+        "instructions": [
+          {
+            "address": 134881677971704,
+            "offset": 568,
+            "operation": "REX.W movq [rbp-0xb8],r14",
+            "ticks": 0
+          },
+          {
+            "address": 134881677971711,
+            "offset": 575,
+            "operation": "imull r14,r14,0x8",
+            "ticks": 2
+          },
+          {
+            "address": 134881677971715,
+            "offset": 579,
+            "operation": "jo 0x7aac9680bf19  <+0x3059>",
+            "ticks": 0
+          }
+        ]
+      },
+      {
+        "startOffset": 585,
+        "endOffsetExclusive": 589,
+        "line": 95,
+        "source": "const length = records[r + 4];",
+        "ticks": 771,
+        "instructions": [
+          {
+            "address": 134881677971721,
+            "offset": 585,
+            "operation": "leal rcx,[r14+0x4]",
+            "ticks": 771
+          }
+        ]
+      },
+      {
+        "startOffset": 589,
+        "endOffsetExclusive": 624,
+        "line": 95,
+        "source": "const length = records[r + 4];",
+        "ticks": 2156,
+        "instructions": [
+          {
+            "address": 134881677971725,
+            "offset": 589,
+            "operation": "cmpl rcx,0x13880",
+            "ticks": 15
+          },
+          {
+            "address": 134881677971731,
+            "offset": 595,
+            "operation": "jnc 0x7aac9680bf1d  <+0x305d>",
+            "ticks": 258
+          },
+          {
+            "address": 134881677971737,
+            "offset": 601,
+            "operation": "REX.W movq rdx,0x7aacc606a010",
+            "ticks": 0
+          },
+          {
+            "address": 134881677971747,
+            "offset": 611,
+            "operation": "movl rcx,[rdx+rcx*4]",
+            "ticks": 0
+          },
+          {
+            "address": 134881677971750,
+            "offset": 614,
+            "operation": "REX.W movq r15,0x17b687525939    ;; object: 0x17b687525939 <Int32Array map = 0x2685950057d9>",
+            "ticks": 1883
+          }
+        ]
+      },
+      {
+        "startOffset": 624,
+        "endOffsetExclusive": 632,
+        "line": 96,
+        "source": "const end = start + length;",
+        "ticks": 335,
+        "instructions": [
+          {
+            "address": 134881677971760,
+            "offset": 624,
+            "operation": "addl rsi,rcx",
+            "ticks": 0
+          },
+          {
+            "address": 134881677971762,
+            "offset": 626,
+            "operation": "jo 0x7aac9680bf21  <+0x3061>",
+            "ticks": 335
+          }
+        ]
+      },
+      {
+        "startOffset": 632,
+        "endOffsetExclusive": 644,
+        "line": 101,
+        "source": "if (buffer[end] === 59 && equal(view, start, length, r, head)) {",
+        "ticks": 305,
+        "instructions": [
+          {
+            "address": 134881677971768,
+            "offset": 632,
+            "operation": "cmpl rsi,0x20100",
+            "ticks": 0
+          },
+          {
+            "address": 134881677971774,
+            "offset": 638,
+            "operation": "jnc 0x7aac9680bf25  <+0x3065>",
+            "ticks": 305
+          }
+        ]
+      },
+      {
+        "startOffset": 644,
+        "endOffsetExclusive": 653,
+        "line": 101,
+        "source": "if (buffer[end] === 59 && equal(view, start, length, r, head)) {",
+        "ticks": 1436,
+        "instructions": [
+          {
+            "address": 134881677971780,
+            "offset": 644,
+            "operation": "cmpb [rsi+0x21a59220],0x3b",
+            "ticks": 0
+          },
+          {
+            "address": 134881677971787,
+            "offset": 651,
+            "operation": "jnz 0x7aac968090e5  <+0x225>",
+            "ticks": 1436
+          }
+        ]
+      },
+      {
+        "startOffset": 4212,
+        "endOffsetExclusive": 4215,
+        "line": 91,
+        "source": "const prefixSlot = Math.imul(head ^ buffer[p + 4], 0x9e3779b1) >>> 17;",
+        "ticks": 95,
+        "instructions": [
+          {
+            "address": 134881677975348,
+            "offset": 4212,
+            "operation": "shrl rax,17",
+            "ticks": 95
+          }
+        ]
+      },
+      {
+        "startOffset": 4215,
+        "endOffsetExclusive": 4248,
+        "line": 92,
+        "source": "const predicted = prefixCache[prefixSlot] - 1;",
+        "ticks": 332,
+        "instructions": [
+          {
+            "address": 134881677975351,
+            "offset": 4215,
+            "operation": "REX.W movq [rbp-0x48],rax",
+            "ticks": 67
+          },
+          {
+            "address": 134881677975355,
+            "offset": 4219,
+            "operation": "cmp rax,0x8000",
+            "ticks": 23
+          },
+          {
+            "address": 134881677975360,
+            "offset": 4224,
+            "operation": "jnc 0x7aac9680baf3  <+0x2c33>",
+            "ticks": 26
+          },
+          {
+            "address": 134881677975366,
+            "offset": 4230,
+            "operation": "movzxwl rcx,[rax*2+0x21a2bd30]",
+            "ticks": 0
+          },
+          {
+            "address": 134881677975374,
+            "offset": 4238,
+            "operation": "REX.W movq rdx,0x17b687525871    ;; object: 0x17b687525871 <Uint16Array map = 0xba91d0d5c9>",
+            "ticks": 216
+          }
+        ]
+      },
+      {
+        "startOffset": 4248,
+        "endOffsetExclusive": 4251,
+        "line": 92,
+        "source": "const predicted = prefixCache[prefixSlot] - 1;",
+        "ticks": 2,
+        "instructions": [
+          {
+            "address": 134881677975384,
+            "offset": 4248,
+            "operation": "subl rcx,0x1",
+            "ticks": 2
+          }
+        ]
+      },
+      {
+        "startOffset": 4251,
+        "endOffsetExclusive": 4278,
+        "line": 93,
+        "source": "if (predicted >= 0) {",
+        "ticks": 419,
+        "instructions": [
+          {
+            "address": 134881677975387,
+            "offset": 4251,
+            "operation": "testl rcx,rcx",
+            "ticks": 109
+          },
+          {
+            "address": 134881677975389,
+            "offset": 4253,
+            "operation": "jge 0x7aac96809f76  <+0x10b6>",
+            "ticks": 194
+          },
+          {
+            "address": 134881677975395,
+            "offset": 4259,
+            "operation": "REX.W movq [rbp-0x90],r9",
+            "ticks": 0
+          },
+          {
+            "address": 134881677975402,
+            "offset": 4266,
+            "operation": "REX.W movq [rbp-0xb0],r11",
+            "ticks": 116
+          },
+          {
+            "address": 134881677975409,
+            "offset": 4273,
+            "operation": "jmp 0x7aac9680a270  <+0x13b0>",
+            "ticks": 0
+          }
+        ]
+      },
+      {
+        "startOffset": 4278,
+        "endOffsetExclusive": 4290,
+        "line": 94,
+        "source": "const r = predicted * 8;",
+        "ticks": 61,
+        "instructions": [
+          {
+            "address": 134881677975414,
+            "offset": 4278,
+            "operation": "REX.W movq rsi,rcx",
+            "ticks": 0
+          },
+          {
+            "address": 134881677975417,
+            "offset": 4281,
+            "operation": "imull rsi,rsi,0x8",
+            "ticks": 14
+          },
+          {
+            "address": 134881677975420,
+            "offset": 4284,
+            "operation": "jo 0x7aac9680bf99  <+0x30d9>",
+            "ticks": 47
+          }
+        ]
+      },
+      {
+        "startOffset": 4290,
+        "endOffsetExclusive": 4300,
+        "line": 95,
+        "source": "const length = records[r + 4];",
+        "ticks": 258,
+        "instructions": [
+          {
+            "address": 134881677975426,
+            "offset": 4290,
+            "operation": "REX.W movq [rbp-0x88],rcx",
+            "ticks": 236
+          },
+          {
+            "address": 134881677975433,
+            "offset": 4297,
+            "operation": "leal rcx,[rsi+0x4]",
+            "ticks": 22
+          }
+        ]
+      },
+      {
+        "startOffset": 4300,
+        "endOffsetExclusive": 4332,
+        "line": 95,
+        "source": "const length = records[r + 4];",
+        "ticks": 1110,
+        "instructions": [
+          {
+            "address": 134881677975436,
+            "offset": 4300,
+            "operation": "cmpl rcx,0x13880",
+            "ticks": 55
+          },
+          {
+            "address": 134881677975442,
+            "offset": 4306,
+            "operation": "jnc 0x7aac9680bf95  <+0x30d5>",
+            "ticks": 43
+          },
+          {
+            "address": 134881677975448,
+            "offset": 4312,
+            "operation": "REX.W movq rax,[rip+0xfffff17c]",
+            "ticks": 0
+          },
+          {
+            "address": 134881677975455,
+            "offset": 4319,
+            "operation": "movl rcx,[rax+rcx*4]",
+            "ticks": 6
+          },
+          {
+            "address": 134881677975458,
+            "offset": 4322,
+            "operation": "REX.W movq rdx,0x17b687525939    ;; object: 0x17b687525939 <Int32Array map = 0x2685950057d9>",
+            "ticks": 1006
+          }
+        ]
+      },
+      {
+        "startOffset": 4332,
+        "endOffsetExclusive": 4344,
+        "line": 96,
+        "source": "const end = start + length;",
+        "ticks": 187,
+        "instructions": [
+          {
+            "address": 134881677975468,
+            "offset": 4332,
+            "operation": "REX.W movq r8,r11",
+            "ticks": 9
+          },
+          {
+            "address": 134881677975471,
+            "offset": 4335,
+            "operation": "addl r8,rcx",
+            "ticks": 178
+          },
+          {
+            "address": 134881677975474,
+            "offset": 4338,
+            "operation": "jo 0x7aac9680bf91  <+0x30d1>",
+            "ticks": 0
+          }
+        ]
+      },
+      {
+        "startOffset": 4344,
+        "endOffsetExclusive": 4357,
+        "line": 101,
+        "source": "if (buffer[end] === 59 && equal(view, start, length, r, head)) {",
+        "ticks": 200,
+        "instructions": [
+          {
+            "address": 134881677975480,
+            "offset": 4344,
+            "operation": "cmpl r8,0x20100",
+            "ticks": 0
+          },
+          {
+            "address": 134881677975487,
+            "offset": 4351,
+            "operation": "jnc 0x7aac9680bf8d  <+0x30cd>",
+            "ticks": 200
+          }
+        ]
+      },
+      {
+        "startOffset": 4357,
+        "endOffsetExclusive": 4367,
+        "line": 101,
+        "source": "if (buffer[end] === 59 && equal(view, start, length, r, head)) {",
+        "ticks": 956,
+        "instructions": [
+          {
+            "address": 134881677975493,
+            "offset": 4357,
+            "operation": "cmpb [r8+0x21a59220],0x3b",
+            "ticks": 0
+          },
+          {
+            "address": 134881677975501,
+            "offset": 4365,
+            "operation": "jnz 0x7aac96809f63  <+0x10a3>",
+            "ticks": 956
+          }
+        ]
+      },
+      {
+        "startOffset": 4367,
+        "endOffsetExclusive": 4378,
+        "line": 54,
+        "source": "if (records[r + 1] !== head) return false;",
+        "ticks": 212,
+        "instructions": [
+          {
+            "address": 134881677975503,
+            "offset": 4367,
+            "operation": "REX.W movq [rbp-0xa8],r8",
+            "ticks": 208
+          },
+          {
+            "address": 134881677975510,
+            "offset": 4374,
+            "operation": "leal r8,[rsi+0x1]",
+            "ticks": 4
+          }
+        ]
+      }
+    ],
+    "finding": "Both inlined lanes retain the dependent sequence predictor[id] -> records[stationId * 8 + 4] -> buffer[start + length], with bounds checks. Full key verification follows.",
+    "artifacts": [
+      {
+        "path": "results/targets-20261021/node-native-regions.json",
+        "bytes": 2383982,
+        "sha256": "43fc6eb9a2c43ed8200f05367140f9324ad53e37edd55f752033f5305469fb21"
+      },
+      {
+        "path": "results/targets-20261021/native-regions.py",
+        "bytes": 3979,
+        "sha256": "de643de9b218ce233ce6334e85b42da72a506a38b9cf13f7929532446ddc84f0"
+      }
+    ]
+  },
+  "wasmNative": {
+    "functions": [
+      {
+        "name": "wasm-function[8]",
+        "compiler": "TurboFan",
+        "start": "0x2aaf2a980880",
+        "size": 11932,
+        "ticks": 9426,
+        "percentAllTicks": 69.20196755010646
+      },
+      {
+        "name": "wasm-function[10]",
+        "compiler": "TurboFan",
+        "start": "0x2aaf2a980280",
+        "size": 1484,
+        "ticks": 1062,
+        "percentAllTicks": 7.796784377064826
+      },
+      {
+        "name": "wasm-function[8]",
+        "compiler": "Liftoff",
+        "start": "0x2aaf2a97a2c0",
+        "size": 17128,
+        "ticks": 30,
+        "percentAllTicks": 0.2202481462447691
+      },
+      {
+        "name": "wasm-function[10]",
+        "compiler": "Liftoff",
+        "start": "0x2aaf2a97ee00",
+        "size": 2060,
+        "ticks": 3,
+        "percentAllTicks": 0.02202481462447691
+      },
+      {
+        "name": "wasm-function[0]",
+        "compiler": "Liftoff",
+        "start": "0x2aaf2a979bc0",
+        "size": 1748,
+        "ticks": 1,
+        "percentAllTicks": 0.007341604874825637
+      },
+      {
+        "name": "wasm-function[1]",
+        "compiler": "Liftoff",
+        "start": "0x2aaf2a979b40",
+        "size": 76,
+        "ticks": 0,
+        "percentAllTicks": 0
+      },
+      {
+        "name": "wasm-function[9]",
+        "compiler": "Liftoff",
+        "start": "0x2aaf2a97e5c0",
+        "size": 1408,
+        "ticks": 0,
+        "percentAllTicks": 0
+      },
+      {
+        "name": "wasm-function[11]",
+        "compiler": "Liftoff",
+        "start": "0x2aaf2a97eb80",
+        "size": 608,
+        "ticks": 0,
+        "percentAllTicks": 0
+      },
+      {
+        "name": "wasm-function[13]",
+        "compiler": "Liftoff",
+        "start": "0x2aaf2a97f640",
+        "size": 728,
+        "ticks": 0,
+        "percentAllTicks": 0
+      },
+      {
+        "name": "wasm-function[14]",
+        "compiler": "Liftoff",
+        "start": "0x2aaf2a97f940",
+        "size": 2296,
+        "ticks": 0,
+        "percentAllTicks": 0
+      },
+      {
+        "name": "wasm-function[2]",
+        "compiler": "Liftoff",
+        "start": "0x2aaf2a983740",
+        "size": 76,
+        "ticks": 0,
+        "percentAllTicks": 0
+      },
+      {
+        "name": "wasm-function[3]",
+        "compiler": "Liftoff",
+        "start": "0x2aaf2a9837c0",
+        "size": 76,
+        "ticks": 0,
+        "percentAllTicks": 0
+      },
+      {
+        "name": "wasm-function[5]",
+        "compiler": "Liftoff",
+        "start": "0x2aaf2a983840",
+        "size": 88,
+        "ticks": 0,
+        "percentAllTicks": 0
+      }
+    ],
+    "shortEquality": {
+      "totalTicks": 13621,
+      "parseTicks": 9426,
+      "shortEqualityBlocksTicks": 3976,
+      "percentParseTicks": 42.181200933587945,
+      "percentAllTicks": 29.190220982306734,
+      "parseNativeBytes": 11932,
+      "blocks": [
+        {
+          "start": "0x346",
+          "endExclusive": "0x362",
+          "samples": 31,
+          "sampledInstructions": [
+            {
+              "offset": "0x34d",
+              "samples": 12,
+              "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+            },
+            {
+              "offset": "0x346",
+              "samples": 8,
+              "operation": "vmovdqu xmm4,[r11+rsi*1+0x18]"
+            },
+            {
+              "offset": "0x351",
+              "samples": 6,
+              "operation": "vpmovmskb r9,xmm0"
+            },
+            {
+              "offset": "0x35c",
+              "samples": 5,
+              "operation": "jnz 0x2aaf2a9827c1  <+0x1f41>"
+            }
+          ]
+        },
+        {
+          "start": "0x45b",
+          "endExclusive": "0x476",
+          "samples": 7,
+          "sampledInstructions": [
+            {
+              "offset": "0x462",
+              "samples": 5,
+              "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+            },
+            {
+              "offset": "0x466",
+              "samples": 2,
+              "operation": "vpmovmskb rcx,xmm0"
+            }
+          ]
+        },
+        {
+          "start": "0x565",
+          "endExclusive": "0x580",
+          "samples": 7,
+          "sampledInstructions": [
+            {
+              "offset": "0x56c",
+              "samples": 3,
+              "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+            },
+            {
+              "offset": "0x57a",
+              "samples": 2,
+              "operation": "jnz 0x2aaf2a982932  <+0x20b2>"
+            },
+            {
+              "offset": "0x565",
+              "samples": 1,
+              "operation": "vmovdqu xmm2,[r11+rax*1+0x18]"
+            },
+            {
+              "offset": "0x570",
+              "samples": 1,
+              "operation": "vpmovmskb rbx,xmm0"
+            }
+          ]
+        },
+        {
+          "start": "0x6fe",
+          "endExclusive": "0x71a",
+          "samples": 614,
+          "sampledInstructions": [
+            {
+              "offset": "0x705",
+              "samples": 233,
+              "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+            },
+            {
+              "offset": "0x714",
+              "samples": 155,
+              "operation": "jnz 0x2aaf2a982a1e  <+0x219e>"
+            },
+            {
+              "offset": "0x6fe",
+              "samples": 137,
+              "operation": "vmovdqu xmm4,[r11+rcx*1+0x18]"
+            },
+            {
+              "offset": "0x709",
+              "samples": 69,
+              "operation": "vpmovmskb r9,xmm0"
+            },
+            {
+              "offset": "0x70d",
+              "samples": 20,
+              "operation": "cmpl r9,0xffff"
+            }
+          ]
+        },
+        {
+          "start": "0x80a",
+          "endExclusive": "0x825",
+          "samples": 235,
+          "sampledInstructions": [
+            {
+              "offset": "0x811",
+              "samples": 80,
+              "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+            },
+            {
+              "offset": "0x81f",
+              "samples": 57,
+              "operation": "jnz 0x2aaf2a982af0  <+0x2270>"
+            },
+            {
+              "offset": "0x819",
+              "samples": 46,
+              "operation": "cmpl rcx,0xffff"
+            },
+            {
+              "offset": "0x815",
+              "samples": 40,
+              "operation": "vpmovmskb rcx,xmm0"
+            },
+            {
+              "offset": "0x80a",
+              "samples": 12,
+              "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+            }
+          ]
+        },
+        {
+          "start": "0x917",
+          "endExclusive": "0x932",
+          "samples": 189,
+          "sampledInstructions": [
+            {
+              "offset": "0x91e",
+              "samples": 67,
+              "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+            },
+            {
+              "offset": "0x92c",
+              "samples": 62,
+              "operation": "jnz 0x2aaf2a982b7f  <+0x22ff>"
+            },
+            {
+              "offset": "0x922",
+              "samples": 34,
+              "operation": "vpmovmskb rbx,xmm0"
+            },
+            {
+              "offset": "0x917",
+              "samples": 26,
+              "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+            }
+          ]
+        },
+        {
+          "start": "0xa55",
+          "endExclusive": "0xa70",
+          "samples": 594,
+          "sampledInstructions": [
+            {
+              "offset": "0xa5c",
+              "samples": 251,
+              "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+            },
+            {
+              "offset": "0xa6a",
+              "samples": 146,
+              "operation": "jnz 0x2aaf2a982c32  <+0x23b2>"
+            },
+            {
+              "offset": "0xa55",
+              "samples": 118,
+              "operation": "vmovdqu xmm4,[r11+rdx*1+0x18]"
+            },
+            {
+              "offset": "0xa60",
+              "samples": 72,
+              "operation": "vpmovmskb rsi,xmm0"
+            },
+            {
+              "offset": "0xa64",
+              "samples": 7,
+              "operation": "cmpl rsi,0xffff"
+            }
+          ]
+        },
+        {
+          "start": "0xb65",
+          "endExclusive": "0xb80",
+          "samples": 215,
+          "sampledInstructions": [
+            {
+              "offset": "0xb6c",
+              "samples": 79,
+              "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+            },
+            {
+              "offset": "0xb7a",
+              "samples": 51,
+              "operation": "jnz 0x2aaf2a982cfc  <+0x247c>"
+            },
+            {
+              "offset": "0xb74",
+              "samples": 36,
+              "operation": "cmpl rcx,0xffff"
+            },
+            {
+              "offset": "0xb70",
+              "samples": 31,
+              "operation": "vpmovmskb rcx,xmm0"
+            },
+            {
+              "offset": "0xb65",
+              "samples": 18,
+              "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+            }
+          ]
+        },
+        {
+          "start": "0xc72",
+          "endExclusive": "0xc8d",
+          "samples": 203,
+          "sampledInstructions": [
+            {
+              "offset": "0xc79",
+              "samples": 88,
+              "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+            },
+            {
+              "offset": "0xc87",
+              "samples": 49,
+              "operation": "jnz 0x2aaf2a982d7f  <+0x24ff>"
+            },
+            {
+              "offset": "0xc7d",
+              "samples": 32,
+              "operation": "vpmovmskb rbx,xmm0"
+            },
+            {
+              "offset": "0xc72",
+              "samples": 27,
+              "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+            },
+            {
+              "offset": "0xc81",
+              "samples": 7,
+              "operation": "cmpl rbx,0xffff"
+            }
+          ]
+        },
+        {
+          "start": "0xdb1",
+          "endExclusive": "0xdcc",
+          "samples": 533,
+          "sampledInstructions": [
+            {
+              "offset": "0xdb8",
+              "samples": 205,
+              "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+            },
+            {
+              "offset": "0xdc6",
+              "samples": 134,
+              "operation": "jnz 0x2aaf2a982e2c  <+0x25ac>"
+            },
+            {
+              "offset": "0xdb1",
+              "samples": 113,
+              "operation": "vmovdqu xmm4,[r11+rdx*1+0x18]"
+            },
+            {
+              "offset": "0xdbc",
+              "samples": 76,
+              "operation": "vpmovmskb rsi,xmm0"
+            },
+            {
+              "offset": "0xdc0",
+              "samples": 5,
+              "operation": "cmpl rsi,0xffff"
+            }
+          ]
+        },
+        {
+          "start": "0xec1",
+          "endExclusive": "0xedc",
+          "samples": 183,
+          "sampledInstructions": [
+            {
+              "offset": "0xed6",
+              "samples": 58,
+              "operation": "jnz 0x2aaf2a982efc  <+0x267c>"
+            },
+            {
+              "offset": "0xec8",
+              "samples": 55,
+              "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+            },
+            {
+              "offset": "0xed0",
+              "samples": 30,
+              "operation": "cmpl rcx,0xffff"
+            },
+            {
+              "offset": "0xecc",
+              "samples": 23,
+              "operation": "vpmovmskb rcx,xmm0"
+            },
+            {
+              "offset": "0xec1",
+              "samples": 17,
+              "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+            }
+          ]
+        },
+        {
+          "start": "0xfce",
+          "endExclusive": "0xfe9",
+          "samples": 207,
+          "sampledInstructions": [
+            {
+              "offset": "0xfd5",
+              "samples": 79,
+              "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+            },
+            {
+              "offset": "0xfe3",
+              "samples": 51,
+              "operation": "jnz 0x2aaf2a982f8b  <+0x270b>"
+            },
+            {
+              "offset": "0xfd9",
+              "samples": 38,
+              "operation": "vpmovmskb rbx,xmm0"
+            },
+            {
+              "offset": "0xfce",
+              "samples": 35,
+              "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+            },
+            {
+              "offset": "0xfdd",
+              "samples": 4,
+              "operation": "cmpl rbx,0xffff"
+            }
+          ]
+        },
+        {
+          "start": "0x110d",
+          "endExclusive": "0x1128",
+          "samples": 551,
+          "sampledInstructions": [
+            {
+              "offset": "0x1114",
+              "samples": 238,
+              "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+            },
+            {
+              "offset": "0x1122",
+              "samples": 120,
+              "operation": "jnz 0x2aaf2a983038  <+0x27b8>"
+            },
+            {
+              "offset": "0x110d",
+              "samples": 104,
+              "operation": "vmovdqu xmm4,[r11+rdx*1+0x18]"
+            },
+            {
+              "offset": "0x1118",
+              "samples": 87,
+              "operation": "vpmovmskb rsi,xmm0"
+            },
+            {
+              "offset": "0x111c",
+              "samples": 2,
+              "operation": "cmpl rsi,0xffff"
+            }
+          ]
+        },
+        {
+          "start": "0x121d",
+          "endExclusive": "0x1238",
+          "samples": 195,
+          "sampledInstructions": [
+            {
+              "offset": "0x1224",
+              "samples": 58,
+              "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+            },
+            {
+              "offset": "0x1232",
+              "samples": 54,
+              "operation": "jnz 0x2aaf2a983108  <+0x2888>"
+            },
+            {
+              "offset": "0x122c",
+              "samples": 39,
+              "operation": "cmpl rcx,0xffff"
+            },
+            {
+              "offset": "0x1228",
+              "samples": 28,
+              "operation": "vpmovmskb rcx,xmm0"
+            },
+            {
+              "offset": "0x121d",
+              "samples": 16,
+              "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+            }
+          ]
+        },
+        {
+          "start": "0x132a",
+          "endExclusive": "0x1345",
+          "samples": 212,
+          "sampledInstructions": [
+            {
+              "offset": "0x1331",
+              "samples": 82,
+              "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+            },
+            {
+              "offset": "0x133f",
+              "samples": 55,
+              "operation": "jnz 0x2aaf2a98319d  <+0x291d>"
+            },
+            {
+              "offset": "0x1335",
+              "samples": 43,
+              "operation": "vpmovmskb rbx,xmm0"
+            },
+            {
+              "offset": "0x132a",
+              "samples": 27,
+              "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+            },
+            {
+              "offset": "0x1339",
+              "samples": 5,
+              "operation": "cmpl rbx,0xffff"
+            }
+          ]
+        }
+      ],
+      "longTicks": 1062,
+      "longLookupEqualityTicks": 668,
+      "percentLongTicks": 62.900188323917135,
+      "note": "Half-open machine-offset ranges for station-head load through the equality branch, excluding the preceding bucket load. All 15 blocks have the verified five-instruction shape. Raw samples do not establish cache misses, branch mispredictions or expected savings."
+    },
+    "longNameRegions": [
+      {
+        "label": "masking-and-hash",
+        "startOffset": "0x29e",
+        "endOffsetExclusive": "0x316",
+        "samples": 279,
+        "percentAllTicks": 2.048307760076353
+      },
+      {
+        "label": "redundant-low-mask-load-and-and",
+        "startOffset": "0x2aa",
+        "endOffsetExclusive": "0x2b8",
+        "samples": 52,
+        "percentAllTicks": 0.3817634534909331
+      },
+      {
+        "label": "redundant-first-or-second-hash-selection",
+        "startOffset": "0x303",
+        "endOffsetExclusive": "0x30b",
+        "samples": 8,
+        "percentAllTicks": 0.0587328389986051
+      },
+      {
+        "label": "bucket-and-key-pointer-loads-through-wide-equality",
+        "startOffset": "0x316",
+        "endOffsetExclusive": "0x362",
+        "samples": 668,
+        "percentAllTicks": 4.9041920563835255
+      }
+    ],
+    "longNameMaskAndHashInstructions": [
+      {
+        "address": "0x2aaf2a98051e",
+        "offset": 670,
+        "bytes": "f3450fbcc3",
+        "operation": "tzcntl r8,r11"
+      },
+      {
+        "address": "0x2aaf2a980523",
+        "offset": 675,
+        "bytes": "458bd8",
+        "operation": "movl r11,r8"
+      },
+      {
+        "address": "0x2aaf2a980526",
+        "offset": 678,
+        "bytes": "41c1e305",
+        "operation": "shll r11,5"
+      },
+      {
+        "address": "0x2aaf2a98052a",
+        "offset": 682,
+        "bytes": "c4a17a6f841f50050000",
+        "operation": "vmovdqu xmm0,[rdi+r11*1+0x550]"
+      },
+      {
+        "address": "0x2aaf2a980534",
+        "offset": 692,
+        "bytes": "c5f9dbc1",
+        "operation": "vpand xmm0,xmm0,xmm1"
+      },
+      {
+        "address": "0x2aaf2a980538",
+        "offset": 696,
+        "bytes": "c4c3f916c400",
+        "operation": "vpextrq r12,xmm0,0x0"
+      },
+      {
+        "address": "0x2aaf2a98053e",
+        "offset": 702,
+        "bytes": "4c8bbf90090200",
+        "operation": "REX.W movq r15,[rdi+0x20990]"
+      },
+      {
+        "address": "0x2aaf2a980545",
+        "offset": 709,
+        "bytes": "4d33e7",
+        "operation": "REX.W xorq r12,r15"
+      },
+      {
+        "address": "0x2aaf2a980548",
+        "offset": 712,
+        "bytes": "c4c3f916c601",
+        "operation": "vpextrq r14,xmm0,0x1"
+      },
+      {
+        "address": "0x2aaf2a98054e",
+        "offset": 718,
+        "bytes": "488b9f98090200",
+        "operation": "REX.W movq rbx,[rdi+0x20998]"
+      },
+      {
+        "address": "0x2aaf2a980555",
+        "offset": 725,
+        "bytes": "4c33f3",
+        "operation": "REX.W xorq r14,rbx"
+      },
+      {
+        "address": "0x2aaf2a980558",
+        "offset": 728,
+        "bytes": "4d0faff4",
+        "operation": "REX.W imulq r14,r12"
+      },
+      {
+        "address": "0x2aaf2a98055c",
+        "offset": 732,
+        "bytes": "c4a17a6f8c1f60050000",
+        "operation": "vmovdqu xmm1,[rdi+r11*1+0x560]"
+      },
+      {
+        "address": "0x2aaf2a980566",
+        "offset": 742,
+        "bytes": "c5f1dbca",
+        "operation": "vpand xmm1,xmm1,xmm2"
+      },
+      {
+        "address": "0x2aaf2a98056a",
+        "offset": 746,
+        "bytes": "c4c3f916cb00",
+        "operation": "vpextrq r11,xmm1,0x0"
+      },
+      {
+        "address": "0x2aaf2a980570",
+        "offset": 752,
+        "bytes": "4d33fb",
+        "operation": "REX.W xorq r15,r11"
+      },
+      {
+        "address": "0x2aaf2a980573",
+        "offset": 755,
+        "bytes": "4d33fe",
+        "operation": "REX.W xorq r15,r14"
+      },
+      {
+        "address": "0x2aaf2a980576",
+        "offset": 758,
+        "bytes": "c4c3f916cb01",
+        "operation": "vpextrq r11,xmm1,0x1"
+      },
+      {
+        "address": "0x2aaf2a98057c",
+        "offset": 764,
+        "bytes": "4933db",
+        "operation": "REX.W xorq rbx,r11"
+      },
+      {
+        "address": "0x2aaf2a98057f",
+        "offset": 767,
+        "bytes": "490fafdf",
+        "operation": "REX.W imulq rbx,r15"
+      },
+      {
+        "address": "0x2aaf2a980583",
+        "offset": 771,
+        "bytes": "4183f810",
+        "operation": "cmpl r8,0x10"
+      },
+      {
+        "address": "0x2aaf2a980587",
+        "offset": 775,
+        "bytes": "490f42de",
+        "operation": "REX.W cmovcq rbx,r14"
+      },
+      {
+        "address": "0x2aaf2a98058b",
+        "offset": 779,
+        "bytes": "48c1eb31",
+        "operation": "REX.W shrq rbx,49"
+      },
+      {
+        "address": "0x2aaf2a98058f",
+        "offset": 783,
+        "bytes": "448bdb",
+        "operation": "movl r11,rbx"
+      },
+      {
+        "address": "0x2aaf2a980592",
+        "offset": 786,
+        "bytes": "41c1e302",
+        "operation": "shll r11,2"
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "results/targets-20261021/wasm-native-regions.json",
+        "bytes": 1121061,
+        "sha256": "67e93c1f8033070bfd2324ba3e14da9daae720c2a2000b14f23b67683bf2373e"
+      },
+      {
+        "path": "results/targets-20261021/wasm-hot-blocks.json",
+        "bytes": 11015,
+        "sha256": "8d396de3657606241312a27cc5781df06c0ff3cd48ffef569024796ac8e923ba"
+      }
+    ]
+  },
+  "rankedExperiments": [
+    {
+      "priority": 1,
+      "engine": "node",
+      "name": "Pack only predicted station ID and name length in the current 32768-entry predictor",
+      "evidence": "The predictor and station-length source lines account for 21.2-21.6% of samples across all isolates in the three fresh captures. Native code confirms the dependent station-length load and bounds check in both lanes.",
+      "change": "Use a Uint32Array with the existing 32768 entries and hash; carry the stored length directly into the existing equality helper. Preserve full-name and delimiter verification and the authoritative fallback.",
+      "historicalCounterevidence": [
+        {
+          "commit": "5cc6fe6",
+          "result": "1.262 s candidate versus 1.234 s control; rejected.",
+          "difference": "That experiment used 65536 32-bit entries (256 KiB), a different hash, and an equality helper that still reloaded records[r + 4]. The present helper accepts a validated length, so a 128 KiB packed table can actually remove that load."
+        },
+        {
+          "commit": "89f8830",
+          "result": "1.203 s candidate versus 1.167 s control; rejected.",
+          "difference": "That predictor stored 16 bytes per entry (512 KiB), including key metadata. Do not repeat the large-record layout."
+        }
+      ],
+      "risk": "The predictor still doubles from 64 to 128 KiB; removing one dependent load may lose to footprint and decoding costs. This is a controlled revisit, not an established win.",
+      "acceptance": "First inspect native code to confirm both predicted-hit lanes lose the length load; then validate collisions/full tuples and benchmark fresh processes in matched alternating rounds."
+    },
+    {
+      "priority": 2,
+      "engine": "wasm",
+      "name": "Specialize the wide helper for its proven 16-31-byte name range",
+      "evidence": "The only process_wide call is guarded by nonzero matches = bitmask(high == semicolon) << 16; ctz(matches) is therefore always 16..31. Native process_long nevertheless loads an all-ones low-vector mask, ANDs the low vector, and conditionally chooses the first hash for length < 16.",
+      "change": "Express the 16..31 invariant directly, use the low vector unmasked, mask only the high vector with short_masks[length - 16], and always use the second hash. Remove the now-unused wide mask table if no references remain.",
+      "sourceLocations": [
+        "wasm/kernel.c:90",
+        "wasm/kernel.c:385",
+        "wasm/kernel.c:395",
+        "wasm/kernel.c:414",
+        "wasm/kernel.c:419"
+      ],
+      "bounds": "process_long receives 5.7-6.3% of 24-worker samples. In the single-worker capture, the two redundant instruction blocks receive just 60/13621 ticks (0.44%); this is a small target, not a predicted speedup.",
+      "risk": "Code-layout changes and remaining lookup dependencies can outweigh the removed instructions. Preserve 32+ byte fallback, complete key equality and tail handling.",
+      "acceptance": "Verify the native low-mask load/AND and hash-select instructions disappear, run boundary/collision correctness checks, then measure an end-to-end gain before retaining it."
+    },
+    {
+      "priority": 3,
+      "engine": "wasm",
+      "name": "Test earlier station-key loads across the existing three lanes",
+      "evidence": "The 15 station-head-load/equality blocks collect 3976/9426 TurboFan parse_chunk ticks (42.18%, or 29.19% of all raw ticks). Each block follows a dependent bucket pointer load; current source finishes each lane lookup/update before the next.",
+      "change": "Try issuing bucket addresses and key loads for the existing three lanes before consuming their equality results. Keep the same lane count, complete key verification and ordered updates when lanes resolve to the same station.",
+      "historicalCounterevidence": [
+        {
+          "commit": "14d3ab9",
+          "result": "1.039 s versus 1.026 s; rejected on the prior Core Ultra 7 258V kernel."
+        },
+        {
+          "commit": "6ceef78",
+          "result": "Preloading keys: 1.043 s versus 1.034 s; rejected on the prior machine/kernel."
+        },
+        {
+          "commit": "ee8bb70",
+          "result": "XOR/zero-test equality: 0.492 s versus 0.481 s on this machine; native sequence grew from five to seven instructions."
+        }
+      ],
+      "risk": "The profile establishes a hot region, not a cache-miss explanation. Older staging attempts lost; extra branches, live values and spills can erase any overlap. Lower confidence than the first two experiments.",
+      "acceptance": "Inspect emitted load ordering and stack spills before benchmarking. Stop if the native scheduling is unchanged or the extra work dominates; retain only a repeatable full-file gain."
+    }
+  ],
+  "deprioritized": [
+    "GC is only 0.37-0.66% of fresh samples, so allocation/GC tuning is not a leading target.",
+    "Node find is 1.1-1.3%; the predicted-hit path is a stronger target than generic collision probing.",
+    "Wasm read is 15.1-16.1% and Node read is 5.1-5.2%, but these are not pure disk-wait percentages. Prior chunk, asynchronous-reader and mmap experiments did not establish a repeatable gain.",
+    "Generic hot/likely hints previously left Wasm bytecode unchanged. Target the proven range invariant instead of another unmeasured attribute sweep.",
+    "The prior Node runtime-control timing gap remains unresolved. Earlier first-TurboFan timestamps do not quantify compiler CPU cost or establish a cause; a separate compilation trace is required before proposing a startup fix."
+  ],
+  "captures": [
+    {
+      "label": "targets-20261021-node-cpu24-1",
+      "engine": "node",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/targets-20261021-node-cpu24-1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/targets-20261021-node-cpu24-1",
+        "plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 1.1660978649742901,
+      "usage": {
+        "user": 23.0,
+        "system": 1.69,
+        "maxRssKiB": 418808,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "32d47a915fbe732a16745499278ec860ca58f3f84c030413cbf10795ed0a6aa1",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "environment": {
+        "ENGINE": "node",
+        "WORKERS": "24"
+      },
+      "rawArtifacts": [
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/capture.json",
+          "bytes": 3515,
+          "sha256": "be83a4ada840542c21480e152a815dcefe8d577bc0fc890d3fc7ee420ee1e7c8"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.0.001.cpuprofile",
+          "bytes": 28927,
+          "sha256": "62c8e102a4ecbcd1c3b2a418a4c40c7799a0986183f295c7436fa2e25e13b1dc"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.1.007.cpuprofile",
+          "bytes": 34753,
+          "sha256": "73308ea966d52fd77790872c14cc725081c0251a32b99ee93efc0d8db13103ae"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.10.009.cpuprofile",
+          "bytes": 29654,
+          "sha256": "4f58b7d3f1985d564864da1273214c7dc88e6b76be01d8b012b5394f17512f5f"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.11.008.cpuprofile",
+          "bytes": 30540,
+          "sha256": "dd3c5b67f2fdb79c5b79e9bc1b4d789f80dc64cb037c35086faf030beb0d0646"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.12.017.cpuprofile",
+          "bytes": 23690,
+          "sha256": "e67edc360277d33f89dfea53d16a11b88b39a598bef97fce7de0330e85fa0126"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.13.016.cpuprofile",
+          "bytes": 29752,
+          "sha256": "02af7ec4a27dead34aea40c530d5a0f439900a55cf62968365a7cc0cbd35504f"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.14.014.cpuprofile",
+          "bytes": 27510,
+          "sha256": "b0dc1147b4d1383c39b034a80c09adbb4fb58f3594e95474cf97ed45883c688b"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.15.019.cpuprofile",
+          "bytes": 26572,
+          "sha256": "048c2e6fe63885e1e853f3f21a0c5eb1b28caa91ea15182ec760d69282f10558"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.16.013.cpuprofile",
+          "bytes": 26868,
+          "sha256": "1889a6a1dcdc0d3ce1fd17db6681d9fb43e6e89d0526373af4ec49f9e4f2a248"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.17.015.cpuprofile",
+          "bytes": 27304,
+          "sha256": "ab93b66498f7bf152297ec3576b6808ddf3412def21e332cae7072a0c8cf1773"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.18.020.cpuprofile",
+          "bytes": 29490,
+          "sha256": "4b43950824e1b8534d6b221d53a8e923b3fa7366f6264c51b97ec13a5e9ccf0f"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.19.021.cpuprofile",
+          "bytes": 20692,
+          "sha256": "c505d129378a1185dc576eea64fb7be8102814b04b4609f9432869e44ad5dd67"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.2.002.cpuprofile",
+          "bytes": 22198,
+          "sha256": "a6b9769a5fcc79436b97c76242b84d107289870a08b0e6df1c50dd69da25d4e9"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.20.025.cpuprofile",
+          "bytes": 26356,
+          "sha256": "90da7627813fe000d6c457f5783164b862e0e9512da40419ee528f96710408fe"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.21.024.cpuprofile",
+          "bytes": 27538,
+          "sha256": "7161ce29c5ce14affe1d694204a3d8f1c24cc0b338fff0e662407913e3c709b7"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.22.018.cpuprofile",
+          "bytes": 27779,
+          "sha256": "c03e427dc3def7ac8cf060c10afeb04ffb832ac4692a2b7ab2ed4c423fb8d57b"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.23.023.cpuprofile",
+          "bytes": 15507,
+          "sha256": "5357e88d84eb09da0347c7045dfbe1e0f4fee7ef96966d4cf0c64feee2902e7b"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.24.022.cpuprofile",
+          "bytes": 22445,
+          "sha256": "4631329d18f237753c15906c739a0914a686ff7bb2016c783fd95edc2fe5d746"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.3.003.cpuprofile",
+          "bytes": 27810,
+          "sha256": "0e625a22711618504813ea04cfeaaa6709ac99c90d9cd673e7ab679986fdd5da"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.4.004.cpuprofile",
+          "bytes": 27416,
+          "sha256": "ed99898c72490cad0c2c3f8bc42543004975096ef110f199ce34935210c98e0c"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.5.005.cpuprofile",
+          "bytes": 26851,
+          "sha256": "208ca1d5bb154eceefa6bc8ddc7d48b7447a3438b0fad7ce5f810ffca678d6f5"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.6.006.cpuprofile",
+          "bytes": 33208,
+          "sha256": "44ff64c8c31e2633f07562dbfa3c409c030158e2d5fb68cabc52d3188b47352a"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.7.011.cpuprofile",
+          "bytes": 30068,
+          "sha256": "dc8df774f90a10f361c8267d6e07fcfde07566b579ca6320755ff00ec8563cc6"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.8.010.cpuprofile",
+          "bytes": 25372,
+          "sha256": "0f67e829dccbb0341830885758ea8708e355d5df6eff13667864cd9183fa7c7b"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-1/CPU.20261021.053917.1909912.9.012.cpuprofile",
+          "bytes": 26244,
+          "sha256": "318511bdfe1e23809fa79615591a4e270e28a2620922f150f5793af0049c0886"
+        }
+      ]
+    },
+    {
+      "label": "targets-20261021-node-cpu24-2",
+      "engine": "node",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/targets-20261021-node-cpu24-2/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/targets-20261021-node-cpu24-2",
+        "plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 1.1157660169992596,
+      "usage": {
+        "user": 22.1,
+        "system": 1.73,
+        "maxRssKiB": 418820,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "32d47a915fbe732a16745499278ec860ca58f3f84c030413cbf10795ed0a6aa1",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "environment": {
+        "ENGINE": "node",
+        "WORKERS": "24"
+      },
+      "rawArtifacts": [
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/capture.json",
+          "bytes": 3515,
+          "sha256": "d28667754ad493c5c51a70f15f705048ed1b6f101638919e4598d117c394ec7b"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.0.001.cpuprofile",
+          "bytes": 28095,
+          "sha256": "956b151961824ce6a6a0d4949745e03004987856b3129517426bc1f27ce49534"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.1.003.cpuprofile",
+          "bytes": 28339,
+          "sha256": "5503b1aa7fc6ebbe9d90ca6a092650a39c8bafc1b2d6714450cff70764c22488"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.10.009.cpuprofile",
+          "bytes": 26518,
+          "sha256": "092b116935ce284a7927911b13d46fc482e5ebfb6809344af0104371feefd272"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.11.008.cpuprofile",
+          "bytes": 17000,
+          "sha256": "d51956ed273f795cdea1cce3f6a0ceef9b3b1ba572e0790f536e9b373b00295c"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.12.013.cpuprofile",
+          "bytes": 28475,
+          "sha256": "76e61d33aebf19801c35bda9e7955577502a4329d4e439c047bc8254c94a47c1"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.13.017.cpuprofile",
+          "bytes": 26169,
+          "sha256": "179afdcf71443f9ee7b6379ecc42cf1cfd601cc913df1d568fe391d478558d75"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.14.014.cpuprofile",
+          "bytes": 28873,
+          "sha256": "8ad319d4b782bfeaecb2ed7b3bf3f61dc982f3f86cc87f3fbcc84038eae81691"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.15.019.cpuprofile",
+          "bytes": 28425,
+          "sha256": "3c59fccf0f198eb5015e85fef1b850e3449d46b6f263608a7cca01b5d565b4da"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.16.021.cpuprofile",
+          "bytes": 22618,
+          "sha256": "1acaecd64aab08e59213f34711fc454d7091fc58d8dd280c378ed77572b2b70a"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.17.022.cpuprofile",
+          "bytes": 21250,
+          "sha256": "3eddfcd55629df6bbcc20ba3981a5f267b474c97f4e0bc8765e031ff6ff17f2d"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.18.016.cpuprofile",
+          "bytes": 27940,
+          "sha256": "5e584e3d82e06cdf3cbe6fa4aff0f474e61e1a2576269f3fe6af027476018bb6"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.19.015.cpuprofile",
+          "bytes": 30379,
+          "sha256": "a334b213e616bff56570e71b1eed383df89fab70f6dbed413a1bf1b2faf7ba5c"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.2.002.cpuprofile",
+          "bytes": 26219,
+          "sha256": "aa46b759b9ad892508061d652e6781f8091bc5c4cec875619322101f1ee03f99"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.20.018.cpuprofile",
+          "bytes": 26947,
+          "sha256": "a213d3fdcebc18d2f880e5886cfa51d6245fb07694b5487b69cd09ad5e402ba8"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.21.023.cpuprofile",
+          "bytes": 22026,
+          "sha256": "14b977582bace596aab8de8deb159c268fa3611640f62fe4886cdd7ad5e0731f"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.22.024.cpuprofile",
+          "bytes": 31113,
+          "sha256": "9f602a489efca959b131058f748cb2d85d67276afa7c9b75c1f206102d5660a4"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.23.025.cpuprofile",
+          "bytes": 26673,
+          "sha256": "988c21960e6be59c3fa129d4e86337173a6dc93a74b79f84573830e8927f0fee"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.24.020.cpuprofile",
+          "bytes": 23944,
+          "sha256": "abcb6aef22b65282f9ba298aa1824cd04aac7e720a7e94a8fad5e1bd87584ca5"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.3.007.cpuprofile",
+          "bytes": 29241,
+          "sha256": "63f0adb7fbcb0dc1c01e99b65360e674b034ab1702dbb716b7ae219196406cd5"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.4.004.cpuprofile",
+          "bytes": 26687,
+          "sha256": "58773dfcb61b6acdc225852f4673b51810424f545742ff0c08747dff762e0371"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.5.006.cpuprofile",
+          "bytes": 25956,
+          "sha256": "b514ad176fd0711b8f563824a1340a1f719c6731121310cf4e6f4b8cc0729a33"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.6.005.cpuprofile",
+          "bytes": 26454,
+          "sha256": "26524f5901f363ee4f99f912d3cf4db4be22b3583eb03c58cb01f5a089643302"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.7.012.cpuprofile",
+          "bytes": 25618,
+          "sha256": "2218223c01e5ccfd7a657abc91eb8578d8f5965c4cc8471b9ae48fc4d4f4386a"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.8.010.cpuprofile",
+          "bytes": 29431,
+          "sha256": "66d19ea45e9306dec49c060bc13779a6200ee73074a4bb0d3b6b1894777128ca"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-2/CPU.20261021.053919.1910183.9.011.cpuprofile",
+          "bytes": 29343,
+          "sha256": "11fd94d695f0378105b70276e79af3d2a9946f64cf52f4baaa999f726d756b2c"
+        }
+      ]
+    },
+    {
+      "label": "targets-20261021-node-cpu24-3",
+      "engine": "node",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/targets-20261021-node-cpu24-3/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/targets-20261021-node-cpu24-3",
+        "plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 1.115808747941628,
+      "usage": {
+        "user": 22.29,
+        "system": 1.86,
+        "maxRssKiB": 418944,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "32d47a915fbe732a16745499278ec860ca58f3f84c030413cbf10795ed0a6aa1",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "environment": {
+        "ENGINE": "node",
+        "WORKERS": "24"
+      },
+      "rawArtifacts": [
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/capture.json",
+          "bytes": 3515,
+          "sha256": "5a9501d75f78afe85d70dc80e7bf2be81229be68734d0f7d3a9b2862a0cbc4fd"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.0.001.cpuprofile",
+          "bytes": 25905,
+          "sha256": "3b34c1da5d660fb4b75dae155ece3564cb509220c79c110c0ab8f77108495ad3"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.1.007.cpuprofile",
+          "bytes": 31768,
+          "sha256": "9d1f6d6f10d481b64b6cf62771a35799fa55a54e0c0b3d00c404e2d0a75836ed"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.10.010.cpuprofile",
+          "bytes": 28165,
+          "sha256": "56ebe60e868d3b37650ff9b5a04d14e844310ac71ca2d375e0322c9ff5f5ab96"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.11.012.cpuprofile",
+          "bytes": 32759,
+          "sha256": "557ecb63fef9e3fde8f67c6f235547771293155af3b2b5316790d2e2e9e1283b"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.12.016.cpuprofile",
+          "bytes": 27787,
+          "sha256": "be793eef9602a47696d820f7827bb34b7ec947140a395fbc419cd8db79158de1"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.13.021.cpuprofile",
+          "bytes": 27433,
+          "sha256": "a4c090bbfc40be124498f3777a6255621ba30901332d7220b438af5685e486ca"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.14.018.cpuprofile",
+          "bytes": 25505,
+          "sha256": "557582f87f255562b638c70b10a3ffba010afed5e20050173f54258432f2fd13"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.15.014.cpuprofile",
+          "bytes": 25436,
+          "sha256": "c5b3b4a2104b3817d3e244ee361fb3afd755f6afdcb41d4f9c2225131bcf97c7"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.16.015.cpuprofile",
+          "bytes": 27858,
+          "sha256": "1f9377f5ace8b043241cf29659cdb52ae346f165690be61b39244eaf908d5244"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.17.013.cpuprofile",
+          "bytes": 23306,
+          "sha256": "570bbccf13b6e165bce9df9717369353f15f2243a5a830aa1c2cd0b0874b54c5"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.18.019.cpuprofile",
+          "bytes": 26302,
+          "sha256": "98cff0b0ed4699ddd3de299eb043a7d2078dc0e1114076d77cf9b3ba4ef01736"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.19.017.cpuprofile",
+          "bytes": 21311,
+          "sha256": "ec481606e55d972ef5550c8d5d6791073eafe48ced74deec702cf5615b7460c7"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.2.003.cpuprofile",
+          "bytes": 26226,
+          "sha256": "285db80b8a83a0c8b20241f84fe7468c8d868608b4a48b8bcf9c2050abb953ac"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.20.020.cpuprofile",
+          "bytes": 29731,
+          "sha256": "073decf729db384461e521d918b5d7efe13ce345ceaafb2283e73a73e2e7f444"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.21.023.cpuprofile",
+          "bytes": 28396,
+          "sha256": "7ed18e88d71c477b155db9646624c28edacbbd5bcc9940d5d9c9e4353da0d5f0"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.22.024.cpuprofile",
+          "bytes": 29733,
+          "sha256": "db5f275acdab2440c6017e01288ca3656b0e5d3e9e76418f71368d6398ba5d77"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.23.022.cpuprofile",
+          "bytes": 26759,
+          "sha256": "fd598e127dbf5e89b5fdc02eda38cf2cca32b831432a70b558d1d7dbbb186951"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.24.025.cpuprofile",
+          "bytes": 28023,
+          "sha256": "30fffcf7932ef7ee29fc33005a06e3e4adebe1e8776ea0e744e0f3e6af16b6b5"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.3.002.cpuprofile",
+          "bytes": 13855,
+          "sha256": "cf81527d860cb9a25dbbea33e64795295f0b989549049bb114e61798666da51b"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.4.004.cpuprofile",
+          "bytes": 28436,
+          "sha256": "133dfca25b7ab3bbc77dfa2eddc8497c02bd868987a16d007ec992c9a22f660a"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.5.006.cpuprofile",
+          "bytes": 25815,
+          "sha256": "0cbea8ddb07ba68d35f311a90a3a6d7eeffd08a011beea54e64bdc31374c34ba"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.6.005.cpuprofile",
+          "bytes": 29611,
+          "sha256": "2888ea1bd34dc89a82d34bea7ebcb96224691b4d4ef5158cac351c63785f96e0"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.7.008.cpuprofile",
+          "bytes": 28782,
+          "sha256": "d2fe5c9ef7d9a338a525584661598a59457f7985dbe9a80eb53d696db1df5930"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.8.009.cpuprofile",
+          "bytes": 28582,
+          "sha256": "baa5a8d74045b7d8f4c8e24f6da4bdfa0b6ab1bd655f3e7d8a37cf519a01ae5e"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-cpu24-3/CPU.20261021.053920.1910256.9.011.cpuprofile",
+          "bytes": 26413,
+          "sha256": "c15744ea60249dcdcec63a7ef985f3a26fbf0c3c74003e275571427b1b11d2c1"
+        }
+      ]
+    },
+    {
+      "label": "targets-20261021-node-native1",
+      "engine": "node",
+      "workers": 1,
+      "mode": "js-ticks",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/targets-20261021-node-native1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--prof",
+        "--prof-sampling-interval=250",
+        "--logfile=/home/mmv/projects/1brc-node/results/profiles/targets-20261021-node-native1/v8.log",
+        "--print-opt-code",
+        "--code-comments",
+        "--log-source-code",
+        "--log-source-position",
+        "--trace-deopt",
+        "plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 10.026525580091402,
+      "usage": {
+        "user": 9.44,
+        "system": 0.91,
+        "maxRssKiB": 65496,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "32d47a915fbe732a16745499278ec860ca58f3f84c030413cbf10795ed0a6aa1",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "environment": {
+        "ENGINE": "node",
+        "WORKERS": "1"
+      },
+      "rawArtifacts": [
+        {
+          "path": "results/profiles/targets-20261021-node-native1/capture.json",
+          "bytes": 1150,
+          "sha256": "745cc62bd2d37b91dacf58a8c7e6696c317adb8efd863b0befab9176337f9366"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-native1/isolate-0x21882000-1910401-v8.log",
+          "bytes": 4862918,
+          "sha256": "d714141adcaeb1b33fc6b1dc1ba5dc053f37c66874f0032d1e6b8a3f439dceb8"
+        },
+        {
+          "path": "results/profiles/targets-20261021-node-native1/js-native.asm",
+          "bytes": 1215602,
+          "sha256": "367ff8e6f857541b557ad84d44888347d663c40070ad7404d82c0ffa9525abec"
+        }
+      ]
+    },
+    {
+      "label": "targets-20261021-wasm-cpu24-1",
+      "engine": "wasm",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/targets-20261021-wasm-cpu24-1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/targets-20261021-wasm-cpu24-1",
+        "calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 0.5149516109377146,
+      "usage": {
+        "user": 8.21,
+        "system": 1.86,
+        "maxRssKiB": 404276,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "environment": {
+        "ENGINE": "wasm",
+        "WORKERS": "24"
+      },
+      "rawArtifacts": [
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/capture.json",
+          "bytes": 3418,
+          "sha256": "523f3d1d1323888fcaf67271c9cb54d0df3d27db42f8eede2a78cf516907478d"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.0.001.cpuprofile",
+          "bytes": 17679,
+          "sha256": "73b8d816a557f668a7be33db5531b4aa75504857bf6cc0d0d67fdbba919b2eb2"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.1.002.cpuprofile",
+          "bytes": 20452,
+          "sha256": "a7b67ce4c064eb0feefdc02d00d0e678a6b32b75da0d62f4c7deb5c012360fed"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.10.011.cpuprofile",
+          "bytes": 17980,
+          "sha256": "ca9fd057eb87745b0ab02af83c112b4cf1277b450ac4ea717a76c98080f6f610"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.11.008.cpuprofile",
+          "bytes": 18757,
+          "sha256": "79b1cd752b12e4f18cd32ea8f3310634122b02cae341fddb824c33e290c4d116"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.12.018.cpuprofile",
+          "bytes": 15918,
+          "sha256": "d791a9c7c1feb84144a06c51e0b667c3d6fe37e91f3cc0311fbbda36e14c1588"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.13.013.cpuprofile",
+          "bytes": 18763,
+          "sha256": "a41d71a4f6113316449aa4e14be36f291f01187722542124f2ee13d677bf99fa"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.14.017.cpuprofile",
+          "bytes": 15908,
+          "sha256": "2435f7ca3c2973c027fa2c2e63d146939cd67c4e531ee8e4b22631b671336175"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.15.014.cpuprofile",
+          "bytes": 16269,
+          "sha256": "3ea11bf6445b2d87e584b9f8e0217d97a07798f63714c7671a0a96d7ce5827d7"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.16.015.cpuprofile",
+          "bytes": 15917,
+          "sha256": "a2b5f22f6c45ad631da35e56f38a39424b05ca5076deeaf12b2199ccd694c979"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.17.019.cpuprofile",
+          "bytes": 17577,
+          "sha256": "edab8d38873b4062e5fccfdadda8947462aec80c9c92836a3a012503d7c57c68"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.18.020.cpuprofile",
+          "bytes": 16375,
+          "sha256": "6efdd228def0e35d6ca02b518cda9191154e52817bee466f17eeb5dc0e40c98d"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.19.016.cpuprofile",
+          "bytes": 17138,
+          "sha256": "cf82a379e44ef6af417efa50cbef0bc975634bdb0b49fa6983cbbf93cb7d0640"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.2.006.cpuprofile",
+          "bytes": 20065,
+          "sha256": "41017e232e5fe4ea6eea21e96ccf5af6aa0786c45fe82b565874383d66b0eddf"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.20.025.cpuprofile",
+          "bytes": 16573,
+          "sha256": "d9ec0772ed5891af28138576d2bd06f43c69c3b77e54f49d46bdfa66f8fb582a"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.21.021.cpuprofile",
+          "bytes": 11512,
+          "sha256": "16e948cf92628528dc0b4832f50c5b3ce10538c7ce700437a59bf4fd032531fc"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.22.023.cpuprofile",
+          "bytes": 17337,
+          "sha256": "c619ee49b1d15e6a20f0a452c7819fa0a5b9159d7d65927d75a84dc4e07de367"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.23.022.cpuprofile",
+          "bytes": 12956,
+          "sha256": "46e9b31b799f5833276508e58b5f371089c865bfe71dfb192744d56c0508b56c"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.24.024.cpuprofile",
+          "bytes": 16883,
+          "sha256": "6f965d55a2b929a71f8384ee0265853cb28959bff9b706eb4e29bc9ad7888405"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.3.004.cpuprofile",
+          "bytes": 15679,
+          "sha256": "92218c37c135041dd7f3daf8db53ec6f6a7a905b2d2fbc50bcd1738959328761"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.4.003.cpuprofile",
+          "bytes": 19360,
+          "sha256": "f0842ce7a9a6b8a70f29583034dfec243ffe8bd2f56ce3bc8ffe74df06029648"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.5.005.cpuprofile",
+          "bytes": 16783,
+          "sha256": "061e6ea189abe8cae49397789aafeee2d2f322a3f9c1b2cc1842a139534e7348"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.6.010.cpuprofile",
+          "bytes": 15550,
+          "sha256": "b1b94cf3966c0057b6bf69b65d8aab3a21810b21d0c304baee99371f337720b1"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.7.007.cpuprofile",
+          "bytes": 16943,
+          "sha256": "089c707ca36db79a390b19d0f5d48d680a9b7dceee189d02cc6301b7d94d6368"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.8.009.cpuprofile",
+          "bytes": 22064,
+          "sha256": "2ba79dc175a9ee64c951fd82bc7c3f2772271a0d84a181c4a1d3b914c6a05280"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-1/CPU.20261021.053918.1910036.9.012.cpuprofile",
+          "bytes": 16939,
+          "sha256": "320a005f67bb062b5b69af6cf0838899a713a0d4382bf602a2096e8176d893e6"
+        }
+      ]
+    },
+    {
+      "label": "targets-20261021-wasm-cpu24-2",
+      "engine": "wasm",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/targets-20261021-wasm-cpu24-2/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/targets-20261021-wasm-cpu24-2",
+        "calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 0.5152879990637302,
+      "usage": {
+        "user": 8.09,
+        "system": 1.91,
+        "maxRssKiB": 405324,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "environment": {
+        "ENGINE": "wasm",
+        "WORKERS": "24"
+      },
+      "rawArtifacts": [
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/capture.json",
+          "bytes": 3418,
+          "sha256": "c70ef6c730f6decf8f3b2e09271d6d79274e683d32d6e329d99fb0b4b93b7507"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.0.001.cpuprofile",
+          "bytes": 22136,
+          "sha256": "dcda39bc4e9f4ffa4fe0f5934343d86599df01e90f9777eec2aceb5e8bbc3a92"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.1.008.cpuprofile",
+          "bytes": 16399,
+          "sha256": "b6eb122f64b3ebc131964557ff3e3dd992a9b296f75a633d8702648f29cbd14a"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.10.009.cpuprofile",
+          "bytes": 15971,
+          "sha256": "084da3231c4c8625941f3403d0e4bc6533fcffffd02e3ba0805becbef67b084b"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.11.011.cpuprofile",
+          "bytes": 20657,
+          "sha256": "5ae0a246bb62884212d1da65604d0316a92805df24d46ea8ac220cb8c2375ced"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.12.015.cpuprofile",
+          "bytes": 17125,
+          "sha256": "826bdad4cc9cb3786eca06c3d3faa953eeecaee6ffd8def56b72d14cb63fa2d4"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.13.013.cpuprofile",
+          "bytes": 21739,
+          "sha256": "198b36fd0fb362d5de334c66705316008e10a6da7239668f47f6436e27cdcd6c"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.14.014.cpuprofile",
+          "bytes": 19070,
+          "sha256": "d3adb9e69515bbd2d99f7eb6ea7020ff8ec069505b79cb7c5b974c1d0b15710e"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.15.016.cpuprofile",
+          "bytes": 18423,
+          "sha256": "88b91085e36a2e975eefd1741431be257f937c19e419b0ae4dead2b5630344b5"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.16.018.cpuprofile",
+          "bytes": 17232,
+          "sha256": "43d98a69362ee1a8a873538950878d7868e7538c6fa2162d45fb664582e84692"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.17.017.cpuprofile",
+          "bytes": 17659,
+          "sha256": "8197f4f5c32dcc08092c30043a6e4fb2a26531d8d6d20331866eb67642362dd0"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.18.019.cpuprofile",
+          "bytes": 19684,
+          "sha256": "3bcd086872a9a66dd4dd9e74f88531894242e282345b521b7f373f7063ce0d8a"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.19.023.cpuprofile",
+          "bytes": 18265,
+          "sha256": "11e2392a6c6c7cf8634dffccff5d9589b32f4b8efda4305d121cf7b6551dda3d"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.2.003.cpuprofile",
+          "bytes": 18169,
+          "sha256": "6303d1fa0e9936caeec54177733325db08145c2925499701899cfc3b789ff518"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.20.022.cpuprofile",
+          "bytes": 15815,
+          "sha256": "7f3bdb50417261c54205c1a307563b758fd9d0ad1b2f09afe9d0e0a128f9fcbd"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.21.021.cpuprofile",
+          "bytes": 16100,
+          "sha256": "0f07c37150b32bdfa9ad0a25f07bad92ada9871085c245aa135c8c7d740b5608"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.22.020.cpuprofile",
+          "bytes": 16296,
+          "sha256": "77b5e3901c9c88b20c33e8b98b942f084a1ba836f333baa73a871372e97cccad"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.23.024.cpuprofile",
+          "bytes": 17087,
+          "sha256": "11ad77f84befe736a2c38fbaea81eed410ec2d315ca2b12b700dbe731a94941b"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.24.025.cpuprofile",
+          "bytes": 17492,
+          "sha256": "d89d18074f51e9df3756b6fb2208a68ac42079e64e21587985b7e3351d9beb48"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.3.002.cpuprofile",
+          "bytes": 16358,
+          "sha256": "05fa5876e55036111bc922465f5687bbdbc8b0a4c2ac458b16ecd975741881fa"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.4.005.cpuprofile",
+          "bytes": 17182,
+          "sha256": "66af0a6e2deea1b34a3863a8ad7bac0d11716a0c948fdfe0921ff382c426f4a6"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.5.004.cpuprofile",
+          "bytes": 17798,
+          "sha256": "a83cf07b48dd55e6e4a63e613f95511c96af66028f89096e9e455125a5b38251"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.6.007.cpuprofile",
+          "bytes": 18514,
+          "sha256": "b0a42cf67be441d19833ca5071b46c9f2b975e1eee7c82ab98cc394c602074f5"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.7.006.cpuprofile",
+          "bytes": 16944,
+          "sha256": "12e3f8f50465e640f2ee7f48e3e18f6e774fd66266c96f111c16e70065c3e6a6"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.8.012.cpuprofile",
+          "bytes": 18003,
+          "sha256": "382a5ab88e9905f714257e87c5e6d4ddad7e9eb9ebd0a139eec0784c2be1bdab"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-2/CPU.20261021.053919.1910111.9.010.cpuprofile",
+          "bytes": 20694,
+          "sha256": "a5a3a8e75169316bfc080a276dbb82f2306ad8fde632b6c8af5a8a4e37d8f129"
+        }
+      ]
+    },
+    {
+      "label": "targets-20261021-wasm-cpu24-3",
+      "engine": "wasm",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/targets-20261021-wasm-cpu24-3/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/targets-20261021-wasm-cpu24-3",
+        "calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 0.515556758036837,
+      "usage": {
+        "user": 8.22,
+        "system": 1.91,
+        "maxRssKiB": 402296,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "environment": {
+        "ENGINE": "wasm",
+        "WORKERS": "24"
+      },
+      "rawArtifacts": [
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/capture.json",
+          "bytes": 3417,
+          "sha256": "a7d3cccb998a741b76b8c1254746766d2d2138fe40e713f1eef474c801cab255"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.0.001.cpuprofile",
+          "bytes": 20178,
+          "sha256": "4409f7e7991184b420b5c918bc59a0587f86f8679f0bff27eb2b370a1dda7536"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.1.002.cpuprofile",
+          "bytes": 17298,
+          "sha256": "638154220ba36636835034336e91bd4e90d8f78df0bd1720144a22b1aaf641d2"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.10.012.cpuprofile",
+          "bytes": 16093,
+          "sha256": "2af42feba42f9850d4bf4296a192b285d58a7914c8727cbabcfc28b89497a55f"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.11.009.cpuprofile",
+          "bytes": 17132,
+          "sha256": "7cee1c6052a84eb706669dd961730672aace9de8b52e701c721ac9f725210fed"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.12.014.cpuprofile",
+          "bytes": 18014,
+          "sha256": "b96f173b05342a43a52390d63ef9d1b13f5513d456f82516d61d06463cde6ee5"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.13.016.cpuprofile",
+          "bytes": 19187,
+          "sha256": "9333518c0898a4d545a48a70ce8f7e0becd9df614457cb4b30e8d0126bfa7e6d"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.14.013.cpuprofile",
+          "bytes": 17791,
+          "sha256": "43bd8db75fffac13473e0c6b123717d696dcf5ab7a0ff4852282097eaba5b05d"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.15.018.cpuprofile",
+          "bytes": 18654,
+          "sha256": "ce9453a2fac229d96c98c082d436e78a9f9f4f22634b03382bd4d24e933fc33e"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.16.017.cpuprofile",
+          "bytes": 18120,
+          "sha256": "7e2a76051031db40c3d870843f43b5d5c473ec219daa42c44b13082593f46f4c"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.17.021.cpuprofile",
+          "bytes": 16862,
+          "sha256": "d068e977eccc255796ee0ec485c33abb8b293af1bdf1fa2479b6ba0e08c8b333"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.18.019.cpuprofile",
+          "bytes": 15893,
+          "sha256": "ceeb063a0feec95c6b109c6da2d6bcc73e4db3c51151e786be14a6938c4f5762"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.19.015.cpuprofile",
+          "bytes": 18895,
+          "sha256": "5ccbb333d6a1f8ba98e51f8c49e1d727d1b8b697db36fa2b12e6137263f0b72b"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.2.007.cpuprofile",
+          "bytes": 16684,
+          "sha256": "2621eb056cda08ad98478fae25569eba59479063f41172c0c14e474eaa7cafcf"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.20.020.cpuprofile",
+          "bytes": 17173,
+          "sha256": "4f8f3ec15925e2e9d9013e1e02f129afe0553aff1ee8188f0a69b40e301a9e71"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.21.025.cpuprofile",
+          "bytes": 16880,
+          "sha256": "8697d345503bad9b05b240b1c580574131db04210433172630b0ebb5192cfdaa"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.22.022.cpuprofile",
+          "bytes": 15383,
+          "sha256": "735a1fa0d576168fb5189bc7faad9929bfab1d0388ed4f28d5d3da179d5f822c"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.23.024.cpuprofile",
+          "bytes": 16758,
+          "sha256": "17bf603bfae4c2cd6644873fa0bc59085e31015465ac136b0513f5a123a2c0b4"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.24.023.cpuprofile",
+          "bytes": 14847,
+          "sha256": "f664b14f9beb2ab0fd50cc225d63bdf73882b58a7a6a68f1e62f3f002b0dc9d6"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.3.003.cpuprofile",
+          "bytes": 16038,
+          "sha256": "1d179ca6acfaa60a92daa9887edb5d552c4763914622397935a0f5bb89001831"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.4.004.cpuprofile",
+          "bytes": 16212,
+          "sha256": "a14bc91a51de0c4f3ad7616f6a31c3ae4811a2a74899f5d5965a2d8f76dad680"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.5.006.cpuprofile",
+          "bytes": 18576,
+          "sha256": "8170425f05cf28b65ce95f1f1b1c265cb1666da2799bcad8d7002ae6693a9423"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.6.005.cpuprofile",
+          "bytes": 17549,
+          "sha256": "f394c6e4cfe141fe510644c06a62e2602736a43007472b79dac3fd18c307e04a"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.7.008.cpuprofile",
+          "bytes": 17013,
+          "sha256": "8eefb5cc665942d3177366803ea4745535e635905cddbbcd9a9e206ae3b1e15d"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.8.011.cpuprofile",
+          "bytes": 18425,
+          "sha256": "d8c944f1007da165fd0d7e6d4f68b445e1cacc9d7763ee26bc5f41670a09f575"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-cpu24-3/CPU.20261021.053922.1910329.9.010.cpuprofile",
+          "bytes": 17315,
+          "sha256": "4d9f42389da42f600ed56f68fb9b895733f347fe114f9fbb1cd862efb3ae644d"
+        }
+      ]
+    },
+    {
+      "label": "targets-20261021-wasm-native1",
+      "engine": "wasm",
+      "workers": 1,
+      "mode": "ticks",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/targets-20261021-wasm-native1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--prof",
+        "--prof-sampling-interval=250",
+        "--logfile=/home/mmv/projects/1brc-node/results/profiles/targets-20261021-wasm-native1/v8.log",
+        "--print-wasm-code",
+        "--print-wasm-code-function-index=8",
+        "--code-comments",
+        "--redirect-code-traces",
+        "--redirect-code-traces-to=/home/mmv/projects/1brc-node/results/profiles/targets-20261021-wasm-native1/native.asm",
+        "calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 4.221065264893696,
+      "usage": {
+        "user": 3.36,
+        "system": 0.98,
+        "maxRssKiB": 66576,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "environment": {
+        "ENGINE": "wasm",
+        "WORKERS": "1"
+      },
+      "rawArtifacts": [
+        {
+          "path": "results/profiles/targets-20261021-wasm-native1/capture.json",
+          "bytes": 1167,
+          "sha256": "b7f285508931481a2501183966e4d9e2bd8999c2841b5e6f260c979506409def"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-native1/isolate-0x16bf6000-1910430-v8.log",
+          "bytes": 2865750,
+          "sha256": "832eef3027a3b16dd3578bad320e66c05a5f9e421139c9b69c529c3a07ca8806"
+        },
+        {
+          "path": "results/profiles/targets-20261021-wasm-native1/wasm-native.asm",
+          "bytes": 618780,
+          "sha256": "e6c92d3eccf59708160edfba4bf965ab9a8e2093a5b102f4b6e6746a77d376e6"
+        }
+      ]
+    }
+  ]
+}

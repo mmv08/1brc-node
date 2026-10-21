@@ -1,5 +1,72 @@
 # Benchmark and experiment log
 
+## Next optimization targets: fresh profiles, 2026-10-21
+
+Both production solvers are unchanged from `338c04c`. This pass profiles that
+version and ranks experiments; it does not claim another speedup. The unsigned
+profiling checkpoint is `33d732c`. Commands, source/output hashes, sample counts,
+native instructions and raw-artifact hashes are in
+[the target report](benchmarks/2026-10-21-optimization-targets.json).
+
+On the same Ryzen 9 7900 and Node 26.12.0, each engine received three fresh
+full-billion-row CPU-profile captures with 24 workers, alternating engine order
+by round. All 150 main/worker profiles were included. A separate single-worker
+raw-tick capture per engine supplied PCs and native disassembly from the same
+process. All eight captures matched complete expected stdout, had stable source
+hashes, and reported zero filesystem inputs. Profiled durations are not scores.
+
+| Measured region | Share of raw CPU-profile samples across three captures |
+| --- | ---: |
+| Node station scanning (`scan`) | 40.4–41.3% |
+| Node predictor lookup plus station-length source lines, within `scan` | 21.2–21.6% |
+| Node updates / key equality (`update` / `equal`) | 25.8–26.6% / 8.3–8.6% |
+| Wasm main parser (`parse_chunk`) | 68.6–69.3% |
+| Wasm long-name path (`process_long`) | 5.7–6.3% |
+| Reads, Node / Wasm | 5.1–5.2% / 15.1–16.1% |
+| GC, either engine | 0.37–0.66% |
+
+Percentages include the main isolate and its idle samples. Rows overlap where
+stated; they are not elapsed-time components or predicted savings. Hardware
+counters remain unavailable at `perf_event_paranoid=4`, so there is no measured
+cache-miss or branch-misprediction explanation. No system settings were changed.
+
+Recommended order:
+
+1. **Node: pack only predicted ID and length in the current 32,768-entry table.**
+   Native code confirms `predictor → station length → delimiter address` in
+   both lanes, with a dependent length load and bounds check. A packed 128 KiB
+   table can remove that load. This is a controlled revisit: `5cc6fe6` lost
+   (1.262 versus 1.234 s), but used a 256 KiB table and an equality helper that
+   still reloaded the length. Today's helper takes the length directly. The
+   larger 512 KiB metadata layout in `89f8830` also lost. Verify that the load
+   actually disappears before benchmarking; doubling today's 64 KiB table
+   could still outweigh the saving. Full-name and delimiter checks must remain.
+2. **Wasm: specialize the wide helper for 16–31-byte names.** Its only caller
+   passes a nonzero delimiter mask shifted left by 16, proving that range.
+   Nevertheless, native code loads an all-ones mask and ANDs the low vector,
+   then conditionally selects the first hash for a length below 16. Use the
+   low vector directly, mask only the high vector, and always take the second
+   hash. This is a small, concrete target: the redundant blocks receive only
+   60 of 13,621 single-worker raw ticks; the entire long-name function is about
+   6% of the multiworker samples. Removing instructions need not improve time.
+3. **Wasm: revisit lookup scheduling across the existing three lanes.** The
+   station-head-load/equality blocks receive 3,976 of 9,426 optimized parser
+   ticks (42.2%, or 29.2% of all ticks) in the single-worker capture. Test earlier
+   bucket/key loads before consuming each lane's equality result, checking
+   emitted ordering and spills. This has lower confidence: related staging
+   attempts `14d3ab9` and `6ceef78` lost on the earlier machine/kernel. The recent
+   XOR/zero-test comparison also lost; another comparison spelling alone is
+   not the proposed experiment. Updates for lanes sharing a station must stay
+   ordered, and full key verification must remain.
+
+GC and generic Node collision probing are small targets in these profiles.
+Read costs remain secondary, but do not establish that a new I/O strategy will
+help. The prior Node runtime-control gap is still unresolved; compiler timing
+needs separate evidence before attributing it to startup. Theoretical limits
+have not been established. For each candidate, inspect the changed native code,
+validate exact results, then require a repeatable matched full-file improvement
+before changing the retained solvers.
+
 ## Current: profile-guided Node sum updates, 2026-10-20
 
 The retained source change is **`b216096`**, confirmed at **`c60feda`**. Plain

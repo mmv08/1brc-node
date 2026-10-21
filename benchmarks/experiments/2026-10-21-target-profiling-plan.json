@@ -7,20 +7,14 @@
   "runtime": "v26.12.0",
   "date": "2026-10-21",
   "cpuProfiles": {
-    "engines": [
-      "node",
-      "wasm"
-    ],
+    "engines": ["node", "wasm"],
     "workers": 24,
     "repetitions": 3,
     "intervalMicroseconds": 1000,
     "ordering": "Alternate engine order each round."
   },
   "nativeProfiles": {
-    "engines": [
-      "node",
-      "wasm"
-    ],
+    "engines": ["node", "wasm"],
     "workers": 1,
     "intervalMicroseconds": 250,
     "sameProcessDisassembly": true
