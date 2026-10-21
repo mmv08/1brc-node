@@ -1,0 +1,564 @@
+From 5f9782e9934ce530bb7e1ddeccda9a9c8ea258c3 Mon Sep 17 00:00:00 2001
+From: Mikhail Mikheev <16622558+mmv08@users.noreply.github.com>
+Date: Wed, 21 Oct 2026 09:47:02 +0000
+Subject: [PATCH 1/4] [turboshaft] Eliminate implied zero-mask guards
+
+Track zero bits established by successful Word32 mask deopt guards.
+A later mask of the same SSA value is zero when its bits are a subset.
+Scope the first fact per value to the existing dominator layers, and
+conservatively forget guard facts when replaying cloned predecessors.
+
+TAG=agy
+CONV=01a15ac7-b7fe-7dc2-ab61-5d14a81b88b5
+---
+ .../turboshaft/branch-elimination-reducer.h   |  41 ++++
+ .../turboshaft/deoptimize-if-zero-mask.js     |  67 ++++++
+ .../turboshaft/control-flow-unittest.cc       | 223 ++++++++++++++++++
+ 3 files changed, 331 insertions(+)
+ create mode 100644 test/mjsunit/turboshaft/deoptimize-if-zero-mask.js
+
+diff --git a/src/compiler/turboshaft/branch-elimination-reducer.h b/src/compiler/turboshaft/branch-elimination-reducer.h
+index e47c6cef..8041aa12 100644
+--- a/src/compiler/turboshaft/branch-elimination-reducer.h
++++ b/src/compiler/turboshaft/branch-elimination-reducer.h
+@@ -14,6 +14,7 @@
+ #include "src/compiler/turboshaft/index.h"
+ #include "src/compiler/turboshaft/layered-hash-map.h"
+ #include "src/compiler/turboshaft/operations.h"
++#include "src/compiler/turboshaft/opmasks.h"
+ #include "src/utils/utils.h"
+ 
+ namespace v8::internal::compiler::turboshaft {
+@@ -472,6 +473,21 @@ class BranchEliminationReducer : public Next {
+ 
+     std::optional<KnownCondition> condition_value =
+         known_conditions_.Get(condition);
++    if (!condition_value.has_value()) {
++      V<Word32> value;
++      uint32_t mask;
++      if (MatchWord32Mask(condition, &value, &mask)) {
++        std::optional<uint32_t> known_zero_mask = known_zero_masks_.Get(value);
++        if (known_zero_mask.has_value() && (mask & ~*known_zero_mask) == 0) {
++          condition_value = KnownCondition::Zero();
++        } else if (!negated && !known_zero_mask.has_value()) {
++          // On the continuation of DeoptimizeIf(value & mask), all of the
++          // masked bits are zero. Keep the first fact for each SSA value;
++          // LayeredHashMap does not support updating existing keys.
++          known_zero_masks_.InsertNewKey(value, mask);
++        }
++      }
++    }
+     if (!condition_value.has_value()) {
+       known_conditions_.InsertNewKey(condition, negated
+                                                     ? KnownCondition::NonZero()
+@@ -523,6 +539,21 @@ class BranchEliminationReducer : public Next {
+ #endif  // V8_ENABLE_WEBASSEMBLY
+ 
+  private:
++  bool MatchWord32Mask(V<Word32> condition, V<Word32>* value, uint32_t* mask) {
++    const WordBinopOp* bitwise_and =
++        __ Get(condition).template TryCast<Opmask::kWord32BitwiseAnd>();
++    if (bitwise_and == nullptr) return false;
++    if (__ matcher().MatchIntegralWord32Constant(bitwise_and->right(), mask)) {
++      *value = bitwise_and->left<Word32>();
++      return true;
++    }
++    if (__ matcher().MatchIntegralWord32Constant(bitwise_and->left(), mask)) {
++      *value = bitwise_and->right<Word32>();
++      return true;
++    }
++    return false;
++  }
++
+   // Resets {known_conditions_} and {dominator_path_} up to the 1st dominator of
+   // {block} that they contain.
+   void ResetToBlock(Block* block) {
+@@ -545,11 +576,13 @@ class BranchEliminationReducer : public Next {
+   // Removes the latest entry in {known_conditions_} and {dominator_path_}.
+   void ClearCurrentEntries() {
+     known_conditions_.DropLastLayer();
++    known_zero_masks_.DropLastLayer();
+     dominator_path_.pop_back();
+   }
+ 
+   void StartLayer(Block* block) {
+     known_conditions_.StartLayer();
++    known_zero_masks_.StartLayer();
+     dominator_path_.push_back(block);
+   }
+ 
+@@ -607,6 +640,9 @@ class BranchEliminationReducer : public Next {
+     // order).
+     for (Block* block : base::Reversed(missing_blocks)) {
+       StartLayer(block);
++      // Guard-derived zero masks are not replayed. Forgetting these facts can
++      // miss an optimization, but avoids inspecting every operation in a
++      // predecessor that is replayed after block cloning.
+ 
+       if (block->IsBranchTarget()) {
+         const Operation& op =
+@@ -756,6 +792,11 @@ class BranchEliminationReducer : public Next {
+   ZoneVector<Block*> dominator_path_{__ phase_zone()};
+   LayeredHashMap<V<Word32>, KnownCondition> known_conditions_{
+       __ phase_zone(), __ input_graph().DominatorTreeDepth() * 2};
++  // These facts have the same dominator scope as {known_conditions_}. A loop
++  // phi is a distinct SSA value from its input, so a preheader guard does not
++  // imply anything about subsequent values of the induction variable.
++  LayeredHashMap<V<Word32>, uint32_t> known_zero_masks_{
++      __ phase_zone(), __ input_graph().DominatorTreeDepth() * 2};
+ };
+ 
+ #include "src/compiler/turboshaft/undef-assembler-macros.inc"
+diff --git a/test/mjsunit/turboshaft/deoptimize-if-zero-mask.js b/test/mjsunit/turboshaft/deoptimize-if-zero-mask.js
+new file mode 100644
+index 00000000..cb03a7ce
+--- /dev/null
++++ b/test/mjsunit/turboshaft/deoptimize-if-zero-mask.js
+@@ -0,0 +1,67 @@
++// Copyright 2026 the V8 project authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++// Flags: --allow-natives-syntax
++
++// These semantic tests preserve the behavior of the implicit divisibility
++// guards used for integer array indices. The graph tests check that redundant
++// guards are removed; these tests also pass without that optimization.
++const values = new Float64Array(20);
++for (let i = 0; i < values.length; ++i) values[i] = i + 0.25;
++
++(function SameValue() {
++  function read(index) {
++    return values[index / 8] + values[index / 4];
++  }
++  %PrepareFunctionForOptimization(read);
++  assertEquals(3.5, read(8));
++  assertEquals(6.5, read(16));
++  %OptimizeFunctionOnNextCall(read);
++  assertEquals(9.5, read(24));
++  assertOptimized(read);
++  assertEquals(0.5, read(0));
++  assertEquals(0.5, read(-0));
++  // The first guard must still deopt for an index not divisible by eight.
++  assertEquals(NaN, read(12));
++  assertEquals(NaN, read(-8));
++  assertEquals(NaN, read(8.5));
++  assertEquals(NaN, read(0x100000008));
++})();
++
++(function ConditionalGuard() {
++  function read(index, include_first) {
++    let result = 0;
++    if (include_first) result = values[index / 8];
++    return result + values[index / 4];
++  }
++  %PrepareFunctionForOptimization(read);
++  assertEquals(6.5, read(16, true));
++  assertEquals(4.25, read(16, false));
++  %OptimizeFunctionOnNextCall(read);
++  assertEquals(6.5, read(16, true));
++  assertOptimized(read);
++  // A guard in the skipped arm cannot constrain the merged index.
++  assertEquals(1.25, read(4, false));
++  assertEquals(NaN, read(2, false));
++})();
++
++(function LoopAndOsr() {
++  function sum(start, step, request_osr) {
++    let result = 0;
++    for (let index = start; index < 48; index += step) {
++      result += values[index / 8] + values[index / 4];
++      if (request_osr && index === start) %OptimizeOsr();
++    }
++    return result;
++  }
++  %PrepareFunctionForOptimization(sum);
++  assertEquals(48, sum(0, 8, false));
++  assertEquals(48, sum(0, 8, false));
++  assertEquals(48, sum(0, 8, true));
++  %OptimizeFunctionOnNextCall(sum);
++  assertEquals(48, sum(0, 8, false));
++  assertOptimized(sum);
++  // A guard for one induction value cannot constrain later iterations.
++  assertEquals(NaN, sum(0, 4, false));
++})();
+diff --git a/test/unittests/compiler/turboshaft/control-flow-unittest.cc b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+index 1d23775d..5a7a6250 100644
+--- a/test/unittests/compiler/turboshaft/control-flow-unittest.cc
++++ b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+@@ -112,6 +112,229 @@ TEST_F(ControlFlowTest, BranchElimination) {
+             static_cast<size_t>(kSize * 2 + kMaxOtherBlocksCount));
+ }
+ 
++// A successful deopt guard establishes zero bits for the exact Word32 SSA
++// value. Neither the bit positions nor the operand order are special.
++TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskSubset) {
++  struct Masks {
++    uint32_t known;
++    uint32_t subset;
++  };
++  for (Masks masks : {Masks{0x7, 0x3}, Masks{0x5500, 0x4100},
++                      Masks{0x80000005, 0x80000000}}) {
++    for (bool constant_on_left : {false, true}) {
++      const RegisterRepresentation reps[] = {RegisterRepresentation::Word32()};
++      auto test = CreateFromGraph(base::VectorOf(reps), [&](auto& Asm) {
++        V<Word32> value = Asm.template GetParameter<Word32>(0);
++        V<EagerFrameState> frame_state = Asm.BuildFrameState();
++        V<Word32> known_mask = __ Word32Constant(masks.known);
++        V<Word32> subset_mask = __ Word32Constant(masks.subset);
++        V<Word32> first = constant_on_left
++                              ? __ Word32BitwiseAnd(known_mask, value)
++                              : __ Word32BitwiseAnd(value, known_mask);
++        V<Word32> second = constant_on_left
++                               ? __ Word32BitwiseAnd(subset_mask, value)
++                               : __ Word32BitwiseAnd(value, subset_mask);
++        __ DeoptimizeIf(first, frame_state, DeoptimizeReason::kLostPrecision,
++                        FeedbackSource{});
++        __ DeoptimizeIf(second, frame_state, DeoptimizeReason::kLostPrecision,
++                        FeedbackSource{});
++        __ Return(value);
++      });
++
++      test.Run<BranchEliminationReducer>();
++      EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 1u);
++      EXPECT_EQ(test.CountOp(Opcode::kDeoptimize), 0u);
++    }
++  }
++}
++
++TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskContradiction) {
++  const RegisterRepresentation reps[] = {RegisterRepresentation::Word32()};
++  auto test = CreateFromGraph(base::VectorOf(reps), [](auto& Asm) {
++    V<Word32> value = Asm.template GetParameter<Word32>(0);
++    V<EagerFrameState> frame_state = Asm.BuildFrameState();
++    __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0x55), frame_state,
++                    DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    __ DeoptimizeIfNot(__ Word32BitwiseAnd(value, 0x41), frame_state,
++                       DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    __ Return(value);
++  });
++
++  test.Run<BranchEliminationReducer>();
++  EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 1u);
++  EXPECT_EQ(test.CountOp(Opcode::kDeoptimize), 1u);
++  EXPECT_EQ(test.CountOp(Opcode::kReturn), 0u);
++}
++
++TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskUnrelated) {
++  struct Guards {
++    uint32_t known;
++    uint32_t other;
++    bool first_negated;
++    bool different_value;
++  };
++  for (Guards guards :
++       {Guards{0x3, 0x7, false, false}, Guards{0x3, 0xc, false, false},
++        Guards{0x7, 0x3, true, false}, Guards{0x7, 0x3, false, true}}) {
++    const RegisterRepresentation reps[] = {RegisterRepresentation::Word32(),
++                                           RegisterRepresentation::Word32()};
++    auto test = CreateFromGraph(base::VectorOf(reps), [&](auto& Asm) {
++      V<Word32> value = Asm.template GetParameter<Word32>(0);
++      V<Word32> other =
++          guards.different_value ? Asm.template GetParameter<Word32>(1) : value;
++      V<EagerFrameState> frame_state = Asm.BuildFrameState();
++      V<Word32> first = __ Word32BitwiseAnd(value, guards.known);
++      if (guards.first_negated) {
++        __ DeoptimizeIfNot(first, frame_state, DeoptimizeReason::kLostPrecision,
++                           FeedbackSource{});
++      } else {
++        __ DeoptimizeIf(first, frame_state, DeoptimizeReason::kLostPrecision,
++                        FeedbackSource{});
++      }
++      __ DeoptimizeIf(__ Word32BitwiseAnd(other, guards.other), frame_state,
++                      DeoptimizeReason::kLostPrecision, FeedbackSource{});
++      __ Return(value);
++    });
++
++    test.Run<BranchEliminationReducer>();
++    EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 2u);
++    EXPECT_EQ(test.CountOp(Opcode::kDeoptimize), 0u);
++  }
++}
++
++TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskVariable) {
++  const RegisterRepresentation reps[] = {RegisterRepresentation::Word32(),
++                                         RegisterRepresentation::Word32()};
++  auto test = CreateFromGraph(base::VectorOf(reps), [](auto& Asm) {
++    V<Word32> value = Asm.template GetParameter<Word32>(0);
++    V<Word32> mask = Asm.template GetParameter<Word32>(1);
++    V<EagerFrameState> frame_state = Asm.BuildFrameState();
++    __ DeoptimizeIf(__ Word32BitwiseAnd(value, mask), frame_state,
++                    DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    __ DeoptimizeIf(__ Word32BitwiseAnd(value, 3), frame_state,
++                    DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    __ Return(value);
++  });
++
++  test.Run<BranchEliminationReducer>();
++  EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 2u);
++}
++
++// A guard from one arm does not dominate the other arm or the merge.
++TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskDiamond) {
++  const RegisterRepresentation reps[] = {RegisterRepresentation::Word32(),
++                                         RegisterRepresentation::Word32()};
++  auto test = CreateFromGraph(base::VectorOf(reps), [](auto& Asm) {
++    V<Word32> value = Asm.template GetParameter<Word32>(0);
++    V<Word32> condition = Asm.template GetParameter<Word32>(1);
++    V<EagerFrameState> frame_state = Asm.BuildFrameState();
++    IF (condition) {
++      __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0xf), frame_state,
++                      DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    } ELSE {
++      __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0x3), frame_state,
++                      DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    }
++    __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0x1), frame_state,
++                    DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    __ Return(value);
++  });
++
++  test.Run<BranchEliminationReducer>();
++  EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 3u);
++}
++
++// Cloning the first merge changes visitation order. A zero-mask fact from
++// the true arm must not be replayed into the false arm of the second diamond.
++TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskClonedDiamond) {
++  const RegisterRepresentation reps[] = {RegisterRepresentation::Word32(),
++                                         RegisterRepresentation::Word32()};
++  auto test = CreateFromGraph(base::VectorOf(reps), [](auto& Asm) {
++    V<Word32> value = Asm.template GetParameter<Word32>(0);
++    V<Word32> condition = Asm.template GetParameter<Word32>(1);
++    V<EagerFrameState> frame_state = Asm.BuildFrameState();
++    ScopedVar<Word32, TestInstance::assembler_t> selected(&Asm, 0);
++    IF (condition) {
++      __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0xf), frame_state,
++                      DeoptimizeReason::kLostPrecision, FeedbackSource{});
++      selected = 1;
++    }
++    IF (selected) {
++      __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0x1), frame_state,
++                      DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    } ELSE {
++      V<Word32> false_condition =
++          Asm.Capture(__ Word32BitwiseAnd(value, 0x3), "false_condition");
++      __ DeoptimizeIf(false_condition, frame_state,
++                      DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    }
++    __ Return(value);
++  });
++
++  test.Run<BranchEliminationReducer, MachineOptimizationReducer>();
++  // The branch on the selected constant was folded through block cloning.
++  EXPECT_EQ(test.CountOp(Opcode::kBranch), 1u);
++  bool found_false_guard = false;
++  for (const Operation& op : test.graph().AllOperations()) {
++    if (const DeoptimizeIfOp* guard = op.TryCast<DeoptimizeIfOp>()) {
++      found_false_guard |=
++          test.GetCapture("false_condition").Is(guard->condition());
++    }
++  }
++  EXPECT_TRUE(found_false_guard);
++}
++
++// The loop can exit before the guarded body executes. Its facts must not
++// escape to the exit, even though the guarded SSA value is loop invariant.
++TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskLoopExit) {
++  const RegisterRepresentation reps[] = {RegisterRepresentation::Word32()};
++  auto test = CreateFromGraph(base::VectorOf(reps), [](auto& Asm) {
++    V<Word32> value = Asm.template GetParameter<Word32>(0);
++    V<EagerFrameState> frame_state = Asm.BuildFrameState();
++    LoopLabel<Word32> loop(&Asm);
++    Label<> end(&Asm);
++    GOTO(loop, value);
++    BIND_LOOP(loop, iter) {
++      GOTO_IF(__ Word32Equal(iter, 42), end);
++      __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0xf), frame_state,
++                      DeoptimizeReason::kLostPrecision, FeedbackSource{});
++      GOTO(loop, __ Word32Add(iter, 1));
++    }
++    BIND(end);
++    __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0x3), frame_state,
++                    DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    __ Return(value);
++  });
++
++  test.Run<BranchEliminationReducer>();
++  EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 2u);
++}
++
++// A zero-mask fact about the initial value does not constrain the loop phi.
++TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskLoopPhi) {
++  const RegisterRepresentation reps[] = {RegisterRepresentation::Word32()};
++  auto test = CreateFromGraph(base::VectorOf(reps), [](auto& Asm) {
++    V<Word32> value = Asm.template GetParameter<Word32>(0);
++    V<EagerFrameState> frame_state = Asm.BuildFrameState();
++    __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0xf), frame_state,
++                    DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    LoopLabel<Word32> loop(&Asm);
++    Label<> end(&Asm);
++    GOTO(loop, value);
++    BIND_LOOP(loop, iter) {
++      GOTO_IF(__ Word32Equal(iter, 42), end);
++      __ DeoptimizeIf(__ Word32BitwiseAnd(iter, 0x3), frame_state,
++                      DeoptimizeReason::kLostPrecision, FeedbackSource{});
++      GOTO(loop, __ Word32Add(iter, 1));
++    }
++    BIND(end);
++    __ Return(value);
++  });
++
++  test.Run<BranchEliminationReducer>();
++  EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 2u);
++}
++
+ // When the block following a loop header has a single predecessor and contains
+ // Phis with a single input, loop peeling should be careful not to think that
+ // these phis are loop phis.
+-- 
+2.53.0
+
+
+From 4c5f36158c8aa6f309fa75bdf33495ee6667dfc6 Mon Sep 17 00:00:00 2001
+From: Mikhail Mikheev <16622558+mmv08@users.noreply.github.com>
+Date: Wed, 21 Oct 2026 09:54:54 +0000
+Subject: [PATCH 2/4] [test] Cover mask facts across a dominating merge
+
+Keep a diamond merge large enough to prevent block cloning, and verify
+that a mask guard before the diamond eliminates an implied guard in the
+merge. Assert that the merge and its common dominator remain distinct.
+
+TAG=agy
+CONV=01a15ac7-b7fe-7dc2-ab61-5d14a81b88b5
+---
+ .../turboshaft/control-flow-unittest.cc       | 37 +++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+
+diff --git a/test/unittests/compiler/turboshaft/control-flow-unittest.cc b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+index 5a7a6250..19d73ec0 100644
+--- a/test/unittests/compiler/turboshaft/control-flow-unittest.cc
++++ b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+@@ -220,6 +220,43 @@ TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskVariable) {
+   EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 2u);
+ }
+ 
++// A guard before a diamond dominates its merge, even after facts from each
++// arm have been dropped. Keep the merge too large to clone into either arm.
++TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskDominatesMerge) {
++  const RegisterRepresentation reps[] = {RegisterRepresentation::Word32(),
++                                         RegisterRepresentation::Word32()};
++  auto test = CreateFromGraph(base::VectorOf(reps), [](auto& Asm) {
++    V<Word32> value = Asm.template GetParameter<Word32>(0);
++    V<Word32> condition = Asm.template GetParameter<Word32>(1);
++    V<EagerFrameState> frame_state = Asm.BuildFrameState();
++    __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0x55), frame_state,
++                    DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    ScopedVar<Word32, TestInstance::assembler_t> selected(&Asm, value);
++    IF (condition) {
++      selected = __ Word32Add(value, 1);
++    } ELSE {
++      selected = __ Word32Add(value, 2);
++    }
++    V<Word32> result = selected;
++    Asm.Capture(result, "merge_phi");
++    __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0x41), frame_state,
++                    DeoptimizeReason::kLostPrecision, FeedbackSource{});
++    for (int i = 0; i < 64; ++i) result = __ Word32Add(result, value);
++    __ Return(result);
++  });
++
++  test.Run<BranchEliminationReducer>();
++  EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 1u);
++  EXPECT_EQ(test.CountOp(Opcode::kBranch), 1u);
++  EXPECT_EQ(test.CountOp(Opcode::kPhi), 1u);
++  const auto& phi_capture = test.GetCapture("merge_phi");
++  ASSERT_EQ(phi_capture.generated_output.size(), 1u);
++  OpIndex phi_index = *phi_capture.generated_output.begin();
++  const Block& merge = test.graph().Get(test.graph().BlockOf(phi_index));
++  EXPECT_EQ(merge.PredecessorCount(), 2u);
++  EXPECT_EQ(merge.GetDominator(), &test.graph().StartBlock());
++}
++
+ // A guard from one arm does not dominate the other arm or the merge.
+ TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskDiamond) {
+   const RegisterRepresentation reps[] = {RegisterRepresentation::Word32(),
+-- 
+2.53.0
+
+
+From 6d8fa4c953cdd36c35ef5d24482c4a117b866a53 Mon Sep 17 00:00:00 2001
+From: Mikhail Mikheev <16622558+mmv08@users.noreply.github.com>
+Date: Wed, 21 Oct 2026 10:03:18 +0000
+Subject: [PATCH 3/4] [test] Materialize cloned mask-test condition
+
+Use an explicit Word32 value before constructing ConditionWithHint to avoid two implicit user-defined conversions.
+
+TAG=agy
+CONV=01a15ac7-b7fe-7dc2-ab61-5d14a81b88b5
+---
+ test/unittests/compiler/turboshaft/control-flow-unittest.cc | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/test/unittests/compiler/turboshaft/control-flow-unittest.cc b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+index 19d73ec0..22edb4ea 100644
+--- a/test/unittests/compiler/turboshaft/control-flow-unittest.cc
++++ b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+@@ -296,7 +296,8 @@ TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskClonedDiamond) {
+                       DeoptimizeReason::kLostPrecision, FeedbackSource{});
+       selected = 1;
+     }
+-    IF (selected) {
++    V<Word32> selected_condition = selected;
++    IF (selected_condition) {
+       __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0x1), frame_state,
+                       DeoptimizeReason::kLostPrecision, FeedbackSource{});
+     } ELSE {
+-- 
+2.53.0
+
+
+From 99263a08b9f962e1251f9c209c9edace31ec790c Mon Sep 17 00:00:00 2001
+From: Mikhail Mikheev <16622558+mmv08@users.noreply.github.com>
+Date: Wed, 21 Oct 2026 10:05:44 +0000
+Subject: [PATCH 4/4] [test] Preserve the merge in mask-scope regression
+
+Prevent valid return-block cloning from eliminating the merge under test. Use unrelated false-arm mask bits so the merged guard is semantically necessary on that path.
+
+TAG=agy
+CONV=01a15ac7-b7fe-7dc2-ab61-5d14a81b88b5
+---
+ .../compiler/turboshaft/control-flow-unittest.cc         | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/test/unittests/compiler/turboshaft/control-flow-unittest.cc b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+index 22edb4ea..083d6244 100644
+--- a/test/unittests/compiler/turboshaft/control-flow-unittest.cc
++++ b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+@@ -269,16 +269,21 @@ TEST_F(ControlFlowTest, DeoptimizeIfZeroMaskDiamond) {
+       __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0xf), frame_state,
+                       DeoptimizeReason::kLostPrecision, FeedbackSource{});
+     } ELSE {
+-      __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0x3), frame_state,
++      __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0xc), frame_state,
+                       DeoptimizeReason::kLostPrecision, FeedbackSource{});
+     }
+     __ DeoptimizeIf(__ Word32BitwiseAnd(value, 0x1), frame_state,
+                     DeoptimizeReason::kLostPrecision, FeedbackSource{});
+-    __ Return(value);
++    // Keep this merge from being cloned into the arms, where removing the
++    // final guard in the true arm would be valid.
++    V<Word32> result = value;
++    for (int i = 0; i < 64; ++i) result = __ Word32Add(result, value);
++    __ Return(result);
+   });
+ 
+   test.Run<BranchEliminationReducer>();
+   EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 3u);
++  EXPECT_EQ(test.CountOp(Opcode::kReturn), 1u);
+ }
+ 
+ // Cloning the first merge changes visitation order. A zero-mask fact from
+-- 
+2.53.0
+

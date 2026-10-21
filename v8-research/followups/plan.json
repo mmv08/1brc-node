@@ -39,10 +39,12 @@
     {
       "id": "mask-implication",
       "scope": "eliminate zero-mask guards implied by dominating guards",
-      "state": "building isolated candidate",
+      "state": "29 tests pass; OSR entry confirmed; native weaker mask guard removed; 21-pair benchmark running",
       "source_commits": [
         "5f9782e9",
-        "4c5f3615"
+        "4c5f3615",
+        "6d8fa4c9",
+        "99263a08"
       ]
     }
   ]
