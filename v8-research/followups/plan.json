@@ -34,7 +34,7 @@
     {
       "id": "terminal-peeling",
       "scope": "safely clone bounded terminal-throw side exits",
-      "state": "building after independent review of terminal-region and retained-input safety",
+      "state": "37 tests pass; IR and native peeling confirmed with code growth; 21-pair benchmark running",
       "source_commits": [
         "6500a6d2",
         "166b0ea4",
