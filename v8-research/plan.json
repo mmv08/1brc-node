@@ -1,0 +1,22 @@
+{
+  "objective": "Find and validate a general V8 compiler improvement visible in unchanged official V8 benchmarks.",
+  "upstreamRevision": "293377af9f02c268362e5975b7af4baa25688323",
+  "baselineRepositoryCommit": "0ab712b",
+  "acceptance": [
+    "Inspect current upstream V8 and profile unchanged official benchmark workloads before selecting a patch.",
+    "No station-name, 1BRC, benchmark-name, fixed-input, or workload-specific runtime behavior.",
+    "Demonstrate the general code-generation deficiency with native instructions and the compiler IR/source responsible.",
+    "Add semantic and compiler regression coverage, including edge cases and deoptimization/trapping behavior.",
+    "Build baseline and candidate with identical tools/options; use unchanged official benchmark sources with paired fresh processes.",
+    "Report exact suites and per-test effects, variance, negative results and any build/test limits; do not claim an overall V8 gain from a single microbenchmark.",
+    "Keep the production plain Node and Wasm solvers on the previously selected stock runtime.",
+    "Checkpoint every experiment with unsigned commits; prepare local reviewable patches and results, without publishing externally."
+  ],
+  "sources": [
+    "https://v8.dev/docs/test",
+    "https://chromium.googlesource.com/v8/v8/+/refs/heads/main/"
+  ],
+  "initialEvidence": "The 1BRC profiles motivate inspecting integer representation, repeated typed-array/DataView checks, and machine-level lowering; official benchmark profiles will determine whether these are relevant beyond this program.",
+  "workingDirectory": "results/v8-general",
+  "olderLocalV8": "14.6.202.34; exploratory only until reproduced on current upstream"
+}
