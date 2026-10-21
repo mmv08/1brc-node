@@ -262,3 +262,44 @@ The final [DataView target profile](compile-cost/fresh-allocation-target-post-pr
 **Disposition:** retain fresh-allocation lookup at V8 `87e3481b` as a general compiler-performance candidate, independently of the two other cost experiments. It has a large, repeated official Large-Copy gain and no measured regression in the six stock DataView runtime cases. Smaller Compiler point estimates and the remaining DataView compilation/code-size costs are explicit limitations. This is not a claim of a regression-free or submission-ready combined patch. The preserved final binary is `out/x64.release-fresh-allocation/d8`; its [manifest](compile-cost/fresh-allocation-build-evidence.json) records source, executable, snapshot, ICU and configuration identities. All experiments have unsigned source and evidence checkpoints. No upstream publication has occurred.
 
 The [final artifact audit](compile-cost/final-artifact-audit.json) verifies the saved patch against the committed V8 diff, the preserved build against its manifest, all eight completed fixed runs, compilation counts, post-profile accounting, test-log identity and local report links.
+
+## Graph-reducer follow-up
+
+The next experiments start independently from the retained `87e3481b` build. The [fixed protocol](reducer-cost/plan.json) declares six DataView compilation-diagnostic pairs and twelve unchanged official Compiler pairs per valid candidate, followed by twenty-one stock DataView pairs for retained candidates. Timed processes remain pinned to CPU 2; builds and tests do not overlap measurements. All observations are retained, and intervals are per case without multiple-comparison correction.
+
+The baseline native compiler profile attributed 2,182 self samples to `GraphReducer::ReduceTop` and 1,849 to `GraphReducer::Reduce`, out of 32,959 included compiler samples. Matching PCs to the saved executable identifies repeated mark decoding and a safepoint predicate inside the reducer loop. The [reproducible PC mapping](reducer-cost/map-native-samples.py), [reviewed instruction ranges](reducer-cost/initial-block-evidence.json) and [source invariants](reducer-cost/source-review.json) distinguish sampled locations from instruction latency or removable time. Hardware perf counters remain unavailable.
+
+The encoded-marker experiment compares full stored marks directly instead of subtracting the marker epoch, clamping old epochs to zero and narrowing the result before comparison. Logical zero still includes all older epochs; bounds assertions and graph traversal remain intact. Source checkpoints are `b6b39719`, `428ce5ce` and final test refinement `c281a2f9`. The [patch](reducer-cost/encoded-marker.patch), [87-check validation manifest](reducer-cost/encoded-marker-build-evidence.json) and [28-check test refinement](reducer-cost/encoded-marker-test-refinement.json) preserve the implementation and coverage. The latter uses a copy of the validated production objects and the generated link command; the measured d8 hash is unchanged.
+
+Native `ReduceTop` shrinks from 1,303 to 1,251 bytes, with the subtraction/clamp sequences replaced by encoded comparisons. `Reduce` remains 1,458 bytes. All 25 generated DataView function names and instruction sizes match the baseline. This is a size check, not proof of byte-identical generated JS code. See the [native evidence](reducer-cost/encoded-marker-native-evidence.json).
+
+| Official Compiler case | Encoded-marker score change | 95% interval | Wins |
+|---|---:|---:|---:|
+| Large-Copy | +0.65% | +0.47% to +0.84% | 11/12 |
+| Medium-Copy | +0.66% | +0.37% to +0.94% | 10/12 |
+| Medium-Eratosthenes | +0.40% | -0.20% to +0.96% | 9/12 |
+| Medium-Fact | +1.05% | +0.34% to +1.77% | 10/12 |
+| Medium-Prime | +0.66% | -0.03% to +1.33% | 7/12 |
+| Small-Add | +0.41% | -0.35% to +1.18% | 7/12 |
+| Small-Constant | +0.84% | -0.76% to +2.59% | 7/12 |
+| Small-Empty | +0.92% | -0.67% to +2.61% | 7/12 |
+| Small-Load | +1.07% | -0.29% to +2.43% | 7/12 |
+
+Large-Copy improves **0.65%** (interval **+0.47% to +0.84%**), Medium-Copy **0.66%** (**+0.37% to +0.94%**), and Medium-Fact **1.05%** (**+0.34% to +1.77%**). Both AB and BA orders are positive for these cases. The nine-case geometric mean is **+0.74%**, with interval **−0.03% to +1.51%**; it does not establish an overall suite improvement. [Raw official Compiler pairs](reducer-cost/encoded-marker-compiler-results.json) retain broad movements in several rounds, including the negative eleventh pair.
+
+The six-pair cost diagnostic reports total pipeline time **−1.06%**, interval **−1.74% to −0.38%**, with AB **−0.88%** and BA **−1.23%**. Integer-target compilation time changes **−0.88%**, interval **−1.70% to −0.21%**. Zone allocation is essentially unchanged. Every process completes 25 pipelines and two normal target compilations, with no target OSR compilation or traced abort. These instrumented results are separate from stock runtime scores. [Cost summary](reducer-cost/encoded-marker-cost-summary.json).
+
+| Official DataView case | Encoded-marker score change | 95% interval |
+|---|---:|---:|
+| DataView-BigEndian | +0.10% | -0.01% to +0.22% |
+| DataView-Floats | +0.24% | +0.14% to +0.36% |
+| DataView-LittleEndian | +0.20% | +0.13% to +0.28% |
+| TypedArray-BigEndian | +0.03% | -0.05% to +0.12% |
+| TypedArray-Floats | +0.46% | -0.04% to +1.29% |
+| TypedArray-LittleEndian | -0.06% | -0.17% to +0.05% |
+
+No runtime case has a negative interval excluding zero. The six-case geometric mean is **+0.16%**, interval **+0.06% to +0.31%**. Small positive runtime movements have not been causally isolated; they are not attributed to the mark-comparison change. The sixteenth pair remains in the analysis. [Raw stock runtime pairs](reducer-cost/encoded-marker-runtime-results.json) and [audited results](reducer-cost/validation-summary.json).
+
+The matched [post-change native profile](reducer-cost/encoded-marker-post-profile.json) has 32,890 included compiler ticks and zero unaccounted ticks. `ReduceTop` remains 6.43% and `Reduce` 5.09% of self samples, so substantial graph-reduction work remains. Single profile differences do not establish an additional speedup, and profiler-only source-position wrappers are excluded from stock optimization targets.
+
+**Encoded-marker disposition:** retain the independent candidate for modest gains in three official Compiler cases. The original loop/dispatch graph-growth overhead has not been eliminated or remeasured against the historical getter-only build in this round. These incremental percentages must not be subtracted from the earlier historical cost estimate.
