@@ -16,5 +16,15 @@
   "cost_pairs": 6,
   "cost_summary": "field-name-invalidation-cost-summary.json",
   "interpretation": "Total cost fell2.30% (CI -4.04..-0.75%); target compilation1.31% lower. DataView zone allocation effectively unchanged; this workload does not exercise the allocation-saving path substantially. Official Compiler screen pending.",
-  "safety_review": "Every live entry retains the old invalidation predicate. Dead entries may remain when all live names are disjoint; lookup skips dead keys. No cache cap relaxed."
+  "safety_review": "Every live entry retains the old invalidation predicate. Dead entries may remain when all live names are disjoint; lookup skips dead keys. No cache cap relaxed.",
+  "final_tests": {
+    "passed": 81,
+    "failed": 0,
+    "log": "results/v8-general/field-name-final-tests.log",
+    "binary_sha256_matches_preserved_build": true
+  },
+  "native_validation": "native-code-validation.json",
+  "all_25_function_names_and_instruction_sizes_match": true,
+  "phase_summary": "field-name-invalidation-phase-summary.json",
+  "measurement_caveat": "Several unchanged phases also move in the short diagnostic. Do not assign the full observed DataView time change to the named-cache fast path; official Compiler validation and post-change profiling provide separate evidence."
 }

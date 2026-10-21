@@ -1,0 +1,389 @@
+{
+  "warning": "Phase groups and child phases both occur; do not sum all rows. Diagnostic only; six-pair totals are summarized separately.",
+  "rows": [
+    {
+      "phase": "V8.TFInitPipelineData",
+      "baseline_median_time_ms": 0.075,
+      "candidate_median_time_ms": 0.0775,
+      "delta_ms": 0.0025000000000000022,
+      "baseline_median_zone_bytes": 35000.0,
+      "candidate_median_zone_bytes": 35000.0
+    },
+    {
+      "phase": "V8.TFInitializing",
+      "baseline_median_time_ms": 0.1815,
+      "candidate_median_time_ms": 0.1905,
+      "delta_ms": 0.009000000000000008,
+      "baseline_median_zone_bytes": 47400.0,
+      "candidate_median_zone_bytes": 47400.0
+    },
+    {
+      "phase": "V8.TFHeapBrokerInitialization",
+      "baseline_median_time_ms": 0.023,
+      "candidate_median_time_ms": 0.025,
+      "delta_ms": 0.0020000000000000018,
+      "baseline_median_zone_bytes": 10600.0,
+      "candidate_median_zone_bytes": 10600.0
+    },
+    {
+      "phase": "V8.TFBrokerInitAndSerialization",
+      "baseline_median_time_ms": 0.038,
+      "candidate_median_time_ms": 0.042,
+      "delta_ms": 0.0040000000000000036,
+      "baseline_median_zone_bytes": 10600.0,
+      "candidate_median_zone_bytes": 10600.0
+    },
+    {
+      "phase": "V8.TFBytecodeGraphBuilder",
+      "baseline_median_time_ms": 0.471,
+      "candidate_median_time_ms": 0.4765,
+      "delta_ms": 0.005500000000000005,
+      "baseline_median_zone_bytes": 541904.0,
+      "candidate_median_zone_bytes": 541904.0
+    },
+    {
+      "phase": "V8.TFInlining",
+      "baseline_median_time_ms": 2.0495,
+      "candidate_median_time_ms": 2.0465,
+      "delta_ms": -0.0030000000000001137,
+      "baseline_median_zone_bytes": 2278648.0,
+      "candidate_median_zone_bytes": 2278648.0
+    },
+    {
+      "phase": "V8.TFGraphCreation",
+      "baseline_median_time_ms": 2.54,
+      "candidate_median_time_ms": 2.5395000000000003,
+      "delta_ms": -0.0004999999999997229,
+      "baseline_median_zone_bytes": 2820552.0,
+      "candidate_median_zone_bytes": 2820552.0
+    },
+    {
+      "phase": "V8.TFEarlyGraphTrimming",
+      "baseline_median_time_ms": 0.142,
+      "candidate_median_time_ms": 0.1425,
+      "delta_ms": 0.0005000000000000004,
+      "baseline_median_zone_bytes": 80304.0,
+      "candidate_median_zone_bytes": 80304.0
+    },
+    {
+      "phase": "V8.TFTyper",
+      "baseline_median_time_ms": 0.5275000000000001,
+      "candidate_median_time_ms": 0.5285,
+      "delta_ms": 0.0009999999999998899,
+      "baseline_median_zone_bytes": 234376.0,
+      "candidate_median_zone_bytes": 234376.0
+    },
+    {
+      "phase": "V8.TFTypedLowering",
+      "baseline_median_time_ms": 0.455,
+      "candidate_median_time_ms": 0.444,
+      "delta_ms": -0.01100000000000001,
+      "baseline_median_zone_bytes": 78808.0,
+      "candidate_median_zone_bytes": 78808.0
+    },
+    {
+      "phase": "V8.TFLoopPeeling",
+      "baseline_median_time_ms": 0.6045,
+      "candidate_median_time_ms": 0.5994999999999999,
+      "delta_ms": -0.0050000000000001155,
+      "baseline_median_zone_bytes": 991280.0,
+      "candidate_median_zone_bytes": 991280.0
+    },
+    {
+      "phase": "V8.TFLoadElimination",
+      "baseline_median_time_ms": 1.9035,
+      "candidate_median_time_ms": 1.8639999999999999,
+      "delta_ms": -0.03950000000000009,
+      "baseline_median_zone_bytes": 1715496.0,
+      "candidate_median_zone_bytes": 1715560.0
+    },
+    {
+      "phase": "V8.TFEscapeAnalysis",
+      "baseline_median_time_ms": 0.7945,
+      "candidate_median_time_ms": 0.7865,
+      "delta_ms": -0.008000000000000007,
+      "baseline_median_zone_bytes": 431408.0,
+      "candidate_median_zone_bytes": 431408.0
+    },
+    {
+      "phase": "V8.TFSimplifiedLowering",
+      "baseline_median_time_ms": 1.4335,
+      "candidate_median_time_ms": 1.4455,
+      "delta_ms": 0.01200000000000001,
+      "baseline_median_zone_bytes": 716568.0,
+      "candidate_median_zone_bytes": 716568.0
+    },
+    {
+      "phase": "V8.TFGenericLowering",
+      "baseline_median_time_ms": 0.16,
+      "candidate_median_time_ms": 0.16,
+      "delta_ms": 0.0,
+      "baseline_median_zone_bytes": 35088.0,
+      "candidate_median_zone_bytes": 35088.0
+    },
+    {
+      "phase": "V8.TFLowering",
+      "baseline_median_time_ms": 6.166,
+      "candidate_median_time_ms": 6.108,
+      "delta_ms": -0.05800000000000072,
+      "baseline_median_zone_bytes": 4312088.0,
+      "candidate_median_zone_bytes": 4312152.0
+    },
+    {
+      "phase": "V8.TFEarlyOptimization",
+      "baseline_median_time_ms": 0.819,
+      "candidate_median_time_ms": 0.8005,
+      "delta_ms": -0.01849999999999996,
+      "baseline_median_zone_bytes": 366000.0,
+      "candidate_median_zone_bytes": 366000.0
+    },
+    {
+      "phase": "V8.TFScheduling",
+      "baseline_median_time_ms": 0.689,
+      "candidate_median_time_ms": 0.688,
+      "delta_ms": -0.0010000000000000009,
+      "baseline_median_zone_bytes": 820112.0,
+      "candidate_median_zone_bytes": 820112.0
+    },
+    {
+      "phase": "V8.TFTurboshaftBuildGraph",
+      "baseline_median_time_ms": 0.683,
+      "candidate_median_time_ms": 0.706,
+      "delta_ms": 0.02299999999999991,
+      "baseline_median_zone_bytes": 925320.0,
+      "candidate_median_zone_bytes": 925320.0
+    },
+    {
+      "phase": "V8.TFBlockBuilding",
+      "baseline_median_time_ms": 2.2385,
+      "candidate_median_time_ms": 2.2439999999999998,
+      "delta_ms": 0.005499999999999616,
+      "baseline_median_zone_bytes": 2582832.0,
+      "candidate_median_zone_bytes": 2582832.0
+    },
+    {
+      "phase": "V8.TFTurboshaftMachineLowering",
+      "baseline_median_time_ms": 0.9265000000000001,
+      "candidate_median_time_ms": 0.9295,
+      "delta_ms": 0.0029999999999998916,
+      "baseline_median_zone_bytes": 1549840.0,
+      "candidate_median_zone_bytes": 1549840.0
+    },
+    {
+      "phase": "V8.TFTurboshaftLoopUnrolling",
+      "baseline_median_time_ms": 0.0455,
+      "candidate_median_time_ms": 0.047,
+      "delta_ms": 0.0015000000000000013,
+      "baseline_median_zone_bytes": 10880.0,
+      "candidate_median_zone_bytes": 10880.0
+    },
+    {
+      "phase": "V8.TFTurboshaftLoadElimination",
+      "baseline_median_time_ms": 1.209,
+      "candidate_median_time_ms": 1.23,
+      "delta_ms": 0.020999999999999908,
+      "baseline_median_zone_bytes": 1187816.0,
+      "candidate_median_zone_bytes": 1187816.0
+    },
+    {
+      "phase": "V8.TFTurboshaftMemoryOptimization",
+      "baseline_median_time_ms": 0.7004999999999999,
+      "candidate_median_time_ms": 0.72,
+      "delta_ms": 0.019500000000000073,
+      "baseline_median_zone_bytes": 822984.0,
+      "candidate_median_zone_bytes": 822984.0
+    },
+    {
+      "phase": "V8.TFTurboshaftCodeEliminationAndSimplification",
+      "baseline_median_time_ms": 0.6915,
+      "candidate_median_time_ms": 0.7,
+      "delta_ms": 0.008499999999999952,
+      "baseline_median_zone_bytes": 682544.0,
+      "candidate_median_zone_bytes": 682544.0
+    },
+    {
+      "phase": "V8.TFTurboshaftDecompressionOptimization",
+      "baseline_median_time_ms": 0.09,
+      "candidate_median_time_ms": 0.0885,
+      "delta_ms": -0.0015000000000000013,
+      "baseline_median_zone_bytes": 16656.0,
+      "candidate_median_zone_bytes": 16656.0
+    },
+    {
+      "phase": "V8.TFTurboshaftSpecialRPOScheduling",
+      "baseline_median_time_ms": 0.07,
+      "candidate_median_time_ms": 0.072,
+      "delta_ms": 0.001999999999999988,
+      "baseline_median_zone_bytes": 157200.0,
+      "candidate_median_zone_bytes": 157200.0
+    },
+    {
+      "phase": "V8.TFTurboshaftInstructionSelection",
+      "baseline_median_time_ms": 1.052,
+      "candidate_median_time_ms": 1.0535,
+      "delta_ms": 0.0015000000000000568,
+      "baseline_median_zone_bytes": 1754224.0,
+      "candidate_median_zone_bytes": 1754224.0
+    },
+    {
+      "phase": "V8.TurboshaftOptimize",
+      "baseline_median_time_ms": 4.8915,
+      "candidate_median_time_ms": 4.9254999999999995,
+      "delta_ms": 0.03399999999999981,
+      "baseline_median_zone_bytes": 6184544.0,
+      "candidate_median_zone_bytes": 6184544.0
+    },
+    {
+      "phase": "V8.TFMeetRegisterConstraints",
+      "baseline_median_time_ms": 0.13,
+      "candidate_median_time_ms": 0.1335,
+      "delta_ms": 0.003500000000000003,
+      "baseline_median_zone_bytes": 134192.0,
+      "candidate_median_zone_bytes": 134192.0
+    },
+    {
+      "phase": "V8.TFResolvePhis",
+      "baseline_median_time_ms": 0.0185,
+      "candidate_median_time_ms": 0.02,
+      "delta_ms": 0.0015000000000000013,
+      "baseline_median_zone_bytes": 28696.0,
+      "candidate_median_zone_bytes": 28696.0
+    },
+    {
+      "phase": "V8.TFBuildLiveRanges",
+      "baseline_median_time_ms": 0.4215,
+      "candidate_median_time_ms": 0.4205,
+      "delta_ms": -0.0010000000000000009,
+      "baseline_median_zone_bytes": 883048.0,
+      "candidate_median_zone_bytes": 883048.0
+    },
+    {
+      "phase": "V8.TFBuildLiveRangeBundles",
+      "baseline_median_time_ms": 0.023,
+      "candidate_median_time_ms": 0.0225,
+      "delta_ms": -0.0005000000000000004,
+      "baseline_median_zone_bytes": 15296.0,
+      "candidate_median_zone_bytes": 15296.0
+    },
+    {
+      "phase": "V8.TFAllocateGeneralRegisters",
+      "baseline_median_time_ms": 0.852,
+      "candidate_median_time_ms": 0.852,
+      "delta_ms": 0.0,
+      "baseline_median_zone_bytes": 373552.0,
+      "candidate_median_zone_bytes": 373552.0
+    },
+    {
+      "phase": "V8.TFAllocateFPRegisters",
+      "baseline_median_time_ms": 0.161,
+      "candidate_median_time_ms": 0.163,
+      "delta_ms": 0.0020000000000000018,
+      "baseline_median_zone_bytes": 92432.0,
+      "candidate_median_zone_bytes": 92432.0
+    },
+    {
+      "phase": "V8.TFDecideSpillingMode",
+      "baseline_median_time_ms": 0.0075,
+      "candidate_median_time_ms": 0.0075,
+      "delta_ms": 0.0,
+      "baseline_median_zone_bytes": 8856.0,
+      "candidate_median_zone_bytes": 8856.0
+    },
+    {
+      "phase": "V8.TFAssignSpillSlots",
+      "baseline_median_time_ms": 0.033,
+      "candidate_median_time_ms": 0.0315,
+      "delta_ms": -0.0015000000000000013,
+      "baseline_median_zone_bytes": 6256.0,
+      "candidate_median_zone_bytes": 6256.0
+    },
+    {
+      "phase": "V8.TFCommitAssignment",
+      "baseline_median_time_ms": 0.059,
+      "candidate_median_time_ms": 0.059,
+      "delta_ms": 0.0,
+      "baseline_median_zone_bytes": 0.0,
+      "candidate_median_zone_bytes": 0.0
+    },
+    {
+      "phase": "V8.TFConnectRanges",
+      "baseline_median_time_ms": 0.029,
+      "candidate_median_time_ms": 0.0265,
+      "delta_ms": -0.0025000000000000022,
+      "baseline_median_zone_bytes": 27216.0,
+      "candidate_median_zone_bytes": 27216.0
+    },
+    {
+      "phase": "V8.TFResolveControlFlow",
+      "baseline_median_time_ms": 0.1535,
+      "candidate_median_time_ms": 0.152,
+      "delta_ms": -0.0015000000000000013,
+      "baseline_median_zone_bytes": 110496.0,
+      "candidate_median_zone_bytes": 110496.0
+    },
+    {
+      "phase": "V8.TFPopulateReferenceMaps",
+      "baseline_median_time_ms": 0.043,
+      "candidate_median_time_ms": 0.042499999999999996,
+      "delta_ms": -0.0005000000000000004,
+      "baseline_median_zone_bytes": 33168.0,
+      "candidate_median_zone_bytes": 33168.0
+    },
+    {
+      "phase": "V8.TFOptimizeMoves",
+      "baseline_median_time_ms": 0.27,
+      "candidate_median_time_ms": 0.273,
+      "delta_ms": 0.0030000000000000027,
+      "baseline_median_zone_bytes": 122096.0,
+      "candidate_median_zone_bytes": 122096.0
+    },
+    {
+      "phase": "V8.TFFrameElision",
+      "baseline_median_time_ms": 0.024,
+      "candidate_median_time_ms": 0.027,
+      "delta_ms": 0.002999999999999999,
+      "baseline_median_zone_bytes": 0.0,
+      "candidate_median_zone_bytes": 0.0
+    },
+    {
+      "phase": "V8.TFJumpThreading",
+      "baseline_median_time_ms": 0.045,
+      "candidate_median_time_ms": 0.0485,
+      "delta_ms": 0.003500000000000003,
+      "baseline_median_zone_bytes": 21680.0,
+      "candidate_median_zone_bytes": 21680.0
+    },
+    {
+      "phase": "V8.TFRegisterAllocation",
+      "baseline_median_time_ms": 2.462,
+      "candidate_median_time_ms": 2.48,
+      "delta_ms": 0.017999999999999794,
+      "baseline_median_zone_bytes": 2638640.0,
+      "candidate_median_zone_bytes": 2638640.0
+    },
+    {
+      "phase": "V8.TFAssembleCode",
+      "baseline_median_time_ms": 0.93,
+      "candidate_median_time_ms": 0.9345,
+      "delta_ms": 0.0044999999999999485,
+      "baseline_median_zone_bytes": 202232.0,
+      "candidate_median_zone_bytes": 202232.0
+    },
+    {
+      "phase": "V8.TFCodeGeneration",
+      "baseline_median_time_ms": 1.0459999999999998,
+      "candidate_median_time_ms": 1.054,
+      "delta_ms": 0.00800000000000023,
+      "baseline_median_zone_bytes": 207888.0,
+      "candidate_median_zone_bytes": 207888.0
+    },
+    {
+      "phase": "V8.TFFinalizeCode",
+      "baseline_median_time_ms": 0.0195,
+      "candidate_median_time_ms": 0.0225,
+      "delta_ms": 0.002999999999999999,
+      "baseline_median_zone_bytes": 0.0,
+      "candidate_median_zone_bytes": 0.0
+    }
+  ]
+}
