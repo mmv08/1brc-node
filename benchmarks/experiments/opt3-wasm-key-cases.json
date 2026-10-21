@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Wasm baseline",
+    "script": "results/opt3-base/calculate.mjs",
+    "env": { "ENGINE": "wasm", "WORKERS": "24" }
+  },
+  {
+    "name": "Wasm hash-indexed keys",
+    "script": "calculate.mjs",
+    "env": { "ENGINE": "wasm", "WORKERS": "24" }
+  }
+]
