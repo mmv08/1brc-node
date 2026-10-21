@@ -77,6 +77,10 @@ def audit(experiment):
         assert sha256(ROOT / native['raw_directory'] / 'generated.txt') == native['generated_sha256']
         if experiment != 'standalone-fresh-allocation':
             assert native['names_and_sizes_match_marker'] and len(native['code_objects']) == 25
+        else:
+            assert native['names_and_sizes_match_pristine']
+            assert native['baseline_binary_sha256'] == manifest['baseline_sha256']
+            assert sha256(ROOT / native['raw_directory'] / 'baseline-generated.txt') == native['baseline_generated_sha256']
     allocation_path = HERE / f'{experiment}-large-allocation.json'
     if allocation_path.exists():
         allocation = json.loads(allocation_path.read_text())

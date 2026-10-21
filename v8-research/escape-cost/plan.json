@@ -32,7 +32,7 @@
     },
     {
       "id": "merge-input-cache",
-      "state": "119 checks passed; six cost pairs complete; twelve Compiler pairs running",
+      "state": "complete, rejected as-is: copy gains but Small-Constant -0.89%, Small-Empty -1.09%, Small-Load -0.91%; all three intervals exclude zero. No runtime campaign for rejected candidate.",
       "decision": "Large-Copy makes 870,249 of 1,530,955 state reads inside MergeInputs (56.84%); Medium-Copy makes 33,300 of 63,460 (52.47%). These counters support caching predecessor/old-state snapshots outside the variable loop.",
       "source_commit": "b6943c13",
       "source_checkpoints": [
@@ -42,7 +42,7 @@
     },
     {
       "id": "standalone-fresh-allocation",
-      "state": "exact standalone patch committed on pristine base; build waits for current measurements",
+      "state": "building exact standalone patch on pristine base",
       "source_commit": "e6293c24"
     }
   ],

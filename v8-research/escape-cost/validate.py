@@ -100,6 +100,16 @@ def prepare(experiment, directory, expected_commit):
     print(f'{experiment}: {counts[-1]} tests passed; binary preserved.', flush=True)
 
 
+def code_objects(path):
+    objects = []
+    for chunk in path.read_text().split('--- Optimized code ---')[1:]:
+        name = re.search(r'^name = (.+)$', chunk, re.M)
+        size = re.search(r'^Instructions \(size = (\d+)\)', chunk, re.M)
+        if name and size:
+            objects.append({'name': name[1], 'instruction_bytes': int(size[1])})
+    return objects
+
+
 def native(experiment, directory):
     raw = V8.parent / f'escape-{experiment}-native'
     raw.mkdir(exist_ok=False)
@@ -107,24 +117,36 @@ def native(experiment, directory):
                '--no-concurrent-recompilation', '--print-opt-code', 'run.js']
     with (raw / 'generated.txt').open('w') as stdout, (raw / 'stderr.txt').open('w') as stderr:
         run(command, cwd=V8 / 'test/js-perf-test/DataView', stdout=stdout, stderr=stderr)
-    objects = []
-    for chunk in (raw / 'generated.txt').read_text().split('--- Optimized code ---')[1:]:
-        name = re.search(r'^name = (.+)$', chunk, re.M)
-        size = re.search(r'^Instructions \(size = (\d+)\)', chunk, re.M)
-        if name and size:
-            objects.append({'name': name[1], 'instruction_bytes': int(size[1])})
+    objects = code_objects(raw / 'generated.txt')
     prior = json.loads((ROOT / 'v8-research/reducer-cost/encoded-marker-native-evidence.json').read_text())
     match = Counter((o['name'], o['instruction_bytes']) for o in objects) == Counter(
         (o['name'], o['instruction_bytes']) for o in prior['code_objects'])
-    save(f'{experiment}-native-evidence.json', {
+    evidence = {
         'command': command, 'raw_directory': str(raw.relative_to(ROOT)),
         'generated_sha256': sha256(raw / 'generated.txt'), 'code_objects': objects,
         'names_and_sizes_match_marker': match,
         'limits': 'Names and sizes are not proof of byte-identical generated code.',
-    })
+    }
+    if experiment == 'standalone-fresh-allocation':
+        _, baseline = base(experiment)
+        baseline_command = [*command]
+        baseline_command[3] = str(baseline)
+        with (raw / 'baseline-generated.txt').open('w') as stdout, (raw / 'baseline-stderr.txt').open('w') as stderr:
+            run(baseline_command, cwd=V8 / 'test/js-perf-test/DataView', stdout=stdout, stderr=stderr)
+        baseline_objects = code_objects(raw / 'baseline-generated.txt')
+        baseline_match = Counter((o['name'], o['instruction_bytes']) for o in objects) == Counter(
+            (o['name'], o['instruction_bytes']) for o in baseline_objects)
+        evidence.update(baseline_command=baseline_command,
+                        baseline_binary_sha256=sha256(baseline),
+                        baseline_generated_sha256=sha256(raw / 'baseline-generated.txt'),
+                        baseline_code_objects=baseline_objects,
+                        names_and_sizes_match_pristine=baseline_match)
+    save(f'{experiment}-native-evidence.json', evidence)
     assert objects
     if experiment != 'standalone-fresh-allocation':
         assert match, 'Inspect generated-code size changes before benchmarking'
+    else:
+        assert baseline_match, 'Inspect generated-code size changes before benchmarking'
 
 
 def benchmark(experiment, directory, suite):

@@ -1,0 +1,152 @@
+{
+  "raw_results": "v8-research/escape-cost/merge-input-cache-compiler-results.json",
+  "sha256": "2e174405df2971c00ee3225e9d6c5c4286a7744704caa8d130f9f3be3e7ed433",
+  "pairs": 12,
+  "binaries": {
+    "baseline": {
+      "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8",
+      "sha256": "e50dd57bcd9a2c6f1a2c4bd10c2bee4ab6a3e45140c59bd64dfd34d58bdc1ddb",
+      "size_bytes": 204279448
+    },
+    "candidate": {
+      "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-escape-merge-input-cache/d8",
+      "sha256": "2e015f1a36fbba3a7bc9b814956e010d8081c47920e333679d3b9312bb076b1a",
+      "size_bytes": 204280288
+    }
+  },
+  "d8_args": [
+    "--allow-natives-syntax",
+    "run.js"
+  ],
+  "source_sha256": {
+    "large.js": "520c87a2469b3d22a0c968b0a4f6b572590a726feb0d44f6bdfbfa3794312115",
+    "medium.js": "c297630555819b13f3a1a65bd24355199489511fa0f659c3cd6b0539b6801e46",
+    "run.js": "4da89999215f19571347248aba9db6f20b61a944b2a986a1bd4d153baae80ae5",
+    "small.js": "d11ead865918d71b50df8d52571f9c1e5985584479a6becae5e7017b7e8b6edf",
+    "../base.js": "5ed309eef1538495cdca40cf8349ce85c41ad24d3c0620d3ea9d2a88c30e01e1"
+  },
+  "cases": {
+    "Large-Copy-Compile": {
+      "score_change_percent": 2.3456580730929266,
+      "ci95_percent": [
+        2.096796699732595,
+        2.5955873317909495
+      ],
+      "ab_change_percent": 2.40726172311331,
+      "ba_change_percent": 2.2840914810861297,
+      "wins": 12,
+      "ties": 0
+    },
+    "Medium-Copy-Compile": {
+      "score_change_percent": 2.52239033652768,
+      "ci95_percent": [
+        2.352526707182201,
+        2.6908905492035284
+      ],
+      "ab_change_percent": 2.4105249603703847,
+      "ba_change_percent": 2.634377905812942,
+      "wins": 12,
+      "ties": 0
+    },
+    "Medium-Eratosthenes-Compile": {
+      "score_change_percent": 1.159860983075478,
+      "ci95_percent": [
+        0.9588602068329122,
+        1.3612619353102096
+      ],
+      "ab_change_percent": 1.0411299904962656,
+      "ba_change_percent": 1.2787314935777534,
+      "wins": 12,
+      "ties": 0
+    },
+    "Medium-Fact-Compile": {
+      "score_change_percent": -0.13967526554093945,
+      "ci95_percent": [
+        -0.5178635076700799,
+        0.22004211107569116
+      ],
+      "ab_change_percent": -0.47752274904979225,
+      "ba_change_percent": 0.199319103829947,
+      "wins": 6,
+      "ties": 1
+    },
+    "Medium-Prime-Compile": {
+      "score_change_percent": 0.3901842338750683,
+      "ci95_percent": [
+        0.150047114631513,
+        0.6606878037408226
+      ],
+      "ab_change_percent": 0.1799122541496956,
+      "ba_change_percent": 0.6008975626140439,
+      "wins": 8,
+      "ties": 3
+    },
+    "Small-Add-Compile": {
+      "score_change_percent": 0.2559775789679364,
+      "ci95_percent": [
+        -0.15257644398591896,
+        0.7056132800902226
+      ],
+      "ab_change_percent": 0.4605658744577185,
+      "ba_change_percent": 0.05180592826098178,
+      "wins": 5,
+      "ties": 3
+    },
+    "Small-Constant-Compile": {
+      "score_change_percent": -0.8879516657218312,
+      "ci95_percent": [
+        -1.352890769335724,
+        -0.4236296608595702
+      ],
+      "ab_change_percent": -0.9286788699733366,
+      "ba_change_percent": -0.8472077189342625,
+      "wins": 1,
+      "ties": 2
+    },
+    "Small-Empty-Compile": {
+      "score_change_percent": -1.087952327483921,
+      "ci95_percent": [
+        -1.7124595628548844,
+        -0.5029440711887823
+      ],
+      "ab_change_percent": -1.0860659683611387,
+      "ba_change_percent": -1.0898386506324935,
+      "wins": 0,
+      "ties": 4
+    },
+    "Small-Load-Compile": {
+      "score_change_percent": -0.906398385306173,
+      "ci95_percent": [
+        -1.507238140616729,
+        -0.3791109677068971
+      ],
+      "ab_change_percent": -1.35788945450269,
+      "ba_change_percent": -0.4528408134320719,
+      "wins": 0,
+      "ties": 5
+    }
+  },
+  "case_geometric_mean": {
+    "score_change_percent": 0.39765519483399975,
+    "ci95_percent": [
+      0.17930082012907633,
+      0.6281836871919498
+    ],
+    "ab_change_percent": 0.28538385927082105,
+    "ba_change_percent": 0.5100522202265839,
+    "per_pair_change_percent": [
+      -0.08368572259715594,
+      0.4851679181776672,
+      -0.22280928600131814,
+      0.7838914847173627,
+      0.12807672055893732,
+      1.1899525856147315,
+      0.8033297180557024,
+      0.02767725494365435,
+      0.4524015853081452,
+      0.43853285612976733,
+      0.6391809080902069,
+      0.13962691197303093
+    ]
+  }
+}
