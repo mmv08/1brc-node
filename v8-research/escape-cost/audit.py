@@ -17,6 +17,7 @@ from paired_benchmark import sha256, source_hashes
 from compilation_cost import parse_run
 
 summarize = runpy.run_path(str(ROOT / 'v8-research/compile-cost/summarize-validation.py'))['summarize']
+profile_summary = runpy.run_path(str(ROOT / 'v8-research/compile-cost/finish-fresh-allocation.py'))['profile_summary']
 
 
 def git(*args):
@@ -102,8 +103,24 @@ def main():
         run = diagnostic['runs'][suite]
         assert len(run['rows']) == 2 * count
         assert sha256(ROOT / run['stdout']) == run['stdout_sha256']
+    profiles = {}
+    for path in sorted(HERE.glob('*-profile.json')):
+        profile = json.loads(path.read_text())
+        capture = profile['capture']
+        assert sha256(Path(capture['command'][3])) == capture['binary_sha256']
+        log = next(arg.split('=', 1)[1] for arg in capture['command']
+                   if arg.startswith('--logfile='))
+        assert sha256(Path(log)) == capture['log_sha256']
+        report = ROOT / profile['profile']['report']
+        assert profile_summary(report) == profile['profile']
+        assert profile['profile']['unaccounted_ticks'] == 0
+        assert len(capture['diagnostic_scores']) == 9
+        profiles[path.name] = {'sha256': sha256(path),
+                               'included_compiler_ticks': profile['profile']['included_ticks'],
+                               'unaccounted_ticks': 0}
     output = {'experiments': {name: audit(name) for name in args.experiments},
               'diagnostic_compilations': {'Compiler': 441, 'DataView': 25},
+              'profiles': profiles,
               'statistics': 'Fixed alternating pairs, seed 20261021, 10000 bootstrap '
                             'resamples. Per-case intervals are not corrected for multiple comparisons.',
               'limits': 'Single-machine results for these suites. Zone allocation is not RSS. '

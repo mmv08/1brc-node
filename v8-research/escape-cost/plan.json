@@ -32,7 +32,7 @@
     },
     {
       "id": "merge-input-cache",
-      "state": "final source committed; building independent candidate",
+      "state": "119 checks passed; six cost pairs complete; twelve Compiler pairs running",
       "decision": "Large-Copy makes 870,249 of 1,530,955 state reads inside MergeInputs (56.84%); Medium-Copy makes 33,300 of 63,460 (52.47%). These counters support caching predecessor/old-state snapshots outside the variable loop.",
       "source_commit": "b6943c13",
       "source_checkpoints": [
@@ -42,7 +42,8 @@
     },
     {
       "id": "standalone-fresh-allocation",
-      "state": "planned after escape-analysis experiments"
+      "state": "exact standalone patch committed on pristine base; build waits for current measurements",
+      "source_commit": "e6293c24"
     }
   ],
   "limits": "Hardware perf remains unavailable (perf_event_paranoid=4). Use the native sampler, phase statistics, counters and disassembly. Sample shares are not promised gains. Preserve default/reference semantics, traversal, safepoints, allocation budgets and generated-program behavior.",
