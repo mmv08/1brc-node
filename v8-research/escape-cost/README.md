@@ -28,14 +28,64 @@ Both table getters are inlined in the resulting executable. The state write func
 
 The completed [Compiler comparison](indexed-storage-compiler-summary.json) improves Large-Copy by **10.70%** (95% interval **+10.50% to +10.89%**) and Medium-Copy by **9.40%** (**+9.18% to +9.61%**), each winning all twelve pairs. Medium-Eratosthenes improves **1.84%** (**+1.48% to +2.25%**). Both execution orders are positive for these cases. The nine-case mean improves **2.29%** (**+1.88% to +2.76%**). All other case intervals span zero; their negative point estimates remain in the full results.
 
+| Official case | Score change | 95% interval | AB / BA | Wins |
+|---|---:|---:|---:|---:|
+| Large-Copy | +10.70% | +10.50% to +10.89% | +10.71% / +10.68% | 12/12 |
+| Medium-Copy | +9.40% | +9.18% to +9.61% | +9.51% / +9.30% | 12/12 |
+| Medium-Eratosthenes | +1.84% | +1.48% to +2.25% | +1.92% / +1.76% | 12/12 |
+| Medium-Fact | -0.50% | -0.99% to +0.04% | -0.56% / -0.44% | 3/12 |
+| Medium-Prime | -0.33% | -1.01% to +0.33% | +0.18% / -0.84% | 3/12 |
+| Small-Add | -0.51% | -1.13% to +0.08% | -0.82% / -0.20% | 4/12 |
+| Small-Constant | +0.42% | -0.55% to +1.44% | +1.28% / -0.43% | 6/12 |
+| Small-Empty | +0.37% | -0.63% to +1.48% | +1.01% / -0.26% | 4/12 |
+| Small-Load | -0.08% | -0.84% to +0.82% | -0.16% / -0.01% | 3/12 |
+
 The six-pair [DataView cost diagnostic](indexed-storage-cost-summary.json) reports escape-analysis time **−8.21%** and total pipeline time **−0.70%** (interval **−1.24% to −0.04%**). Total zone allocation increases **0.13%**; escape-analysis allocation increases **5.74%**, or 24,744 bytes per suite process. Every process completes 25 pipelines and two normal target compilations, with no target OSR compilation or traced abort.
 
 The [Large-Copy allocation diagnostic](indexed-storage-large-allocation.json) reduces escape-analysis zone bytes from **64,083,056 to 60,535,840** (**−5.54%**) and total pipeline bytes from **329,186,760 to 325,639,376** (**−1.08%**). These are actual instrumented allocations, separate from the initial live-storage estimates.
 
 The [21-pair runtime comparison](indexed-storage-runtime-summary.json) is neutral: the six-case mean is **+0.002%**, with interval **−0.047% to +0.067%**. Every individual interval spans zero. All observations, including the thirteenth pair, remain in the result.
 
+| Official case | Score change | 95% interval | AB / BA | Wins |
+|---|---:|---:|---:|---:|
+| DataView-BigEndian | -0.08% | -0.28% to +0.12% | -0.02% / -0.16% | 7/21 |
+| DataView-Floats | +0.05% | -0.09% to +0.25% | +0.13% / -0.04% | 7/21 |
+| DataView-LittleEndian | -0.09% | -0.20% to +0.02% | -0.11% / -0.07% | 5/21 |
+| TypedArray-BigEndian | +0.05% | -0.04% to +0.14% | -0.03% / +0.14% | 10/21 |
+| TypedArray-Floats | +0.04% | -0.10% to +0.20% | +0.06% / +0.01% | 10/21 |
+| TypedArray-LittleEndian | +0.04% | -0.04% to +0.12% | +0.02% / +0.07% | 11/21 |
+
 The [post-change native profile](indexed-storage-post-profile.json) has 156,011 included compiler samples and zero unaccounted ticks. The getters no longer have separate out-of-line symbols; their indexed reads are inlined. Profile shares are not an additional speedup measurement.
 
 **Disposition:** retain indexed storage as a compiler-performance candidate. Its gains are measured against the earlier marker build, and it has not been combined with the merge-cache candidate. The [artifact audit](artifact-audit.json) verifies the committed patch, preserved binaries, positive test count, every fixed run and the allocation capture.
 
-Independent cache measurement and pristine validation are still in progress. This report will be completed with their full results.
+## Merge-input cache
+
+Source checkpoints: `796241d8`, refined to `b6943c13` before building. [Patch](merge-input-cache.patch), [119-check validation](merge-input-cache-build-evidence.json), [Compiler results](merge-input-cache-compiler-summary.json).
+
+The [native control-flow analysis](merge-loop-evidence.json) confirms that the repeated hash work leaves the variable loop. The baseline has two out-of-line table-read call sites and an inlined lookup containing three division instructions in nested loops. The candidate has three read call sites: two outside loops and one in the predecessor-cache loop. `MergeInputs` shrinks from 2,594 to 2,466 bytes. The underlying getter bodies remain 269 bytes. This is static control-flow evidence, not a measurement of instruction latency.
+
+Large-Copy improves **2.35%** (interval **+2.10% to +2.60%**), Medium-Copy **2.52%** (**+2.35% to +2.69%**), and Medium-Eratosthenes **1.16%** (**+0.96% to +1.36%**); all three win twelve pairs. However, Small-Constant, Small-Empty and Small-Load regress **0.89%, 1.09% and 0.91%** respectively, with negative intervals and negative AB/BA splits. The nine-case mean is **+0.40%**, interval **+0.18% to +0.63%**. The small-case regressions have not been causally isolated; no microarchitectural explanation is assumed.
+
+| Official case | Score change | 95% interval | AB / BA | Wins |
+|---|---:|---:|---:|---:|
+| Large-Copy | +2.35% | +2.10% to +2.60% | +2.41% / +2.28% | 12/12 |
+| Medium-Copy | +2.52% | +2.35% to +2.69% | +2.41% / +2.63% | 12/12 |
+| Medium-Eratosthenes | +1.16% | +0.96% to +1.36% | +1.04% / +1.28% | 12/12 |
+| Medium-Fact | -0.14% | -0.52% to +0.22% | -0.48% / +0.20% | 6/12 |
+| Medium-Prime | +0.39% | +0.15% to +0.66% | +0.18% / +0.60% | 8/12 |
+| Small-Add | +0.26% | -0.15% to +0.71% | +0.46% / +0.05% | 5/12 |
+| Small-Constant | -0.89% | -1.35% to -0.42% | -0.93% / -0.85% | 1/12 |
+| Small-Empty | -1.09% | -1.71% to -0.50% | -1.09% / -1.09% | 0/12 |
+| Small-Load | -0.91% | -1.51% to -0.38% | -1.36% / -0.45% | 0/12 |
+
+The [DataView cost result](merge-input-cache-cost-summary.json) has total pipeline time **−0.71%**, interval **−1.64% to +0.29%**, and total zone allocation **+0.005%**. Escape-analysis allocation increases by 896 bytes per suite process. All fourteen processes complete 25 pipelines, two normal target compilations, no target OSR compilation and no traced abort. The [single Large-Copy allocation check](merge-input-cache-large-allocation.json) increases escape-analysis storage by only 80 bytes; its durations are not used as timing evidence.
+
+**Disposition: rejected as-is.** The copy-case improvements do not justify promoting a candidate with repeated regressions in three small cases, especially when indexed storage provides larger gains. The rejected source, binary and every measured round remain preserved. As declared in the protocol, the rejected candidate does not receive a 21-pair runtime campaign. The two candidates remain independent.
+
+## Standalone fresh-allocation lookup
+
+The exact earlier lookup patch is committed as `e6293c24` on pristine `293377af`, without the other optimizations. Only `src/compiler/load-elimination.cc` and its unit tests differ from pristine. Those two files were identical between pristine and the earlier experiment baseline, and the new patch is byte-for-byte identical to the saved earlier patch. The preserved pristine d8 hash matches the original baseline measurements.
+
+Build, correctness and fixed official benchmark validation are in progress. This section will be completed with the full results.
+

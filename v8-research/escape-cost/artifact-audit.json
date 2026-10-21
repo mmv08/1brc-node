@@ -440,11 +440,339 @@
           "limits": "One compilation per binary. Allocation evidence only; phase durations are not paired timing evidence. Zone allocation is not RSS."
         }
       }
+    },
+    "merge-input-cache": {
+      "source_commit": "b6943c1352e265095367db42f7ead084d3b5ab04",
+      "base_commit": "c281a2f9e3fb9ece0b455153ae45579b7b4108ad",
+      "build_manifest_sha256": "c0267aa6a507c158b35cdb3a61b51e6509907389d2ac1e39d561c2c03cefb0e2",
+      "tests_passed": 119,
+      "unsigned_source_checkpoint": true,
+      "results": {
+        "compiler": {
+          "raw_results": "v8-research/escape-cost/merge-input-cache-compiler-results.json",
+          "sha256": "2e174405df2971c00ee3225e9d6c5c4286a7744704caa8d130f9f3be3e7ed433",
+          "pairs": 12,
+          "binaries": {
+            "baseline": {
+              "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8",
+              "sha256": "e50dd57bcd9a2c6f1a2c4bd10c2bee4ab6a3e45140c59bd64dfd34d58bdc1ddb",
+              "size_bytes": 204279448
+            },
+            "candidate": {
+              "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-escape-merge-input-cache/d8",
+              "sha256": "2e015f1a36fbba3a7bc9b814956e010d8081c47920e333679d3b9312bb076b1a",
+              "size_bytes": 204280288
+            }
+          },
+          "d8_args": [
+            "--allow-natives-syntax",
+            "run.js"
+          ],
+          "source_sha256": {
+            "large.js": "520c87a2469b3d22a0c968b0a4f6b572590a726feb0d44f6bdfbfa3794312115",
+            "medium.js": "c297630555819b13f3a1a65bd24355199489511fa0f659c3cd6b0539b6801e46",
+            "run.js": "4da89999215f19571347248aba9db6f20b61a944b2a986a1bd4d153baae80ae5",
+            "small.js": "d11ead865918d71b50df8d52571f9c1e5985584479a6becae5e7017b7e8b6edf",
+            "../base.js": "5ed309eef1538495cdca40cf8349ce85c41ad24d3c0620d3ea9d2a88c30e01e1"
+          },
+          "cases": {
+            "Large-Copy-Compile": {
+              "score_change_percent": 2.3456580730929266,
+              "ci95_percent": [
+                2.096796699732595,
+                2.5955873317909495
+              ],
+              "ab_change_percent": 2.40726172311331,
+              "ba_change_percent": 2.2840914810861297,
+              "wins": 12,
+              "ties": 0
+            },
+            "Medium-Copy-Compile": {
+              "score_change_percent": 2.52239033652768,
+              "ci95_percent": [
+                2.352526707182201,
+                2.6908905492035284
+              ],
+              "ab_change_percent": 2.4105249603703847,
+              "ba_change_percent": 2.634377905812942,
+              "wins": 12,
+              "ties": 0
+            },
+            "Medium-Eratosthenes-Compile": {
+              "score_change_percent": 1.159860983075478,
+              "ci95_percent": [
+                0.9588602068329122,
+                1.3612619353102096
+              ],
+              "ab_change_percent": 1.0411299904962656,
+              "ba_change_percent": 1.2787314935777534,
+              "wins": 12,
+              "ties": 0
+            },
+            "Medium-Fact-Compile": {
+              "score_change_percent": -0.13967526554093945,
+              "ci95_percent": [
+                -0.5178635076700799,
+                0.22004211107569116
+              ],
+              "ab_change_percent": -0.47752274904979225,
+              "ba_change_percent": 0.199319103829947,
+              "wins": 6,
+              "ties": 1
+            },
+            "Medium-Prime-Compile": {
+              "score_change_percent": 0.3901842338750683,
+              "ci95_percent": [
+                0.150047114631513,
+                0.6606878037408226
+              ],
+              "ab_change_percent": 0.1799122541496956,
+              "ba_change_percent": 0.6008975626140439,
+              "wins": 8,
+              "ties": 3
+            },
+            "Small-Add-Compile": {
+              "score_change_percent": 0.2559775789679364,
+              "ci95_percent": [
+                -0.15257644398591896,
+                0.7056132800902226
+              ],
+              "ab_change_percent": 0.4605658744577185,
+              "ba_change_percent": 0.05180592826098178,
+              "wins": 5,
+              "ties": 3
+            },
+            "Small-Constant-Compile": {
+              "score_change_percent": -0.8879516657218312,
+              "ci95_percent": [
+                -1.352890769335724,
+                -0.4236296608595702
+              ],
+              "ab_change_percent": -0.9286788699733366,
+              "ba_change_percent": -0.8472077189342625,
+              "wins": 1,
+              "ties": 2
+            },
+            "Small-Empty-Compile": {
+              "score_change_percent": -1.087952327483921,
+              "ci95_percent": [
+                -1.7124595628548844,
+                -0.5029440711887823
+              ],
+              "ab_change_percent": -1.0860659683611387,
+              "ba_change_percent": -1.0898386506324935,
+              "wins": 0,
+              "ties": 4
+            },
+            "Small-Load-Compile": {
+              "score_change_percent": -0.906398385306173,
+              "ci95_percent": [
+                -1.507238140616729,
+                -0.3791109677068971
+              ],
+              "ab_change_percent": -1.35788945450269,
+              "ba_change_percent": -0.4528408134320719,
+              "wins": 0,
+              "ties": 5
+            }
+          },
+          "case_geometric_mean": {
+            "score_change_percent": 0.39765519483399975,
+            "ci95_percent": [
+              0.17930082012907633,
+              0.6281836871919498
+            ],
+            "ab_change_percent": 0.28538385927082105,
+            "ba_change_percent": 0.5100522202265839,
+            "per_pair_change_percent": [
+              -0.08368572259715594,
+              0.4851679181776672,
+              -0.22280928600131814,
+              0.7838914847173627,
+              0.12807672055893732,
+              1.1899525856147315,
+              0.8033297180557024,
+              0.02767725494365435,
+              0.4524015853081452,
+              0.43853285612976733,
+              0.6391809080902069,
+              0.13962691197303093
+            ]
+          }
+        },
+        "cost": {
+          "sha256": "a6a43ea4a8f36a023f86330e92d0a932ea53f486c803d87c49b390061fa68da1",
+          "metrics": {
+            "pipeline_time_ms": {
+              "baseline_median": 19.805999999999997,
+              "candidate_median": 19.5715,
+              "paired_cost_change_percent": -0.7085689811155427,
+              "paired_bootstrap_95_percent_interval": [
+                -1.6411588873780913,
+                0.28624801136032385
+              ],
+              "ab_cost_change_percent": -0.6150728517794968,
+              "ba_cost_change_percent": -0.801977154194522
+            },
+            "pipeline_zone_bytes": {
+              "baseline_median": 18813204.0,
+              "candidate_median": 18814060.0,
+              "paired_cost_change_percent": 0.004861866714889196,
+              "paired_bootstrap_95_percent_interval": [
+                0.003253018576931943,
+                0.006683394443363078
+              ],
+              "ab_cost_change_percent": 0.006534542683733768,
+              "ba_cost_change_percent": 0.003189218722665643
+            },
+            "peeling_time_ms": {
+              "baseline_median": 0.5974999999999999,
+              "candidate_median": 0.5934999999999999,
+              "paired_cost_change_percent": -0.44644796517243623,
+              "paired_bootstrap_95_percent_interval": [
+                -1.359095512095343,
+                0.36263053348597474
+              ],
+              "ab_cost_change_percent": -0.5019655472008777,
+              "ba_cost_change_percent": -0.39089940562838654
+            },
+            "peeling_zone_bytes": {
+              "baseline_median": 991280.0,
+              "candidate_median": 991280.0,
+              "paired_cost_change_percent": 0.0,
+              "paired_bootstrap_95_percent_interval": [
+                0.0,
+                0.0
+              ],
+              "ab_cost_change_percent": 0.0,
+              "ba_cost_change_percent": 0.0
+            },
+            "target_normal_time_ms": {
+              "baseline_median": 3.7535,
+              "candidate_median": 3.7424999999999997,
+              "paired_cost_change_percent": -0.0199099264040159,
+              "paired_bootstrap_95_percent_interval": [
+                -0.4746547357874942,
+                0.6003142357042801
+              ],
+              "ab_cost_change_percent": -0.15102427296505017,
+              "ba_cost_change_percent": 0.11137658989386345
+            },
+            "target_osr_time_ms": {
+              "baseline_median": 0.0,
+              "candidate_median": 0.0,
+              "ratio_note": "Ratio undefined with zero-valued observations."
+            },
+            "escape_analysis_time_ms": {
+              "baseline_median": 0.7815000000000001,
+              "candidate_median": 0.777,
+              "paired_cost_change_percent": -0.6833048747173498,
+              "paired_bootstrap_95_percent_interval": [
+                -1.322945345931248,
+                -0.022232152791024085
+              ],
+              "ab_cost_change_percent": -1.3619406939165746,
+              "ba_cost_change_percent": 0.0
+            },
+            "escape_analysis_zone_bytes": {
+              "baseline_median": 431408.0,
+              "candidate_median": 432304.0,
+              "paired_cost_change_percent": 0.20769202240107365,
+              "paired_bootstrap_95_percent_interval": [
+                0.20769202240107365,
+                0.20769202240107365
+              ],
+              "ab_cost_change_percent": 0.20769202240107365,
+              "ba_cost_change_percent": 0.20769202240107365
+            }
+          },
+          "pairs": 6,
+          "pipeline_count_per_run": 25
+        },
+        "large_allocation": {
+          "experiment": "merge-input-cache",
+          "runs": {
+            "baseline": {
+              "command": [
+                "taskset",
+                "-c",
+                "2",
+                "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8",
+                "--allow-natives-syntax",
+                "--no-concurrent-recompilation",
+                "--trace-opt",
+                "--turbo-stats",
+                "--turbo-stats-nvp",
+                "/home/mmv/projects/1brc-node/v8-research/escape-cost/compiler-large-once.js"
+              ],
+              "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/Compiler",
+              "binary_sha256": "e50dd57bcd9a2c6f1a2c4bd10c2bee4ab6a3e45140c59bd64dfd34d58bdc1ddb",
+              "source_sha256": {
+                "large.js": "520c87a2469b3d22a0c968b0a4f6b572590a726feb0d44f6bdfbfa3794312115",
+                "medium.js": "c297630555819b13f3a1a65bd24355199489511fa0f659c3cd6b0539b6801e46",
+                "run.js": "4da89999215f19571347248aba9db6f20b61a944b2a986a1bd4d153baae80ae5",
+                "small.js": "d11ead865918d71b50df8d52571f9c1e5985584479a6becae5e7017b7e8b6edf",
+                "../base.js": "5ed309eef1538495cdca40cf8349ce85c41ad24d3c0620d3ea9d2a88c30e01e1",
+                "../../../../../../v8-research/escape-cost/compiler-large-once.js": "2652e1fbcde465b8fcda29e3545fd5d4e69e709302e3033aff2faeb6700aa4a8"
+              },
+              "stdout": "results/v8-general/escape-merge-input-cache-large-allocation/baseline.stdout.txt",
+              "stdout_sha256": "be007b3e42cb4edb87521af3a5a6b7e04f75f9293d7cd374e0782a9b85159ffb",
+              "stderr_sha256": "43d25a624517b4437bce175e505e504c35681abca0ba4d252088ea761fa763e5",
+              "pipeline_count": 1,
+              "pipeline_zone_bytes": 329185224,
+              "escape_analysis_zone_bytes": 64083056
+            },
+            "candidate": {
+              "command": [
+                "taskset",
+                "-c",
+                "2",
+                "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-escape-merge-input-cache/d8",
+                "--allow-natives-syntax",
+                "--no-concurrent-recompilation",
+                "--trace-opt",
+                "--turbo-stats",
+                "--turbo-stats-nvp",
+                "/home/mmv/projects/1brc-node/v8-research/escape-cost/compiler-large-once.js"
+              ],
+              "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/Compiler",
+              "binary_sha256": "2e015f1a36fbba3a7bc9b814956e010d8081c47920e333679d3b9312bb076b1a",
+              "source_sha256": {
+                "large.js": "520c87a2469b3d22a0c968b0a4f6b572590a726feb0d44f6bdfbfa3794312115",
+                "medium.js": "c297630555819b13f3a1a65bd24355199489511fa0f659c3cd6b0539b6801e46",
+                "run.js": "4da89999215f19571347248aba9db6f20b61a944b2a986a1bd4d153baae80ae5",
+                "small.js": "d11ead865918d71b50df8d52571f9c1e5985584479a6becae5e7017b7e8b6edf",
+                "../base.js": "5ed309eef1538495cdca40cf8349ce85c41ad24d3c0620d3ea9d2a88c30e01e1",
+                "../../../../../../v8-research/escape-cost/compiler-large-once.js": "2652e1fbcde465b8fcda29e3545fd5d4e69e709302e3033aff2faeb6700aa4a8"
+              },
+              "stdout": "results/v8-general/escape-merge-input-cache-large-allocation/candidate.stdout.txt",
+              "stdout_sha256": "b335b00fa96ba72c3537bdf495259d899ffdf7edcf5d6bf3589cfcf673675a5b",
+              "stderr_sha256": "43d25a624517b4437bce175e505e504c35681abca0ba4d252088ea761fa763e5",
+              "pipeline_count": 1,
+              "pipeline_zone_bytes": 329184944,
+              "escape_analysis_zone_bytes": 64083136
+            }
+          },
+          "limits": "One compilation per binary. Allocation evidence only; phase durations are not paired timing evidence. Zone allocation is not RSS."
+        }
+      }
     }
   },
   "diagnostic_compilations": {
     "Compiler": 441,
     "DataView": 25
+  },
+  "profiles": {
+    "indexed-storage-post-profile.json": {
+      "sha256": "f1111776914e64a07fa9788567ab3a5c7737d5706fec1c4ec1e3771bc2d743f8",
+      "included_compiler_ticks": 156011,
+      "unaccounted_ticks": 0
+    },
+    "marker-baseline-profile.json": {
+      "sha256": "545d0ba5c303634c270a759e4e71aa64334c0e2e9e10ff3e601cee8b9fdf1169",
+      "included_compiler_ticks": 169430,
+      "unaccounted_ticks": 0
+    }
   },
   "statistics": "Fixed alternating pairs, seed 20261021, 10000 bootstrap resamples. Per-case intervals are not corrected for multiple comparisons.",
   "limits": "Single-machine results for these suites. Zone allocation is not RSS. Diagnostic phase times and sampled self shares are distinct from official scores."
