@@ -20,16 +20,18 @@
   "experiments": [
     {
       "id": "table-diagnostics",
-      "state": "instrumented source committed; build in progress",
+      "state": "complete: 441 Compiler and 25 DataView compilations, full-phase counters retained",
       "source_commit": "285d9486"
     },
     {
       "id": "indexed-storage",
-      "state": "awaiting occupancy measurements"
+      "state": "implementing 64-entry chunks",
+      "decision": "Large-Copy state density is 90,492 / 99,734 = 90.73%. Current live hash storage estimate is 5,166,632 bytes versus 2,419,568 for 64-entry chunks. Sparse virtual entries require 23,912 chunk bytes versus 1,272 hash bytes, small relative to state savings. Sixty-four-entry chunks limit DataView padding compared with 256/1024. Preserve shared defaults with a presence bitmap and stable chunk addresses; measure actual zone allocation before retaining."
     },
     {
       "id": "merge-input-cache",
-      "state": "awaiting lookup attribution"
+      "state": "justified; implement independently after storage measurement",
+      "decision": "Large-Copy makes 870,249 of 1,530,955 state reads inside MergeInputs (56.84%); Medium-Copy makes 33,300 of 63,460 (52.47%). These counters support caching predecessor/old-state snapshots outside the variable loop."
     },
     {
       "id": "standalone-fresh-allocation",
