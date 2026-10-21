@@ -32,4 +32,10 @@ The six-pair [DataView cost diagnostic](indexed-storage-cost-summary.json) repor
 
 The [Large-Copy allocation diagnostic](indexed-storage-large-allocation.json) reduces escape-analysis zone bytes from **64,083,056 to 60,535,840** (**−5.54%**) and total pipeline bytes from **329,186,760 to 325,639,376** (**−1.08%**). These are actual instrumented allocations, separate from the initial live-storage estimates.
 
-Runtime comparison, post-change profile, independent cache measurement and pristine validation are still in progress. This report will be completed with their full results and artifact audit.
+The [21-pair runtime comparison](indexed-storage-runtime-summary.json) is neutral: the six-case mean is **+0.002%**, with interval **−0.047% to +0.067%**. Every individual interval spans zero. All observations, including the thirteenth pair, remain in the result.
+
+The [post-change native profile](indexed-storage-post-profile.json) has 156,011 included compiler samples and zero unaccounted ticks. The getters no longer have separate out-of-line symbols; their indexed reads are inlined. Profile shares are not an additional speedup measurement.
+
+**Disposition:** retain indexed storage as a compiler-performance candidate. Its gains are measured against the earlier marker build, and it has not been combined with the merge-cache candidate. The [artifact audit](artifact-audit.json) verifies the committed patch, preserved binaries, positive test count, every fixed run and the allocation capture.
+
+Independent cache measurement and pristine validation are still in progress. This report will be completed with their full results.
