@@ -10,7 +10,8 @@
     "runtime_validation": "Leading cost candidate: 21 fixed alternating AB/BA pairs on unchanged official DataView suite with stock flags.",
     "official_compiler_validation": "Leading cost candidate: 12 fixed alternating AB/BA pairs on unchanged official Compiler suite; all nine cases reported.",
     "checkpoints": "Unsigned source and result commits for every experiment, including rejected candidates.",
-    "acceptance": "Report both cost and runtime changes, native code size, count differences, and confidence intervals. Fewer allocations alone are not evidence of faster compilation."
+    "acceptance": "Report both cost and runtime changes, native code size, count differences, and confidence intervals. Fewer allocations alone are not evidence of faster compilation.",
+    "remaining_original_cost": "After selecting and validating the final candidate, six fixed alternating compilation-diagnostic pairs against the earlier getter-only f090ad58 build measure how much of the original cost remains. These are separate from the fcc-based improvement comparisons."
   },
   "state": "first candidate full validation continues; instruction-level profile identifies a third experiment",
   "experiments": [
