@@ -12,5 +12,19 @@
     "checkpoints": "Unsigned source and result commits for every experiment, including rejected candidates.",
     "acceptance": "Report both cost and runtime changes, native code size, count differences, and confidence intervals. Fewer allocations alone are not evidence of faster compilation."
   },
-  "state": "profiling before source changes"
+  "state": "first experiment built and tested; cost measurements in progress",
+  "experiments": [
+    {
+      "id": "field-name-invalidation",
+      "source_commit": "2e2b333a",
+      "hypothesis": "Use complete field-name and object alias predicate before allocating replacement cache; try cheap name test first. Official Compiler native profile attributes 18.9% of included samples to AbstractField::Kill.",
+      "tests": "26 tests pass including 3 new unit tests.",
+      "screen": "Three fixed AB/BA pairs on unchanged official Compiler before choosing final candidate."
+    },
+    {
+      "id": "outline-reduction-tracing",
+      "state": "native inspection before edit",
+      "hypothesis": "GraphReducer::Reduce native code has a 0x148-byte stack frame and unconditional ostream vtable setup despite trace_turbo_reduction being false. Move cold trace branches to a noinline helper; keep behavior identical."
+    }
+  ]
 }

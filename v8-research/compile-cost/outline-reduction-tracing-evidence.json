@@ -1,0 +1,21 @@
+{
+  "base_commit": "fcc58178",
+  "source_commit": "2f98c1e2",
+  "binary": "results/v8-general/v8/out/x64.release-outline-reduction-tracing/d8",
+  "tests": {
+    "count": 52,
+    "result": "pass",
+    "log": "results/v8-general/outline-reduction-tracing-tests.log"
+  },
+  "native_hot_function": {
+    "symbol": "v8::internal::compiler::GraphReducer::Reduce(Node*)",
+    "before_bytes": 1458,
+    "after_bytes": 370,
+    "before_extra_stack_bytes": 328,
+    "after_extra_stack_bytes": 8,
+    "cold_helper_bytes": 930,
+    "note": "Stack figures exclude unchanged saved-register pushes. Stream vtable setup no longer executes before the trace flag is checked."
+  },
+  "trace_validation": "trace-equivalence.json",
+  "rejected_target": "Out-of-line Reducer::Reduce samples originated from SourcePositionWrapper enabled by profiling; this wrapper is absent in stock official runs, so it was not optimized."
+}

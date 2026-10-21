@@ -1,0 +1,129 @@
+
+results/v8-general/v8/out/x64.release/d8:	file format elf64-x86-64
+
+Disassembly of section .text:
+
+000000000140b3e0 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE>:
+ 140b3e0: 55                           	pushq	%rbp
+ 140b3e1: 48 89 e5                     	movq	%rsp, %rbp
+ 140b3e4: 41 57                        	pushq	%r15
+ 140b3e6: 41 56                        	pushq	%r14
+ 140b3e8: 41 55                        	pushq	%r13
+ 140b3ea: 41 54                        	pushq	%r12
+ 140b3ec: 53                           	pushq	%rbx
+ 140b3ed: 50                           	pushq	%rax
+ 140b3ee: 48 89 75 d0                  	movq	%rsi, -0x30(%rbp)
+ 140b3f2: 48 8b 4f 28                  	movq	0x28(%rdi), %rcx
+ 140b3f6: 48 8b 47 30                  	movq	0x30(%rdi), %rax
+ 140b3fa: 48 39 c1                     	cmpq	%rax, %rcx
+ 140b3fd: 0f 84 07 01 00 00            	je	0x140b50a <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x12a>
+ 140b403: 49 89 fe                     	movq	%rdi, %r14
+ 140b406: 49 89 c5                     	movq	%rax, %r13
+ 140b409: 4c 89 eb                     	movq	%r13, %rbx
+ 140b40c: 49 89 cd                     	movq	%rcx, %r13
+ 140b40f: eb 1c                        	jmp	0x140b42d <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x4d>
+ 140b411: 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00 	nopw	%cs:(%rax,%rax)
+ 140b420: 49 83 c5 08                  	addq	$0x8, %r13
+ 140b424: 49 39 c5                     	cmpq	%rax, %r13
+ 140b427: 0f 84 d5 00 00 00            	je	0x140b502 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x122>
+ 140b42d: 49 39 dd                     	cmpq	%rbx, %r13
+ 140b430: 74 ee                        	je	0x140b420 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x40>
+ 140b432: 49 8b 86 e0 00 00 00         	movq	0xe0(%r14), %rax
+ 140b439: 48 ff 00                     	incq	(%rax)
+ 140b43c: 48 8b 78 08                  	movq	0x8(%rax), %rdi
+ 140b440: 48 85 ff                     	testq	%rdi, %rdi
+ 140b443: 74 10                        	je	0x140b455 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x75>
+ 140b445: 0f b6 47 09                  	movzbl	0x9(%rdi), %eax
+ 140b449: a8 06                        	testb	$0x6, %al
+ 140b44b: 0f 94 c1                     	sete	%cl
+ 140b44e: 08 c1                        	orb	%al, %cl
+ 140b450: f6 c1 01                     	testb	$0x1, %cl
+ 140b453: 74 35                        	je	0x140b48a <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0xaa>
+ 140b455: 4d 8b 65 00                  	movq	(%r13), %r12
+ 140b459: 4d 8b be f0 00 00 00         	movq	0xf0(%r14), %r15
+ 140b460: 49 8b 04 24                  	movq	(%r12), %rax
+ 140b464: 4c 89 e7                     	movq	%r12, %rdi
+ 140b467: 48 8b 75 d0                  	movq	-0x30(%rbp), %rsi
+ 140b46b: ff 50 20                     	callq	*0x20(%rax)
+ 140b46e: 48 85 c0                     	testq	%rax, %rax
+ 140b471: 0f 95 c1                     	setne	%cl
+ 140b474: 4d 85 ff                     	testq	%r15, %r15
+ 140b477: 75 02                        	jne	0x140b47b <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x9b>
+ 140b479: 31 c9                        	xorl	%ecx, %ecx
+ 140b47b: 84 c9                        	testb	%cl, %cl
+ 140b47d: 75 12                        	jne	0x140b491 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0xb1>
+ 140b47f: 48 85 c0                     	testq	%rax, %rax
+ 140b482: 75 3c                        	jne	0x140b4c0 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0xe0>
+ 140b484: 49 8b 46 30                  	movq	0x30(%r14), %rax
+ 140b488: eb 96                        	jmp	0x140b420 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x40>
+ 140b48a: e8 a1 bb 4b ff               	callq	0x8c7030 <_ZN2v88internal9LocalHeap17SafepointSlowPathEv>
+ 140b48f: eb c4                        	jmp	0x140b455 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x75>
+ 140b491: 49 8b 0c 24                  	movq	(%r12), %rcx
+ 140b495: 4c 89 e7                     	movq	%r12, %rdi
+ 140b498: 49 89 c4                     	movq	%rax, %r12
+ 140b49b: ff 51 10                     	callq	*0x10(%rcx)
+ 140b49e: 4c 89 ff                     	movq	%r15, %rdi
+ 140b4a1: 48 89 c6                     	movq	%rax, %rsi
+ 140b4a4: 48 8b 55 d0                  	movq	-0x30(%rbp), %rdx
+ 140b4a8: 4c 89 e1                     	movq	%r12, %rcx
+ 140b4ab: e8 80 57 0d 00               	callq	0x14e0c30 <_ZN2v88internal8compiler18ObserveNodeManager13OnNodeChangedEPKcPKNS1_4NodeES7_>
+ 140b4b0: 4c 89 e0                     	movq	%r12, %rax
+ 140b4b3: 66 66 66 66 2e 0f 1f 84 00 00 00 00 00       	nopw	%cs:(%rax,%rax)
+ 140b4c0: 48 8d 0d 39 eb e5 00         	leaq	0xe5eb39(%rip), %rcx    # 0x226a000 <_ZN2v88internal8v8_flagsE>
+ 140b4c7: 0f b6 89 52 02 00 00         	movzbl	0x252(%rcx), %ecx
+ 140b4ce: 48 3b 45 d0                  	cmpq	-0x30(%rbp), %rax
+ 140b4d2: 75 5b                        	jne	0x140b52f <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x14f>
+ 140b4d4: 84 c9                        	testb	%cl, %cl
+ 140b4d6: 74 17                        	je	0x140b4ef <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x10f>
+ 140b4d8: 49 8b be e8 00 00 00         	movq	0xe8(%r14), %rdi
+ 140b4df: 49 8b 4d 00                  	movq	(%r13), %rcx
+ 140b4e3: 48 8b 55 d0                  	movq	-0x30(%rbp), %rdx
+ 140b4e7: 48 89 d6                     	movq	%rdx, %rsi
+ 140b4ea: e8 71 00 00 00               	callq	0x140b560 <_ZN2v88internal8compiler12_GLOBAL__N_114TraceReductionEPNS1_12JSHeapBrokerEPNS1_4NodeES6_PNS1_7ReducerE>
+ 140b4ef: 49 8b 4e 28                  	movq	0x28(%r14), %rcx
+ 140b4f3: 49 8b 46 30                  	movq	0x30(%r14), %rax
+ 140b4f7: 48 39 c1                     	cmpq	%rax, %rcx
+ 140b4fa: 0f 85 09 ff ff ff            	jne	0x140b409 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x29>
+ 140b500: eb 0e                        	jmp	0x140b510 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x130>
+ 140b502: 48 89 c1                     	movq	%rax, %rcx
+ 140b505: 49 89 dd                     	movq	%rbx, %r13
+ 140b508: eb 06                        	jmp	0x140b510 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x130>
+ 140b50a: 48 89 c1                     	movq	%rax, %rcx
+ 140b50d: 49 89 c5                     	movq	%rax, %r13
+ 140b510: 31 c0                        	xorl	%eax, %eax
+ 140b512: 49 39 cd                     	cmpq	%rcx, %r13
+ 140b515: 48 8b 4d d0                  	movq	-0x30(%rbp), %rcx
+ 140b519: 48 0f 44 c8                  	cmoveq	%rax, %rcx
+ 140b51d: 48 89 c8                     	movq	%rcx, %rax
+ 140b520: 48 83 c4 08                  	addq	$0x8, %rsp
+ 140b524: 5b                           	popq	%rbx
+ 140b525: 41 5c                        	popq	%r12
+ 140b527: 41 5d                        	popq	%r13
+ 140b529: 41 5e                        	popq	%r14
+ 140b52b: 41 5f                        	popq	%r15
+ 140b52d: 5d                           	popq	%rbp
+ 140b52e: c3                           	retq
+ 140b52f: 84 c9                        	testb	%cl, %cl
+ 140b531: 74 ed                        	je	0x140b520 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x140>
+ 140b533: 49 8b be e8 00 00 00         	movq	0xe8(%r14), %rdi
+ 140b53a: 49 8b 4d 00                  	movq	(%r13), %rcx
+ 140b53e: 48 8b 75 d0                  	movq	-0x30(%rbp), %rsi
+ 140b542: 48 89 c2                     	movq	%rax, %rdx
+ 140b545: 48 89 c3                     	movq	%rax, %rbx
+ 140b548: e8 13 00 00 00               	callq	0x140b560 <_ZN2v88internal8compiler12_GLOBAL__N_114TraceReductionEPNS1_12JSHeapBrokerEPNS1_4NodeES6_PNS1_7ReducerE>
+ 140b54d: 48 89 d8                     	movq	%rbx, %rax
+ 140b550: eb ce                        	jmp	0x140b520 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x140>
+ 140b552: cc                           	int3
+ 140b553: cc                           	int3
+ 140b554: cc                           	int3
+ 140b555: cc                           	int3
+ 140b556: cc                           	int3
+ 140b557: cc                           	int3
+ 140b558: cc                           	int3
+ 140b559: cc                           	int3
+ 140b55a: cc                           	int3
+ 140b55b: cc                           	int3
+ 140b55c: cc                           	int3
+ 140b55d: cc                           	int3
+ 140b55e: cc                           	int3
+ 140b55f: cc                           	int3

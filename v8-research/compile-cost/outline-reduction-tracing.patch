@@ -1,0 +1,59 @@
+diff --git a/src/compiler/graph-reducer.cc b/src/compiler/graph-reducer.cc
+index 0abbd11e..b7361d67 100644
+--- a/src/compiler/graph-reducer.cc
++++ b/src/compiler/graph-reducer.cc
+@@ -96,6 +96,25 @@ void GraphReducer::ReduceNode(Node* node) {
+ 
+ void GraphReducer::ReduceGraph() { ReduceNode(graph()->end()); }
+ 
++namespace {
++
++// Keep stream construction and formatting out of the per-node reduction path.
++V8_NOINLINE void TraceReduction(JSHeapBroker* broker, Node* node,
++                                Node* replacement, Reducer* reducer) {
++  UnparkedScopeIfNeeded unparked(broker);
++  // TODO(neis): Disallow racy handle dereference once we stop supporting
++  // --no-local-heaps --no-concurrent-inlining.
++  AllowHandleDereference allow_deref;
++  if (replacement == node) {
++    StdoutStream{} << "- In-place update of #" << *node << " by reducer "
++                   << reducer->reducer_name() << std::endl;
++  } else {
++    StdoutStream{} << "- Replacement of #" << *node << " with #" << *replacement
++                   << " by reducer " << reducer->reducer_name() << std::endl;
++  }
++}
++
++}  // namespace
+ 
+ Reduction GraphReducer::Reduce(Node* const node) {
+   auto skip = reducers_.end();
+@@ -110,12 +129,7 @@ Reduction GraphReducer::Reduce(Node* const node) {
+         // all the other reducers for this node, as now there may be more
+         // opportunities for reduction.
+         if (v8_flags.trace_turbo_reduction) {
+-          UnparkedScopeIfNeeded unparked(broker_);
+-          // TODO(neis): Disallow racy handle dereference once we stop
+-          // supporting --no-local-heaps --no-concurrent-inlining.
+-          AllowHandleDereference allow_deref;
+-          StdoutStream{} << "- In-place update of #" << *node << " by reducer "
+-                         << (*i)->reducer_name() << std::endl;
++          TraceReduction(broker_, node, node, *i);
+         }
+         skip = i;
+         i = reducers_.begin();
+@@ -123,13 +137,7 @@ Reduction GraphReducer::Reduce(Node* const node) {
+       } else {
+         // {node} was replaced by another node.
+         if (v8_flags.trace_turbo_reduction) {
+-          UnparkedScopeIfNeeded unparked(broker_);
+-          // TODO(neis): Disallow racy handle dereference once we stop
+-          // supporting --no-local-heaps --no-concurrent-inlining.
+-          AllowHandleDereference allow_deref;
+-          StdoutStream{} << "- Replacement of #" << *node << " with #"
+-                         << *(reduction.replacement()) << " by reducer "
+-                         << (*i)->reducer_name() << std::endl;
++          TraceReduction(broker_, node, reduction.replacement(), *i);
+         }
+         return reduction;
+       }

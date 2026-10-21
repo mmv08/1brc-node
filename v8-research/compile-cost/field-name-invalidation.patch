@@ -1,0 +1,154 @@
+diff --git a/src/compiler/load-elimination.cc b/src/compiler/load-elimination.cc
+index 05c5ca55..db148dfe 100644
+--- a/src/compiler/load-elimination.cc
++++ b/src/compiler/load-elimination.cc
+@@ -314,11 +314,11 @@ LoadElimination::AbstractField const* LoadElimination::AbstractField::Kill(
+     Zone* zone) const {
+   for (auto info1 : this->info_for_node_) {
+     if (info1.first->IsDead()) continue;
+-    if (alias_info.MayAlias(info1.first)) {
++    if (MayAlias(name, info1.second.name) && alias_info.MayAlias(info1.first)) {
+       AbstractField* that = zone->New<AbstractField>(zone);
+       for (auto info2 : this->info_for_node_) {
+-        if (!alias_info.MayAlias(info2.first) ||
+-            !MayAlias(name, info2.second.name)) {
++        if (!MayAlias(name, info2.second.name) ||
++            !alias_info.MayAlias(info2.first)) {
+           that->info_for_node_.insert(info2);
+         }
+       }
+diff --git a/test/unittests/compiler/load-elimination-unittest.cc b/test/unittests/compiler/load-elimination-unittest.cc
+index 7e47445c..86217433 100644
+--- a/test/unittests/compiler/load-elimination-unittest.cc
++++ b/test/unittests/compiler/load-elimination-unittest.cc
+@@ -213,6 +213,130 @@ TEST_F(LoadEliminationTest, StoreFieldAndKillFields) {
+   EXPECT_EQ(store3, r.replacement());
+ }
+ 
++TEST_F(LoadEliminationTest, NamedFieldInvalidation) {
++  struct TestCase {
++    const char* load_name;
++    const char* store_name;
++    bool invalidated;
++  };
++  const TestCase cases[] = {{"a", "b", false},
++                            {"a", "a", true},
++                            {"a", nullptr, true},
++                            {nullptr, "a", true},
++                            {nullptr, nullptr, true}};
++  for (const auto& test : cases) {
++    SCOPED_TRACE(test.load_name ? test.load_name : "<unknown load name>");
++    SCOPED_TRACE(test.store_name ? test.store_name : "<unknown store name>");
++    auto name = [this](const char* text) -> MaybeHandle<Name> {
++      if (!text) return {};
++      return CanonicalHandle(factory()->InternalizeUtf8String(text));
++    };
++    FieldAccess load_access = {kTaggedBase,          kTaggedSize,
++                               name(test.load_name), OptionalMapRef(),
++                               Type::Any(),          MachineType::AnyTagged(),
++                               kNoWriteBarrier};
++    // An unsupported offset invalidates fields without caching the store.
++    FieldAccess store_access = load_access;
++    store_access.offset = 2048 * kTaggedSize;
++    store_access.name = name(test.store_name);
++    Node* object = Parameter(Type::Any(), 0);
++    Node* other = Parameter(Type::Any(), 1);
++    Node* value = Parameter(Type::Any(), 2);
++    Node* start = graph()->start();
++    Node* load = graph()->NewNode(simplified()->LoadField(load_access), object,
++                                  start, start);
++    Node* store = graph()->NewNode(simplified()->StoreField(store_access),
++                                   other, value, load, start);
++    Node* reload = graph()->NewNode(simplified()->LoadField(load_access),
++                                    object, store, start);
++    StrictMock<MockAdvancedReducerEditor> editor;
++    LoadElimination reducer(&editor, broker(), jsgraph(), zone());
++    reducer.Reduce(start);
++    reducer.Reduce(load);
++    reducer.Reduce(store);
++    if (!test.invalidated) {
++      EXPECT_CALL(editor, ReplaceWithValue(reload, load, store, _));
++    }
++    Reduction r = reducer.Reduce(reload);
++    ASSERT_TRUE(r.Changed());
++    EXPECT_EQ(test.invalidated ? reload : load, r.replacement());
++  }
++}
++
++TEST_F(LoadEliminationTest, NamedFieldInvalidationPreservesOtherNames) {
++  FieldAccess access_a = {
++      kTaggedBase,
++      kTaggedSize,
++      CanonicalHandle(factory()->InternalizeUtf8String("a")),
++      OptionalMapRef(),
++      Type::Any(),
++      MachineType::AnyTagged(),
++      kNoWriteBarrier};
++  FieldAccess access_b = access_a;
++  access_b.name = CanonicalHandle(factory()->InternalizeUtf8String("b"));
++  FieldAccess store_access = access_a;
++  store_access.offset = 2048 * kTaggedSize;
++  Node* object_a = Parameter(Type::Any(), 0);
++  Node* object_b = Parameter(Type::Any(), 1);
++  Node* value = Parameter(Type::Any(), 2);
++  Node* start = graph()->start();
++  Node* load_a = graph()->NewNode(simplified()->LoadField(access_a), object_a,
++                                  start, start);
++  Node* load_b = graph()->NewNode(simplified()->LoadField(access_b), object_b,
++                                  load_a, start);
++  Node* store = graph()->NewNode(simplified()->StoreField(store_access),
++                                 object_a, value, load_b, start);
++  Node* reload_a = graph()->NewNode(simplified()->LoadField(access_a), object_a,
++                                    store, start);
++  Node* reload_b = graph()->NewNode(simplified()->LoadField(access_b), object_b,
++                                    reload_a, start);
++  StrictMock<MockAdvancedReducerEditor> editor;
++  LoadElimination reducer(&editor, broker(), jsgraph(), zone());
++  reducer.Reduce(start);
++  reducer.Reduce(load_a);
++  reducer.Reduce(load_b);
++  reducer.Reduce(store);
++  EXPECT_EQ(reload_a, reducer.Reduce(reload_a).replacement());
++  EXPECT_CALL(editor, ReplaceWithValue(reload_b, load_b, reload_a, _));
++  EXPECT_EQ(load_b, reducer.Reduce(reload_b).replacement());
++}
++
++TEST_F(LoadEliminationTest, DisjointFieldInvalidationDoesNotAllocate) {
++  FieldAccess load_access = {
++      kTaggedBase,
++      kTaggedSize,
++      CanonicalHandle(factory()->InternalizeUtf8String("a")),
++      OptionalMapRef(),
++      Type::Any(),
++      MachineType::AnyTagged(),
++      kNoWriteBarrier};
++  FieldAccess store_access = load_access;
++  store_access.offset = 2048 * kTaggedSize;
++  store_access.name = CanonicalHandle(factory()->InternalizeUtf8String("b"));
++  Node* object = Parameter(Type::Any(), 0);
++  Node* other = Parameter(Type::Any(), 1);
++  Node* value = Parameter(Type::Any(), 2);
++  Node* start = graph()->start();
++  Node* load = graph()->NewNode(simplified()->LoadField(load_access), object,
++                                start, start);
++  Node* store = graph()->NewNode(simplified()->StoreField(store_access), other,
++                                 value, load, start);
++  Node* reload = graph()->NewNode(simplified()->LoadField(load_access), object,
++                                  store, start);
++  StrictMock<MockAdvancedReducerEditor> editor;
++  LoadElimination reducer(&editor, broker(), jsgraph(), zone());
++  reducer.Reduce(start);
++  reducer.Reduce(load);
++  // Populate the node-state storage before measuring the revisited store.
++  reducer.Reduce(store);
++  const size_t allocation_before = zone()->allocation_size();
++  Reduction r = reducer.Reduce(store);
++  EXPECT_FALSE(r.Changed());
++  EXPECT_EQ(allocation_before, zone()->allocation_size());
++  EXPECT_CALL(editor, ReplaceWithValue(reload, load, store, _));
++  EXPECT_EQ(load, reducer.Reduce(reload).replacement());
++}
++
+ TEST_F(LoadEliminationTest, StoreFieldAndStoreElementAndLoadField) {
+   Node* object = Parameter(Type::Any(), 0);
+   Node* value = Parameter(Type::Any(), 1);
