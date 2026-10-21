@@ -1,0 +1,364 @@
+
+/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8:	file format elf64-x86-64
+
+Disassembly of section .text:
+
+000000000140b3a0 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE>:
+ 140b3a0: 55                           	pushq	%rbp
+ 140b3a1: 48 89 e5                     	movq	%rsp, %rbp
+ 140b3a4: 41 57                        	pushq	%r15
+ 140b3a6: 41 56                        	pushq	%r14
+ 140b3a8: 41 55                        	pushq	%r13
+ 140b3aa: 41 54                        	pushq	%r12
+ 140b3ac: 53                           	pushq	%rbx
+ 140b3ad: 48 81 ec 48 01 00 00         	subq	$0x148, %rsp            # imm = 0x148
+ 140b3b4: 48 89 75 c8                  	movq	%rsi, -0x38(%rbp)
+ 140b3b8: 48 8b 4f 28                  	movq	0x28(%rdi), %rcx
+ 140b3bc: 48 8b 47 30                  	movq	0x30(%rdi), %rax
+ 140b3c0: 48 39 c1                     	cmpq	%rax, %rcx
+ 140b3c3: 0f 84 33 03 00 00            	je	0x140b6fc <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x35c>
+ 140b3c9: 49 89 fe                     	movq	%rdi, %r14
+ 140b3cc: 48 8d 15 4d 45 e4 00         	leaq	0xe4454d(%rip), %rdx    # 0x224f920 <_ZTVNSt4__Cr9basic_iosIcNS_11char_traitsIcEEEE>
+ 140b3d3: 48 83 c2 10                  	addq	$0x10, %rdx
+ 140b3d7: 48 89 55 98                  	movq	%rdx, -0x68(%rbp)
+ 140b3db: 48 8d 15 56 02 df 00         	leaq	0xdf0256(%rip), %rdx    # 0x21fb638 <_ZTCN2v88internal12StdoutStreamE0_NS0_8OFStreamE+0x18>
+ 140b3e2: 66 48 0f 6e ca               	movq	%rdx, %xmm1
+ 140b3e7: 48 8d 15 f2 41 e4 00         	leaq	0xe441f2(%rip), %rdx    # 0x224f5e0 <_ZTVNSt4__Cr15basic_streambufIcNS_11char_traitsIcEEEE>
+ 140b3ee: 48 83 c2 10                  	addq	$0x10, %rdx
+ 140b3f2: 48 89 55 90                  	movq	%rdx, -0x70(%rbp)
+ 140b3f6: 66 48 0f 6e c2               	movq	%rdx, %xmm0
+ 140b3fb: 66 0f 6c c8                  	punpcklqdq	%xmm0, %xmm1    # xmm1 = xmm1[0],xmm0[0]
+ 140b3ff: 66 0f 7f 4d a0               	movdqa	%xmm1, -0x60(%rbp)
+ 140b404: 49 89 c4                     	movq	%rax, %r12
+ 140b407: 48 89 7d d0                  	movq	%rdi, -0x30(%rbp)
+ 140b40b: 4d 89 e7                     	movq	%r12, %r15
+ 140b40e: 49 89 cc                     	movq	%rcx, %r12
+ 140b411: eb 1a                        	jmp	0x140b42d <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x8d>
+ 140b413: 66 66 66 66 2e 0f 1f 84 00 00 00 00 00       	nopw	%cs:(%rax,%rax)
+ 140b420: 49 83 c4 08                  	addq	$0x8, %r12
+ 140b424: 49 39 c4                     	cmpq	%rax, %r12
+ 140b427: 0f 84 c7 02 00 00            	je	0x140b6f4 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x354>
+ 140b42d: 4d 39 fc                     	cmpq	%r15, %r12
+ 140b430: 74 ee                        	je	0x140b420 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x80>
+ 140b432: 49 8b 86 e0 00 00 00         	movq	0xe0(%r14), %rax
+ 140b439: 48 ff 00                     	incq	(%rax)
+ 140b43c: 48 8b 78 08                  	movq	0x8(%rax), %rdi
+ 140b440: 48 85 ff                     	testq	%rdi, %rdi
+ 140b443: 74 10                        	je	0x140b455 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0xb5>
+ 140b445: 0f b6 47 09                  	movzbl	0x9(%rdi), %eax
+ 140b449: a8 06                        	testb	$0x6, %al
+ 140b44b: 0f 94 c1                     	sete	%cl
+ 140b44e: 08 c1                        	orb	%al, %cl
+ 140b450: f6 c1 01                     	testb	$0x1, %cl
+ 140b453: 74 3b                        	je	0x140b490 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0xf0>
+ 140b455: 49 8b 1c 24                  	movq	(%r12), %rbx
+ 140b459: 4d 8b ae f0 00 00 00         	movq	0xf0(%r14), %r13
+ 140b460: 48 8b 03                     	movq	(%rbx), %rax
+ 140b463: 48 89 df                     	movq	%rbx, %rdi
+ 140b466: 48 8b 75 c8                  	movq	-0x38(%rbp), %rsi
+ 140b46a: ff 50 20                     	callq	*0x20(%rax)
+ 140b46d: 49 89 c6                     	movq	%rax, %r14
+ 140b470: 48 85 c0                     	testq	%rax, %rax
+ 140b473: 0f 95 c0                     	setne	%al
+ 140b476: 4d 85 ed                     	testq	%r13, %r13
+ 140b479: 75 02                        	jne	0x140b47d <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0xdd>
+ 140b47b: 31 c0                        	xorl	%eax, %eax
+ 140b47d: 84 c0                        	testb	%al, %al
+ 140b47f: 75 16                        	jne	0x140b497 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0xf7>
+ 140b481: 4d 85 f6                     	testq	%r14, %r14
+ 140b484: 75 3a                        	jne	0x140b4c0 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x120>
+ 140b486: 4c 8b 75 d0                  	movq	-0x30(%rbp), %r14
+ 140b48a: 49 8b 46 30                  	movq	0x30(%r14), %rax
+ 140b48e: eb 90                        	jmp	0x140b420 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x80>
+ 140b490: e8 9b bb 4b ff               	callq	0x8c7030 <_ZN2v88internal9LocalHeap17SafepointSlowPathEv>
+ 140b495: eb be                        	jmp	0x140b455 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0xb5>
+ 140b497: 48 8b 03                     	movq	(%rbx), %rax
+ 140b49a: 48 89 df                     	movq	%rbx, %rdi
+ 140b49d: ff 50 10                     	callq	*0x10(%rax)
+ 140b4a0: 4c 89 ef                     	movq	%r13, %rdi
+ 140b4a3: 48 89 c6                     	movq	%rax, %rsi
+ 140b4a6: 48 8b 55 c8                  	movq	-0x38(%rbp), %rdx
+ 140b4aa: 4c 89 f1                     	movq	%r14, %rcx
+ 140b4ad: e8 7e 57 0d 00               	callq	0x14e0c30 <_ZN2v88internal8compiler18ObserveNodeManager13OnNodeChangedEPKcPKNS1_4NodeES7_>
+ 140b4b2: 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00    	nopw	%cs:(%rax,%rax)
+ 140b4c0: 48 8d 05 39 eb e5 00         	leaq	0xe5eb39(%rip), %rax    # 0x226a000 <_ZN2v88internal8v8_flagsE>
+ 140b4c7: 0f b6 80 52 02 00 00         	movzbl	0x252(%rax), %eax
+ 140b4ce: 4c 3b 75 c8                  	cmpq	-0x38(%rbp), %r14
+ 140b4d2: 0f 85 4c 02 00 00            	jne	0x140b724 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x384>
+ 140b4d8: 84 c0                        	testb	%al, %al
+ 140b4da: 4c 8b 75 d0                  	movq	-0x30(%rbp), %r14
+ 140b4de: 0f 84 ec 01 00 00            	je	0x140b6d0 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x330>
+ 140b4e4: 49 8b 86 e8 00 00 00         	movq	0xe8(%r14), %rax
+ 140b4eb: 48 85 c0                     	testq	%rax, %rax
+ 140b4ee: 74 34                        	je	0x140b524 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x184>
+ 140b4f0: 48 8b 58 40                  	movq	0x40(%rax), %rbx
+ 140b4f4: 48 85 db                     	testq	%rbx, %rbx
+ 140b4f7: 74 2b                        	je	0x140b524 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x184>
+ 140b4f9: 4c 8d 73 08                  	leaq	0x8(%rbx), %r14
+ 140b4fd: 4c 89 f7                     	movq	%r14, %rdi
+ 140b500: e8 bb b8 4b ff               	callq	0x8c6dc0 <_ZNK2v88internal9LocalHeap8IsParkedEv>
+ 140b505: 84 c0                        	testb	%al, %al
+ 140b507: 74 1b                        	je	0x140b524 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x184>
+ 140b509: b0 01                        	movb	$0x1, %al
+ 140b50b: 31 c9                        	xorl	%ecx, %ecx
+ 140b50d: f0                           	lock
+ 140b50e: 0f b0 4b 11                  	cmpxchgb	%cl, 0x11(%rbx)
+ 140b512: 4c 89 75 b8                  	movq	%r14, -0x48(%rbp)
+ 140b516: b0 01                        	movb	$0x1, %al
+ 140b518: 0f 85 c5 01 00 00            	jne	0x140b6e3 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x343>
+ 140b51e: 48 89 45 c0                  	movq	%rax, -0x40(%rbp)
+ 140b522: eb 10                        	jmp	0x140b534 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x194>
+ 140b524: 48 c7 45 b8 00 00 00 00      	movq	$0x0, -0x48(%rbp)
+ 140b52c: 48 c7 45 c0 00 00 00 00      	movq	$0x0, -0x40(%rbp)
+ 140b534: 48 c7 85 18 ff ff ff 00 00 00 00     	movq	$0x0, -0xe8(%rbp)
+ 140b53f: 48 8b 45 98                  	movq	-0x68(%rbp), %rax
+ 140b543: 48 89 85 e8 fe ff ff         	movq	%rax, -0x118(%rbp)
+ 140b54a: 48 8b 05 07 c3 e4 00         	movq	0xe4c307(%rip), %rax    # 0x2257858 <writev+0x2257858>
+ 140b551: 48 8b 10                     	movq	(%rax), %rdx
+ 140b554: 4c 8d b5 90 fe ff ff         	leaq	-0x170(%rbp), %r14
+ 140b55b: 4c 89 f7                     	movq	%r14, %rdi
+ 140b55e: 48 8d 35 93 00 df 00         	leaq	0xdf0093(%rip), %rsi    # 0x21fb5f8 <_ZTTN2v88internal12StdoutStreamE+0x8>
+ 140b565: e8 96 64 93 ff               	callq	0xd41a00 <_ZN2v88internal8OFStreamC2EP8_IO_FILE>
+ 140b56a: 4c 8d 3d 47 00 df 00         	leaq	0xdf0047(%rip), %r15    # 0x21fb5b8 <_ZTVN2v88internal12StdoutStreamE+0x18>
+ 140b571: 4c 89 bd 90 fe ff ff         	movq	%r15, -0x170(%rbp)
+ 140b578: 4c 8d 2d 61 00 df 00         	leaq	0xdf0061(%rip), %r13    # 0x21fb5e0 <_ZTVN2v88internal12StdoutStreamE+0x40>
+ 140b57f: 4c 89 ad e8 fe ff ff         	movq	%r13, -0x118(%rbp)
+ 140b586: e8 15 66 93 ff               	callq	0xd41ba0 <_ZN2v88internal12StdoutStream14GetStdoutMutexEv>
+ 140b58b: 48 89 85 e0 fe ff ff         	movq	%rax, -0x120(%rbp)
+ 140b592: 48 89 c7                     	movq	%rax, %rdi
+ 140b595: e8 c6 64 b3 00               	callq	0x1f41a60 <_ZN2v84base14RecursiveMutex4LockEv>
+ 140b59a: ba 16 00 00 00               	movl	$0x16, %edx
+ 140b59f: 4c 89 f7                     	movq	%r14, %rdi
+ 140b5a2: 48 8d 35 57 cc d7 fe         	leaq	-0x12833a9(%rip), %rsi  # 0x188200 <_ZZN2v88internal4wasm7fuzzing12_GLOBAL__N_17BodyGen15choose_sub_typeENS1_8HeapTypeEPNS3_9DataRangeEE13generic_types_2+0x72c48>
+ 140b5a9: e8 92 41 25 ff               	callq	0x65f740 <_ZNSt4__Cr24__put_character_sequenceB9sqn240000IcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_m>
+ 140b5ae: 4c 89 f7                     	movq	%r14, %rdi
+ 140b5b1: 48 8b 75 c8                  	movq	-0x38(%rbp), %rsi
+ 140b5b5: e8 16 93 0d 00               	callq	0x14e48d0 <_ZN2v88internal8compilerlsERNSt4__Cr13basic_ostreamIcNS2_11char_traitsIcEEEERKNS1_4NodeE>
+ 140b5ba: ba 0c 00 00 00               	movl	$0xc, %edx
+ 140b5bf: 4c 89 f7                     	movq	%r14, %rdi
+ 140b5c2: 48 8d 35 9b a5 d6 fe         	leaq	-0x1295a65(%rip), %rsi  # 0x175b64 <_ZZN2v88internal4wasm7fuzzing12_GLOBAL__N_17BodyGen15choose_sub_typeENS1_8HeapTypeEPNS3_9DataRangeEE13generic_types_2+0x605ac>
+ 140b5c9: e8 72 41 25 ff               	callq	0x65f740 <_ZNSt4__Cr24__put_character_sequenceB9sqn240000IcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_m>
+ 140b5ce: 49 8b 3c 24                  	movq	(%r12), %rdi
+ 140b5d2: 48 8b 07                     	movq	(%rdi), %rax
+ 140b5d5: ff 50 10                     	callq	*0x10(%rax)
+ 140b5d8: 48 89 c3                     	movq	%rax, %rbx
+ 140b5db: 48 89 c7                     	movq	%rax, %rdi
+ 140b5de: e8 5d e3 dd 00               	callq	0x21e9940 <strlen@plt>
+ 140b5e3: 4c 89 f7                     	movq	%r14, %rdi
+ 140b5e6: 48 89 de                     	movq	%rbx, %rsi
+ 140b5e9: 48 89 c2                     	movq	%rax, %rdx
+ 140b5ec: e8 4f 41 25 ff               	callq	0x65f740 <_ZNSt4__Cr24__put_character_sequenceB9sqn240000IcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_m>
+ 140b5f1: 48 8b 85 90 fe ff ff         	movq	-0x170(%rbp), %rax
+ 140b5f8: 48 8b 70 e8                  	movq	-0x18(%rax), %rsi
+ 140b5fc: 4c 01 f6                     	addq	%r14, %rsi
+ 140b5ff: 4c 8d 7d 88                  	leaq	-0x78(%rbp), %r15
+ 140b603: 4c 89 ff                     	movq	%r15, %rdi
+ 140b606: e8 25 57 d0 00               	callq	0x2110d30 <_ZNKSt4__Cr8ios_base6getlocEv>
+ 140b60b: 4c 89 ff                     	movq	%r15, %rdi
+ 140b60e: 48 8d 35 cb da eb 00         	leaq	0xebdacb(%rip), %rsi    # 0x22c90e0 <_ZNSt4__Cr5ctypeIcE2idE>
+ 140b615: e8 36 91 d2 00               	callq	0x2134750 <_ZNKSt4__Cr6locale9use_facetERNS0_2idE>
+ 140b61a: 48 8b 08                     	movq	(%rax), %rcx
+ 140b61d: 48 89 c7                     	movq	%rax, %rdi
+ 140b620: be 0a 00 00 00               	movl	$0xa, %esi
+ 140b625: ff 51 38                     	callq	*0x38(%rcx)
+ 140b628: 89 c3                        	movl	%eax, %ebx
+ 140b62a: 4c 89 ff                     	movq	%r15, %rdi
+ 140b62d: e8 ce 8f d2 00               	callq	0x2134600 <_ZNSt4__Cr6localeD2Ev>
+ 140b632: 0f be f3                     	movsbl	%bl, %esi
+ 140b635: 4c 89 f7                     	movq	%r14, %rdi
+ 140b638: e8 93 73 d0 00               	callq	0x21129d0 <_ZNSt4__Cr13basic_ostreamIcNS_11char_traitsIcEEE3putEc>
+ 140b63d: 4c 89 f7                     	movq	%r14, %rdi
+ 140b640: e8 5b 62 d0 00               	callq	0x21118a0 <_ZNSt4__Cr13basic_ostreamIcNS_11char_traitsIcEEE5flushEv>
+ 140b645: 48 8d 05 6c ff de 00         	leaq	0xdeff6c(%rip), %rax    # 0x21fb5b8 <_ZTVN2v88internal12StdoutStreamE+0x18>
+ 140b64c: 48 89 85 90 fe ff ff         	movq	%rax, -0x170(%rbp)
+ 140b653: 4c 89 ad e8 fe ff ff         	movq	%r13, -0x118(%rbp)
+ 140b65a: 48 8b bd e0 fe ff ff         	movq	-0x120(%rbp), %rdi
+ 140b661: 48 85 ff                     	testq	%rdi, %rdi
+ 140b664: 74 05                        	je	0x140b66b <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x2cb>
+ 140b666: e8 45 64 b3 00               	callq	0x1f41ab0 <_ZN2v84base14RecursiveMutex6UnlockEv>
+ 140b66b: 48 8d 05 ee ff de 00         	leaq	0xdeffee(%rip), %rax    # 0x21fb660 <_ZTCN2v88internal12StdoutStreamE0_NS0_8OFStreamE+0x40>
+ 140b672: 48 89 85 e8 fe ff ff         	movq	%rax, -0x118(%rbp)
+ 140b679: 66 0f 6f 45 a0               	movdqa	-0x60(%rbp), %xmm0
+ 140b67e: 66 0f 7f 85 90 fe ff ff      	movdqa	%xmm0, -0x170(%rbp)
+ 140b686: 48 8d bd a0 fe ff ff         	leaq	-0x160(%rbp), %rdi
+ 140b68d: e8 6e 8f d2 00               	callq	0x2134600 <_ZNSt4__Cr6localeD2Ev>
+ 140b692: 48 8d bd 90 fe ff ff         	leaq	-0x170(%rbp), %rdi
+ 140b699: 48 8d 35 60 ff de 00         	leaq	0xdeff60(%rip), %rsi    # 0x21fb600 <_ZTTN2v88internal12StdoutStreamE+0x10>
+ 140b6a0: e8 73 13 21 ff               	callq	0x61ca18 <malloc_stats>
+ 140b6a5: 48 8d bd e8 fe ff ff         	leaq	-0x118(%rbp), %rdi
+ 140b6ac: e8 8f 5c d0 00               	callq	0x2111340 <_ZNSt4__Cr9basic_iosIwNS_11char_traitsIwEEED2Ev>
+ 140b6b1: 80 7d c0 00                  	cmpb	$0x0, -0x40(%rbp)
+ 140b6b5: 4c 8b 75 d0                  	movq	-0x30(%rbp), %r14
+ 140b6b9: 48 8b 7d b8                  	movq	-0x48(%rbp), %rdi
+ 140b6bd: 74 11                        	je	0x140b6d0 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x330>
+ 140b6bf: 31 c0                        	xorl	%eax, %eax
+ 140b6c1: b1 01                        	movb	$0x1, %cl
+ 140b6c3: f0                           	lock
+ 140b6c4: 0f b0 4f 09                  	cmpxchgb	%cl, 0x9(%rdi)
+ 140b6c8: 74 06                        	je	0x140b6d0 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x330>
+ 140b6ca: e8 11 b7 4b ff               	callq	0x8c6de0 <_ZN2v88internal9LocalHeap12ParkSlowPathEv>
+ 140b6cf: 90                           	nop
+ 140b6d0: 49 8b 4e 28                  	movq	0x28(%r14), %rcx
+ 140b6d4: 49 8b 46 30                  	movq	0x30(%r14), %rax
+ 140b6d8: 48 39 c1                     	cmpq	%rax, %rcx
+ 140b6db: 0f 85 2a fd ff ff            	jne	0x140b40b <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x6b>
+ 140b6e1: eb 1f                        	jmp	0x140b702 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x362>
+ 140b6e3: 48 89 45 c0                  	movq	%rax, -0x40(%rbp)
+ 140b6e7: 4c 89 f7                     	movq	%r14, %rdi
+ 140b6ea: e8 31 b8 4b ff               	callq	0x8c6f20 <_ZN2v88internal9LocalHeap14UnparkSlowPathEv>
+ 140b6ef: e9 40 fe ff ff               	jmp	0x140b534 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x194>
+ 140b6f4: 48 89 c1                     	movq	%rax, %rcx
+ 140b6f7: 4d 89 fc                     	movq	%r15, %r12
+ 140b6fa: eb 06                        	jmp	0x140b702 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x362>
+ 140b6fc: 48 89 c1                     	movq	%rax, %rcx
+ 140b6ff: 49 89 c4                     	movq	%rax, %r12
+ 140b702: 31 c0                        	xorl	%eax, %eax
+ 140b704: 49 39 cc                     	cmpq	%rcx, %r12
+ 140b707: 4c 8b 75 c8                  	movq	-0x38(%rbp), %r14
+ 140b70b: 4c 0f 44 f0                  	cmoveq	%rax, %r14
+ 140b70f: 4c 89 f0                     	movq	%r14, %rax
+ 140b712: 48 81 c4 48 01 00 00         	addq	$0x148, %rsp            # imm = 0x148
+ 140b719: 5b                           	popq	%rbx
+ 140b71a: 41 5c                        	popq	%r12
+ 140b71c: 41 5d                        	popq	%r13
+ 140b71e: 41 5e                        	popq	%r14
+ 140b720: 41 5f                        	popq	%r15
+ 140b722: 5d                           	popq	%rbp
+ 140b723: c3                           	retq
+ 140b724: 84 c0                        	testb	%al, %al
+ 140b726: 74 e7                        	je	0x140b70f <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x36f>
+ 140b728: 48 8b 45 d0                  	movq	-0x30(%rbp), %rax
+ 140b72c: 48 8b 80 e8 00 00 00         	movq	0xe8(%rax), %rax
+ 140b733: 48 85 c0                     	testq	%rax, %rax
+ 140b736: 74 36                        	je	0x140b76e <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x3ce>
+ 140b738: 48 8b 58 40                  	movq	0x40(%rax), %rbx
+ 140b73c: 48 85 db                     	testq	%rbx, %rbx
+ 140b73f: 74 2d                        	je	0x140b76e <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x3ce>
+ 140b741: 48 8d 7b 08                  	leaq	0x8(%rbx), %rdi
+ 140b745: 48 89 7d a0                  	movq	%rdi, -0x60(%rbp)
+ 140b749: e8 72 b6 4b ff               	callq	0x8c6dc0 <_ZNK2v88internal9LocalHeap8IsParkedEv>
+ 140b74e: 84 c0                        	testb	%al, %al
+ 140b750: 74 1c                        	je	0x140b76e <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x3ce>
+ 140b752: 31 c9                        	xorl	%ecx, %ecx
+ 140b754: b0 01                        	movb	$0x1, %al
+ 140b756: 48 89 45 d0                  	movq	%rax, -0x30(%rbp)
+ 140b75a: b0 01                        	movb	$0x1, %al
+ 140b75c: f0                           	lock
+ 140b75d: 0f b0 4b 11                  	cmpxchgb	%cl, 0x11(%rbx)
+ 140b761: 74 1b                        	je	0x140b77e <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x3de>
+ 140b763: 48 8b 7d a0                  	movq	-0x60(%rbp), %rdi
+ 140b767: e8 b4 b7 4b ff               	callq	0x8c6f20 <_ZN2v88internal9LocalHeap14UnparkSlowPathEv>
+ 140b76c: eb 10                        	jmp	0x140b77e <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x3de>
+ 140b76e: 48 c7 45 d0 00 00 00 00      	movq	$0x0, -0x30(%rbp)
+ 140b776: 48 c7 45 a0 00 00 00 00      	movq	$0x0, -0x60(%rbp)
+ 140b77e: 48 c7 85 18 ff ff ff 00 00 00 00     	movq	$0x0, -0xe8(%rbp)
+ 140b789: 48 8b 45 98                  	movq	-0x68(%rbp), %rax
+ 140b78d: 48 89 85 e8 fe ff ff         	movq	%rax, -0x118(%rbp)
+ 140b794: 48 8b 05 bd c0 e4 00         	movq	0xe4c0bd(%rip), %rax    # 0x2257858 <writev+0x2257858>
+ 140b79b: 48 8b 10                     	movq	(%rax), %rdx
+ 140b79e: 48 8d 35 53 fe de 00         	leaq	0xdefe53(%rip), %rsi    # 0x21fb5f8 <_ZTTN2v88internal12StdoutStreamE+0x8>
+ 140b7a5: 48 8d 9d 90 fe ff ff         	leaq	-0x170(%rbp), %rbx
+ 140b7ac: 48 89 df                     	movq	%rbx, %rdi
+ 140b7af: e8 4c 62 93 ff               	callq	0xd41a00 <_ZN2v88internal8OFStreamC2EP8_IO_FILE>
+ 140b7b4: 4c 8d 2d fd fd de 00         	leaq	0xdefdfd(%rip), %r13    # 0x21fb5b8 <_ZTVN2v88internal12StdoutStreamE+0x18>
+ 140b7bb: 4c 89 ad 90 fe ff ff         	movq	%r13, -0x170(%rbp)
+ 140b7c2: 4c 8d 3d 17 fe de 00         	leaq	0xdefe17(%rip), %r15    # 0x21fb5e0 <_ZTVN2v88internal12StdoutStreamE+0x40>
+ 140b7c9: 4c 89 bd e8 fe ff ff         	movq	%r15, -0x118(%rbp)
+ 140b7d0: e8 cb 63 93 ff               	callq	0xd41ba0 <_ZN2v88internal12StdoutStream14GetStdoutMutexEv>
+ 140b7d5: 48 89 85 e0 fe ff ff         	movq	%rax, -0x120(%rbp)
+ 140b7dc: 48 89 c7                     	movq	%rax, %rdi
+ 140b7df: e8 7c 62 b3 00               	callq	0x1f41a60 <_ZN2v84base14RecursiveMutex4LockEv>
+ 140b7e4: 48 8d 35 db 71 da fe         	leaq	-0x1258e25(%rip), %rsi  # 0x1b29c6 <_ZZN2v88internal4wasm7fuzzing12_GLOBAL__N_17BodyGen15choose_sub_typeENS1_8HeapTypeEPNS3_9DataRangeEE13generic_types_2+0x9d40e>
+ 140b7eb: ba 12 00 00 00               	movl	$0x12, %edx
+ 140b7f0: 48 89 df                     	movq	%rbx, %rdi
+ 140b7f3: e8 48 3f 25 ff               	callq	0x65f740 <_ZNSt4__Cr24__put_character_sequenceB9sqn240000IcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_m>
+ 140b7f8: 48 89 df                     	movq	%rbx, %rdi
+ 140b7fb: 48 8b 75 c8                  	movq	-0x38(%rbp), %rsi
+ 140b7ff: e8 cc 90 0d 00               	callq	0x14e48d0 <_ZN2v88internal8compilerlsERNSt4__Cr13basic_ostreamIcNS2_11char_traitsIcEEEERKNS1_4NodeE>
+ 140b804: 48 8d 35 0c ca d7 fe         	leaq	-0x12835f4(%rip), %rsi  # 0x188217 <_ZZN2v88internal4wasm7fuzzing12_GLOBAL__N_17BodyGen15choose_sub_typeENS1_8HeapTypeEPNS3_9DataRangeEE13generic_types_2+0x72c5f>
+ 140b80b: ba 07 00 00 00               	movl	$0x7, %edx
+ 140b810: 48 89 df                     	movq	%rbx, %rdi
+ 140b813: e8 28 3f 25 ff               	callq	0x65f740 <_ZNSt4__Cr24__put_character_sequenceB9sqn240000IcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_m>
+ 140b818: 48 89 df                     	movq	%rbx, %rdi
+ 140b81b: 49 89 df                     	movq	%rbx, %r15
+ 140b81e: 4c 89 f6                     	movq	%r14, %rsi
+ 140b821: e8 aa 90 0d 00               	callq	0x14e48d0 <_ZN2v88internal8compilerlsERNSt4__Cr13basic_ostreamIcNS2_11char_traitsIcEEEERKNS1_4NodeE>
+ 140b826: 48 8d 35 37 a3 d6 fe         	leaq	-0x1295cc9(%rip), %rsi  # 0x175b64 <_ZZN2v88internal4wasm7fuzzing12_GLOBAL__N_17BodyGen15choose_sub_typeENS1_8HeapTypeEPNS3_9DataRangeEE13generic_types_2+0x605ac>
+ 140b82d: ba 0c 00 00 00               	movl	$0xc, %edx
+ 140b832: 48 89 df                     	movq	%rbx, %rdi
+ 140b835: e8 06 3f 25 ff               	callq	0x65f740 <_ZNSt4__Cr24__put_character_sequenceB9sqn240000IcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_m>
+ 140b83a: 49 8b 3c 24                  	movq	(%r12), %rdi
+ 140b83e: 48 8b 07                     	movq	(%rdi), %rax
+ 140b841: ff 50 10                     	callq	*0x10(%rax)
+ 140b844: 48 89 c3                     	movq	%rax, %rbx
+ 140b847: 48 89 c7                     	movq	%rax, %rdi
+ 140b84a: e8 f1 e0 dd 00               	callq	0x21e9940 <strlen@plt>
+ 140b84f: 4c 89 ff                     	movq	%r15, %rdi
+ 140b852: 48 89 de                     	movq	%rbx, %rsi
+ 140b855: 48 89 c2                     	movq	%rax, %rdx
+ 140b858: e8 e3 3e 25 ff               	callq	0x65f740 <_ZNSt4__Cr24__put_character_sequenceB9sqn240000IcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_m>
+ 140b85d: 48 8b 85 90 fe ff ff         	movq	-0x170(%rbp), %rax
+ 140b864: 48 8b 70 e8                  	movq	-0x18(%rax), %rsi
+ 140b868: 4c 01 fe                     	addq	%r15, %rsi
+ 140b86b: 48 8d 5d 88                  	leaq	-0x78(%rbp), %rbx
+ 140b86f: 48 89 df                     	movq	%rbx, %rdi
+ 140b872: e8 b9 54 d0 00               	callq	0x2110d30 <_ZNKSt4__Cr8ios_base6getlocEv>
+ 140b877: 48 8d 35 62 d8 eb 00         	leaq	0xebd862(%rip), %rsi    # 0x22c90e0 <_ZNSt4__Cr5ctypeIcE2idE>
+ 140b87e: 48 89 df                     	movq	%rbx, %rdi
+ 140b881: e8 ca 8e d2 00               	callq	0x2134750 <_ZNKSt4__Cr6locale9use_facetERNS0_2idE>
+ 140b886: 48 8b 08                     	movq	(%rax), %rcx
+ 140b889: 48 89 c7                     	movq	%rax, %rdi
+ 140b88c: be 0a 00 00 00               	movl	$0xa, %esi
+ 140b891: ff 51 38                     	callq	*0x38(%rcx)
+ 140b894: 41 89 c4                     	movl	%eax, %r12d
+ 140b897: 48 89 df                     	movq	%rbx, %rdi
+ 140b89a: e8 61 8d d2 00               	callq	0x2134600 <_ZNSt4__Cr6localeD2Ev>
+ 140b89f: 41 0f be f4                  	movsbl	%r12b, %esi
+ 140b8a3: 4c 89 ff                     	movq	%r15, %rdi
+ 140b8a6: e8 25 71 d0 00               	callq	0x21129d0 <_ZNSt4__Cr13basic_ostreamIcNS_11char_traitsIcEEE3putEc>
+ 140b8ab: 4c 89 ff                     	movq	%r15, %rdi
+ 140b8ae: e8 ed 5f d0 00               	callq	0x21118a0 <_ZNSt4__Cr13basic_ostreamIcNS_11char_traitsIcEEE5flushEv>
+ 140b8b3: 4c 89 ad 90 fe ff ff         	movq	%r13, -0x170(%rbp)
+ 140b8ba: 48 8d 05 1f fd de 00         	leaq	0xdefd1f(%rip), %rax    # 0x21fb5e0 <_ZTVN2v88internal12StdoutStreamE+0x40>
+ 140b8c1: 48 89 85 e8 fe ff ff         	movq	%rax, -0x118(%rbp)
+ 140b8c8: 48 8b bd e0 fe ff ff         	movq	-0x120(%rbp), %rdi
+ 140b8cf: 48 85 ff                     	testq	%rdi, %rdi
+ 140b8d2: 74 05                        	je	0x140b8d9 <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x539>
+ 140b8d4: e8 d7 61 b3 00               	callq	0x1f41ab0 <_ZN2v84base14RecursiveMutex6UnlockEv>
+ 140b8d9: 48 8d 05 58 fd de 00         	leaq	0xdefd58(%rip), %rax    # 0x21fb638 <_ZTCN2v88internal12StdoutStreamE0_NS0_8OFStreamE+0x18>
+ 140b8e0: 48 89 85 90 fe ff ff         	movq	%rax, -0x170(%rbp)
+ 140b8e7: 48 8d 05 72 fd de 00         	leaq	0xdefd72(%rip), %rax    # 0x21fb660 <_ZTCN2v88internal12StdoutStreamE0_NS0_8OFStreamE+0x40>
+ 140b8ee: 48 89 85 e8 fe ff ff         	movq	%rax, -0x118(%rbp)
+ 140b8f5: 48 8b 45 90                  	movq	-0x70(%rbp), %rax
+ 140b8f9: 48 89 85 98 fe ff ff         	movq	%rax, -0x168(%rbp)
+ 140b900: 48 8d bd a0 fe ff ff         	leaq	-0x160(%rbp), %rdi
+ 140b907: e8 f4 8c d2 00               	callq	0x2134600 <_ZNSt4__Cr6localeD2Ev>
+ 140b90c: 48 8d 35 ed fc de 00         	leaq	0xdefced(%rip), %rsi    # 0x21fb600 <_ZTTN2v88internal12StdoutStreamE+0x10>
+ 140b913: 48 8d bd 90 fe ff ff         	leaq	-0x170(%rbp), %rdi
+ 140b91a: e8 f9 10 21 ff               	callq	0x61ca18 <malloc_stats>
+ 140b91f: 48 8d bd e8 fe ff ff         	leaq	-0x118(%rbp), %rdi
+ 140b926: e8 15 5a d0 00               	callq	0x2111340 <_ZNSt4__Cr9basic_iosIwNS_11char_traitsIwEEED2Ev>
+ 140b92b: 80 7d d0 00                  	cmpb	$0x0, -0x30(%rbp)
+ 140b92f: 0f 84 da fd ff ff            	je	0x140b70f <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x36f>
+ 140b935: b1 01                        	movb	$0x1, %cl
+ 140b937: 31 c0                        	xorl	%eax, %eax
+ 140b939: 48 8b 7d a0                  	movq	-0x60(%rbp), %rdi
+ 140b93d: f0                           	lock
+ 140b93e: 0f b0 4f 09                  	cmpxchgb	%cl, 0x9(%rdi)
+ 140b942: 0f 84 c7 fd ff ff            	je	0x140b70f <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x36f>
+ 140b948: e8 93 b4 4b ff               	callq	0x8c6de0 <_ZN2v88internal9LocalHeap12ParkSlowPathEv>
+ 140b94d: e9 bd fd ff ff               	jmp	0x140b70f <_ZN2v88internal8compiler12GraphReducer6ReduceEPNS1_4NodeE+0x36f>
+ 140b952: cc                           	int3
+ 140b953: cc                           	int3
+ 140b954: cc                           	int3
+ 140b955: cc                           	int3
+ 140b956: cc                           	int3
+ 140b957: cc                           	int3
+ 140b958: cc                           	int3
+ 140b959: cc                           	int3
+ 140b95a: cc                           	int3
+ 140b95b: cc                           	int3
+ 140b95c: cc                           	int3
+ 140b95d: cc                           	int3
+ 140b95e: cc                           	int3
+ 140b95f: cc                           	int3

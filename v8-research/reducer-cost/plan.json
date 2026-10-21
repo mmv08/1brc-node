@@ -20,7 +20,13 @@
       "hypothesis": "GraphReducer decodes an epoch-based node mark, clamps older epochs to zero and narrows to uint8 before comparing. Compare full encoded marks directly for equality and greater-than while preserving zero and old-epoch semantics.",
       "evidence": "ReduceTop: 2182 self ticks, 6.62% of included compiler samples; native code has subtract/cmov/byte-test sequences at all three input scans.",
       "safety": "Keep traversal, self guards, revisit queue checks and input rescans. Preserve bounds assertions; explicitly test old epochs beyond 256 marks and logical zero.",
-      "state": "planned"
+      "state": "87 selected tests passed; native decoding removed; six cost pairs then twelve official Compiler pairs running",
+      "source_commit": "428ce5ce",
+      "source_checkpoints": [
+        "b6b39719",
+        "428ce5ce"
+      ],
+      "native": "ReduceTop 1303 -> 1251 bytes; Reduce unchanged at1458; all25 generated DataView function names/sizes match baseline"
     },
     {
       "id": "safepoint-predicate",
