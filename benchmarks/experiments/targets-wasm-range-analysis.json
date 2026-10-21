@@ -139,5 +139,7 @@
       }
     ]
   },
-  "interpretation": "Fewer instructions and a smaller binary did not establish a repeatable elapsed-time gain in this screening batch."
+  "interpretation": "Fewer instructions and a smaller binary did not establish a repeatable elapsed-time gain in this screening batch.",
+  "finalDecision": "retain",
+  "finalReport": "benchmarks/2026-10-21-target-results.json"
 }

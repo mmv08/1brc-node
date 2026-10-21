@@ -1,6 +1,103 @@
 # Benchmark and experiment log
 
-## Next optimization targets: fresh profiles, 2026-10-21
+## Current: two measured improvements from the profile targets, 2026-10-21
+
+The retained Node change is **`266d94c`**: pack the predicted station ID and
+length in one 32-bit cache entry. The retained Wasm change is **`becfb15`**:
+specialize the two-vector name path for its proven 16–31-byte range. Production
+selection is `654b0d4`. The third candidate, staged Wasm key loads, was rejected.
+Every experiment and selection checkpoint is unsigned.
+
+### Final independent paired comparisons
+
+Same Ryzen 9 7900, Node 26.12.0 and independently seeded **1,000,000,000-row /
+13,795,455,110-byte / 413-station** input. Both engines used 24 workers and their
+existing chunk sizes and flags. Each final batch used three excluded full-file
+warm-ups per case followed by **21 alternating rounds**. The fastest and slowest
+run of each case are discarded. Node and Wasm were measured in separate,
+sequential batches; comparisons below use the matched baseline in each batch.
+
+| Solver | Baseline `9ee0ee3` | Retained | Less elapsed time | Paired wins | Retained throughput |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Plain Node | 1.092 s | **1.077 s** | **1.36%** | 15/21 | 12.81 GB/s |
+| Wasm | 0.487 s | **0.477 s** | **2.09%** | 17/21 | 28.95 GB/s |
+
+Node's best run was 1.043 s and peak RSS was 340,360 KiB. Wasm's best was
+0.466 s and peak RSS was 327,144 KiB. Untrimmed paired savings averaged
+16.47 ms (4.15 ms standard error) for Node and 11.04 ms (2.51 ms standard error)
+for Wasm. These include process/worker startup, compilation, reads, parsing,
+aggregation, merging, formatting, output and shutdown. Power settings remained
+`powersave` / `balance_performance`; these are cached-file results.
+
+[Final results and all batch summaries](benchmarks/2026-10-21-target-results.json)
+link the complete [Node timings](benchmarks/experiments/targets-node-final-results.json)
+and [Wasm timings](benchmarks/experiments/targets-wasm-final-results.json).
+Separate batches are not pooled to calculate gains.
+
+### What changed and what the native code proves
+
+Node's fresh CPU profiles placed 21.2–21.6% of samples at predictor lookup and
+station-length loading. Packing ID and length removes the dependent record load
+and its bounds check from both predicted-hit lanes; native code extracts the
+length with a shift. The optimized parser shrinks from 12,884 to 12,520 bytes.
+The predictor grows from 64 to 128 KiB per worker. Full-name/delimiter checking
+and the authoritative collision fallback remain. Unlike the older rejected
+packing trial, the equality helper no longer reloads the stored length.
+
+Wasm's `process_wide` is called only when the second vector contains a delimiter
+and the first does not. The explicit 16–31-byte path uses the low vector directly,
+masks the high vector with the existing short-mask table, and always takes the
+second hash. Native code loses the low-mask load/AND and conditional hash choice;
+the long-name function shrinks from 1,484 to 1,460 bytes. The removed 1 KiB mask
+table helps reduce the module from **13,175 to 12,110 bytes**. Full two-vector
+equality and the 32+ byte fallback remain. Rebuilding the original source with
+the same Clang/LLD 21.1.8 tools reproduced its binary exactly.
+
+The staging experiment did issue all three key loads before the first equality
+check. Its optimized parser grew from 11,932 to 17,444 bytes, with 930 versus
+696 static stack references across the whole function, including cold paths.
+Those counts are not dynamic spill costs and do not establish why timings tied.
+The candidate was rejected on the full-file measurements. The added collision
+regression remains: three equal-size lanes insert and reuse colliding station
+IDs across mixer retuning, checking exact aggregates.
+
+### Experiment record
+
+| Checkpoint | Experiment / confirmation | Matched result and decision |
+| --- | --- | --- |
+| `266d94c`, `791de51` | Node packed prediction; native-code evidence and nine rounds | 1.069 vs 1.089 s; 9/9 wins. |
+| `becfb15`, `62b0302` | Wasm range specialization; nine rounds | 0.476 vs 0.477 s; inconclusive initial result. |
+| `b6a3e22`, `431757d` | Wasm key-load staging; native-code evidence and nine rounds | 0.481 vs 0.481 s; no clear gain. |
+| `431757d` | Independent nine-round Node confirmation | 1.077 vs 1.084 s; noisier, so extended to 21 rounds. |
+| `431757d`, `654b0d4` | Three-case Wasm confirmation, 21 rounds | Range 0.472, original 0.486, staging 0.487 s. Range wins 20/21; staging rejected. |
+| `654b0d4` | Final two-case confirmations, 21 rounds per engine | Node 1.36% and Wasm 2.09% less time; retain both. Wasm's pairwise check also removes the fixed-middle-position concern from the three-case batch. |
+
+All **264 full-file benchmark processes** matched complete expected stdout;
+all **219 measured processes** reported zero filesystem inputs. Sources were
+checked before and after every warm-up and measured run. The three separate
+native-profile captures also matched expected stdout; their instrumented times
+are not benchmark scores. Hardware counters remain unavailable under the
+existing `perf_event_paranoid=4`, so no cache-miss or misprediction cause is
+claimed. No theoretical optimum has been established.
+
+All **54 tests pass on Node 24.15.0 and 26.12.0**. The final selected solvers match
+exact station/minimum/sum/maximum/count tuples for every billion-row aggregate,
+the total count is one billion, and complete output matches the expected file.
+[Exact verification](benchmarks/2026-10-21-target-verification.json) and the final
+report preserve source hashes and test-log hashes. Biome and C-format checks pass.
+
+To reproduce the final paired comparisons from the selected source:
+
+```sh
+git worktree add --detach results/targets-base 9ee0ee3
+CASES="$(cat benchmarks/experiments/targets-node-packed-cases.json)" \
+  RUNS=21 WARMUP=3 node tools/compare.mjs targets-node-final measurements.txt
+CASES="$(cat benchmarks/experiments/targets-wasm-range-cases.json)" \
+  RUNS=21 WARMUP=3 node tools/compare.mjs targets-wasm-final measurements.txt
+node tools/verify-engines.mjs measurements.txt 1000000000
+```
+
+## Target selection: fresh profiles, 2026-10-21
 
 Both production solvers are unchanged from `338c04c`. This pass profiles that
 version and ranks experiments; it does not claim another speedup. The unsigned
@@ -67,7 +164,7 @@ have not been established. For each candidate, inspect the changed native code,
 validate exact results, then require a repeatable matched full-file improvement
 before changing the retained solvers.
 
-## Current: profile-guided Node sum updates, 2026-10-20
+## Previous: profile-guided Node sum updates, 2026-10-20
 
 The retained source change is **`b216096`**, confirmed at **`c60feda`**. Plain
 Node now keeps each worker-local sum biased by exactly 0.5 and removes the bias

@@ -41,11 +41,12 @@ name in an outlined lookup, so the hot loop keeps no hash state alive for them.
 Each lane with a longer name calls the outlined, cold `process_long()` helper.
 Names of 16–31 bytes take a two-vector path. Their canonical 32-byte key holds
 the name, its delimiter and zero padding; the arena stores the same form, so
-one pair of vector comparisons verifies the complete key. Names of 32 bytes or
-more use the complete general parser. Both short and wide mask tables are
-indexed directly by name length, with the delimiter included in the mask.
-Removing unused zero-width entries lets Clang fold their bases into memory
-access offsets.
+one pair of vector comparisons verifies the complete key. The caller proves
+that the first vector contains no delimiter, so this path uses it unmasked and
+always hashes both vectors. Only the high vector needs masking, using the short
+mask table indexed by `length - 16`. This removes a redundant load/AND, hash
+selection and the separate 1 KiB wide-mask table. Names of 32 bytes or more use
+the complete general parser. Every mask includes the delimiter.
 
 The general scanner packs the name's length into seven bits beside its full
 32-bit pointer and carries that descriptor plus the hash into lookup. Hashing
@@ -119,9 +120,10 @@ Every name byte is checked, including the middle of names sharing identical
 heads and tails. No input dictionary or precomputed results are embedded.
 BigInt conversion happens once per result station, never per measurement.
 All challenge sums fit exactly in a JS Number after conversion.
-The selected binary is **13,175 bytes**. Four-way unrolling increased it from
-9,442 bytes; the latest 21-round comparison measured about 0.6% less elapsed
-time, a small gain relative to run-to-run variation. The existing `cold`,
+The selected binary is **12,110 bytes**, down from 13,175 after the range
+specialization. The final 21-round paired comparison measured **2.09% less
+elapsed time** (0.487 to 0.477 seconds). Three-lane key-load staging produced no
+repeatable gain and was rejected. The four-way loop hint, existing `cold`,
 `noinline`, `always_inline` attributes and branch-hint policy remain. Extra
 `hot` and `__builtin_expect` annotations produced identical Wasm with this
 toolchain, and other tested hint policies did not improve the matched results.

@@ -1,0 +1,270 @@
+{
+  "date": "2026-10-21",
+  "baseline": "9ee0ee3",
+  "selectionCheckpoint": "654b0d4",
+  "profileEvidence": "benchmarks/2026-10-21-optimization-targets.json",
+  "machine": {
+    "cpu": "AMD Ryzen 9 7900",
+    "physicalCores": 12,
+    "logicalCpus": 24,
+    "runtime": "v26.12.0",
+    "governor": "powersave",
+    "energyPerformancePreference": "balance_performance",
+    "perfEventParanoid": "4"
+  },
+  "input": {
+    "path": "measurements.txt",
+    "rows": 1000000000,
+    "bytes": 13795455110,
+    "stations": 413,
+    "cached": true
+  },
+  "method": {
+    "workers": 24,
+    "finalRoundsPerEngine": 21,
+    "warmupsPerCase": 3,
+    "order": "Alternate case order each round. Node and Wasm were measured in separate sequential batches.",
+    "score": "Trimmed mean after removing the fastest and slowest run of each case; warm-ups excluded.",
+    "includes": [
+      "process and worker startup",
+      "compilation",
+      "reads",
+      "parsing and aggregation",
+      "merge and formatting",
+      "output and shutdown"
+    ],
+    "profilingSeparated": true,
+    "sourceHashesCheckedBeforeAndAfterEveryProcess": true,
+    "completeExpectedStdoutCheckedEveryProcess": true,
+    "hardwareCountersUnavailable": true,
+    "note": "Separate batches are not pooled to calculate gains. Native inspection proves changed operations, not a hardware cache-miss explanation."
+  },
+  "final": {
+    "node": {
+      "sourceCheckpoint": "266d94c",
+      "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "baselineSourceSha256": "32d47a915fbe732a16745499278ec860ca58f3f84c030413cbf10795ed0a6aa1",
+      "baselineSeconds": 1.0917434820000012,
+      "candidateSeconds": 1.0769316913157894,
+      "percentLessTime": 1.3567097883724122,
+      "bestSeconds": 1.0428377739999997,
+      "logicalGBPerSecond": 12.809962991380436,
+      "peakRssKiB": 340360,
+      "rawReport": "benchmarks/experiments/targets-node-final-results.json"
+    },
+    "wasm": {
+      "sourceCheckpoint": "becfb15",
+      "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+      "baselineSourceSha256": "ce3e6c3f83c3a8e6d07e4b76dd94786cd2a2155922cbbb4ff4c3a8b1cdaf18ce",
+      "baselineSeconds": 0.486735821578947,
+      "candidateSeconds": 0.4765599174210526,
+      "percentLessTime": 2.090642132088061,
+      "bestSeconds": 0.4658909110000004,
+      "logicalGBPerSecond": 28.947997105286074,
+      "peakRssKiB": 327144,
+      "rawReport": "benchmarks/experiments/targets-wasm-final-results.json"
+    }
+  },
+  "decisions": [
+    {
+      "experiment": "Node packed ID and length",
+      "checkpoint": "266d94c",
+      "decision": "retain",
+      "reason": "Removes the length load from both hot lanes; gains in all three matched batches, ending with 1.36% less time and 15/21 paired wins. The first batch won 9/9; the intermediate nine-round confirmation was noisier.",
+      "native": "benchmarks/experiments/targets-node-packed-analysis.json"
+    },
+    {
+      "experiment": "Wasm 16..31 specialization",
+      "checkpoint": "becfb15",
+      "decision": "retain",
+      "reason": "Removes the redundant mask/hash choice and unused 1024-byte table. Initial tie; 2.92% gain in 21-round three-case confirmation and 2.09% in independent 21-round pairwise confirmation, with 17/21 final wins.",
+      "native": "benchmarks/experiments/targets-wasm-range-analysis.json"
+    },
+    {
+      "experiment": "Wasm staged key loads",
+      "checkpoint": "b6a3e22",
+      "decision": "reject",
+      "reason": "Actual preloading is confirmed, but nine-round and 21-round timings do not improve. Native parser grows 11932 to 17444 bytes with more static stack references. Those counts alone do not establish the cause of the timing result.",
+      "native": "benchmarks/experiments/targets-wasm-staged-analysis.json"
+    }
+  ],
+  "batches": [
+    {
+      "label": "targets-node-packed",
+      "report": "benchmarks/experiments/targets-node-packed-results.json",
+      "date": "2026-10-21T05:57:03.509Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 18,
+      "comparisons": [
+        {
+          "candidate": "Node packed ID and length",
+          "baselineSeconds": 1.0894136811428567,
+          "candidateSeconds": 1.068737077285714,
+          "percentLessTime": 1.8979570584657712,
+          "pairedWins": 9,
+          "rounds": 9,
+          "pairedMeanSavingMs": 21.79939533333308,
+          "pairedStandardErrorMs": 5.501441458194377
+        }
+      ]
+    },
+    {
+      "label": "targets-wasm-range",
+      "report": "benchmarks/experiments/targets-wasm-range-results.json",
+      "date": "2026-10-21T06:01:09.342Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 18,
+      "comparisons": [
+        {
+          "candidate": "Wasm 16-31 specialization",
+          "baselineSeconds": 0.47661129928571455,
+          "candidateSeconds": 0.4764340204285711,
+          "percentLessTime": 0.03719568910958149,
+          "pairedWins": 3,
+          "rounds": 9,
+          "pairedMeanSavingMs": 1.793788555555959,
+          "pairedStandardErrorMs": 3.5005459145654307
+        }
+      ]
+    },
+    {
+      "label": "targets-wasm-staged",
+      "report": "benchmarks/experiments/targets-wasm-staged-results.json",
+      "date": "2026-10-21T06:06:36.648Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 18,
+      "comparisons": [
+        {
+          "candidate": "Wasm staged key loads",
+          "baselineSeconds": 0.48139441757142876,
+          "candidateSeconds": 0.48122573642857114,
+          "percentLessTime": 0.03504011195405443,
+          "pairedWins": 5,
+          "rounds": 9,
+          "pairedMeanSavingMs": 0.7796280000003221,
+          "pairedStandardErrorMs": 3.1845017281986805
+        }
+      ]
+    },
+    {
+      "label": "targets-node-confirm",
+      "report": "benchmarks/experiments/targets-node-confirm-results.json",
+      "date": "2026-10-21T06:08:43.892Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 18,
+      "comparisons": [
+        {
+          "candidate": "Node packed ID and length",
+          "baselineSeconds": 1.0837712492857143,
+          "candidateSeconds": 1.077126713571429,
+          "percentLessTime": 0.6130939272161462,
+          "pairedWins": 5,
+          "rounds": 9,
+          "pairedMeanSavingMs": 4.302820888888793,
+          "pairedStandardErrorMs": 7.3589249110368256
+        }
+      ]
+    },
+    {
+      "label": "targets-wasm-confirm",
+      "report": "benchmarks/experiments/targets-wasm-confirm-results.json",
+      "date": "2026-10-21T06:09:59.992Z",
+      "warmupProcesses": 9,
+      "measuredProcesses": 63,
+      "comparisons": [
+        {
+          "candidate": "Wasm 16-31 specialization",
+          "baselineSeconds": 0.4864213817368421,
+          "candidateSeconds": 0.47224108826315825,
+          "percentLessTime": 2.915228237511047,
+          "pairedWins": 20,
+          "rounds": 21,
+          "pairedMeanSavingMs": 14.20919490476172,
+          "pairedStandardErrorMs": 1.6146925895636393
+        },
+        {
+          "candidate": "Wasm staged key loads",
+          "baselineSeconds": 0.4864213817368421,
+          "candidateSeconds": 0.48716148047368407,
+          "percentLessTime": -0.15215176894554094,
+          "pairedWins": 10,
+          "rounds": 21,
+          "pairedMeanSavingMs": -1.0728151428570776,
+          "pairedStandardErrorMs": 1.8742112190384208
+        }
+      ]
+    },
+    {
+      "label": "targets-node-final",
+      "report": "benchmarks/experiments/targets-node-final-results.json",
+      "date": "2026-10-21T06:12:44.961Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 42,
+      "comparisons": [
+        {
+          "candidate": "Node packed ID and length",
+          "baselineSeconds": 1.0917434820000012,
+          "candidateSeconds": 1.0769316913157894,
+          "percentLessTime": 1.3567097883724122,
+          "pairedWins": 15,
+          "rounds": 21,
+          "pairedMeanSavingMs": 16.471697952382236,
+          "pairedStandardErrorMs": 4.1514993503978115
+        }
+      ]
+    },
+    {
+      "label": "targets-wasm-final",
+      "report": "benchmarks/experiments/targets-wasm-final-results.json",
+      "date": "2026-10-21T06:13:37.022Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 42,
+      "comparisons": [
+        {
+          "candidate": "Wasm 16-31 specialization",
+          "baselineSeconds": 0.486735821578947,
+          "candidateSeconds": 0.4765599174210526,
+          "percentLessTime": 2.090642132088061,
+          "pairedWins": 17,
+          "rounds": 21,
+          "pairedMeanSavingMs": 11.038740190475893,
+          "pairedStandardErrorMs": 2.5071284785457744
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "fullFileBenchmarkProcesses": 264,
+    "measuredProcessesWithZeroFilesystemInputs": 219,
+    "nativeFullFileCaptures": 3,
+    "unitTests": [
+      {
+        "runtime": "v26.12.0",
+        "passed": 54,
+        "failed": 0,
+        "rawLog": "results/targets-final-tests-node26.tap",
+        "sha256": "8726e215b917a17a150c7875123f95172e01e3f17e1ddce9e9a723231d4510a0",
+        "command": ".runtimes/node-v26.12.0/bin/node --test --test-reporter=tap test/*.test.mjs test/node/*.test.mjs"
+      },
+      {
+        "runtime": "v24.15.0",
+        "passed": 54,
+        "failed": 0,
+        "rawLog": "results/targets-final-tests-node24.tap",
+        "sha256": "fdd600859703e2f1a022bd8fc9b3de7895068845b6f641a568743b00dfaa3474",
+        "command": "node --test --test-reporter=tap test/*.test.mjs test/node/*.test.mjs"
+      }
+    ],
+    "exactBillionRowVerification": "benchmarks/2026-10-21-target-verification.json",
+    "regression": "Colliding short keys insert and reuse the same station IDs across three equal-size lanes; checks exact aggregates and actual mixer retuning.",
+    "baselineWasmRebuildWasByteIdentical": true
+  },
+  "artifacts": {
+    "nativeCaptures": [
+      "results/profiles/targets-node-packed-native1",
+      "results/profiles/targets-wasm-range-native1",
+      "results/profiles/targets-wasm-staged-native1"
+    ],
+    "rawNativeFilesAreIgnored": true
+  }
+}

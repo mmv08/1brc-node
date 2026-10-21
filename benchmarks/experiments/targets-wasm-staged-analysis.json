@@ -257,5 +257,7 @@
       }
     ]
   },
-  "interpretation": "The native scheduling change is verified; its first full-file timing is effectively tied. Static stack references do not prove the cause of the timing result."
+  "interpretation": "The native scheduling change is verified; its first full-file timing is effectively tied. Static stack references do not prove the cause of the timing result.",
+  "finalDecision": "reject",
+  "finalReport": "benchmarks/2026-10-21-target-results.json"
 }

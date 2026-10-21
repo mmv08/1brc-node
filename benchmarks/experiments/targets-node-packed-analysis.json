@@ -234,5 +234,7 @@
       }
     ]
   },
-  "limits": "Profiled sample percentages and code size are not speedup estimates. End-to-end scores come from separate uninstrumented fresh processes."
+  "limits": "Profiled sample percentages and code size are not speedup estimates. End-to-end scores come from separate uninstrumented fresh processes.",
+  "finalDecision": "retain",
+  "finalReport": "benchmarks/2026-10-21-target-results.json"
 }

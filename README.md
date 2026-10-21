@@ -43,38 +43,32 @@ its optimized parsing loop:
 On an **AMD Ryzen 9 7900, 12 cores / 24 threads, 60 GiB RAM**, Node **26.12.0**
 processed the full **1,000,000,000-row / 13,795,455,110-byte** input as follows:
 
-| Solver | Nine-run trimmed mean | Best |
-| --- | ---: | ---: |
-| Previous plain Node | 1.144 s | 1.137 s |
-| **Profile-guided plain Node** | **1.086 s** | **1.076 s** |
-| **Wasm** | **0.482 s** | **0.474 s** |
+| Solver | Previous version | Retained version | Less elapsed time |
+| --- | ---: | ---: | ---: |
+| **Plain Node** | 1.092 s | **1.077 s** | **1.36%** |
+| **Wasm** | 0.487 s | **0.477 s** | **2.09%** |
 
-Profiling identified integer conversions and range checks in Node's sum update.
-An exact half-unit bias makes V8 emit direct floating-point addition; each worker
-removes the bias before merging. Node takes **5.0% less elapsed time**, winning
-all nine paired rounds. The full billion-row exact aggregates match between
-engines, and all 53 tests pass on Node 24 and 26.
+Fresh profiles identified Node's dependent station-length load and redundant
+Wasm masking/hash selection. Packing the predicted station ID with its length
+removes the Node load. Specializing Wasm's 16–31-byte name path removes the
+redundant operations and a 1 KiB mask table. Native inspection verified both
+changes. Node won 15 of 21 final paired rounds; Wasm won 17 of 21. A separate
+Wasm key-load scheduling experiment showed no repeatable gain and was rejected.
+Throughput is **12.81 GB/s** for plain Node and **28.95 GB/s** for Wasm.
 
-Two profile-driven Wasm equality rewrites were rejected after native-code
-inspection and matched benchmarks. The selected Wasm kernel retains its existing
-branch hints and four-way loop-unrolling hint; it is unchanged in this round.
-Its measured throughput is **28.60 GB/s**, versus **12.70 GB/s** for plain Node.
+Full-billion-row exact station/minimum/sum/maximum/count tuples match between
+engines. All **54 tests pass on Node 24 and 26**.
 
 These are warm-filesystem-cache, end-to-end timings: startup, compilation, reads,
 parsing, aggregation, merging, sorting, output and shutdown all count. Three
-full-file warm-ups per case precede nine alternating rounds; scores discard the
-fastest and slowest run. All measured outputs matched and filesystem-input
-counters were zero. Both solvers use 24 workers, with 128 KiB Node chunks and
-512 KiB Wasm chunks. The Node launcher keeps its two existing inlining flags.
+full-file warm-ups per case precede 21 alternating rounds for each engine in
+separate paired batches; scores discard the fastest and slowest run. All measured
+outputs matched and filesystem-input counters were zero. Both solvers use 24
+workers, with 128 KiB Node chunks and 512 KiB Wasm chunks. The Node launcher uses
+its two existing inlining flags. No theoretical optimum is claimed.
 
-A separate engine-flag control was faster than the source fix in its matched
-batch. Its remaining advantage is unresolved by the profiles; commands and
-observations are recorded in [BENCHMARKS.md](BENCHMARKS.md). The retained source
-fix preserves the existing runtime requirements. No theoretical optimum is
-claimed, and read-only throughput is not a theoretical bound.
-
-See the [raw final timings](benchmarks/2026-10-20-profile-guided-results.json),
-[profile evidence](benchmarks/2026-10-20-profiling.json), and
+See the [results and raw timing links](benchmarks/2026-10-21-target-results.json),
+[profile evidence](benchmarks/2026-10-21-optimization-targets.json), and
 [experiment log](BENCHMARKS.md). These are local results, not leaderboard scores.
 
 ## Input and design
@@ -96,14 +90,15 @@ Java-compatible. Temperatures are accumulated as exact integer tenths.
 Workers use 128 KiB chunks, four-byte delimiter scanning, typed-array hash tables
 and two independent parsing cursors. There are no per-measurement strings or objects.
 
-A 64 KiB worker-local cache predicts a station from its first five bytes using
+A 128 KiB worker-local cache predicts a station from its first five bytes using
 a simple XOR and integer multiplication; for a four-byte name, the fifth byte
 is its delimiter. A hit must match the **entire name and its delimiter** before
 it can skip scanning and
 rolling-hash calculation. Cached entries supply their stored length directly;
 hash-table lookups check the scanned length before comparing bytes. Misses use
 the general hash-table parser; names shorter than four bytes are not cached.
-The cache learns only station IDs while reading the current file:
+Each 32-bit cache entry packs the station ID and byte length, avoiding a
+dependent load from the station record. It learns these while reading the current file:
 no hardcoded station names, precomputed answers or parsed state survive a process.
 Its benefit depends on name distribution; shared prefixes can reduce it or cause
 regressions without changing correctness.
