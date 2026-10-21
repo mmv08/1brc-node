@@ -1,0 +1,236 @@
+{
+  "baseline_commit": "87e3481b97d9ae327293ec319b57f4ef79e0c2a3",
+  "experiments": {
+    "encoded-marker": {
+      "compiler": {
+        "raw_results": "v8-research/reducer-cost/encoded-marker-compiler-results.json",
+        "sha256": "3829f308c578636723bfde649bd32b63c0fb9cdf51f910eaa84a9c1c85e66f57",
+        "pairs": 12,
+        "binaries": {
+          "baseline": {
+            "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-fresh-allocation/d8",
+            "sha256": "33127a72e7381aa41dbe855f30e551fa8531eb1be51ffd54f7e784e336356d87",
+            "size_bytes": 204279320
+          },
+          "candidate": {
+            "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8",
+            "sha256": "e50dd57bcd9a2c6f1a2c4bd10c2bee4ab6a3e45140c59bd64dfd34d58bdc1ddb",
+            "size_bytes": 204279448
+          }
+        },
+        "d8_args": [
+          "--allow-natives-syntax",
+          "run.js"
+        ],
+        "source_sha256": {
+          "large.js": "520c87a2469b3d22a0c968b0a4f6b572590a726feb0d44f6bdfbfa3794312115",
+          "medium.js": "c297630555819b13f3a1a65bd24355199489511fa0f659c3cd6b0539b6801e46",
+          "run.js": "4da89999215f19571347248aba9db6f20b61a944b2a986a1bd4d153baae80ae5",
+          "small.js": "d11ead865918d71b50df8d52571f9c1e5985584479a6becae5e7017b7e8b6edf",
+          "../base.js": "5ed309eef1538495cdca40cf8349ce85c41ad24d3c0620d3ea9d2a88c30e01e1"
+        },
+        "cases": {
+          "Large-Copy-Compile": {
+            "score_change_percent": 0.6530922464599298,
+            "ci95_percent": [
+              0.46629160019884264,
+              0.8395434104810251
+            ],
+            "ab_change_percent": 0.560460091970542,
+            "ba_change_percent": 0.7458097298751776,
+            "wins": 11,
+            "ties": 1
+          },
+          "Medium-Copy-Compile": {
+            "score_change_percent": 0.6627413569358032,
+            "ci95_percent": [
+              0.3749012390865225,
+              0.9406094341879667
+            ],
+            "ab_change_percent": 0.5967154849132487,
+            "ba_change_percent": 0.7288105645260959,
+            "wins": 10,
+            "ties": 0
+          },
+          "Medium-Eratosthenes-Compile": {
+            "score_change_percent": 0.4003040124859192,
+            "ci95_percent": [
+              -0.19773507326039663,
+              0.9634961734192871
+            ],
+            "ab_change_percent": 0.3214233957568039,
+            "ba_change_percent": 0.4792466513782432,
+            "wins": 9,
+            "ties": 0
+          },
+          "Medium-Fact-Compile": {
+            "score_change_percent": 1.0456035624442306,
+            "ci95_percent": [
+              0.3440049273507828,
+              1.7717027745893787
+            ],
+            "ab_change_percent": 1.3273505020238492,
+            "ba_change_percent": 0.764640037584991,
+            "wins": 10,
+            "ties": 0
+          },
+          "Medium-Prime-Compile": {
+            "score_change_percent": 0.6641895129853914,
+            "ci95_percent": [
+              -0.02850817128281502,
+              1.3284303226094973
+            ],
+            "ab_change_percent": 0.9098135587367937,
+            "ba_change_percent": 0.4191633394302111,
+            "wins": 7,
+            "ties": 2
+          },
+          "Small-Add-Compile": {
+            "score_change_percent": 0.4106916039167574,
+            "ci95_percent": [
+              -0.351697768966841,
+              1.1778551324007625
+            ],
+            "ab_change_percent": 0.48701852274702967,
+            "ba_change_percent": 0.3344226607198102,
+            "wins": 7,
+            "ties": 0
+          },
+          "Small-Constant-Compile": {
+            "score_change_percent": 0.8413382028614746,
+            "ci95_percent": [
+              -0.7558407938420109,
+              2.5871901613961468
+            ],
+            "ab_change_percent": 1.5139178770613473,
+            "ba_change_percent": 0.17321470006753753,
+            "wins": 7,
+            "ties": 0
+          },
+          "Small-Empty-Compile": {
+            "score_change_percent": 0.9157400701553131,
+            "ci95_percent": [
+              -0.6733913297204186,
+              2.606397331654975
+            ],
+            "ab_change_percent": 1.5818879562538086,
+            "ba_change_percent": 0.2539606105064825,
+            "wins": 7,
+            "ties": 0
+          },
+          "Small-Load-Compile": {
+            "score_change_percent": 1.067936843721884,
+            "ci95_percent": [
+              -0.29372431316907477,
+              2.4326188170473717
+            ],
+            "ab_change_percent": 1.217118480541591,
+            "ba_change_percent": 0.918975082364939,
+            "wins": 7,
+            "ties": 2
+          }
+        },
+        "case_geometric_mean": {
+          "score_change_percent": 0.7399143372437256,
+          "ci95_percent": [
+            -0.030789141455880853,
+            1.514162031719053
+          ],
+          "ab_change_percent": 0.9451889787327602,
+          "ba_change_percent": 0.5350571270247173,
+          "per_pair_change_percent": [
+            0.3306510474915497,
+            -0.23562744032508193,
+            3.0131391432684276,
+            1.141372091901649,
+            0.24373825283030515,
+            0.0066759275105483335,
+            3.010312516037411,
+            0.6823190504604799,
+            1.030342957179968,
+            -0.3095883888349511,
+            -1.8709228632032366,
+            1.944844106169449
+          ]
+        }
+      },
+      "cost": {
+        "summary_file": "v8-research/reducer-cost/encoded-marker-cost-summary.json",
+        "sha256": "3067ed6e1f53341245dcc432422193cd5f8d1cc0a9f47e27a31b795b38a26266",
+        "pairs": 6,
+        "metrics": {
+          "pipeline_time_ms": {
+            "baseline_median": 20.0785,
+            "candidate_median": 19.9725,
+            "paired_cost_change_percent": -1.0551733717062306,
+            "paired_bootstrap_95_percent_interval": [
+              -1.7386749287064407,
+              -0.37832293726343114
+            ],
+            "ab_cost_change_percent": -0.8794042561715898,
+            "ba_cost_change_percent": -1.2306307984163212
+          },
+          "pipeline_zone_bytes": {
+            "baseline_median": 18813392.0,
+            "candidate_median": 18813484.0,
+            "paired_cost_change_percent": 0.0012544558063209976,
+            "paired_bootstrap_95_percent_interval": [
+              -0.0017859433927180923,
+              0.0040398442257227885
+            ],
+            "ab_cost_change_percent": 0.002055346743401465,
+            "ba_cost_change_percent": 0.0004535712833542149
+          },
+          "peeling_time_ms": {
+            "baseline_median": 0.607,
+            "candidate_median": 0.6065,
+            "paired_cost_change_percent": -0.8484908780114875,
+            "paired_bootstrap_95_percent_interval": [
+              -2.0701630550598815,
+              0.13879284318916163
+            ],
+            "ab_cost_change_percent": -1.4769508151122435,
+            "ba_cost_change_percent": -0.21602211357735213
+          },
+          "peeling_zone_bytes": {
+            "baseline_median": 991280.0,
+            "candidate_median": 991280.0,
+            "paired_cost_change_percent": 0.0,
+            "paired_bootstrap_95_percent_interval": [
+              0.0,
+              0.0
+            ],
+            "ab_cost_change_percent": 0.0,
+            "ba_cost_change_percent": 0.0
+          },
+          "target_normal_time_ms": {
+            "baseline_median": 3.8049999999999997,
+            "candidate_median": 3.7849999999999997,
+            "paired_cost_change_percent": -0.8825144457841327,
+            "paired_bootstrap_95_percent_interval": [
+              -1.7041601566622488,
+              -0.20643762459380266
+            ],
+            "ab_cost_change_percent": -1.1650004181271933,
+            "ba_cost_change_percent": -0.5992210841062384
+          },
+          "target_osr_time_ms": {
+            "baseline_median": 0.0,
+            "candidate_median": 0.0,
+            "ratio_note": "Ratio undefined with zero-valued observations."
+          }
+        },
+        "pipeline_count_per_run": 25,
+        "normal_target_compilations_per_run": 2,
+        "target_osr_compilations": 0,
+        "aborted_compilations": 0
+      }
+    }
+  },
+  "statistics": {
+    "bootstrap_seed": 20261021,
+    "resamples": 10000,
+    "resampling_unit": "paired round, retaining cases together"
+  },
+  "limits": "Intervals are per case, without multiple-comparison correction. The nine-case mean is a local summary, not whole-V8 performance. Instrumented cost diagnostics are separate from stock runtime scores."
+}
