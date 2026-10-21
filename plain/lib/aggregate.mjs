@@ -11,7 +11,8 @@ export async function aggregate(config) {
     throw new Error('TABLE_BITS must be 14, 15, or 16');
   const table = new Uint16Array(tableSize);
   // Worker-local, direct-mapped predictions; the hash table remains authoritative.
-  const prefixCache = new Uint16Array(32768);
+  // Carry the name length with its ID to avoid a dependent record load on hits.
+  const prefixCache = new Uint32Array(32768);
   // Dense station IDs. Each 32-byte record holds hash, head, tail, middle,
   // byte length, arena offset, minimum, maximum, in that order.
   const records = new Int32Array(MAX_STATIONS * 8);
@@ -89,10 +90,11 @@ export async function aggregate(config) {
       // A fifth byte is stable even for four-byte names: it is their delimiter.
       // It distinguishes common four-byte prefixes without scanning the name.
       const prefixSlot = Math.imul(head ^ buffer[p + 4], 0x9e3779b1) >>> 17;
-      const predicted = prefixCache[prefixSlot] - 1;
+      const prediction = prefixCache[prefixSlot];
+      const predicted = (prediction & 0xffff) - 1;
       if (predicted >= 0) {
         const r = predicted * 8;
-        const length = records[r + 4];
+        const length = prediction >>> 16;
         const end = start + length;
         // The largest prediction is 100 bytes; the reader reserves 256 bytes of
         // lookahead. Full equality plus the delimiter rejects a wrong length,
@@ -122,7 +124,7 @@ export async function aggregate(config) {
       temperatures[lane] = p + 1;
       const id = find(start, p, hash, head);
       // Never cache a short name: its initial word includes temperature bytes.
-      if (p - start >= 4) prefixCache[prefixSlot] = id + 1;
+      if (p - start >= 4) prefixCache[prefixSlot] = ((p - start) << 16) | (id + 1);
       return id;
     }
 

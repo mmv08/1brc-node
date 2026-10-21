@@ -1,0 +1,12 @@
+{
+  "baseline": "9ee0ee3",
+  "experiment": "Pack station ID and length in the current 32768-entry Node predictor",
+  "profileEvidence": "benchmarks/2026-10-21-optimization-targets.json",
+  "hypothesis": "Remove the measured dependent station-length load from both predicted-hit lanes; test whether that compensates for doubling predictor bytes to 128 KiB.",
+  "checks": [
+    "Existing exact-tuple, prefix collision, all-length and 10K-key tests",
+    "Same-process native disassembly confirms removed load",
+    "Nine alternating full-file rounds after three warm-ups per case; source hashes and expected stdout checked for every process",
+    "Keep the candidate only after a separate confirmation batch"
+  ]
+}
