@@ -8,8 +8,9 @@
     "cpu": 2,
     "flags": "stock benchmark defaults; separate codegen/compilation diagnostics",
     "isolation": "no concurrent build/test/profile/benchmark processes",
-    "controls": "unchanged official ForLoops and TypedArrays construct-buffer, for candidates with retained performance gains",
-    "acceptance": "No speedup inferred from fewer instructions; report regressions and preserve rejected patches."
+    "controls": "For retained gains: unchanged official Compiler (9 cases), ForLoops (2), TypedArrays construct-buffer (1); 12 fixed alternating pairs per suite, 6 AB and 6 BA. No extending based on significance.",
+    "acceptance": "No speedup inferred from fewer instructions; report regressions and preserve rejected patches.",
+    "score_validation": "Exact expected score sets and numerical errors checked; complete earlier six-case runs audited retrospectively."
   },
   "experiments": [
     {
@@ -21,13 +22,14 @@
     {
       "id": "constant-phi-expression",
       "scope": "repair expression-wide foldability proof",
-      "state": "building",
+      "state": "completed: 10 tests pass, primary native target unchanged; benchmark recorded, prerequisite for budget experiment",
       "source_commit": "d7fff2e2"
     },
     {
       "id": "bounded-dispatch-cloning",
       "scope": "bounded actual-operation budget including separate metadata bound",
-      "state": "isolated source worktree; follows constant-phi fix"
+      "state": "building on constant-Phi fix",
+      "source_commit": "c4f4ccdb"
     },
     {
       "id": "terminal-peeling",

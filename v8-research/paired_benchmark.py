@@ -51,6 +51,8 @@ def parse_scores(stdout):
     for line in stdout.splitlines():
         match = SCORE.fullmatch(line)
         if not match:
+            if "(Score):" in line:
+                raise ValueError(f"Invalid score or benchmark error: {line}")
             continue
         name, value = match.group(1).strip(), float(match.group(2))
         if name in scores or not math.isfinite(value) or value <= 0:
@@ -99,6 +101,8 @@ def main():
     parser.add_argument("--rounds", type=int, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--cpu", type=int, default=2)
+    parser.add_argument("--expected-score", action="append",
+                        help="Require this exact score name; repeat for each suite result")
     parser.add_argument("d8_args", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     if args.rounds < 1 or args.cpu < 0:
@@ -125,10 +129,12 @@ def main():
         "binaries": {}, "runs": [],
         "statistics": {"ratio": "candidate / baseline", "bootstrap_seed": SEED,
                        "bootstrap_resamples": BOOTSTRAPS, "resampling_unit": "paired round"},
+        "expected_scores": sorted(set(args.expected_score)) if args.expected_score else None,
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
-    pairs, keys = [], None
+    pairs = []
+    keys = set(args.expected_score) if args.expected_score else None
 
     def save():
         output.write_text(json.dumps(data, indent=2, allow_nan=False) + "\n")

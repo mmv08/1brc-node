@@ -1,0 +1,247 @@
+From d7fff2e26359ddc588d2bb5884f2548066d06250 Mon Sep 17 00:00:00 2001
+From: Mikhail Mikheev <16622558+mmv08@users.noreply.github.com>
+Date: Wed, 21 Oct 2026 09:37:10 +0000
+Subject: [PATCH] [turboshaft] Fold expressions over constant Phis
+
+Track Phi dependence across the entire branch condition, separately from
+whether every operand can be folded. Constants outside the merge are
+valid operands regardless of the order in which they are visited.
+
+Add reducer tests for both operand orders, nonconstant inputs, and
+expressions that need no cloning, plus dispatch deoptimization coverage.
+
+TAG=agy
+CONV=01a15ac7-b7fe-7dc2-ab61-5d14a81b88b5
+---
+ .../turboshaft/branch-elimination-reducer.h   |  31 ++++--
+ test/mjsunit/compiler/constant-phi-branch.js  |  33 ++++++
+ .../turboshaft/control-flow-unittest.cc       | 103 ++++++++++++++++++
+ 3 files changed, 155 insertions(+), 12 deletions(-)
+ create mode 100644 test/mjsunit/compiler/constant-phi-branch.js
+
+diff --git a/src/compiler/turboshaft/branch-elimination-reducer.h b/src/compiler/turboshaft/branch-elimination-reducer.h
+index e47c6cef..c19ee2ef 100644
+--- a/src/compiler/turboshaft/branch-elimination-reducer.h
++++ b/src/compiler/turboshaft/branch-elimination-reducer.h
+@@ -650,32 +650,39 @@ class BranchEliminationReducer : public Next {
+     }
+   }
+ 
+-  // Checks that {idx} only depends on only on Constants or on Phi whose input
+-  // from the current block is a Constant, and on a least one Phi (whose input
++  // Checks that {idx} only depends on Constants or on Phis whose input
++  // from the current block is a Constant, and on at least one Phi (whose input
+   // from the current block is a Constant). If it is the case and {idx} is used
+   // in a Branch, then the Branch's block could be cloned in the current block,
+   // and {idx} could then be constant-folded away such that the Branch becomes a
+   // Goto.
+-  bool CanBeConstantFolded(OpIndex idx, const Block* cond_input_block,
+-                           bool has_phi = false, int depth = 0) {
++  bool CanBeConstantFolded(OpIndex idx, const Block* cond_input_block) {
++    bool has_phi = false;
++    return CanBeConstantFoldedImpl(idx, cond_input_block, &has_phi, 0) &&
++           has_phi;
++  }
++
++  bool CanBeConstantFoldedImpl(OpIndex idx, const Block* cond_input_block,
++                               bool* has_phi, int depth) {
+     // We limit the depth of the search to {kMaxDepth} in order to avoid
+     // potentially visiting a lot of nodes.
+     static constexpr int kMaxDepth = 4;
+     if (depth > kMaxDepth) return false;
+     const Operation& op = __ input_graph().Get(idx);
+     if (!cond_input_block->Contains(idx)) {
+-      // If we reach a ConstantOp without having gone through a Phi, then the
+-      // condition can be constant-folded without performing block cloning.
+-      return has_phi && op.Is<ConstantOp>();
++      // A constant can be an operand of an expression whose other operand
++      // depends on a Phi. Check for that dependency on the whole expression.
++      return op.Is<ConstantOp>();
+     }
+     if (op.Is<PhiOp>()) {
++      *has_phi = true;
+       int curr_block_pred_idx = cond_input_block->GetPredecessorIndex(
+           __ current_block()->OriginForBlockEnd());
+       // There is no need to increment {depth} on this recursive call, because
+       // it will anyways exit early because {idx} won't be in
+       // {cond_input_block}.
+-      return CanBeConstantFolded(op.input(curr_block_pred_idx),
+-                                 cond_input_block, /*has_phi*/ true, depth);
++      return CanBeConstantFoldedImpl(op.input(curr_block_pred_idx),
++                                     cond_input_block, has_phi, depth);
+     } else if (op.Is<ConstantOp>()) {
+       return true;
+     } else if (op.input_count == 0) {
+@@ -688,13 +695,13 @@ class BranchEliminationReducer : public Next {
+     }
+ 
+     for (int i = 0; i < op.input_count; i++) {
+-      if (!CanBeConstantFolded(op.input(i), cond_input_block, has_phi,
+-                               depth + 1)) {
++      if (!CanBeConstantFoldedImpl(op.input(i), cond_input_block, has_phi,
++                                   depth + 1)) {
+         return false;
+       }
+     }
+ 
+-    return has_phi;
++    return true;
+   }
+ 
+   std::optional<int> GetExact(OpIndex index) {
+diff --git a/test/mjsunit/compiler/constant-phi-branch.js b/test/mjsunit/compiler/constant-phi-branch.js
+new file mode 100644
+index 00000000..da2644d1
+--- /dev/null
++++ b/test/mjsunit/compiler/constant-phi-branch.js
+@@ -0,0 +1,33 @@
++// Copyright 2026 the V8 project authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++// Flags: --allow-natives-syntax
++
++// Graph tests check the branch-threading transformation. This test preserves
++// the result and the deoptimization state of intervening checked arithmetic.
++(function ConstantMethodDispatch() {
++  function increment(value) { return value + 1; }
++  function decrement(value) { return value - 1; }
++  class Increment { operation = increment; }
++  class Decrement { operation = decrement; }
++  const incrementer = new Increment();
++  const decrementer = new Decrement();
++
++  function dispatch(receiver, value) {
++    const operation = receiver.operation;
++    const adjusted = value + 1;
++    return operation(adjusted);
++  }
++
++  %PrepareFunctionForOptimization(dispatch);
++  assertEquals(12, dispatch(incrementer, 10));
++  assertEquals(10, dispatch(decrementer, 10));
++  %OptimizeFunctionOnNextCall(dispatch);
++  assertEquals(12, dispatch(incrementer, 10));
++  assertEquals(10, dispatch(decrementer, 10));
++  assertEquals(2147483649, dispatch(incrementer, 2147483647));
++  assertEquals(2147483647, dispatch(decrementer, 2147483647));
++  assertEquals('511', dispatch(incrementer, '5'));
++  assertEquals(50, dispatch(decrementer, '5'));
++})();
+diff --git a/test/unittests/compiler/turboshaft/control-flow-unittest.cc b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+index 1d23775d..ab7d49d7 100644
+--- a/test/unittests/compiler/turboshaft/control-flow-unittest.cc
++++ b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+@@ -112,6 +112,109 @@ TEST_F(ControlFlowTest, BranchElimination) {
+             static_cast<size_t>(kSize * 2 + kMaxOtherBlocksCount));
+ }
+ 
++TEST_F(ControlFlowTest, BranchEliminationConstantPhiExpression) {
++  // Constants outside the merge must be accepted regardless of which operand
++  // contains the Phi. The Phi dependency belongs to the whole expression.
++  for (bool phi_on_left : {false, true}) {
++    std::initializer_list<RegisterRepresentation> reps{
++        RegisterRepresentation::Word32()};
++    auto test = CreateFromGraph(base::VectorOf(reps), [&](auto& Asm) {
++      V<Word32> cond = Asm.template GetParameter<Word32>(0);
++      V<Word32> first = __ Word32Constant(7);
++      V<Word32> second = __ Word32Constant(11);
++      V<Word32> offset = __ Word32Constant(3);
++      V<Word32> expected = __ Word32Constant(phi_on_left ? 4 : -4);
++      Block *left = __ NewBlock(), *right = __ NewBlock();
++      Block* merge = __ NewBlock();
++      __ Branch(cond, left, right);
++      __ Bind(left);
++      __ Goto(merge);
++      __ Bind(right);
++      __ Goto(merge);
++      __ Bind(merge);
++      V<Word32> phi = __ Phi({first, second}, RegisterRepresentation::Word32());
++      V<Word32> value =
++          phi_on_left ? __ Word32Sub(phi, offset) : __ Word32Sub(offset, phi);
++      Block *matched = __ NewBlock(), *other = __ NewBlock();
++      __ Branch(__ Word32Equal(value, expected), matched, other);
++      __ Bind(matched);
++      __ Return(__ Word32Constant(1));
++      __ Bind(other);
++      __ Return(__ Word32Constant(0));
++    });
++
++    test.Run<BranchEliminationReducer, MachineOptimizationReducer>();
++
++    EXPECT_EQ(test.CountOp(Opcode::kBranch), 1u);
++    EXPECT_EQ(test.CountOp(Opcode::kPhi), 0u);
++  }
++}
++
++TEST_F(ControlFlowTest, BranchEliminationConstantPhiNonConstantOperand) {
++  std::initializer_list<RegisterRepresentation> reps{
++      RegisterRepresentation::Word32(), RegisterRepresentation::Word32()};
++  auto test = CreateFromGraph(base::VectorOf(reps), [](auto& Asm) {
++    V<Word32> cond = Asm.template GetParameter<Word32>(0);
++    V<Word32> unknown = Asm.template GetParameter<Word32>(1);
++    V<Word32> first = __ Word32Constant(7);
++    V<Word32> second = __ Word32Constant(11);
++    Block *left = __ NewBlock(), *right = __ NewBlock();
++    Block* merge = __ NewBlock();
++    __ Branch(cond, left, right);
++    __ Bind(left);
++    __ Goto(merge);
++    __ Bind(right);
++    __ Goto(merge);
++    __ Bind(merge);
++    V<Word32> phi = __ Phi({first, second}, RegisterRepresentation::Word32());
++    Block *matched = __ NewBlock(), *other = __ NewBlock();
++    __ Branch(__ Word32Equal(phi, unknown), matched, other);
++    __ Bind(matched);
++    __ Return(__ Word32Constant(1));
++    __ Bind(other);
++    __ Return(__ Word32Constant(0));
++  });
++
++  test.Run<BranchEliminationReducer, MachineOptimizationReducer>();
++
++  EXPECT_EQ(test.CountOp(Opcode::kBranch), 2u);
++  EXPECT_EQ(test.CountOp(Opcode::kPhi), 1u);
++}
++
++TEST_F(ControlFlowTest, BranchEliminationConstantExpressionWithoutPhi) {
++  std::initializer_list<RegisterRepresentation> reps{
++      RegisterRepresentation::Tagged(), RegisterRepresentation::Word32()};
++  auto test = CreateFromGraph(base::VectorOf(reps), [](auto& Asm) {
++    V<HeapObject> object = Asm.template GetParameter<HeapObject>(0);
++    V<Word32> cond = Asm.template GetParameter<Word32>(1);
++    V<Word32> first = __ Word32Constant(7);
++    V<Word32> second = __ Word32Constant(11);
++    Block *left = __ NewBlock(), *right = __ NewBlock();
++    Block* merge = __ NewBlock();
++    __ Branch(cond, left, right);
++    __ Bind(left);
++    __ Goto(merge);
++    __ Bind(right);
++    __ Goto(merge);
++    __ Bind(merge);
++    V<Word32> phi = __ Phi({first, second}, RegisterRepresentation::Word32());
++    __ Store(object, {}, phi, StoreOp::Kind::TaggedBase(),
++             MemoryRepresentation::Int32(), WriteBarrierKind::kNoWriteBarrier,
++             0);
++    Block *matched = __ NewBlock(), *other = __ NewBlock();
++    __ Branch(__ Word32Equal(first, second), matched, other);
++    __ Bind(matched);
++    __ Return(first);
++    __ Bind(other);
++    __ Return(second);
++  });
++
++  test.Run<BranchEliminationReducer, MachineOptimizationReducer>();
++
++  // Folding an expression that does not depend on a Phi needs no cloning.
++  EXPECT_EQ(test.CountOp(Opcode::kStore), 1u);
++}
++
+ // When the block following a loop header has a single predecessor and contains
+ // Phis with a single input, loop peeling should be careful not to think that
+ // these phis are loop phis.
+-- 
+2.53.0
+

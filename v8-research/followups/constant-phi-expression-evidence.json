@@ -1,0 +1,80 @@
+{
+  "source_commit": "d7fff2e2",
+  "baseline_commit": "f090ad58",
+  "tests": {
+    "passed": 10,
+    "failed": 0,
+    "log": "results/v8-general/constant-phi-expression-tests.log",
+    "selection": [
+      "unittests/ControlFlowTest.*",
+      "mjsunit/compiler/constant-phi-branch",
+      "mjsunit/compiler/array-buffer-byte-length"
+    ]
+  },
+  "native": {
+    "before": {
+      "capture": {
+        "argv": [
+          "taskset",
+          "-c",
+          "2",
+          "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+          "--print-opt-code",
+          "--print-opt-code-filter=doOneIterationJS",
+          "run.js"
+        ],
+        "returncode": 0,
+        "elapsed_s": 6.02376630785875
+      },
+      "code_objects": [
+        {
+          "name": "doOneIterationJS",
+          "instruction_bytes": 1308
+        },
+        {
+          "name": "doOneIterationJS",
+          "instruction_bytes": 1524
+        },
+        {
+          "name": "doOneIterationJS",
+          "instruction_bytes": 3796
+        }
+      ],
+      "raw_path": "results/v8-general/profiles/followups-constant-phi-expression/corrected-before"
+    },
+    "after": {
+      "capture": {
+        "argv": [
+          "taskset",
+          "-c",
+          "2",
+          "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-constant-phi-expression/d8",
+          "--print-opt-code",
+          "--print-opt-code-filter=doOneIterationJS",
+          "run.js"
+        ],
+        "returncode": 0,
+        "elapsed_s": 6.022042430005968
+      },
+      "code_objects": [
+        {
+          "name": "doOneIterationJS",
+          "instruction_bytes": 1844
+        },
+        {
+          "name": "doOneIterationJS",
+          "instruction_bytes": 1524
+        },
+        {
+          "name": "doOneIterationJS",
+          "instruction_bytes": 3296
+        }
+      ],
+      "raw_path": "results/v8-general/profiles/followups-constant-phi-expression/corrected-after"
+    }
+  },
+  "benchmark": "constant-phi-expression-results.json",
+  "score_audit": "All 44 runs contain exactly the six official DataView scores, exit zero and preserve source hashes.",
+  "diagnostic_note": "Initial captures used doOneIteration, a nonexistent exact function name; they printed no native code. Corrected captures use doOneIterationJS on both binaries.",
+  "interpretation": "The foldability helper is repaired and graph tests pass. The profiled integer function sizes remain unchanged; the separate cloning-budget barrier is still present. Small score movements in this isolated stage do not establish removal of that primary target."
+}
