@@ -1,0 +1,195 @@
+{
+  "date": "2026-10-21T07:05:54.183Z",
+  "label": "opt3-wasm-early",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Wasm baseline",
+      "round": 1,
+      "seconds": 0.47884277000000003
+    },
+    {
+      "name": "Wasm keys with early bucket load",
+      "round": 1,
+      "seconds": 0.47467068100000004
+    },
+    {
+      "name": "Wasm keys with early bucket load",
+      "round": 2,
+      "seconds": 0.479936914
+    },
+    {
+      "name": "Wasm baseline",
+      "round": 2,
+      "seconds": 0.4692860520000002
+    },
+    {
+      "name": "Wasm baseline",
+      "round": 3,
+      "seconds": 0.457403755
+    },
+    {
+      "name": "Wasm keys with early bucket load",
+      "round": 3,
+      "seconds": 0.47154368199999996
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Wasm baseline",
+      "script": "results/opt3-base/calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "24"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+      "times": [
+        0.46247552099999983, 0.47790667500000017, 0.4884144670000005, 0.4680478149999999,
+        0.48520167499999933, 0.4745387699999992, 0.46637492399999975, 0.46669227499999943,
+        0.46882360599999995
+      ],
+      "usage": [
+        {
+          "user": 7.81,
+          "system": 1.47,
+          "maxRssKiB": 324836,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.85,
+          "system": 1.63,
+          "maxRssKiB": 325668,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.74,
+          "system": 1.57,
+          "maxRssKiB": 325108,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.89,
+          "system": 1.46,
+          "maxRssKiB": 324376,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.71,
+          "system": 1.59,
+          "maxRssKiB": 325176,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.86,
+          "system": 1.46,
+          "maxRssKiB": 324564,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.83,
+          "system": 1.52,
+          "maxRssKiB": 325104,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.9,
+          "system": 1.47,
+          "maxRssKiB": 323584,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.84,
+          "system": 1.54,
+          "maxRssKiB": 324344,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4725122485714283,
+      "best": 0.46247552099999983
+    },
+    {
+      "name": "Wasm keys with early bucket load",
+      "script": "calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "24"
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "48047c3395c25d1d7264a87a833e90b9b325fb25e742bfd91a0aee0f29d93bc2",
+      "times": [
+        0.4755511190000002, 0.4736972249999999, 0.4816256460000004, 0.4786308989999998,
+        0.48397944799999915, 0.4949516110000004, 0.4826596959999988, 0.4852492860000002,
+        0.46953564600000025
+      ],
+      "usage": [
+        {
+          "user": 7.91,
+          "system": 1.48,
+          "maxRssKiB": 338444,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.96,
+          "system": 1.5,
+          "maxRssKiB": 335628,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.9,
+          "system": 1.63,
+          "maxRssKiB": 336608,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.98,
+          "system": 1.48,
+          "maxRssKiB": 337748,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.03,
+          "system": 1.49,
+          "maxRssKiB": 336884,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 8.04,
+          "system": 1.59,
+          "maxRssKiB": 337172,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.92,
+          "system": 1.65,
+          "maxRssKiB": 336228,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.96,
+          "system": 1.58,
+          "maxRssKiB": 336692,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.9,
+          "system": 1.52,
+          "maxRssKiB": 334132,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.48019904557142834,
+      "best": 0.46953564600000025
+    }
+  ]
+}

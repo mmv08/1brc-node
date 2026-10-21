@@ -29,9 +29,6 @@ _Static_assert(offsetof(Station, key) == 20, "station ABI key");
 _Static_assert(MAX_STATIONS * 104 + 48 < (1 << 20), "all valid key offsets fit");
 
 static uint32_t buckets[TABLE_SIZE];
-// Validate short keys from the hash slot without first loading a station
-// pointer. Statistics stay in dense records; collisions still use full keys.
-static v128_t short_keys[TABLE_SIZE];
 static Station stations[MAX_STATIONS];
 static Station empty_station;
 // Canonical keys: the name, its delimiter and zero padding to at least 32 bytes.
@@ -164,7 +161,6 @@ __attribute__((noinline, cold)) static Station *insert_station(const uint8_t *st
   if (length < 16) {
     v128_t key = wasm_v128_and(wasm_v128_load(start), wasm_v128_load(short_masks[length]));
     wasm_v128_store(&station->head, key);
-    wasm_v128_store(&short_keys[slot], key);
   } else {
     station->head = head;
     station->tail = load64(start + length - 8);
@@ -234,15 +230,11 @@ __attribute__((noinline, cold)) static void retune(void) {
     if (id < used) continue;
     mixers[0] = mix[0];
     mixers[1] = mix[1];
-    for (uint32_t slot = 0; slot < TABLE_SIZE; slot++) {
+    for (uint32_t slot = 0; slot < TABLE_SIZE; slot++)
       buckets[slot] = (uint32_t)(uintptr_t)&empty_station;
-      wasm_v128_store(&short_keys[slot], wasm_i64x2_const(0, 0));
-    }
     for (id = 0; id < used; id++) {
       uint64_t hash = scan_name(names + (stations[id].key & OFFSET_MASK), mixers).hash;
       buckets[hash >> 49] = (uint32_t)(uintptr_t)&stations[id];
-      if ((stations[id].key >> 20) < 16)
-        wasm_v128_store(&short_keys[hash >> 49], wasm_v128_load(&stations[id].head));
       stations[id].hash = (uint32_t)(hash ^ (hash >> 32));
     }
     return;
@@ -328,9 +320,9 @@ INLINE const uint8_t *process_short(const uint8_t *start, uint32_t matches, v128
   uint64_t hash =
       (uint64_t)wasm_i64x2_extract_lane(mixed, 0) * (uint64_t)wasm_i64x2_extract_lane(mixed, 1);
   uint32_t slot = (uint32_t)(hash >> 49);
-  Station *station = (Station *)(uintptr_t)((volatile uint32_t *)buckets)[slot];
-  // An empty key is all zero; a key containing ';' can never match it.
-  if (wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(&short_keys[slot]), key)) != 0xffff)
+  Station *station = (Station *)(uintptr_t)buckets[slot];
+  // An empty record is all zero; a key containing ';' can never match it.
+  if (wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(&station->head), key)) != 0xffff)
     station = find_name(start);
   return update_row((ParsedRow){start + length + 1, station});
 }
@@ -376,10 +368,8 @@ __attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t
 }
 
 EXPORT(reset) void reset(void) {
-  for (uint32_t slot = 0; slot < TABLE_SIZE; slot++) {
+  for (uint32_t slot = 0; slot < TABLE_SIZE; slot++)
     buckets[slot] = (uint32_t)(uintptr_t)&empty_station;
-    wasm_v128_store(&short_keys[slot], wasm_i64x2_const(0, 0));
-  }
   used = 0;
   mixers[0] = UINT64_C(0x9e3779b185ebca87);
   mixers[1] = UINT64_C(0xc2b2ae3d27d4eb4f);
