@@ -358,5 +358,77 @@
         0.0374582059167239
       ]
     }
-  }
+  },
+  "remaining_cost_comparison": {
+    "reference": "f090ad58; getter-only build",
+    "summary": "fresh-allocation-remaining-cost-summary.json",
+    "metrics": {
+      "pipeline_time_ms": {
+        "baseline_median": 18.0545,
+        "candidate_median": 19.798000000000002,
+        "paired_cost_change_percent": 9.620313054743445,
+        "paired_bootstrap_95_percent_interval": [
+          9.176083364530152,
+          10.12870754067281
+        ],
+        "ab_cost_change_percent": 9.955248800711459,
+        "ba_cost_change_percent": 9.286397559787996
+      },
+      "pipeline_zone_bytes": {
+        "baseline_median": 16815552.0,
+        "candidate_median": 18813244.0,
+        "paired_cost_change_percent": 11.879489228669392,
+        "paired_bootstrap_95_percent_interval": [
+          11.87673620739307,
+          11.88165923753619
+        ],
+        "ab_cost_change_percent": 11.87838464802704,
+        "ba_cost_change_percent": 11.88059382021731
+      },
+      "peeling_time_ms": {
+        "baseline_median": 0.491,
+        "candidate_median": 0.6014999999999999,
+        "paired_cost_change_percent": 22.530385807061215,
+        "paired_bootstrap_95_percent_interval": [
+          21.996488066424558,
+          23.063658789374507
+        ],
+        "ab_cost_change_percent": 22.40912945312763,
+        "ba_cost_change_percent": 22.651762275429355
+      },
+      "peeling_zone_bytes": {
+        "baseline_median": 679760.0,
+        "candidate_median": 991280.0,
+        "paired_cost_change_percent": 45.82793927268447,
+        "paired_bootstrap_95_percent_interval": [
+          45.82793927268447,
+          45.82793927268447
+        ],
+        "ab_cost_change_percent": 45.82793927268447,
+        "ba_cost_change_percent": 45.82793927268447
+      },
+      "target_normal_time_ms": {
+        "baseline_median": 2.674,
+        "candidate_median": 3.782,
+        "paired_cost_change_percent": 41.536052695600056,
+        "paired_bootstrap_95_percent_interval": [
+          41.194509424433726,
+          41.94340769363851
+        ],
+        "ab_cost_change_percent": 41.36939801392583,
+        "ba_cost_change_percent": 41.702903839757056
+      },
+      "target_osr_time_ms": {
+        "baseline_median": 0.0,
+        "candidate_median": 0.0,
+        "ratio_note": "Ratio undefined with zero-valued observations."
+      }
+    },
+    "interpretation": "The original cost remains. Do not subtract this result from the earlier differently-timed +12.37% estimate to attribute a saving; direct fcc-based total DataView cost change is inconclusive."
+  },
+  "post_profiles": {
+    "official_compiler": "fresh-allocation-post-profile.json",
+    "original_dataview_target": "fresh-allocation-target-post-profile.json"
+  },
+  "disposition": "Retain as a general compiler-performance candidate. It is not a regression-free or submission-ready claim for the full earlier runtime patch stack."
 }

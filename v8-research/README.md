@@ -165,7 +165,7 @@ The [fixed protocol](compile-cost/plan.json) compares each new experiment with t
 
 Native compiler profiles were collected before these edits, both for the unchanged official Compiler suite and for repeated compilation of the original DataView integer function. Hardware perf counters remained unavailable, so the evidence uses V8's native sampling profiler, phase statistics and disassembly. Compiler-state filtering excludes other VM states; the denominator is total ticks minus excluded ticks. The [phase evidence](compile-cost/initial-phase-evidence.json) and [native summaries](compile-cost/native-profile-evidence.json) retain both baselines. Phase groups and their child phases overlap and must not be added together.
 
-The official Compiler profile attributed 40,542 of 214,658 included ticks (18.9%) to `LoadElimination::AbstractField::Kill`; 40,531 of its ticks were under Large-Copy's runner. Matching sample PCs to the preserved binary showed that 89.4% of this function's self samples were in the initial dead-node checks and tree iteration. The alias checker overwhelmingly took the existing fresh-allocation identity path. This is evidence of repeated cache scanning when the only possible alias is already known exactly. The [PC analysis](compile-cost/fresh-allocation-pc-evidence.json) records reviewed instruction ranges, input hashes, accounting checks and reproduction commands.
+The official Compiler profile attributed 40,542 of 214,658 included ticks (18.9%) to `LoadElimination::AbstractField::Kill`; 40,531 of its ticks were under Large-Copy's runner. Matching sample PCs to the preserved binary showed that 89.4% of this function's self samples were in the initial dead-node checks and tree iteration. Among alias-check samples that distinguish the paths, 2,387 landed in the existing fresh-allocation identity comparison and 33 in the general alias/map paths. This is evidence of repeated cache scanning when the only possible alias is already known exactly. The [PC analysis](compile-cost/fresh-allocation-pc-evidence.json) records reviewed instruction ranges, input hashes, accounting checks and reproduction commands.
 
 Three independent experiments start from `fcc58178`; their patches must not be assumed to be stacked:
 
@@ -173,7 +173,7 @@ Three independent experiments start from `fcc58178`; their patches must not be a
 |---|---|---|
 | Field-name invalidation, `2e2b333a` | Check both name and object aliasing before constructing a replacement field cache; check the cheap name predicate first. | 81 selected checks passed. Full official results below show modest compiler improvements; retained separately. |
 | Outline reduction tracing, `2f98c1e2` | Move cold trace printing to a noinline helper. Native `GraphReducer::Reduce` shrinks from 1,458 to 370 bytes, removing unconditional stream setup; extra stack reservation falls from 328 to 8 bytes. | 52 checks passed; normalized trace-event multisets match, with three independent constant-typing events reordered. Total compilation-time interval includes zero; excluded from the leading candidate. |
-| Fresh-allocation lookup, `8944d358` + `87e3481b` | Use the existing Allocate-only alias invariant to look up the exact key in the field map, avoiding a full scan on a miss. | 83 selected checks passed. Twelve official Compiler pairs are complete; stock runtime and remaining-cost validation follow. |
+| Fresh-allocation lookup, `8944d358` + `87e3481b` | Use the existing Allocate-only alias invariant to look up the exact key in the field map, avoiding a full scan on a miss. | 83 selected checks passed. All fixed benchmarks and the historical cost comparison are complete; retained as the leading compiler-cost candidate. |
 
 The tracing experiment demonstrates why smaller native code is insufficient evidence of a speedup. Its separate cold helper is 930 bytes, and total pipeline time changed **+0.18%**, interval **−1.68% to +2.03%**. Source-position wrappers enabled by profiling also appeared in samples; their overhead was not treated as a stock-benchmark optimization target. The [trace equivalence evidence](compile-cost/trace-equivalence.json), [native/source review](compile-cost/outline-reduction-tracing-evidence.json) and [six-pair cost summary](compile-cost/outline-reduction-tracing-cost-summary.json) preserve the neutral result.
 
@@ -193,24 +193,24 @@ The completed field-name candidate's official results are below. Compiler uses t
 
 | Official Compiler case | Field-name score change | 95% interval |
 |---|---:|---:|
-| Small-Empty | +0.75% | −0.46% to +2.12% |
-| Small-Constant | +0.67% | −0.56% to +2.05% |
-| Small-Add | +0.58% | −0.22% to +1.35% |
-| Small-Load | +0.60% | −0.45% to +1.68% |
-| Medium-Copy | +0.85% | +0.63% to +1.08% |
-| Medium-Fact | +0.80% | +0.10% to +1.57% |
-| Medium-Prime | +0.97% | +0.36% to +1.54% |
+| Small-Empty | +0.75% | -0.46% to +2.12% |
+| Small-Constant | +0.67% | -0.55% to +2.04% |
+| Small-Add | +0.58% | -0.22% to +1.35% |
+| Small-Load | +0.61% | -0.45% to +1.68% |
+| Medium-Copy | +0.85% | +0.63% to +1.07% |
+| Medium-Fact | +0.79% | +0.10% to +1.57% |
+| Medium-Prime | +0.96% | +0.36% to +1.54% |
 | Medium-Eratosthenes | +0.72% | +0.28% to +1.16% |
 | Large-Copy | +0.29% | +0.04% to +0.55% |
 
 | Official DataView case | Field-name score change | 95% interval |
 |---|---:|---:|
-| DataView-BigEndian | −0.00% | −0.24% to +0.24% |
-| DataView-Floats | −0.51% | −1.81% to +0.37% |
-| DataView-LittleEndian | −0.04% | −0.20% to +0.13% |
-| TypedArray-BigEndian | +0.05% | −0.09% to +0.21% |
-| TypedArray-Floats | −0.13% | −1.46% to +1.06% |
-| TypedArray-LittleEndian | +0.01% | −0.11% to +0.15% |
+| DataView-BigEndian | -0.00% | -0.24% to +0.24% |
+| DataView-Floats | -0.51% | -1.81% to +0.37% |
+| DataView-LittleEndian | -0.04% | -0.20% to +0.13% |
+| TypedArray-BigEndian | +0.05% | -0.09% to +0.21% |
+| TypedArray-Floats | -0.13% | -1.46% to +1.06% |
+| TypedArray-LittleEndian | +0.01% | -0.11% to +0.15% |
 
 Every field-name runtime interval includes zero. Full raw records are [official Compiler](compile-cost/field-name-compiler-results.json) and [stock DataView](compile-cost/field-name-runtime-results.json). The field-name and tracing experiments are saved separately and are not part of the fresh-allocation binary.
 
@@ -242,3 +242,23 @@ The fresh-allocation candidate also completed **21 fixed stock DataView pairs**.
 | TypedArray-LittleEndian | -0.00% | -0.14% to +0.14% | 8/21 |
 
 The [raw runtime results](compile-cost/fresh-allocation-runtime-results.json) and [audited summary of both fully validated candidates](compile-cost/official-validation-summary.json) retain all observations and AB/BA splits. Confidence intervals are per case and are not adjusted for multiple comparisons. These local microbenchmark results do not establish whole-browser or whole-V8 performance.
+
+A post-change native profile confirms the intended hotspot reduction on unchanged official Compiler input: `AbstractField::Kill` falls from **18.89% to 1.33%** of included compiler-state samples, and `AliasStateInfo::MayAlias` from **3.91% to 0.10%**. Both processed profiles have zero unaccounted ticks. The [capture and comparison](compile-cost/fresh-allocation-post-profile.json) retain commands, binary/source/log hashes and selected symbols. Sample shares corroborate the disassembly; different harness iteration counts and profiler overhead mean raw ticks are not a paired per-compilation speedup measurement.
+
+The declared final **six-pair comparison against getter-only `f090ad58`** quantifies the original cost still present in the full candidate. Every process again completes 25 pipelines, two normal integer-target compilations, zero target OSR compilations and zero traced aborts. Positive changes mean more cost:
+
+| Diagnostic vs. getter-only build | Getter median | Final candidate median | Paired cost change | 95% interval |
+|---|---:|---:|---:|---:|
+| Total pipeline time | 18.055 ms | 19.798 ms | +9.62% | +9.18% to +10.13% |
+| Compiler-zone allocation | 16,815,552 bytes | 18,813,244 bytes | +11.88% | +11.88% to +11.88% |
+| Loop-peeling time | 0.4910 ms | 0.6015 ms | +22.53% | +22.00% to +23.06% |
+| Loop-peeling zone allocation | 679,760 bytes | 991,280 bytes | +45.83% | +45.83% to +45.83% |
+| Two integer-target compilations, summed | 2.674 ms | 3.782 ms | +41.54% | +41.19% to +41.94% |
+
+Thus the earlier loop/dispatch work still carries substantial compilation and allocation overhead. The new comparison does **not** establish that the cache fix reduced the old +12.37% estimate to +9.62%: the direct six-pair comparison against `fcc58178` remains inconclusive for total DataView pipeline time. Those experiments were collected separately, and their difference is not a measured treatment effect. See [remaining-cost summary](compile-cost/fresh-allocation-remaining-cost-summary.json) and [raw pairs](compile-cost/fresh-allocation-remaining-cost-results.json).
+
+The final [DataView target profile](compile-cost/fresh-allocation-target-post-profile.json) repeats the original integer function 4,000 times after the unchanged suite. It contains 32,959 included compiler-state samples with zero unaccounted ticks. `GraphReducer::ReduceTop` and `GraphReducer::Reduce` together account for **12.23%** of those self samples; the field-invalidation function has no sampled self ticks in this capture. This distinguishes the remaining DataView work from the Large-Copy cache bottleneck. Reducing graph traversal/reduction work remains an investigation target, not a proven next speedup; profiler-enabled source-position wrappers must again be excluded from stock-performance claims.
+
+**Disposition:** retain fresh-allocation lookup at V8 `87e3481b` as a general compiler-performance candidate, independently of the two other cost experiments. It has a large, repeated official Large-Copy gain and no measured regression in the six stock DataView runtime cases. Smaller Compiler point estimates and the remaining DataView compilation/code-size costs are explicit limitations. This is not a claim of a regression-free or submission-ready combined patch. The preserved final binary is `out/x64.release-fresh-allocation/d8`; its [manifest](compile-cost/fresh-allocation-build-evidence.json) records source, executable, snapshot, ICU and configuration identities. All experiments have unsigned source and evidence checkpoints. No upstream publication has occurred.
+
+The [final artifact audit](compile-cost/final-artifact-audit.json) verifies the saved patch against the committed V8 diff, the preserved build against its manifest, all eight completed fixed runs, compilation counts, post-profile accounting, test-log identity and local report links.

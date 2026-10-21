@@ -1,0 +1,59 @@
+{
+  "source_commit": "87e3481b97d9ae327293ec319b57f4ef79e0c2a3",
+  "source_tree_clean": true,
+  "saved_patch_matches_committed_diff": true,
+  "preserved_build_matches_manifest": true,
+  "all_eight_fixed_runs_complete": true,
+  "runs": [
+    {
+      "path": "v8-research/compile-cost/field-name-compiler-results.json",
+      "sha256": "13e182331e5fd49496b729ac58bfa909aacf69a1dd7e7a5111bb882e53fbc2df",
+      "completed_pairs": 12
+    },
+    {
+      "path": "v8-research/compile-cost/field-name-invalidation-cost-results.json",
+      "sha256": "a8cd390e9ca73827567f8a5e715687d701cbe02856be14a0baf12f70dd102b99",
+      "completed_pairs": 6
+    },
+    {
+      "path": "v8-research/compile-cost/field-name-runtime-results.json",
+      "sha256": "a0ad789b9d78bfc29623399f53052fc098c452765b8620ce26a2fe417f70b7f4",
+      "completed_pairs": 21
+    },
+    {
+      "path": "v8-research/compile-cost/fresh-allocation-compiler-results.json",
+      "sha256": "96bf2206ce784b69b73ee80ca7ea9d3c64754a435348c8a4bff16af0662a4ba2",
+      "completed_pairs": 12
+    },
+    {
+      "path": "v8-research/compile-cost/fresh-allocation-cost-results.json",
+      "sha256": "01f101cb86caa8b20fa3558b4ce1f8938024c1b8c8df62d73a71d5943a05728a",
+      "completed_pairs": 6
+    },
+    {
+      "path": "v8-research/compile-cost/fresh-allocation-remaining-cost-results.json",
+      "sha256": "a75074fc1e2dd23b3918fdc281c5f284e92954a4b63cd97ebc9dfa2c76193000",
+      "completed_pairs": 6
+    },
+    {
+      "path": "v8-research/compile-cost/fresh-allocation-runtime-results.json",
+      "sha256": "07cf2b7f808f94aa7825f9dd0d6ab343afeea8d8695dd42b1fce8ebabe4a26f5",
+      "completed_pairs": 21
+    },
+    {
+      "path": "v8-research/compile-cost/outline-reduction-tracing-cost-results.json",
+      "sha256": "1ba80062836cd6ec7fbffb2c594323288fb4377e220ad5d6fb455a51469b7faf",
+      "completed_pairs": 6
+    }
+  ],
+  "all_compilation_diagnostic_counts_match": true,
+  "both_post_profiles_have_zero_unaccounted_ticks": true,
+  "tests": {
+    "passed": 83,
+    "failed": 0,
+    "log": "results/v8-general/fresh-allocation-tests.log",
+    "sha256": "23ba4fcfd8708261b665572afb9d1001880311e667c3871a9bdb6c31797abf6f"
+  },
+  "report_local_links_resolve": true,
+  "production_program_edits": "none in this compilation-cost work"
+}
