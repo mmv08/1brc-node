@@ -410,6 +410,36 @@ INLINE const uint8_t *advance_short(const uint8_t *start, uint32_t matches, v128
   return start + __builtin_ctz(lines) + 1;
 }
 
+typedef struct {
+  Station *station;
+  v128_t key;
+  uint32_t length;
+} ShortLookup;
+
+INLINE ShortLookup prepare_short(uint32_t matches, v128_t bytes) {
+  uint32_t length = (uint32_t)__builtin_ctz(matches);
+  v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length]));
+  v128_t mixed = wasm_v128_xor(key, wasm_v128_load(mixers));
+  uint64_t hash =
+      (uint64_t)wasm_i64x2_extract_lane(mixed, 0) * (uint64_t)wasm_i64x2_extract_lane(mixed, 1);
+  Station *station = (Station *)(uintptr_t)buckets[hash >> 49];
+  return (ShortLookup){station, key, length};
+}
+
+INLINE const uint8_t *next_short(const uint8_t *start, v128_t bytes) {
+  const v128_t newline = wasm_v128_load(&newlines);
+  uint32_t lines = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(bytes, newline)) |
+                   (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 16), newline))
+                       << 16;
+  return start + __builtin_ctz(lines) + 1;
+}
+
+INLINE void finish_short(const uint8_t *start, ShortLookup row, v128_t stored_key) {
+  Station *station = row.station;
+  if (wasm_i8x16_bitmask(wasm_i8x16_eq(stored_key, row.key)) != 0xffff) station = find_name(start);
+  update_row((ParsedRow){start + row.length + 1, station});
+}
+
 // Keep short rows in their fast path even when another lane has a long name.
 __attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *start,
                                                                    v128_t low) {
@@ -496,9 +526,29 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
       uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
       uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-      a = matches_a ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
-      b = matches_b ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
-      c = matches_c ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
+      if (matches_a && matches_b && matches_c) {
+        // Fetch all three bucket pointers and keys before consuming a lookup.
+        ShortLookup row_a = prepare_short(matches_a, bytes_a);
+        ShortLookup row_b = prepare_short(matches_b, bytes_b);
+        ShortLookup row_c = prepare_short(matches_c, bytes_c);
+        v128_t stored_a = wasm_v128_load(&row_a.station->head);
+        v128_t stored_b = wasm_v128_load(&row_b.station->head);
+        v128_t stored_c = wasm_v128_load(&row_c.station->head);
+        const uint8_t *next_a = next_short(a, bytes_a);
+        const uint8_t *next_b = next_short(b, bytes_b);
+        const uint8_t *next_c = next_short(c, bytes_c);
+        // Misses rehash after any retune. Updates remain ordered for shared IDs.
+        finish_short(a, row_a, stored_a);
+        finish_short(b, row_b, stored_b);
+        finish_short(c, row_c, stored_c);
+        a = next_a;
+        b = next_b;
+        c = next_c;
+      } else {
+        a = matches_a ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
+        b = matches_b ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
+        c = matches_c ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
+      }
     } while (--rounds);
   }
   while (a < end_a) a = process_row(a);

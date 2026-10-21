@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Wasm baseline",
+    "script": "results/targets-base/calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "24"
+    }
+  },
+  {
+    "name": "Wasm staged key loads",
+    "script": "calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "24"
+    }
+  }
+]

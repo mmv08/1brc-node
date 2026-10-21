@@ -408,6 +408,42 @@ test('first-bucket collisions retune the mixers so every station hits directly',
   });
 });
 
+test('colliding short keys preserve exact totals across simultaneous lane inserts and hits', async () => {
+  const kernel = await createKernel(65536);
+  const buffer = kernel.allocateBuffer(65536 + 256);
+  const parse = kernel.makeParser(buffer);
+  const seen = new Map();
+  let pair;
+  for (let i = 0; !pair; i++) {
+    const name = `n${i.toString(36).padStart(4, '0')}`;
+    const { slot } = hashName(name);
+    if (seen.has(slot)) pair = [seen.get(slot), name];
+    else seen.set(slot, name);
+  }
+  parse(0, fill(buffer, `${pair[0]};0.0\n`));
+  // Equal byte lengths put each block in its own parsing lane. The first lane
+  // inserts a colliding key and retunes; the others reuse the old and new IDs.
+  const repeats = 64;
+  const input =
+    `${pair[1]};11.1\n`.repeat(repeats) +
+    `${pair[0]};-2.2\n`.repeat(repeats) +
+    `${pair[1]};33.3\n`.repeat(repeats);
+  parse(0, fill(buffer, input));
+  assert.deepEqual(
+    new Map(kernel.rows().map(([name, ...stats]) => [name, stats])),
+    new Map([
+      [pair[0], [-22, -22 * repeats, 0, repeats + 1]],
+      [pair[1], [111, (111 + 333) * repeats, 333, repeats * 2]],
+    ]),
+  );
+  const view = new DataView(kernel.memory);
+  const mixers = kernel.api.mixers_base();
+  assert.notDeepEqual(
+    [view.getBigUint64(mixers, true), view.getBigUint64(mixers + 8, true)],
+    initialMixers,
+  );
+});
+
 test('negated maximum lane decodes signed extrema and positive zero', async () => {
   const kernel = await createKernel(65536);
   const buffer = kernel.allocateBuffer(65536 + 256);

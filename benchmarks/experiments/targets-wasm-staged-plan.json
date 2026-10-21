@@ -1,0 +1,14 @@
+{
+  "baseline": "9ee0ee3",
+  "experiment": "Issue bucket and key loads for three short-name lanes before consuming the lookups",
+  "profileEvidence": "benchmarks/2026-10-21-optimization-targets.json",
+  "hypothesis": "Overlap the dependent loads in the measured key-equality regions; preserve immediate per-lane fallback for mixed short/long groups.",
+  "risk": "Extra branch, code size and live values/spills may erase any benefit. Older staging variants lost. No cache-miss cause is assumed.",
+  "correctnessInvariant": "Station records are stable across mixer retuning; preloaded full keys validate hits. Misses rehash against current mixers. Statistics are loaded and updated in lane order, so shared station IDs remain correct.",
+  "checks": [
+    "Existing suite plus colliding-key retuning and shared IDs across all-short lanes",
+    "Native inspection checks actual load ordering and hot-path stack traffic",
+    "Nine alternating full-file rounds after three warm-ups per case",
+    "Keep only a repeated full-file improvement"
+  ]
+}
