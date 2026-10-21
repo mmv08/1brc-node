@@ -1,0 +1,218 @@
+From 8f4ca627eb973a23e04b590a445e2cfc375a7e96 Mon Sep 17 00:00:00 2001
+From: Mikhail Mikheev <16622558+mmv08@users.noreply.github.com>
+Date: Wed, 21 Oct 2026 09:38:30 +0000
+Subject: [PATCH] [turboshaft] Elide overflow checks after signed shifts
+
+Use the narrowed signed range of arithmetic right shifts to prove
+constant additions and subtractions cannot overflow. Preserve checks
+when either endpoint would leave the result representation.
+
+TAG=agy
+CONV=01a15ac7-b7fe-7dc2-ab61-5d14a81b88b5
+---
+ .../turboshaft/machine-optimization-reducer.h |  33 ++++++
+ test/mjsunit/compiler/shifted-overflow.js     |  37 +++++++
+ .../machine-optimization-reducer-unittest.cc  | 101 ++++++++++++++++++
+ 3 files changed, 171 insertions(+)
+ create mode 100644 test/mjsunit/compiler/shifted-overflow.js
+
+diff --git a/src/compiler/turboshaft/machine-optimization-reducer.h b/src/compiler/turboshaft/machine-optimization-reducer.h
+index 2c1b5cec..9c8c619d 100644
+--- a/src/compiler/turboshaft/machine-optimization-reducer.h
++++ b/src/compiler/turboshaft/machine-optimization-reducer.h
+@@ -1525,6 +1525,39 @@ class MachineOptimizationReducer : public Next {
+       }
+     }
+ 
++    // An arithmetic right shift narrows the signed range. If adding or
++    // subtracting a constant keeps both endpoints representable, overflow is
++    // impossible, including for ShiftRightArithmeticShiftOutZeros.
++    if (kind == any_of(Kind::kSignedAdd, Kind::kSignedSub)) {
++      const ShiftOp* shift = matcher_.template TryCast<ShiftOp>(left);
++      int64_t constant;
++      uint32_t amount;
++      if (shift && shift->rep == rep &&
++          shift->kind ==
++              any_of(ShiftOp::Kind::kShiftRightArithmetic,
++                     ShiftOp::Kind::kShiftRightArithmeticShiftOutZeros) &&
++          matcher_.MatchIntegralWordConstant(right, rep, &constant) &&
++          matcher_.MatchIntegralWord32Constant(shift->right(), &amount) &&
++          amount > 0 && amount < rep.bit_width()) {
++        int64_t min = rep.MinSignedValue();
++        int64_t max = rep.MaxSignedValue();
++        int64_t shifted_min = min >> amount;
++        int64_t shifted_max = max >> amount;
++        // These differences are representable even for Word64: a nonzero
++        // shift makes both shifted endpoints strictly narrower than [min,max].
++        int64_t lower =
++            kind == Kind::kSignedAdd ? min - shifted_min : shifted_max - max;
++        int64_t upper =
++            kind == Kind::kSignedAdd ? max - shifted_max : shifted_min - min;
++        if (lower <= constant && constant <= upper) {
++          V<Word> result = kind == Kind::kSignedAdd
++                               ? __ WordAdd(left, right, rep)
++                               : __ WordSub(left, right, rep);
++          return __ MakeTuple(result, __ Word32Constant(0));
++        }
++      }
++    }
++
+     // left + 0  =>  (left, false)
+     // left - 0  =>  (left, false)
+     if (kind == any_of(Kind::kSignedAdd, Kind::kSignedSub) &&
+diff --git a/test/mjsunit/compiler/shifted-overflow.js b/test/mjsunit/compiler/shifted-overflow.js
+new file mode 100644
+index 00000000..7f9cf4a8
+--- /dev/null
++++ b/test/mjsunit/compiler/shifted-overflow.js
+@@ -0,0 +1,37 @@
++// Copyright 2026 the V8 project authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++// Flags: --allow-natives-syntax
++
++// A lossless division lowers to an arithmetic shift with an exactness check.
++// The shift narrows the range enough that the subsequent small sums cannot
++// overflow. Fractional inputs must still deoptimize and preserve JS semantics.
++function divideAndAdd(x) {
++  return x / 4 + 2;
++}
++%PrepareFunctionForOptimization(divideAndAdd);
++assertEquals(3, divideAndAdd(4));
++assertEquals(4, divideAndAdd(8));
++%OptimizeFunctionOnNextCall(divideAndAdd);
++assertEquals(-536870910, divideAndAdd(-2147483648));
++assertEquals(536870913, divideAndAdd(2147483644));
++assertEquals(2.25, divideAndAdd(1));
++
++// Exact boundaries of the safe constant range for an arithmetic shift by two.
++function addAtLimit(x) { return (x >> 2) + 1610612736; }
++function subtractAtLimit(x) { return (x >> 2) - 1610612736; }
++function addBeyondLimit(x) { return (x >> 2) + 1610612737; }
++function subtractBeyondLimit(x) { return (x >> 2) - 1610612737; }
++for (const fn of [addAtLimit, subtractAtLimit,
++                  addBeyondLimit, subtractBeyondLimit]) {
++  %PrepareFunctionForOptimization(fn);
++  fn(0);
++  fn(4);
++  %OptimizeFunctionOnNextCall(fn);
++  fn(0);
++}
++assertEquals(2147483647, addAtLimit(2147483647));
++assertEquals(-2147483648, subtractAtLimit(-2147483648));
++assertEquals(2147483648, addBeyondLimit(2147483647));
++assertEquals(-2147483649, subtractBeyondLimit(-2147483648));
+diff --git a/test/unittests/compiler/turboshaft/machine-optimization-reducer-unittest.cc b/test/unittests/compiler/turboshaft/machine-optimization-reducer-unittest.cc
+index 1f5db37a..3df4849d 100644
+--- a/test/unittests/compiler/turboshaft/machine-optimization-reducer-unittest.cc
++++ b/test/unittests/compiler/turboshaft/machine-optimization-reducer-unittest.cc
+@@ -559,4 +559,105 @@ TEST_F(MachineOptimizationReducerTest, SelfComparisonLessThan) {
+   }
+ }
+ 
++TEST_F(MachineOptimizationReducerTest, ShiftedAddSubtractOverflowBounds) {
++  struct RangeCase {
++    WordRepresentation rep;
++    int shift;
++    int64_t safe_limit;
++  };
++  const RangeCase cases[] = {
++      {WordRepresentation::Word32(), 1, 1073741824},
++      {WordRepresentation::Word32(), 2, 1610612736},
++      {WordRepresentation::Word32(), 31, 2147483647},
++      {WordRepresentation::Word64(), 1, INT64_C(4611686018427387904)},
++      {WordRepresentation::Word64(), 2, INT64_C(6917529027641081856)},
++      {WordRepresentation::Word64(), 63, INT64_MAX},
++  };
++  for (auto [rep, amount, limit] : cases) {
++    base::SmallVector<RegisterRepresentation, 1> reps = {rep};
++    // Include the exact endpoints and the first unsafe constant on each side.
++    base::SmallVector<std::pair<int64_t, bool>, 6> constants = {
++        {2, true},
++        {3, true},
++        {limit, true},
++        {-limit, true},
++        {-limit - 1, false}};
++    if (limit < rep.MaxSignedValue()) constants.emplace_back(limit + 1, false);
++    for (auto [constant, safe] : constants) {
++      for (auto shift_kind :
++           {ShiftOp::Kind::kShiftRightArithmetic,
++            ShiftOp::Kind::kShiftRightArithmeticShiftOutZeros}) {
++        for (auto kind : {OverflowCheckedBinopOp::Kind::kSignedAdd,
++                          OverflowCheckedBinopOp::Kind::kSignedSub}) {
++          SCOPED_TRACE(::testing::Message()
++                       << rep.bit_width() << " " << amount << " " << constant
++                       << " " << static_cast<int>(shift_kind) << " "
++                       << static_cast<int>(kind));
++          auto test = CreateFromGraph(base::VectorOf(reps), [&](auto& t) {
++            V<Word> input = t.template GetParameter<Word>(0);
++            V<Word> shifted = t.Asm().Shift(
++                input, t.Asm().Word32Constant(amount), shift_kind, rep);
++            auto result = t.Asm().OverflowCheckedBinop(
++                shifted, t.Asm().WordConstant(constant, rep), kind, rep);
++            OpIndex values[] = {t.Asm().template Projection<0>(result, rep),
++                                t.Asm().template Projection<1>(
++                                    result, RegisterRepresentation::Word32())};
++            t.Asm().Return(t.Asm().Word32Constant(0), base::VectorOf(values));
++          });
++          test.Run<MachineOptimizationReducer>();
++          EXPECT_EQ(test.CountOp(Opcode::kOverflowCheckedBinop),
++                    safe ? 0u : 1u);
++          const auto& ret = test.graph()
++                                .Get(test.graph().LastOperation())
++                                .template Cast<ReturnOp>();
++          const ConstantOp* overflow = test.graph()
++                                           .Get(ret.return_values()[1])
++                                           .template TryCast<ConstantOp>();
++          if (safe) {
++            ASSERT_NE(overflow, nullptr);
++            EXPECT_EQ(overflow->kind, ConstantOp::Kind::kWord32);
++            EXPECT_EQ(overflow->word32(), 0u);
++          } else {
++            EXPECT_EQ(overflow, nullptr);
++          }
++        }
++      }
++    }
++  }
++}
++
++TEST_F(MachineOptimizationReducerTest, KeepUnprovenShiftedOverflowChecks) {
++  for (auto rep :
++       {WordRepresentation::Word32(), WordRepresentation::Word64()}) {
++    base::SmallVector<RegisterRepresentation, 2> reps = {
++        rep, RegisterRepresentation::Word32()};
++    for (auto shift_kind :
++         {ShiftOp::Kind::kShiftRightArithmetic,
++          ShiftOp::Kind::kShiftRightLogical, ShiftOp::Kind::kShiftLeft}) {
++      // A variable shift can be zero. Logical/left shifts have different
++      // ranges.
++      for (bool variable : {false, true}) {
++        auto test = CreateFromGraph(base::VectorOf(reps), [&](auto& t) {
++          V<Word> input = t.template GetParameter<Word>(0);
++          bool arithmetic = shift_kind == ShiftOp::Kind::kShiftRightArithmetic;
++          V<Word32> amount = variable
++                                 ? t.template GetParameter<Word32>(1)
++                                 : t.Asm().Word32Constant(arithmetic ? 0 : 2);
++          V<Word> shifted = t.Asm().Shift(input, amount, shift_kind, rep);
++          int64_t constant =
++              arithmetic ? 2
++                         : rep.MaxSignedValue() - (rep.MaxSignedValue() >> 2);
++          auto result = t.Asm().OverflowCheckedBinop(
++              shifted, t.Asm().WordConstant(constant, rep),
++              OverflowCheckedBinopOp::Kind::kSignedAdd, rep);
++          t.Asm().Return(t.Asm().template Projection<1>(
++              result, RegisterRepresentation::Word32()));
++        });
++        test.Run<MachineOptimizationReducer>();
++        EXPECT_EQ(test.CountOp(Opcode::kOverflowCheckedBinop), 1u);
++      }
++    }
++  }
++}
++
+ }  // namespace v8::internal::compiler::turboshaft
+-- 
+2.53.0
+

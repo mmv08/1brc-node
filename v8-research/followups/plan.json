@@ -1,0 +1,42 @@
+{
+  "objective": "Implement and measure the targets from the fresh 58,888-sample V8 profile.",
+  "baseline": "f090ad58, preserved out/x64.release-byte-length, including the earlier successful getter reduction",
+  "protocol": {
+    "workload": "unchanged official DataView/run.js",
+    "rounds": 21,
+    "order": "alternating fresh-process AB/BA, one warmup per binary",
+    "cpu": 2,
+    "flags": "stock benchmark defaults; separate codegen/compilation diagnostics",
+    "isolation": "no concurrent build/test/profile/benchmark processes",
+    "controls": "unchanged official ForLoops and TypedArrays construct-buffer, for candidates with retained performance gains",
+    "acceptance": "No speedup inferred from fewer instructions; report regressions and preserve rejected patches."
+  },
+  "experiments": [
+    {
+      "id": "shift-range",
+      "source_commit": "8f4ca627",
+      "scope": "general Word32/Word64 signed shifted add/sub overflow elimination",
+      "state": "built; 44 tests pass; native inspection and benchmarks next"
+    },
+    {
+      "id": "constant-phi-expression",
+      "scope": "repair expression-wide foldability proof",
+      "state": "isolated source worktree"
+    },
+    {
+      "id": "bounded-dispatch-cloning",
+      "scope": "bounded actual-operation budget including separate metadata bound",
+      "state": "isolated source worktree; follows constant-phi fix"
+    },
+    {
+      "id": "terminal-peeling",
+      "scope": "safely clone bounded terminal-throw side exits",
+      "state": "isolated source worktree"
+    },
+    {
+      "id": "mask-implication",
+      "scope": "eliminate zero-mask guards implied by dominating guards",
+      "state": "isolated source worktree"
+    }
+  ]
+}
