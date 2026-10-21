@@ -1,0 +1,21 @@
+{
+  "baseline": "90a74a9",
+  "profileEvidence": "benchmarks/2026-10-21-deeper-targets.json",
+  "input": "measurements.txt",
+  "rows": 1000000000,
+  "bytes": 13795455110,
+  "runtime": "v26.12.0",
+  "workers": 24,
+  "experiments": [
+    "Wasm: 16-byte hash-indexed short-key table, keeping statistics dense and full collision/retune/reset semantics.",
+    "Node: isolate normal tier-up thresholds and V8 background pool sizes; inspect observed tier state for any repeatable winner. Consider a smaller default parser entry separately.",
+    "Node: eight-byte cache entry containing packed ID/length and exact first word; preserve all remaining equality checks."
+  ],
+  "validation": [
+    "Unsigned source checkpoints before measuring each candidate; retain rejected experiments in history.",
+    "Native-code inspection verifies the intended dependency or code-size change; no cache/misprediction inference without counters.",
+    "Unit correctness checks before timing; compare complete expected output and source hashes on every full-file process.",
+    "Initial comparisons use alternating fresh processes, followed by independent 21-round confirmations for promising changes.",
+    "Final selected solvers must agree on exact full-file station/min/sum/max/count tuples."
+  ]
+}

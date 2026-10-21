@@ -81,6 +81,22 @@ test('signed 64-bit sums handle the full challenge bound', async () => {
   }
 });
 
+test('reset invalidates hot short-key lookups when station IDs change', async () => {
+  const kernel = await createKernel(65536);
+  const buffer = kernel.allocateBuffer(65536 + 256);
+  const parse = kernel.makeParser(buffer);
+  const names = ['First', 'Second', 'é\u0000', 'L'.repeat(25)];
+  parse(0, fill(buffer, names.map((name) => `${name};1.0\n`.repeat(96)).join('')));
+  kernel.api.reset();
+  const reordered = names.toReversed();
+  const text = reordered.map((name, i) => `${name};${i + 2}.0\n`.repeat(96)).join('');
+  parse(0, fill(buffer, text));
+  assert.deepEqual(
+    new Map(kernel.rows().map(([name, ...stats]) => [name, stats])),
+    new Map(reordered.map((name, i) => [name, [(i + 2) * 10, (i + 2) * 960, (i + 2) * 10, 96]])),
+  );
+});
+
 test('10K keys, 100-byte/UTF-8/NUL names and chunk boundaries preserve exact aggregates', async () => {
   const directory = mkdtempSync(join(tmpdir(), '1brc-wasm-'));
   const file = join(directory, 'input.txt');
