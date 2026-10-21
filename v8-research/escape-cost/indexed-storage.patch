@@ -1,0 +1,255 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 0e0277b6..f96465e9 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -4417,6 +4417,7 @@ v8_header_set("v8_internal_headers") {
+     "src/compiler/simplified-lowering.h",
+     "src/compiler/simplified-operator-reducer.h",
+     "src/compiler/simplified-operator.h",
++    "src/compiler/sparse-sidetable.h",
+     "src/compiler/state-values-utils.h",
+     "src/compiler/turbofan-graph-visualizer.h",
+     "src/compiler/turbofan-graph.h",
+diff --git a/src/compiler/escape-analysis.cc b/src/compiler/escape-analysis.cc
+index 87757ff5..901c3241 100644
+--- a/src/compiler/escape-analysis.cc
++++ b/src/compiler/escape-analysis.cc
+@@ -9,6 +9,7 @@
+ #include "src/compiler/node-matchers.h"
+ #include "src/compiler/operator-properties.h"
+ #include "src/compiler/simplified-operator.h"
++#include "src/compiler/sparse-sidetable.h"
+ #include "src/compiler/state-values-utils.h"
+ #include "src/deoptimizer/translated-state.h"
+ #include "src/handles/handles-inl.h"
+@@ -43,29 +44,6 @@ class Sidetable {
+   ZoneVector<T> map_;
+ };
+ 
+-template <class T>
+-class SparseSidetable {
+- public:
+-  explicit SparseSidetable(Zone* zone, T def_value = T())
+-      : def_value_(std::move(def_value)), map_(zone) {}
+-  void Set(const Node* node, T value) {
+-    auto iter = map_.find(node->id());
+-    if (iter != map_.end()) {
+-      iter->second = std::move(value);
+-    } else if (value != def_value_) {
+-      map_.insert(iter, std::make_pair(node->id(), std::move(value)));
+-    }
+-  }
+-  const T& Get(const Node* node) const {
+-    auto iter = map_.find(node->id());
+-    return iter != map_.end() ? iter->second : def_value_;
+-  }
+-
+- private:
+-  T def_value_;
+-  ZoneUnorderedMap<NodeId, T> map_;
+-};
+-
+ // Keeps track of the changes to the current node during reduction.
+ // Encapsulates the current state of the IR graph and the reducer state like
+ // side-tables. All access to the IR and the reducer state should happen through
+diff --git a/src/compiler/sparse-sidetable.h b/src/compiler/sparse-sidetable.h
+new file mode 100644
+index 00000000..831809dc
+--- /dev/null
++++ b/src/compiler/sparse-sidetable.h
+@@ -0,0 +1,80 @@
++// Copyright 2026 the V8 project authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef V8_COMPILER_SPARSE_SIDETABLE_H_
++#define V8_COMPILER_SPARSE_SIDETABLE_H_
++
++#include <array>
++#include <type_traits>
++#include <utility>
++
++#include "src/base/template-utils.h"
++#include "src/compiler/node.h"
++#include "src/zone/zone-containers.h"
++
++namespace v8::internal::compiler {
++
++// Node-indexed storage with allocation-free missing reads and default writes.
++// Chunks keep references stable when the index grows. The presence bits retain
++// the distinction between a missing entry and a stored default value.
++template <class T>
++class SparseSidetable {
++ public:
++  explicit SparseSidetable(Zone* zone, T def_value = T())
++      : def_value_(std::move(def_value)), chunks_(zone), zone_(zone) {}
++  SparseSidetable(const SparseSidetable&) = delete;
++  SparseSidetable& operator=(const SparseSidetable&) = delete;
++
++  void Set(const Node* node, T value) {
++    const size_t index = node->id() / kChunkSize;
++    const size_t slot = node->id() % kChunkSize;
++    Chunk* chunk = index < chunks_.size() ? chunks_[index] : nullptr;
++    if (chunk && chunk->Contains(slot)) {
++      chunk->values[slot] = std::move(value);
++      return;
++    }
++    if (!(value != def_value_)) return;
++    if (!chunk) {
++      if (index >= chunks_.size()) chunks_.resize(index + 1, nullptr);
++      chunk = zone_->New<Chunk>(def_value_);
++      chunks_[index] = chunk;
++    }
++    chunk->values[slot] = std::move(value);
++    chunk->present |= uint64_t{1} << slot;
++  }
++
++  const T& Get(const Node* node) const {
++    const size_t index = node->id() / kChunkSize;
++    if (index < chunks_.size()) {
++      const Chunk* chunk = chunks_[index];
++      const size_t slot = node->id() % kChunkSize;
++      if (chunk && chunk->Contains(slot)) return chunk->values[slot];
++    }
++    return def_value_;
++  }
++
++ private:
++  static constexpr size_t kChunkSize = 64;
++  static_assert(std::is_trivially_destructible_v<T>);
++
++  struct Chunk {
++    explicit Chunk(const T& def_value)
++        : values(
++              base::make_array<kChunkSize>([&](size_t) { return def_value; })) {
++    }
++    bool Contains(size_t slot) const {
++      return (present & (uint64_t{1} << slot)) != 0;
++    }
++    uint64_t present = 0;
++    std::array<T, kChunkSize> values;
++  };
++
++  T def_value_;
++  ZoneVector<Chunk*> chunks_;
++  Zone* const zone_;
++};
++
++}  // namespace v8::internal::compiler
++
++#endif  // V8_COMPILER_SPARSE_SIDETABLE_H_
+diff --git a/test/unittests/BUILD.gn b/test/unittests/BUILD.gn
+index 7935c2ea..25c8c52c 100644
+--- a/test/unittests/BUILD.gn
++++ b/test/unittests/BUILD.gn
+@@ -655,6 +655,7 @@ v8_cluster_source_set("v8_unittests_sources") {
+       "compiler/simplified-operator-reducer-unittest.cc",
+       "compiler/simplified-operator-unittest.cc",
+       "compiler/sloppy-equality-unittest.cc",
++      "compiler/sparse-sidetable-unittest.cc",
+       "compiler/state-values-utils-unittest.cc",
+       "compiler/turboshaft/call-runtime-unittest.cc",
+       "compiler/turboshaft/control-flow-unittest.cc",
+diff --git a/test/unittests/compiler/sparse-sidetable-unittest.cc b/test/unittests/compiler/sparse-sidetable-unittest.cc
+new file mode 100644
+index 00000000..ec1f32f0
+--- /dev/null
++++ b/test/unittests/compiler/sparse-sidetable-unittest.cc
+@@ -0,0 +1,97 @@
++// Copyright 2026 the V8 project authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "src/compiler/sparse-sidetable.h"
++
++#include "src/compiler/common-operator.h"
++#include "test/unittests/test-utils.h"
++
++namespace v8::internal::compiler {
++
++class SparseSidetableTest : public TestWithZone {
++ protected:
++  Node* NewNode(NodeId id) {
++    return Node::New(zone(), id, common_.Int32Constant(0), 0, nullptr, false);
++  }
++  CommonOperatorBuilder common_{zone()};
++};
++
++TEST_F(SparseSidetableTest, MissingOperationsDoNotAllocate) {
++  Node* low = NewNode(0);
++  Node* high = NewNode(65535);
++  SparseSidetable<int> table(zone(), -1);
++  size_t before = zone()->allocation_size();
++  for (Node* node : {low, high}) {
++    EXPECT_EQ(-1, table.Get(node));
++    table.Set(node, -1);
++    EXPECT_EQ(-1, table.Get(node));
++  }
++  EXPECT_EQ(before, zone()->allocation_size());
++}
++
++TEST_F(SparseSidetableTest, SparseGrowthPreservesReferences) {
++  Node* first = NewNode(0);
++  Node* adjacent = NewNode(1);
++  Node* boundary = NewNode(63);
++  Node* next = NewNode(64);
++  Node* high = NewNode(65535);
++  SparseSidetable<int> table(zone(), -1);
++  const int& missing = table.Get(first);
++  table.Set(first, 7);
++  const int& stored = table.Get(first);
++  for (Node* node : {adjacent, boundary, next, high}) {
++    EXPECT_EQ(-1, table.Get(node));
++    table.Set(node, static_cast<int>(node->id()));
++  }
++  EXPECT_EQ(-1, missing);
++  EXPECT_EQ(7, stored);
++  EXPECT_EQ(&stored, &table.Get(first));
++  for (Node* node : {adjacent, boundary, next, high}) {
++    EXPECT_EQ(static_cast<int>(node->id()), table.Get(node));
++  }
++  table.Set(first, -1);
++  EXPECT_EQ(-1, stored);
++  EXPECT_EQ(&stored, &table.Get(first));
++  EXPECT_NE(&missing, &table.Get(first));
++  table.Set(first, 9);
++  EXPECT_EQ(9, stored);
++  EXPECT_EQ(-1, missing);
++}
++
++TEST_F(SparseSidetableTest, MissingSlotSharesDefaultInAllocatedChunk) {
++  Node* first = NewNode(0);
++  Node* missing_node = NewNode(1);
++  Node* remote = NewNode(4096);
++  SparseSidetable<int> table(zone(), -1);
++  table.Set(first, 7);
++  const int& missing = table.Get(missing_node);
++  EXPECT_EQ(&missing, &table.Get(remote));
++  size_t before = zone()->allocation_size();
++  table.Set(missing_node, -1);
++  EXPECT_EQ(before, zone()->allocation_size());
++  EXPECT_EQ(&missing, &table.Get(missing_node));
++  table.Set(missing_node, 8);
++  EXPECT_EQ(-1, missing);
++  EXPECT_EQ(8, table.Get(missing_node));
++}
++
++TEST_F(SparseSidetableTest, NonDefaultConstructibleValue) {
++  struct Value {
++    explicit Value(int value) : value(value) {}
++    bool operator!=(const Value& other) const { return value != other.value; }
++    int value;
++  };
++  Node* first = NewNode(0);
++  Node* high = NewNode(4096);
++  SparseSidetable<Value> table(zone(), Value(-1));
++  table.Set(first, Value(7));
++  const Value& stored = table.Get(first);
++  table.Set(high, Value(8));
++  EXPECT_EQ(7, stored.value);
++  EXPECT_EQ(8, table.Get(high).value);
++  table.Set(first, Value(-1));
++  EXPECT_EQ(-1, stored.value);
++}
++
++}  // namespace v8::internal::compiler
