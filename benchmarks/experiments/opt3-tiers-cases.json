@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Baseline pool 4",
+    "script": "results/opt3-base-probe/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24",
+      "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000 --allow-natives-syntax --v8-pool-size=4",
+      "PROFILE_TIER": "1",
+      "PROFILE_PHASE_DIR": "/home/mmv/projects/1brc-node/results/opt3-phase-output/opt3-base-probe-4"
+    }
+  },
+  {
+    "name": "Baseline pool 8",
+    "script": "results/opt3-base-probe/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24",
+      "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000 --allow-natives-syntax --v8-pool-size=8",
+      "PROFILE_TIER": "1",
+      "PROFILE_PHASE_DIR": "/home/mmv/projects/1brc-node/results/opt3-phase-output/opt3-base-probe-8"
+    }
+  },
+  {
+    "name": "Integer entry pool 4",
+    "script": "results/opt3-int-probe/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24",
+      "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000 --allow-natives-syntax --v8-pool-size=4",
+      "PROFILE_TIER": "1",
+      "PROFILE_PHASE_DIR": "/home/mmv/projects/1brc-node/results/opt3-phase-output/opt3-int-probe-4"
+    }
+  },
+  {
+    "name": "Integer entry pool 8",
+    "script": "results/opt3-int-probe/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24",
+      "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000 --allow-natives-syntax --v8-pool-size=8",
+      "PROFILE_TIER": "1",
+      "PROFILE_PHASE_DIR": "/home/mmv/projects/1brc-node/results/opt3-phase-output/opt3-int-probe-8"
+    }
+  }
+]

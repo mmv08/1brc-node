@@ -1,0 +1,514 @@
+{
+  "date": "2026-10-21T07:20:00.081Z",
+  "label": "opt3-node-int-confirm",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Node baseline pool 4",
+      "round": 1,
+      "seconds": 1.095721683
+    },
+    {
+      "name": "Node integer entry pool 4",
+      "round": 1,
+      "seconds": 1.0625036849999998
+    },
+    {
+      "name": "Node integer entry pool 8",
+      "round": 1,
+      "seconds": 1.067092005
+    },
+    {
+      "name": "Node integer entry pool 8",
+      "round": 2,
+      "seconds": 1.0469706659999998
+    },
+    {
+      "name": "Node integer entry pool 4",
+      "round": 2,
+      "seconds": 1.058542856
+    },
+    {
+      "name": "Node baseline pool 4",
+      "round": 2,
+      "seconds": 1.0645700630000001
+    },
+    {
+      "name": "Node baseline pool 4",
+      "round": 3,
+      "seconds": 1.0880465320000003
+    },
+    {
+      "name": "Node integer entry pool 4",
+      "round": 3,
+      "seconds": 1.0527775849999998
+    },
+    {
+      "name": "Node integer entry pool 8",
+      "round": 3,
+      "seconds": 1.0521594239999994
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Node baseline pool 4",
+      "script": "results/opt3-base/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "WORKERS": "24",
+        "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "times": [
+        1.0757339680000004, 1.0720087359999997, 1.0712725999999984, 1.0864665959999984,
+        1.049532783999999, 1.0682536639999998, 1.0678951469999993, 1.0826508919999978,
+        1.0869083939999982, 1.0891907509999947, 1.0807525929999975, 1.0646375009999973,
+        1.072390910000002, 1.0838309489999955, 1.059644064, 1.0948866689999994, 1.092937343999998,
+        1.0748335900000092, 1.0585649170000107, 1.1038097169999965, 1.0760927389999997
+      ],
+      "usage": [
+        {
+          "user": 22.54,
+          "system": 1.45,
+          "maxRssKiB": 339420,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.13,
+          "system": 1.38,
+          "maxRssKiB": 339284,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.4,
+          "system": 1.42,
+          "maxRssKiB": 337876,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.61,
+          "system": 1.34,
+          "maxRssKiB": 339408,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.76,
+          "system": 1.44,
+          "maxRssKiB": 340224,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.19,
+          "system": 1.4,
+          "maxRssKiB": 339736,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.18,
+          "system": 1.48,
+          "maxRssKiB": 338924,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.28,
+          "system": 1.42,
+          "maxRssKiB": 339852,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.6,
+          "system": 1.35,
+          "maxRssKiB": 339172,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.65,
+          "system": 1.43,
+          "maxRssKiB": 340744,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.36,
+          "system": 1.4,
+          "maxRssKiB": 340324,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.99,
+          "system": 1.36,
+          "maxRssKiB": 338444,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.28,
+          "system": 1.4,
+          "maxRssKiB": 338848,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.33,
+          "system": 1.46,
+          "maxRssKiB": 339456,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.76,
+          "system": 1.49,
+          "maxRssKiB": 338824,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.64,
+          "system": 1.37,
+          "maxRssKiB": 338952,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.61,
+          "system": 1.39,
+          "maxRssKiB": 338680,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.23,
+          "system": 1.4,
+          "maxRssKiB": 338228,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.97,
+          "system": 1.42,
+          "maxRssKiB": 340068,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.94,
+          "system": 1.47,
+          "maxRssKiB": 339840,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.31,
+          "system": 1.45,
+          "maxRssKiB": 339448,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.0767869486315789,
+      "best": 1.049532783999999
+    },
+    {
+      "name": "Node integer entry pool 4",
+      "script": "plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "WORKERS": "24",
+        "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "ec66a35dd5617a960e1f08073107e11912a132ebf0ec0f205d598bf8405b74f6",
+      "times": [
+        1.0316007969999992, 1.0694150180000015, 1.0758587249999982, 1.0453202169999967,
+        1.0550658739999998, 1.0724006690000023, 1.0882245299999995, 1.0699926640000048,
+        1.0591262820000047, 1.0488817499999932, 1.0690520010000037, 1.0617958629999993,
+        1.0601979439999996, 1.071685814000004, 1.0791022939999966, 1.0723355159999992, 1.066728314,
+        1.052957546999998, 1.0529029829999927, 1.0612559000000037, 1.0657005860000064
+      ],
+      "usage": [
+        {
+          "user": 21.42,
+          "system": 1.4,
+          "maxRssKiB": 339236,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.08,
+          "system": 1.33,
+          "maxRssKiB": 339416,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.32,
+          "system": 1.46,
+          "maxRssKiB": 341908,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.73,
+          "system": 1.34,
+          "maxRssKiB": 339976,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.78,
+          "system": 1.4,
+          "maxRssKiB": 338588,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.26,
+          "system": 1.48,
+          "maxRssKiB": 340768,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.35,
+          "system": 1.44,
+          "maxRssKiB": 341028,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.97,
+          "system": 1.47,
+          "maxRssKiB": 341892,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.92,
+          "system": 1.45,
+          "maxRssKiB": 339892,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.76,
+          "system": 1.49,
+          "maxRssKiB": 341584,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.19,
+          "system": 1.36,
+          "maxRssKiB": 339980,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.91,
+          "system": 1.45,
+          "maxRssKiB": 340612,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.93,
+          "system": 1.42,
+          "maxRssKiB": 338784,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.12,
+          "system": 1.42,
+          "maxRssKiB": 340532,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.04,
+          "system": 1.44,
+          "maxRssKiB": 340620,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.21,
+          "system": 1.47,
+          "maxRssKiB": 338752,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.83,
+          "system": 1.45,
+          "maxRssKiB": 340464,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.71,
+          "system": 1.36,
+          "maxRssKiB": 339532,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.8,
+          "system": 1.43,
+          "maxRssKiB": 339724,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.21,
+          "system": 1.36,
+          "maxRssKiB": 339724,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.79,
+          "system": 1.48,
+          "maxRssKiB": 340268,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.0636724190000002,
+      "best": 1.0316007969999992
+    },
+    {
+      "name": "Node integer entry pool 8",
+      "script": "plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "WORKERS": "24",
+        "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000 --v8-pool-size=8"
+      },
+      "flags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--v8-pool-size=8"
+      ],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "ec66a35dd5617a960e1f08073107e11912a132ebf0ec0f205d598bf8405b74f6",
+      "times": [
+        1.0386827730000006, 1.0660511910000006, 1.0628469559999976, 1.044162221999999,
+        1.0471703450000023, 1.0656817100000007, 1.08613667, 1.1266247110000003, 1.0657058060000053,
+        1.0450464980000034, 1.0692693419999997, 1.0734719200000036, 1.0886071040000025,
+        1.0364935629999963, 1.041011537999999, 1.0777835640000049, 1.0811953930000018,
+        1.0906635339999993, 1.0987992779999913, 1.085797286999994, 1.0676334410000128
+      ],
+      "usage": [
+        {
+          "user": 21.37,
+          "system": 1.41,
+          "maxRssKiB": 343276,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.15,
+          "system": 1.38,
+          "maxRssKiB": 340568,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.98,
+          "system": 1.42,
+          "maxRssKiB": 341972,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.41,
+          "system": 1.47,
+          "maxRssKiB": 342032,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.41,
+          "system": 1.42,
+          "maxRssKiB": 339560,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.83,
+          "system": 1.42,
+          "maxRssKiB": 339308,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.37,
+          "system": 1.45,
+          "maxRssKiB": 339032,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 23.32,
+          "system": 1.44,
+          "maxRssKiB": 337700,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.19,
+          "system": 1.41,
+          "maxRssKiB": 341420,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.21,
+          "system": 1.39,
+          "maxRssKiB": 339652,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.05,
+          "system": 1.41,
+          "maxRssKiB": 339948,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.18,
+          "system": 1.49,
+          "maxRssKiB": 338232,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.34,
+          "system": 1.43,
+          "maxRssKiB": 341476,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.46,
+          "system": 1.45,
+          "maxRssKiB": 345148,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.57,
+          "system": 1.57,
+          "maxRssKiB": 339680,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.28,
+          "system": 1.48,
+          "maxRssKiB": 340296,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.44,
+          "system": 1.41,
+          "maxRssKiB": 341120,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.46,
+          "system": 1.53,
+          "maxRssKiB": 339272,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.67,
+          "system": 1.37,
+          "maxRssKiB": 338364,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.42,
+          "system": 1.44,
+          "maxRssKiB": 339888,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.03,
+          "system": 1.42,
+          "maxRssKiB": 340048,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.0681956090526323,
+      "best": 1.0364935629999963
+    }
+  ]
+}
