@@ -33,7 +33,8 @@
       "hypothesis": "The reducer's safepoint poll contains a dependent test/set/or/test sequence for running-and-requested. Investigate moving the parked-state guard to the cold path, without removing polls or weakening atomic ordering.",
       "evidence": "Reduce: 1849 self ticks, 5.61% of included compiler samples. 700 samples at the three request/predicate test-or instructions, with additional nearby samples.",
       "safety": "Source review must establish parked-state and asynchronous request semantics before selecting an implementation. GC correctness takes precedence over native code size.",
-      "state": "source review"
+      "state": "source and deterministic parked-poll test checkpointed; awaiting serialized build after first benchmark",
+      "source_commit": "15e78039"
     }
   ],
   "limits": "Hardware perf counters remain denied. V8 native sampler PCs identify sampled code, not precise instruction latency or branch counts. Profiling-only source-position wrappers are excluded as stock optimization targets."

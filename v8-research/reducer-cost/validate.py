@@ -54,7 +54,10 @@ def prepare(experiment, directory, expected_commit):
         tests += ['unittests/NodeMarkerTest.*']
     elif experiment == 'safepoint-predicate':
         tests += ['unittests/LocalHeapTest.*', 'unittests/SafepointTest.*',
-                  'unittests/GlobalSafepointTest.*']
+                  'unittests/GlobalSafepointTest.*',
+                  'cctest/test-concurrent-allocation/ConcurrentAllocationWhileMainThreadRunsWithSafepoints',
+                  'cctest/test-concurrent-allocation/ConcurrentAllocationWhileMainThreadParksAndUnparks',
+                  'cctest/test-concurrent-allocation/ConcurrentAllocationWhileMainThreadIsParked']
     else:
         raise ValueError(experiment)
     command = [sys.executable, '-B', 'tools/run-tests.py',
@@ -75,6 +78,9 @@ def prepare(experiment, directory, expected_commit):
                     'size_bytes': (directory / name).stat().st_size}
              for name in ('d8', 'v8_unittests', 'snapshot_blob.bin', 'icudtl.dat',
                           'args.gn', 'v8_build_config.json')}
+    if experiment == 'safepoint-predicate':
+        files['cctest'] = {'sha256': sha256(directory / 'cctest'),
+                           'size_bytes': (directory / 'cctest').stat().st_size}
     save(f'{experiment}-build-evidence.json', {
         'source_commit': commit, 'base_commit': BASE_COMMIT,
         'directory': str(directory.relative_to(ROOT)), 'files': files,

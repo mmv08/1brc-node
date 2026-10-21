@@ -1,0 +1,22 @@
+{
+  "base_commit": "87e3481b97d9ae327293ec319b57f4ef79e0c2a3",
+  "encoded_marker": {
+    "implementation": "428ce5ce; additional current-epoch test matrix atc281a2f9",
+    "invariant": "With L=mark_min and U=mark_max, valid raw marks m satisfy m<U. Get returns0 for m<L and m-L otherwise. Is(s) is m<=L for s=0, otherwise m=L+s. IsGreaterThan(s) is m>L+s for every valid nonnegative state s.",
+    "bounds": "Preserve the stale-marker and state-range DCHECKs. The existing constructor invariant L<U excludes epoch wraparound. Queries require an in-range state, like Set; they are not substitutes for comparisons to out-of-range sentinels.",
+    "traversal": "Keep all three self guards, the prefix scan, saved-index clamp, post-reduction input reacquisition and revisit-queue state check. Child reducers can mutate suspended parents. A queued revisit can be consumed through DFS before its queue entry is drained.",
+    "native": "All three input-state checks replace subtraction/clamping/byte tests with full-width encoded comparisons. ReduceTop1303->1251bytes; Reduce remains1458bytes.",
+    "test_build_correction": "Initial test called the private GraphReducer override. Build correctly rejected it.428ce5ce calls through the public AdvancedReducer::Editor virtual interface. The subsequent build and87 selected tests passed."
+  },
+  "safepoint_predicate": {
+    "implementation": "15e78039",
+    "invariant": "Only the owning thread changes the parked bit. Request RMWs on other threads preserve it. No owner state transition occurs between the inline relaxed load and the existing slow-path relaxed reload.",
+    "running_requests": "Safepoint requests are cleared only while affected heaps are parked (safepoint.cc ClearSafepointRequestedFlags checks this). The running path therefore retains its previous request-handling behavior.",
+    "snapshot": "Preserve both relaxed loads, the second snapshot and the existing safepoint-before-collection order. Do not replace the second snapshot with the first, or reload again after sleeping.",
+    "parked_requests": "A parked caller may observe a request that clears before the reload. It remains parked and returns before assertions, tracing, heap access or acknowledgement. Parked polling with request bits now takes a call and an extra relaxed load; this cold-path cost is a real tradeoff.",
+    "unchanged": "Polling frequency, deterministic tick counts, atomic write ordering and write-barrier verification checks.",
+    "deterministic_test": "Worker registers a parked LocalHeap before ready signal. Main holds IsolateSafepointScope while worker polls and signals completion. Worker remains alive until scope exits, avoiding destructor mutex interference.",
+    "existing_tests": "LocalHeapTest.GCEpilogue; SafepointTest.*; GlobalSafepointTest.Interrupt; three concurrent-allocation cctests covering running safepoint polling, parked main thread, and parking/unparking."
+  },
+  "review": "Main source inspection plus independent read-only review by compile_cost_source_review; no correctness defect found. Performance claims require completed measurements."
+}
