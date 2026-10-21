@@ -1,9 +1,91 @@
 # Benchmark and experiment log
 
+## Retained: integer Node loops and background pool, 2026-10-21
+
+The latest pass improves plain Node by **4.97%**, from **1.078 s to 1.024 s**,
+with **21/21** final paired wins. Wasm remains the same optimized binary and
+measures **0.476 s**. The retained source is `cf9bf9b`; selection of the
+source plus `--v8-pool-size=8` is `3e59970`. The baseline is `90a74a9`.
+[The complete evidence report](benchmarks/2026-10-21-opt3-results.json) links all
+16 batches, commands, source hashes, native captures, phase observations and
+unsigned checkpoints.
+
+### What the native code changed
+
+The original Node loop carries tagged cursor values and loads its final limit
+from the context captured by the boundary helper. Making that captured parameter
+mutable in the first integer variant also introduces context-cell checks.
+The retained version leaves the captured parameters immutable, uses separate
+integer locals for loop limits, and constrains each updated cursor with `| 0`.
+Its loop uses direct 32-bit comparisons. The whole optimized parser is 12,604
+bytes, versus 12,520 originally and 14,868 in the preceding integer variant;
+this is a removal of hot-loop work, not a claim that all generated code shrank.
+
+Only buffer-local positions are constrained. `calculate` caps chunks at 2^28
+bytes and the reader allocates 256 additional lookahead bytes, so every valid
+cursor fits in int32. Global file positions remain untruncated. All lane counts,
+read modes, complete key verification and exact aggregation are preserved.
+
+The final tier diagnostic uses separate instrumented copies and three measured
+processes per case. With the selected source and pool of eight, the per-process
+median first parser call with TurboFan attached is **48–87 ms after first parse**,
+versus **115–139 ms** for baseline. Calls without TurboFan at both boundaries use
+**4.9–7.3%** of measured parser thread CPU, versus **10.1–12.2%** for baseline.
+These are observations with probe overhead, not production timings or compiler
+CPU measurements. Status at call boundaries cannot identify OSR within a call
+or distinguish a compilation queue from active compilation.
+
+### Experiments and decisions
+
+| Experiment | Checkpoint(s) | Measured result / decision |
+| --- | --- | --- |
+| Wasm hash-addressed short-key side table | `ae7fdf1` | 0.466 → 0.483 s; reject, 0/9 wins |
+| Same table, earlier bucket load | `25d7c6b` | 0.473 → 0.480 s; reject, 3/9 wins |
+| V8 pool sizes 2 and 8 | `0fd4e2a`, `a2af382` | Pool 2 regresses; pool 8 gains 1.38% independently on baseline, 17/21 wins |
+| Earlier TurboFan / OSR thresholds | `6ca732e` | TurboFan 1,000 ties; OSR 100 regresses 2.75%; retain normal thresholds |
+| Smaller dedicated two-lane entry | `915d3f1` | Bytecode 693 → 170 bytes, but new floating-point conversion guards; 1.087 → 1.099 s, reject |
+| Dedicated entry with integer cursors | `87fe74d` | Guards removed; 1.22% in confirmation, 16/21 wins; superseded |
+| Eight-byte Node predictor with exact head | `0e186a5` | 1.076 → 1.096 s; reject despite removing both dependent head loads |
+| Integer cursors in original entry | `2ae08e2` | Initial 1.77% gain; captured-limit checks remain; superseded |
+| Local integer limits and cursors | `cf9bf9b` | First screen gains 4.78%, 9/9 wins; later source-only gain is smaller |
+| Local integer version plus V8 pool 8 | `3e59970` | 5.12% in three-case confirmation, 21/21 wins; **4.97% final pairwise gain, 21/21 wins** |
+
+The predictor experiment illustrates why sample percentages are not expected
+speedups: first-word loads genuinely moved to hash-derived addresses, but samples
+shifted toward the next record-tail comparison and whole-process time increased.
+Wasm native captures likewise verified the intended load ordering in both
+variants; that did not make either version faster. Hardware counters remain
+unavailable, so no cache-miss or branch-miss cause is asserted.
+
+### Final measurement and validation
+
+Same Ryzen 9 7900, Node 26.12.0, 24 workers, and independently generated billion-row
+13,795,455,110-byte input. Three warm-ups per case precede the final 21 alternating
+Node rounds. Wasm has a separate seven-round measurement after three warm-ups.
+Scores discard the fastest and slowest run. Node's final paired mean saving is
+54.28 ms with a 3.56 ms standard error. Source hashes are checked before and after
+every process, and every output matches expected stdout. Profiling, tests and
+timings run sequentially.
+
+Across this pass, **415 measured processes, 97 warm-ups and seven native captures**
+match expected stdout; all measured processes and native captures report zero
+filesystem inputs. Final exact station/min/sum/max/count tuples match for all
+**1,000,000,000 measurements and 413 stations**. All **56 tests pass on Node 24.15.0
+and 26.12.0**, including new first-word collision and Wasm reset regressions.
+Biome, C formatting and diff checks pass. Every experiment has an unsigned
+checkpoint; rejected implementations are preserved in history.
+
+The default Wasm launcher behavior remains unchanged. The plain launcher and
+benchmark helper now use the two existing inlining flags plus `--v8-pool-size=8`.
+This pass's saved case files pin their historical flags explicitly, so changing
+the default does not silently alter a replay. Raw timing reports contain the
+complete measured flags and hashes; removed temporary worktrees can be recreated
+at their recorded experiment commits.
+
 ## Profiling follow-up: larger targets, 2026-10-21
 
-Production remains at **`7aacb10`**, including its two measured improvements.
-This pass identifies the next experiments; it does not claim another speedup.
+At the start of that profiling pass, production was **`7aacb10`**, including its
+two measured improvements. That pass identified the experiments tested above.
 The unsigned checkpoints are `c4e6dea` (plan), `74ef85f` (phase probes),
 `ff763cf` (early/steady windows), and `5760edc` (observed V8 tiers).
 [The evidence report](benchmarks/2026-10-21-deeper-targets.json) contains commands,
@@ -143,7 +225,7 @@ tier observer, set `PROFILE_TIER=1` and add `--allow-natives-syntax` only to the
 diagnostic command. Captured helper versions and hashes are in the report;
 later helper changes reject unsupported async mode and create the parent folder.
 
-## Current: two measured improvements from the profile targets, 2026-10-21
+## Previous: two measured improvements from the profile targets, 2026-10-21
 
 The retained Node change is **`266d94c`**: pack the predicted station ID and
 length in one 32-bit cache entry. The retained Wasm change is **`becfb15`**:

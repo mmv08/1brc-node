@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-21T07:35:00.504Z",
+  "label": "opt3-wasm-final",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Wasm retained",
+      "round": 1,
+      "seconds": 0.48943333999999994
+    },
+    {
+      "name": "Wasm retained",
+      "round": 2,
+      "seconds": 0.475844483
+    },
+    {
+      "name": "Wasm retained",
+      "round": 3,
+      "seconds": 0.471196547
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Wasm retained",
+      "script": "calculate.mjs",
+      "env": {
+        "ENGINE": "wasm",
+        "WORKERS": "24",
+        "FLAGS": ""
+      },
+      "flags": [],
+      "requestedWorkers": 24,
+      "chunkBytes": 524288,
+      "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+      "times": [
+        0.45768479700000014, 0.46746662200000016, 0.481116493, 0.4741280969999998,
+        0.47808945099999983, 0.4811609669999998, 0.4853084140000001
+      ],
+      "usage": [
+        {
+          "user": 7.91,
+          "system": 1.47,
+          "maxRssKiB": 324228,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.78,
+          "system": 1.53,
+          "maxRssKiB": 323716,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.93,
+          "system": 1.44,
+          "maxRssKiB": 325460,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.9,
+          "system": 1.51,
+          "maxRssKiB": 326284,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.76,
+          "system": 1.58,
+          "maxRssKiB": 323860,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.79,
+          "system": 1.5,
+          "maxRssKiB": 324396,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 7.78,
+          "system": 1.55,
+          "maxRssKiB": 325288,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 0.4763923259999999,
+      "best": 0.45768479700000014
+    }
+  ]
+}

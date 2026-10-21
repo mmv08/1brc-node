@@ -1,0 +1,677 @@
+{
+  "checkpoint": "3e59970",
+  "method": "One excluded warm-up and three full-file processes per configuration. V8 tier status is observed at chunk boundaries in copied solvers, with unchanged hot loops. Worker thread CPU excludes compiler threads.",
+  "limitations": [
+    "Instrumented times include probe overhead and are not solver speedups.",
+    "Probes perturb tier-up; boundary status cannot identify OSR within a call or separate compiler queueing from execution.",
+    "Do not add concurrent worker wall spans or nested phases."
+  ],
+  "groups": [
+    {
+      "case": "opt3-base-probe",
+      "excludedWarmupPid": 2063506,
+      "processes": [
+        {
+          "pid": 2063645,
+          "firstTurboFanMedianMs": 114.86655700206757,
+          "lowerTierBytePercent": 3.7567352457804852,
+          "lowerTierCpuPercent": 10.255007787930971,
+          "parserTierGroups": {
+            "OtherOrTransition": {
+              "calls": 3954,
+              "bytes": 518232142,
+              "wallMs": 2612.768801212311,
+              "userUs": 2145654,
+              "systemUs": 35793
+            },
+            "TurboFanBeforeAndAfter": {
+              "calls": 101297,
+              "bytes": 13276515374,
+              "wallMs": 19723.663016319275,
+              "userUs": 19053199,
+              "systemUs": 37371
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 192,
+              "bytes": 25164499,
+              "wallMs": 975.7784578800201,
+              "userUs": 679153,
+              "systemUs": 23977,
+              "threadCpuNsPerByte": 27.94134705403831
+            },
+            "9-32": {
+              "calls": 576,
+              "bytes": 75493621,
+              "wallMs": 470.03064608573914,
+              "userUs": 400314,
+              "systemUs": 2725,
+              "threadCpuNsPerByte": 5.338715969128041
+            },
+            "33-128": {
+              "calls": 2304,
+              "bytes": 301974407,
+              "wallMs": 871.4478311538696,
+              "userUs": 781761,
+              "systemUs": 3034,
+              "threadCpuNsPerByte": 2.5988791824997275
+            },
+            "129-512": {
+              "calls": 9216,
+              "bytes": 1207897264,
+              "wallMs": 2023.1094725131989,
+              "userUs": 1836532,
+              "systemUs": 13564,
+              "threadCpuNsPerByte": 1.5316666865138293
+            },
+            "513-2048": {
+              "calls": 36864,
+              "bytes": 4831591029,
+              "wallMs": 7084.034923791885,
+              "userUs": 6941250,
+              "systemUs": 15200,
+              "threadCpuNsPerByte": 1.4397845261004603
+            },
+            "2049+": {
+              "calls": 56099,
+              "bytes": 7352626696,
+              "wallMs": 10912.030486106873,
+              "userUs": 10559843,
+              "systemUs": 14664,
+              "threadCpuNsPerByte": 1.4381944626337113
+            }
+          }
+        },
+        {
+          "pid": 2065485,
+          "firstTurboFanMedianMs": 139.03074204921722,
+          "lowerTierBytePercent": 3.478350476827966,
+          "lowerTierCpuPercent": 12.181419523312833,
+          "parserTierGroups": {
+            "OtherOrTransition": {
+              "calls": 3661,
+              "bytes": 479829666,
+              "wallMs": 3147.8747725486755,
+              "userUs": 2600921,
+              "systemUs": 35064
+            },
+            "TurboFanBeforeAndAfter": {
+              "calls": 101590,
+              "bytes": 13314917850,
+              "wallMs": 20100.715178251266,
+              "userUs": 18892837,
+              "systemUs": 110569
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 192,
+              "bytes": 25164503,
+              "wallMs": 1145.5151274204254,
+              "userUs": 853555,
+              "systemUs": 20978,
+              "threadCpuNsPerByte": 34.75264343587473
+            },
+            "9-32": {
+              "calls": 576,
+              "bytes": 75493403,
+              "wallMs": 952.8165216445923,
+              "userUs": 849141,
+              "systemUs": 3984,
+              "threadCpuNsPerByte": 11.300656297080687
+            },
+            "33-128": {
+              "calls": 2304,
+              "bytes": 301974254,
+              "wallMs": 851.155665397644,
+              "userUs": 694139,
+              "systemUs": 6751,
+              "threadCpuNsPerByte": 2.321025685852013
+            },
+            "129-512": {
+              "calls": 9216,
+              "bytes": 1207897348,
+              "wallMs": 2037.6835610866547,
+              "userUs": 1778376,
+              "systemUs": 14510,
+              "threadCpuNsPerByte": 1.484303283692614
+            },
+            "513-2048": {
+              "calls": 36864,
+              "bytes": 4831591763,
+              "wallMs": 7355.73556804657,
+              "userUs": 6746079,
+              "systemUs": 70194,
+              "threadCpuNsPerByte": 1.4107717154827843
+            },
+            "2049+": {
+              "calls": 56099,
+              "bytes": 7352626245,
+              "wallMs": 10905.683507204056,
+              "userUs": 10572468,
+              "systemUs": 29216,
+              "threadCpuNsPerByte": 1.441890781162643
+            }
+          }
+        },
+        {
+          "pid": 2065617,
+          "firstTurboFanMedianMs": 114.73304355144501,
+          "lowerTierBytePercent": 3.8070913830852313,
+          "lowerTierCpuPercent": 10.09624728119265,
+          "parserTierGroups": {
+            "OtherOrTransition": {
+              "calls": 4007,
+              "bytes": 525178644,
+              "wallMs": 2434.0131225585938,
+              "userUs": 2102090,
+              "systemUs": 33581
+            },
+            "TurboFanBeforeAndAfter": {
+              "calls": 101244,
+              "bytes": 13269568872,
+              "wallMs": 19811.46692919731,
+              "userUs": 18938189,
+              "systemUs": 79257
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 192,
+              "bytes": 25164530,
+              "wallMs": 855.0454602241516,
+              "userUs": 590126,
+              "systemUs": 20989,
+              "threadCpuNsPerByte": 24.284777025440174
+            },
+            "9-32": {
+              "calls": 576,
+              "bytes": 75493423,
+              "wallMs": 479.3975305557251,
+              "userUs": 448836,
+              "systemUs": 1264,
+              "threadCpuNsPerByte": 5.962108778668044
+            },
+            "33-128": {
+              "calls": 2304,
+              "bytes": 301974479,
+              "wallMs": 783.0610537528992,
+              "userUs": 754043,
+              "systemUs": 8888,
+              "threadCpuNsPerByte": 2.526475093280979
+            },
+            "129-512": {
+              "calls": 9216,
+              "bytes": 1207897580,
+              "wallMs": 2022.784717798233,
+              "userUs": 1844417,
+              "systemUs": 11240,
+              "threadCpuNsPerByte": 1.5362701529710823
+            },
+            "513-2048": {
+              "calls": 36864,
+              "bytes": 4831591221,
+              "wallMs": 7184.5331909656525,
+              "userUs": 6886121,
+              "systemUs": 30808,
+              "threadCpuNsPerByte": 1.4316047619956547
+            },
+            "2049+": {
+              "calls": 56099,
+              "bytes": 7352626283,
+              "wallMs": 10920.658098459244,
+              "userUs": 10516736,
+              "systemUs": 39649,
+              "threadCpuNsPerByte": 1.4357298458657428
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "opt3-local-int-probe",
+      "excludedWarmupPid": 2063577,
+      "processes": [
+        {
+          "pid": 2063677,
+          "firstTurboFanMedianMs": 50.280864000320435,
+          "lowerTierBytePercent": 2.4721854865734247,
+          "lowerTierCpuPercent": 7.851985445491298,
+          "parserTierGroups": {
+            "OtherOrTransition": {
+              "calls": 2602,
+              "bytes": 341031746,
+              "wallMs": 1745.529037475586,
+              "userUs": 1532246,
+              "systemUs": 20811
+            },
+            "TurboFanBeforeAndAfter": {
+              "calls": 102649,
+              "bytes": 13453715770,
+              "wallMs": 18930.121129512787,
+              "userUs": 18155939,
+              "systemUs": 70167
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 192,
+              "bytes": 25164503,
+              "wallMs": 773.7806253433228,
+              "userUs": 634450,
+              "systemUs": 15455,
+              "threadCpuNsPerByte": 25.8262601093294
+            },
+            "9-32": {
+              "calls": 576,
+              "bytes": 75493513,
+              "wallMs": 354.7745575904846,
+              "userUs": 315634,
+              "systemUs": 1232,
+              "threadCpuNsPerByte": 4.197261293165679
+            },
+            "33-128": {
+              "calls": 2304,
+              "bytes": 301974665,
+              "wallMs": 688.5194962024689,
+              "userUs": 585879,
+              "systemUs": 3227,
+              "threadCpuNsPerByte": 1.9508457770786831
+            },
+            "129-512": {
+              "calls": 9216,
+              "bytes": 1207897843,
+              "wallMs": 1821.9968888759613,
+              "userUs": 1664387,
+              "systemUs": 12187,
+              "threadCpuNsPerByte": 1.3880097640012095
+            },
+            "513-2048": {
+              "calls": 36864,
+              "bytes": 4831590266,
+              "wallMs": 6704.627553701401,
+              "userUs": 6501120,
+              "systemUs": 28180,
+              "threadCpuNsPerByte": 1.3513770085072856
+            },
+            "2049+": {
+              "calls": 56099,
+              "bytes": 7352626726,
+              "wallMs": 10331.951045274734,
+              "userUs": 9986715,
+              "systemUs": 30697,
+              "threadCpuNsPerByte": 1.3624262965202512
+            }
+          }
+        },
+        {
+          "pid": 2064893,
+          "firstTurboFanMedianMs": 143.0253790616989,
+          "lowerTierBytePercent": 3.803290516129226,
+          "lowerTierCpuPercent": 12.45556957849335,
+          "parserTierGroups": {
+            "OtherOrTransition": {
+              "calls": 4003,
+              "bytes": 524654324,
+              "wallMs": 3004.0758991241455,
+              "userUs": 2491816,
+              "systemUs": 36279
+            },
+            "TurboFanBeforeAndAfter": {
+              "calls": 101248,
+              "bytes": 13270093192,
+              "wallMs": 19294.391002178192,
+              "userUs": 17680130,
+              "systemUs": 88679
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 192,
+              "bytes": 25164607,
+              "wallMs": 995.0128436088562,
+              "userUs": 826108,
+              "systemUs": 26836,
+              "threadCpuNsPerByte": 33.89458853857722
+            },
+            "9-32": {
+              "calls": 576,
+              "bytes": 75493648,
+              "wallMs": 710.1526160240173,
+              "userUs": 631654,
+              "systemUs": 1424,
+              "threadCpuNsPerByte": 8.385844594501513
+            },
+            "33-128": {
+              "calls": 2304,
+              "bytes": 301974172,
+              "wallMs": 945.6042363643646,
+              "userUs": 737183,
+              "systemUs": 7217,
+              "threadCpuNsPerByte": 2.4651114864220904
+            },
+            "129-512": {
+              "calls": 9216,
+              "bytes": 1207897453,
+              "wallMs": 2037.2247655391693,
+              "userUs": 1758628,
+              "systemUs": 8170,
+              "threadCpuNsPerByte": 1.4627052947349828
+            },
+            "513-2048": {
+              "calls": 36864,
+              "bytes": 4831591111,
+              "wallMs": 6957.265674114227,
+              "userUs": 6327102,
+              "systemUs": 32401,
+              "threadCpuNsPerByte": 1.316233690703137
+            },
+            "2049+": {
+              "calls": 56099,
+              "bytes": 7352626525,
+              "wallMs": 10653.206765651703,
+              "userUs": 9891271,
+              "systemUs": 48910,
+              "threadCpuNsPerByte": 1.351922468277416
+            }
+          }
+        },
+        {
+          "pid": 2065649,
+          "firstTurboFanMedianMs": 108.85691738128662,
+          "lowerTierBytePercent": 3.2275222252788347,
+          "lowerTierCpuPercent": 9.147510485092377,
+          "parserTierGroups": {
+            "OtherOrTransition": {
+              "calls": 3397,
+              "bytes": 445228542,
+              "wallMs": 2251.8152384757996,
+              "userUs": 1805386,
+              "systemUs": 26172
+            },
+            "TurboFanBeforeAndAfter": {
+              "calls": 101854,
+              "bytes": 13349518974,
+              "wallMs": 18853.908102989197,
+              "userUs": 18132352,
+              "systemUs": 58565
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 192,
+              "bytes": 25164575,
+              "wallMs": 811.1152040958405,
+              "userUs": 630188,
+              "systemUs": 20231,
+              "threadCpuNsPerByte": 25.84661175481803
+            },
+            "9-32": {
+              "calls": 576,
+              "bytes": 75493384,
+              "wallMs": 433.6737654209137,
+              "userUs": 335645,
+              "systemUs": 1277,
+              "threadCpuNsPerByte": 4.462934129433117
+            },
+            "33-128": {
+              "calls": 2304,
+              "bytes": 301974419,
+              "wallMs": 882.1367340087891,
+              "userUs": 721836,
+              "systemUs": 493,
+              "threadCpuNsPerByte": 2.3920204976038053
+            },
+            "129-512": {
+              "calls": 9216,
+              "bytes": 1207897584,
+              "wallMs": 1880.2081665992737,
+              "userUs": 1705545,
+              "systemUs": 12200,
+              "threadCpuNsPerByte": 1.4220949050263187
+            },
+            "513-2048": {
+              "calls": 36864,
+              "bytes": 4831591392,
+              "wallMs": 6722.1699430942535,
+              "userUs": 6553184,
+              "systemUs": 25938,
+              "threadCpuNsPerByte": 1.3616884099291813
+            },
+            "2049+": {
+              "calls": 56099,
+              "bytes": 7352626162,
+              "wallMs": 10376.419528245926,
+              "userUs": 9991340,
+              "systemUs": 24598,
+              "threadCpuNsPerByte": 1.362225928439635
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "opt3-local-int-probe-8",
+      "excludedWarmupPid": 2063608,
+      "processes": [
+        {
+          "pid": 2063713,
+          "firstTurboFanMedianMs": 70.32666206359863,
+          "lowerTierBytePercent": 3.480253766465529,
+          "lowerTierCpuPercent": 7.044653842122303,
+          "parserTierGroups": {
+            "OtherOrTransition": {
+              "calls": 3663,
+              "bytes": 480092220,
+              "wallMs": 1708.038349866867,
+              "userUs": 1332224,
+              "systemUs": 16622
+            },
+            "TurboFanBeforeAndAfter": {
+              "calls": 101588,
+              "bytes": 13314655296,
+              "wallMs": 19568.305471420288,
+              "userUs": 17687352,
+              "systemUs": 110889
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 192,
+              "bytes": 25164487,
+              "wallMs": 361.59702014923096,
+              "userUs": 234208,
+              "systemUs": 6825,
+              "threadCpuNsPerByte": 9.578299768240855
+            },
+            "9-32": {
+              "calls": 576,
+              "bytes": 75493564,
+              "wallMs": 351.95158338546753,
+              "userUs": 273434,
+              "systemUs": 453,
+              "threadCpuNsPerByte": 3.627951648964407
+            },
+            "33-128": {
+              "calls": 2304,
+              "bytes": 301974550,
+              "wallMs": 793.5002791881561,
+              "userUs": 633980,
+              "systemUs": 4202,
+              "threadCpuNsPerByte": 2.1133635268270123
+            },
+            "129-512": {
+              "calls": 9216,
+              "bytes": 1207897325,
+              "wallMs": 2015.3628754615784,
+              "userUs": 1676598,
+              "systemUs": 23929,
+              "threadCpuNsPerByte": 1.4078406871213163
+            },
+            "513-2048": {
+              "calls": 36864,
+              "bytes": 4831590800,
+              "wallMs": 6959.445988893509,
+              "userUs": 6427538,
+              "systemUs": 37829,
+              "threadCpuNsPerByte": 1.3381445713490472
+            },
+            "2049+": {
+              "calls": 56099,
+              "bytes": 7352626790,
+              "wallMs": 10794.486074209213,
+              "userUs": 9773818,
+              "systemUs": 54273,
+              "threadCpuNsPerByte": 1.3366775277329153
+            }
+          }
+        },
+        {
+          "pid": 2064125,
+          "firstTurboFanMedianMs": 47.85132539272308,
+          "lowerTierBytePercent": 2.0256350301148927,
+          "lowerTierCpuPercent": 4.883503977073009,
+          "parserTierGroups": {
+            "OtherOrTransition": {
+              "calls": 2132,
+              "bytes": 279431238,
+              "wallMs": 1251.4222042560577,
+              "userUs": 896702,
+              "systemUs": 22889
+            },
+            "TurboFanBeforeAndAfter": {
+              "calls": 103119,
+              "bytes": 13515316278,
+              "wallMs": 20083.88314628601,
+              "userUs": 17794624,
+              "systemUs": 116342
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 192,
+              "bytes": 25164499,
+              "wallMs": 466.3467526435852,
+              "userUs": 272840,
+              "systemUs": 16560,
+              "threadCpuNsPerByte": 11.500328299800445
+            },
+            "9-32": {
+              "calls": 576,
+              "bytes": 75493546,
+              "wallMs": 300.6248025894165,
+              "userUs": 255970,
+              "systemUs": 670,
+              "threadCpuNsPerByte": 3.3994958986295334
+            },
+            "33-128": {
+              "calls": 2304,
+              "bytes": 301974242,
+              "wallMs": 721.716242313385,
+              "userUs": 500371,
+              "systemUs": 8979,
+              "threadCpuNsPerByte": 1.6867332677997087
+            },
+            "129-512": {
+              "calls": 9216,
+              "bytes": 1207897779,
+              "wallMs": 1924.0794367790222,
+              "userUs": 1539006,
+              "systemUs": 25951,
+              "threadCpuNsPerByte": 1.2956038393377989
+            },
+            "513-2048": {
+              "calls": 36864,
+              "bytes": 4831590710,
+              "wallMs": 7085.646675825119,
+              "userUs": 6373621,
+              "systemUs": 37138,
+              "threadCpuNsPerByte": 1.3268423144227794
+            },
+            "2049+": {
+              "calls": 56099,
+              "bytes": 7352626740,
+              "wallMs": 10836.89144039154,
+              "userUs": 9749518,
+              "systemUs": 49933,
+              "threadCpuNsPerByte": 1.3327823302505901
+            }
+          }
+        },
+        {
+          "pid": 2065681,
+          "firstTurboFanMedianMs": 86.98374247550964,
+          "lowerTierBytePercent": 3.5220570977212224,
+          "lowerTierCpuPercent": 7.319909754756722,
+          "parserTierGroups": {
+            "OtherOrTransition": {
+              "calls": 3707,
+              "bytes": 485858884,
+              "wallMs": 1823.6111578941345,
+              "userUs": 1393446,
+              "systemUs": 23017
+            },
+            "TurboFanBeforeAndAfter": {
+              "calls": 101544,
+              "bytes": 13308888632,
+              "wallMs": 18740.078404188156,
+              "userUs": 17863796,
+              "systemUs": 70567
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 192,
+              "bytes": 25164543,
+              "wallMs": 402.8097469806671,
+              "userUs": 237457,
+              "systemUs": 11389,
+              "threadCpuNsPerByte": 9.88875498354967
+            },
+            "9-32": {
+              "calls": 576,
+              "bytes": 75493732,
+              "wallMs": 356.06956815719604,
+              "userUs": 284421,
+              "systemUs": 281,
+              "threadCpuNsPerByte": 3.7712005017847043
+            },
+            "33-128": {
+              "calls": 2304,
+              "bytes": 301973987,
+              "wallMs": 849.6558482646942,
+              "userUs": 671585,
+              "systemUs": 8850,
+              "threadCpuNsPerByte": 2.2532901153502336
+            },
+            "129-512": {
+              "calls": 9216,
+              "bytes": 1207897218,
+              "wallMs": 1944.0739045143127,
+              "userUs": 1650293,
+              "systemUs": 22840,
+              "threadCpuNsPerByte": 1.3851617298782453
+            },
+            "513-2048": {
+              "calls": 36864,
+              "bytes": 4831591124,
+              "wallMs": 6697.995571136475,
+              "userUs": 6495821,
+              "systemUs": 22160,
+              "threadCpuNsPerByte": 1.349034062013895
+            },
+            "2049+": {
+              "calls": 56099,
+              "bytes": 7352626912,
+              "wallMs": 10313.084923028946,
+              "userUs": 9917665,
+              "systemUs": 28064,
+              "threadCpuNsPerByte": 1.3526769573698723
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

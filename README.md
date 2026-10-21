@@ -33,10 +33,11 @@ node plain/calculate.mjs measurements.txt # Plain JavaScript, without launcher t
 node calculate.mjs measurements.txt       # Wasm
 ```
 
-The launcher supplies two V8 tuning flags for plain Node only. V8 is Node's
-JavaScript engine; the flags increase how much helper code it can combine into
-its optimized parsing loop:
+The launcher supplies three V8 tuning flags for plain Node only. The two inlining
+flags let Node's JavaScript engine combine more helper code into the parsing loop:
 `--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000`.
+`--v8-pool-size=8` gives V8 eight background threads; the combination was measured
+with fresh process startup included.
 
 ## Measured results
 
@@ -45,30 +46,34 @@ processed the full **1,000,000,000-row / 13,795,455,110-byte** input as follows:
 
 | Solver | Previous version | Retained version | Less elapsed time |
 | --- | ---: | ---: | ---: |
-| **Plain Node** | 1.092 s | **1.077 s** | **1.36%** |
-| **Wasm** | 0.487 s | **0.477 s** | **2.09%** |
+| **Plain Node** | 1.078 s | **1.024 s** | **4.97%** |
+| **Wasm** | Unchanged | **0.476 s** | — |
 
-Fresh profiles identified Node's dependent station-length load and redundant
-Wasm masking/hash selection. Packing the predicted station ID with its length
-removes the Node load. Specializing Wasm's 16–31-byte name path removes the
-redundant operations and a 1 KiB mask table. Native inspection verified both
-changes. Node won 15 of 21 final paired rounds; Wasm won 17 of 21. A separate
-Wasm key-load scheduling experiment showed no repeatable gain and was rejected.
-Throughput is **12.81 GB/s** for plain Node and **28.95 GB/s** for Wasm.
+The latest retained Node change uses explicit integer cursors and loop limits
+that stay outside the boundary helper's captured context. Native code confirms
+that the loop no longer reloads the captured limit or checks tagged values on
+every iteration. The V8 pool of eight improves the combined result. It won all
+**21 of 21** final paired rounds, following a separate 21-round confirmation.
+Throughput is **13.47 GB/s** for plain Node and **28.96 GB/s** for Wasm.
+
+The Wasm short-key table experiments regressed by 1.6–3.5%, so the existing
+optimized kernel is retained. A larger Node prediction cache, earlier tier-up
+thresholds, and several parser variants were also measured and rejected or
+superseded. Each experiment has an unsigned commit checkpoint.
 
 Full-billion-row exact station/minimum/sum/maximum/count tuples match between
-engines. All **54 tests pass on Node 24 and 26**.
+engines. All **56 tests pass on Node 24 and 26**.
 
 These are warm-filesystem-cache, end-to-end timings: startup, compilation, reads,
 parsing, aggregation, merging, sorting, output and shutdown all count. Three
-full-file warm-ups per case precede 21 alternating rounds for each engine in
-separate paired batches; scores discard the fastest and slowest run. All measured
-outputs matched and filesystem-input counters were zero. Both solvers use 24
-workers, with 128 KiB Node chunks and 512 KiB Wasm chunks. The Node launcher uses
-its two existing inlining flags. No theoretical optimum is claimed.
+full-file warm-ups per case precede 21 alternating Node rounds; unchanged Wasm
+was measured separately for seven rounds. Scores discard the fastest and slowest
+run. All outputs matched and filesystem-input counters were zero. Both solvers
+use 24 workers, with 128 KiB Node chunks and 512 KiB Wasm chunks. No theoretical
+optimum is claimed.
 
-See the [results and raw timing links](benchmarks/2026-10-21-target-results.json),
-[profile evidence](benchmarks/2026-10-21-optimization-targets.json), and
+See the [results and raw timing links](benchmarks/2026-10-21-opt3-results.json),
+[profile targets](benchmarks/2026-10-21-deeper-targets.json), and
 [experiment log](BENCHMARKS.md). These are local results, not leaderboard scores.
 
 ## Input and design
@@ -88,7 +93,10 @@ Java-compatible. Temperatures are accumulated as exact integer tenths.
 
 `plain/calculate.mjs` and `plain/lib/` contain the JavaScript implementation.
 Workers use 128 KiB chunks, four-byte delimiter scanning, typed-array hash tables
-and two independent parsing cursors. There are no per-measurement strings or objects.
+and two independent parsing cursors. Chunk-local positions and loop limits use
+32-bit integers: the reader limits buffers to 256 MiB plus 256 bytes of lookahead.
+File offsets remain full JavaScript numbers. There are no per-measurement strings
+or objects.
 
 A 128 KiB worker-local cache predicts a station from its first five bytes using
 a simple XOR and integer multiplication; for a four-byte name, the fifth byte

@@ -1,0 +1,1134 @@
+{
+  "date": "2026-10-21",
+  "baseline": "90a74a9",
+  "sourceCheckpoint": "cf9bf9b",
+  "selectionCheckpoint": "3e59970",
+  "profileEvidence": "benchmarks/2026-10-21-deeper-targets.json",
+  "machine": {
+    "cpu": "AMD Ryzen 9 7900",
+    "physicalCores": 12,
+    "logicalCpus": 24,
+    "runtime": "v26.12.0",
+    "governor": "powersave",
+    "energyPerformancePreference": "balance_performance",
+    "perfEventParanoid": "4"
+  },
+  "input": {
+    "path": "measurements.txt",
+    "rows": 1000000000,
+    "bytes": 13795455110,
+    "stations": 413,
+    "cached": true
+  },
+  "method": {
+    "workers": 24,
+    "nodeChunkBytes": 131072,
+    "wasmChunkBytes": 524288,
+    "nodeFinalRounds": 21,
+    "wasmFinalRounds": 7,
+    "warmupsPerCase": 3,
+    "score": "Trimmed mean, dropping fastest and slowest measured process; warm-ups excluded.",
+    "order": "Node cases alternate order each round; Wasm measured separately after Node.",
+    "includes": "Fresh process and workers, compilation, cached file reads, parsing, aggregation, merge, output, shutdown.",
+    "sourceHashAndCompleteStdoutCheckedEveryProcess": true,
+    "profilingSeparatedFromUninstrumentedTiming": true,
+    "hardwareCountersAvailable": false
+  },
+  "final": {
+    "node": {
+      "baselineSeconds": 1.0775369670000003,
+      "seconds": 1.0239846355789473,
+      "lessTimePercent": 4.969883452829427,
+      "logicalGBPerSecond": 13.472326273919366,
+      "sourceSha256": "326d1bd30fec9dcb715037fcd27ee10c2f72838898e5a0c7417e15153c1f4540",
+      "baselineSourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "flags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--v8-pool-size=8"
+      ],
+      "baselineFlags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000"
+      ],
+      "pairedWins": 21,
+      "pairedRounds": 21,
+      "pairedMeanSavingMs": 54.28171195238126,
+      "pairedStandardErrorMs": 3.5595883235693875,
+      "peakRssKiB": 343084,
+      "rawReport": "benchmarks/experiments/opt3-node-final-results.json"
+    },
+    "wasm": {
+      "seconds": 0.4763923259999999,
+      "logicalGBPerSecond": 28.958180804113123,
+      "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+      "flags": [],
+      "changed": false,
+      "peakRssKiB": 326284,
+      "rawReport": "benchmarks/experiments/opt3-wasm-final-results.json"
+    }
+  },
+  "decisions": [
+    {
+      "experiment": "Wasm hash-addressed 16-byte short-key table",
+      "checkpoints": ["ae7fdf1", "25d7c6b"],
+      "decision": "Reject both load orderings; retain original kernel.",
+      "evidence": ["opt3-wasm-keys-analysis.json", "opt3-wasm-early-analysis.json"]
+    },
+    {
+      "experiment": "Node V8 background pool",
+      "checkpoints": ["0fd4e2a", "a2af382"],
+      "decision": "Pool 2 regresses. Pool 8 improves baseline independently and wins with final source; retain pool 8 only for plain Node.",
+      "evidence": [
+        "opt3-node-pool-analysis.json",
+        "opt3-node-pool-confirm-analysis.json",
+        "opt3-node-local-confirm-analysis.json"
+      ]
+    },
+    {
+      "experiment": "Earlier TurboFan / OSR thresholds",
+      "checkpoints": ["6ca732e"],
+      "decision": "Reject; normal thresholds retained.",
+      "evidence": ["opt3-node-tier-analysis.json"]
+    },
+    {
+      "experiment": "Dedicated two-lane entry",
+      "checkpoints": ["915d3f1", "87fe74d"],
+      "decision": "Initial entry regresses; explicit integer cursors recover a small gain. Later local-limit version wins; dedicated entry not retained.",
+      "evidence": [
+        "opt3-node-two-analysis.json",
+        "opt3-node-int-analysis.json",
+        "opt3-node-int-confirm-analysis.json",
+        "opt3-tiers-analysis.json"
+      ]
+    },
+    {
+      "experiment": "Eight-byte predictor with exact first word",
+      "checkpoints": ["0e186a5"],
+      "decision": "Reject; dependent first-word load is removed but end-to-end performance regresses.",
+      "evidence": ["opt3-node-head-analysis.json"]
+    },
+    {
+      "experiment": "Integer cursors in original generic entry",
+      "checkpoints": ["2ae08e2"],
+      "decision": "Initial gain; native code still loads captured limit and checks tags/context cells. Superseded by uncaptured local limits.",
+      "evidence": ["opt3-node-generic-int-analysis.json"]
+    },
+    {
+      "experiment": "Uncaptured local integer limits/cursors plus pool 8",
+      "checkpoints": ["cf9bf9b", "68f2e30", "3e59970"],
+      "decision": "Retain. Native loop uses int32 comparisons without captured-limit reload or tagged checks; independent full-file comparisons improve.",
+      "evidence": [
+        "opt3-node-local-int-analysis.json",
+        "opt3-node-local-confirm-analysis.json",
+        "opt3-local-tiers-analysis.json"
+      ]
+    }
+  ],
+  "limitations": [
+    "Measurements apply to this machine, Node runtime, input and cached filesystem; name distributions and other runtimes can change performance.",
+    "Native PC samples identify emitted work, not cache misses, branch misses, exact instruction latency or independent wall-time components.",
+    "Phase probes perturb tier-up. Worker thread CPU excludes compiler threads, and boundary tier status cannot observe OSR within a call.",
+    "No theoretical optimum is established. Rejected source changes remain available through unsigned checkpoints."
+  ],
+  "batches": [
+    {
+      "report": "benchmarks/experiments/opt3-local-tiers-results.json",
+      "label": "opt3-local-tiers",
+      "date": "2026-10-21T07:31:35.373Z",
+      "warmupProcesses": 3,
+      "measuredProcesses": 9,
+      "cases": [
+        {
+          "name": "Baseline",
+          "sourceSha256": "2783dad850d0364124b97710162d4847a4cf19ac7a87b58b184598c816fbb22f",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--allow-natives-syntax"
+          ],
+          "seconds": 1.1507187270000008,
+          "runs": 3
+        },
+        {
+          "name": "Local integer cursors",
+          "sourceSha256": "7671c9e2635cf84f53575ba404949d3cf467251ac38984115f642b0caed38e14",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--allow-natives-syntax"
+          ],
+          "seconds": 1.107044221333333,
+          "runs": 3
+        },
+        {
+          "name": "Local integer cursors pool 8",
+          "sourceSha256": "7671c9e2635cf84f53575ba404949d3cf467251ac38984115f642b0caed38e14",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--allow-natives-syntax",
+            "--v8-pool-size=8"
+          ],
+          "seconds": 1.1029438626666666,
+          "runs": 3
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-node-final-results.json",
+      "label": "opt3-node-final",
+      "date": "2026-10-21T07:32:29.332Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 42,
+      "cases": [
+        {
+          "name": "Node baseline",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0775369670000003,
+          "runs": 21
+        },
+        {
+          "name": "Node selected",
+          "sourceSha256": "326d1bd30fec9dcb715037fcd27ee10c2f72838898e5a0c7417e15153c1f4540",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--v8-pool-size=8"
+          ],
+          "seconds": 1.0239846355789473,
+          "runs": 21
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-node-generic-int-results.json",
+      "label": "opt3-node-generic-int",
+      "date": "2026-10-21T07:25:08.929Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 18,
+      "cases": [
+        {
+          "name": "Node baseline",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0770907895714283,
+          "runs": 9
+        },
+        {
+          "name": "Node generic integer cursors",
+          "sourceSha256": "0e8547901d91dae38164a3fc16853affa29b82520d75915382e3cc2f1b05b9a2",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0575024607142856,
+          "runs": 9
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-node-head-results.json",
+      "label": "opt3-node-head",
+      "date": "2026-10-21T07:23:04.441Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 18,
+      "cases": [
+        {
+          "name": "Node baseline",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0756177551428583,
+          "runs": 9
+        },
+        {
+          "name": "Node eight-byte head predictor",
+          "sourceSha256": "342a07df250c5b6465b921d6f1e22c69d9978b23c425a289c4591c49a37ffecb",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0962353614285718,
+          "runs": 9
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-node-int-confirm-results.json",
+      "label": "opt3-node-int-confirm",
+      "date": "2026-10-21T07:20:00.081Z",
+      "warmupProcesses": 9,
+      "measuredProcesses": 63,
+      "cases": [
+        {
+          "name": "Node baseline pool 4",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0767869486315789,
+          "runs": 21
+        },
+        {
+          "name": "Node integer entry pool 4",
+          "sourceSha256": "ec66a35dd5617a960e1f08073107e11912a132ebf0ec0f205d598bf8405b74f6",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0636724190000002,
+          "runs": 21
+        },
+        {
+          "name": "Node integer entry pool 8",
+          "sourceSha256": "ec66a35dd5617a960e1f08073107e11912a132ebf0ec0f205d598bf8405b74f6",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--v8-pool-size=8"
+          ],
+          "seconds": 1.0681956090526323,
+          "runs": 21
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-node-int-results.json",
+      "label": "opt3-node-int",
+      "date": "2026-10-21T07:19:03.927Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 18,
+      "cases": [
+        {
+          "name": "Node baseline",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0664624950000001,
+          "runs": 9
+        },
+        {
+          "name": "Node two-lane integer cursors",
+          "sourceSha256": "ec66a35dd5617a960e1f08073107e11912a132ebf0ec0f205d598bf8405b74f6",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0548860202857142,
+          "runs": 9
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-node-local-confirm-results.json",
+      "label": "opt3-node-local-confirm",
+      "date": "2026-10-21T07:28:43.066Z",
+      "warmupProcesses": 9,
+      "measuredProcesses": 63,
+      "cases": [
+        {
+          "name": "Node baseline",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0796152840000002,
+          "runs": 21
+        },
+        {
+          "name": "Node local integers pool 4",
+          "sourceSha256": "326d1bd30fec9dcb715037fcd27ee10c2f72838898e5a0c7417e15153c1f4540",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0658771376315794,
+          "runs": 21
+        },
+        {
+          "name": "Node local integers pool 8",
+          "sourceSha256": "326d1bd30fec9dcb715037fcd27ee10c2f72838898e5a0c7417e15153c1f4540",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--v8-pool-size=8"
+          ],
+          "seconds": 1.024285335,
+          "runs": 21
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-node-local-int-results.json",
+      "label": "opt3-node-local-int",
+      "date": "2026-10-21T07:27:14.744Z",
+      "warmupProcesses": 9,
+      "measuredProcesses": 27,
+      "cases": [
+        {
+          "name": "Node baseline",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0925594607142868,
+          "runs": 9
+        },
+        {
+          "name": "Node generic integer cursors",
+          "sourceSha256": "0e8547901d91dae38164a3fc16853affa29b82520d75915382e3cc2f1b05b9a2",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.087894679428572,
+          "runs": 9
+        },
+        {
+          "name": "Node local integer cursors",
+          "sourceSha256": "326d1bd30fec9dcb715037fcd27ee10c2f72838898e5a0c7417e15153c1f4540",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.040332551428572,
+          "runs": 9
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-node-pool-confirm-results.json",
+      "label": "opt3-node-pool-confirm",
+      "date": "2026-10-21T07:10:40.816Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 42,
+      "cases": [
+        {
+          "name": "Node default pool 4",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.079959873000001,
+          "runs": 21
+        },
+        {
+          "name": "Node pool 8",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--v8-pool-size=8"
+          ],
+          "seconds": 1.0650771580526308,
+          "runs": 21
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-node-pool-results.json",
+      "label": "opt3-node-pool",
+      "date": "2026-10-21T07:06:39.484Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 21,
+      "cases": [
+        {
+          "name": "Node default pool 4",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0936580974,
+          "runs": 7
+        },
+        {
+          "name": "Node pool 2",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--v8-pool-size=2"
+          ],
+          "seconds": 1.1897530281999997,
+          "runs": 7
+        },
+        {
+          "name": "Node pool 8",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--v8-pool-size=8"
+          ],
+          "seconds": 1.0844893124,
+          "runs": 7
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-node-tier-results.json",
+      "label": "opt3-node-tier",
+      "date": "2026-10-21T07:08:16.361Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 21,
+      "cases": [
+        {
+          "name": "Node default tiering",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0880620020000007,
+          "runs": 7
+        },
+        {
+          "name": "Node TurboFan threshold 1000",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--invocation-count-for-turbofan=1000"
+          ],
+          "seconds": 1.0885038698000002,
+          "runs": 7
+        },
+        {
+          "name": "Node OSR threshold 100",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--invocation-count-for-osr=100"
+          ],
+          "seconds": 1.1180092352000002,
+          "runs": 7
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-node-two-results.json",
+      "label": "opt3-node-two",
+      "date": "2026-10-21T07:13:36.860Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 18,
+      "cases": [
+        {
+          "name": "Node baseline",
+          "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0867442857142853,
+          "runs": 9
+        },
+        {
+          "name": "Node dedicated two-lane entry",
+          "sourceSha256": "0d300773d05ae5a9116e1f0e5b011ba5dac137e18c0f6ee2ff08024bdb1a4e4a",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000"
+          ],
+          "seconds": 1.0985475317142863,
+          "runs": 9
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-tiers-results.json",
+      "label": "opt3-tiers",
+      "date": "2026-10-21T07:21:40.493Z",
+      "warmupProcesses": 4,
+      "measuredProcesses": 12,
+      "cases": [
+        {
+          "name": "Baseline pool 4",
+          "sourceSha256": "2783dad850d0364124b97710162d4847a4cf19ac7a87b58b184598c816fbb22f",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--allow-natives-syntax",
+            "--v8-pool-size=4"
+          ],
+          "seconds": 1.1395536670000002,
+          "runs": 3
+        },
+        {
+          "name": "Baseline pool 8",
+          "sourceSha256": "2783dad850d0364124b97710162d4847a4cf19ac7a87b58b184598c816fbb22f",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--allow-natives-syntax",
+            "--v8-pool-size=8"
+          ],
+          "seconds": 1.132897563666667,
+          "runs": 3
+        },
+        {
+          "name": "Integer entry pool 4",
+          "sourceSha256": "50c01658b99b4fad3322c518e5ace2cc516d0c584c9e7e8044ddf1879b8718da",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--allow-natives-syntax",
+            "--v8-pool-size=4"
+          ],
+          "seconds": 1.1336228163333333,
+          "runs": 3
+        },
+        {
+          "name": "Integer entry pool 8",
+          "sourceSha256": "50c01658b99b4fad3322c518e5ace2cc516d0c584c9e7e8044ddf1879b8718da",
+          "flags": [
+            "--max-inlined-bytecode-size=1000",
+            "--max-inlined-bytecode-size-cumulative=4000",
+            "--allow-natives-syntax",
+            "--v8-pool-size=8"
+          ],
+          "seconds": 1.1279630923333337,
+          "runs": 3
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-wasm-early-results.json",
+      "label": "opt3-wasm-early",
+      "date": "2026-10-21T07:05:54.183Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 18,
+      "cases": [
+        {
+          "name": "Wasm baseline",
+          "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+          "flags": [],
+          "seconds": 0.4725122485714283,
+          "runs": 9
+        },
+        {
+          "name": "Wasm keys with early bucket load",
+          "sourceSha256": "48047c3395c25d1d7264a87a833e90b9b325fb25e742bfd91a0aee0f29d93bc2",
+          "flags": [],
+          "seconds": 0.48019904557142834,
+          "runs": 9
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-wasm-final-results.json",
+      "label": "opt3-wasm-final",
+      "date": "2026-10-21T07:35:00.504Z",
+      "warmupProcesses": 3,
+      "measuredProcesses": 7,
+      "cases": [
+        {
+          "name": "Wasm retained",
+          "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+          "flags": [],
+          "seconds": 0.4763923259999999,
+          "runs": 7
+        }
+      ]
+    },
+    {
+      "report": "benchmarks/experiments/opt3-wasm-keys-results.json",
+      "label": "opt3-wasm-keys",
+      "date": "2026-10-21T07:02:32.858Z",
+      "warmupProcesses": 6,
+      "measuredProcesses": 18,
+      "cases": [
+        {
+          "name": "Wasm baseline",
+          "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+          "flags": [],
+          "seconds": 0.4664931302857146,
+          "runs": 9
+        },
+        {
+          "name": "Wasm hash-indexed keys",
+          "sourceSha256": "4c7c7ac56cb0748798312815b377adeeb5ea95e541db585aa5c7c96c88965846",
+          "flags": [],
+          "seconds": 0.4829176827142859,
+          "runs": 9
+        }
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "capture": {
+        "label": "opt3-node-generic-int-native1",
+        "engine": "node",
+        "workers": 1,
+        "mode": "js-ticks",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/opt3-node-generic-int-native1/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--max-inlined-bytecode-size=1000",
+          "--max-inlined-bytecode-size-cumulative=4000",
+          "--prof",
+          "--prof-sampling-interval=250",
+          "--logfile=/home/mmv/projects/1brc-node/results/profiles/opt3-node-generic-int-native1/v8.log",
+          "--print-opt-code",
+          "--code-comments",
+          "--log-source-code",
+          "--log-source-position",
+          "--trace-deopt",
+          "plain/calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 9.476604867028072,
+        "usage": {
+          "user": 8.8,
+          "system": 0.97,
+          "maxRssKiB": 65960,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "0e8547901d91dae38164a3fc16853affa29b82520d75915382e3cc2f1b05b9a2",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": []
+      },
+      "rawArtifacts": {
+        "directory": "results/profiles/opt3-node-generic-int-native1",
+        "files": 6,
+        "bytes": 6887710,
+        "sortedPathSizeSha256InventoryDigest": "afe3c0927edf44d22b10070da7966db718c6d816d18d435261e9d1a712433921"
+      }
+    },
+    {
+      "capture": {
+        "label": "opt3-node-head-native1",
+        "engine": "node",
+        "workers": 1,
+        "mode": "js-ticks",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/opt3-node-head-native1/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--max-inlined-bytecode-size=1000",
+          "--max-inlined-bytecode-size-cumulative=4000",
+          "--prof",
+          "--prof-sampling-interval=250",
+          "--logfile=/home/mmv/projects/1brc-node/results/profiles/opt3-node-head-native1/v8.log",
+          "--print-opt-code",
+          "--code-comments",
+          "--log-source-code",
+          "--log-source-position",
+          "--trace-deopt",
+          "plain/calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 9.872671226970851,
+        "usage": {
+          "user": 9.22,
+          "system": 0.97,
+          "maxRssKiB": 65004,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "342a07df250c5b6465b921d6f1e22c69d9978b23c425a289c4591c49a37ffecb",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": []
+      },
+      "rawArtifacts": {
+        "directory": "results/profiles/opt3-node-head-native1",
+        "files": 6,
+        "bytes": 6907454,
+        "sortedPathSizeSha256InventoryDigest": "161b9fca512f880412f2a1ba489183fcdd611eab5bdfb7c54abbd9d3c61ffb8d"
+      }
+    },
+    {
+      "capture": {
+        "label": "opt3-node-int-native1",
+        "engine": "node",
+        "workers": 1,
+        "mode": "js-ticks",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/opt3-node-int-native1/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--max-inlined-bytecode-size=1000",
+          "--max-inlined-bytecode-size-cumulative=4000",
+          "--prof",
+          "--prof-sampling-interval=250",
+          "--logfile=/home/mmv/projects/1brc-node/results/profiles/opt3-node-int-native1/v8.log",
+          "--print-opt-code",
+          "--code-comments",
+          "--log-source-code",
+          "--log-source-position",
+          "--trace-deopt",
+          "plain/calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 9.425876941066235,
+        "usage": {
+          "user": 8.85,
+          "system": 0.9,
+          "maxRssKiB": 65756,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "ec66a35dd5617a960e1f08073107e11912a132ebf0ec0f205d598bf8405b74f6",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": []
+      },
+      "rawArtifacts": {
+        "directory": "results/profiles/opt3-node-int-native1",
+        "files": 6,
+        "bytes": 7393749,
+        "sortedPathSizeSha256InventoryDigest": "a413112dc60e28ce26928a08b32809f186eb5b87ff4dba959916c27ac541e8c0"
+      }
+    },
+    {
+      "capture": {
+        "label": "opt3-node-local-int-native1",
+        "engine": "node",
+        "workers": 1,
+        "mode": "js-ticks",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/opt3-node-local-int-native1/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--max-inlined-bytecode-size=1000",
+          "--max-inlined-bytecode-size-cumulative=4000",
+          "--prof",
+          "--prof-sampling-interval=250",
+          "--logfile=/home/mmv/projects/1brc-node/results/profiles/opt3-node-local-int-native1/v8.log",
+          "--print-opt-code",
+          "--code-comments",
+          "--log-source-code",
+          "--log-source-position",
+          "--trace-deopt",
+          "plain/calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 9.477443656185642,
+        "usage": {
+          "user": 8.9,
+          "system": 0.86,
+          "maxRssKiB": 65416,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "326d1bd30fec9dcb715037fcd27ee10c2f72838898e5a0c7417e15153c1f4540",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": []
+      },
+      "rawArtifacts": {
+        "directory": "results/profiles/opt3-node-local-int-native1",
+        "files": 6,
+        "bytes": 6747612,
+        "sortedPathSizeSha256InventoryDigest": "5e783cbb6d2bb33bd817b2ef447ea910403c8cb16b879e259638e7c2efdcca88"
+      }
+    },
+    {
+      "capture": {
+        "label": "opt3-node-two-native1",
+        "engine": "node",
+        "workers": 1,
+        "mode": "js-ticks",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/opt3-node-two-native1/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--max-inlined-bytecode-size=1000",
+          "--max-inlined-bytecode-size-cumulative=4000",
+          "--prof",
+          "--prof-sampling-interval=250",
+          "--logfile=/home/mmv/projects/1brc-node/results/profiles/opt3-node-two-native1/v8.log",
+          "--print-opt-code",
+          "--code-comments",
+          "--log-source-code",
+          "--log-source-position",
+          "--trace-deopt",
+          "plain/calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 10.127852621022612,
+        "usage": {
+          "user": 9.44,
+          "system": 1.02,
+          "maxRssKiB": 65752,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "0d300773d05ae5a9116e1f0e5b011ba5dac137e18c0f6ee2ff08024bdb1a4e4a",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": []
+      },
+      "rawArtifacts": {
+        "directory": "results/profiles/opt3-node-two-native1",
+        "files": 6,
+        "bytes": 7709936,
+        "sortedPathSizeSha256InventoryDigest": "5aaecc0ebb63af31f94e58aca6a445f40a08f41ba0829bac6c0cdf57e3a847f1"
+      }
+    },
+    {
+      "capture": {
+        "label": "opt3-wasm-early-native1",
+        "engine": "wasm",
+        "workers": 1,
+        "mode": "ticks",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/opt3-wasm-early-native1/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--prof",
+          "--prof-sampling-interval=250",
+          "--logfile=/home/mmv/projects/1brc-node/results/profiles/opt3-wasm-early-native1/v8.log",
+          "--print-wasm-code",
+          "--print-wasm-code-function-index=8",
+          "--code-comments",
+          "--redirect-code-traces",
+          "--redirect-code-traces-to=/home/mmv/projects/1brc-node/results/profiles/opt3-wasm-early-native1/native.asm",
+          "calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 4.4210779659915715,
+        "usage": {
+          "user": 3.67,
+          "system": 0.89,
+          "maxRssKiB": 66972,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "48047c3395c25d1d7264a87a833e90b9b325fb25e742bfd91a0aee0f29d93bc2",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": []
+      },
+      "rawArtifacts": {
+        "directory": "results/profiles/opt3-wasm-early-native1",
+        "files": 7,
+        "bytes": 4180250,
+        "sortedPathSizeSha256InventoryDigest": "389f3489bd20131ac13502f26d827cea01d5d2c3dd5268491de738cc4a5ef0f5"
+      }
+    },
+    {
+      "capture": {
+        "label": "opt3-wasm-keys-native1",
+        "engine": "wasm",
+        "workers": 1,
+        "mode": "ticks",
+        "command": [
+          "/usr/bin/time",
+          "-o",
+          "results/profiles/opt3-wasm-keys-native1/usage.json",
+          "-f",
+          "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+          "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+          "--prof",
+          "--prof-sampling-interval=250",
+          "--logfile=/home/mmv/projects/1brc-node/results/profiles/opt3-wasm-keys-native1/v8.log",
+          "--print-wasm-code",
+          "--print-wasm-code-function-index=8",
+          "--code-comments",
+          "--redirect-code-traces",
+          "--redirect-code-traces-to=/home/mmv/projects/1brc-node/results/profiles/opt3-wasm-keys-native1/native.asm",
+          "calculate.mjs",
+          "measurements.txt"
+        ],
+        "secondsWithProfiling": 4.319478740915656,
+        "usage": {
+          "user": 3.64,
+          "system": 0.84,
+          "maxRssKiB": 66704,
+          "filesystemInputs": 0
+        },
+        "sourceSha256": "4c7c7ac56cb0748798312815b377adeeb5ea95e541db585aa5c7c96c88965846",
+        "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+        "correct": true,
+        "profiles": []
+      },
+      "rawArtifacts": {
+        "directory": "results/profiles/opt3-wasm-keys-native1",
+        "files": 7,
+        "bytes": 4087438,
+        "sortedPathSizeSha256InventoryDigest": "391ac5e79aaf0f3766cbeb2fbf74a088c32646bbf674de1403b073fefe30a19d"
+      }
+    }
+  ],
+  "phaseArtifacts": [
+    {
+      "directory": "results/opt3-phase-output",
+      "files": 400,
+      "bytes": 1626574,
+      "sortedPathSizeSha256InventoryDigest": "ff0b5a881cbbe0aa211bada8930a971ccde333a056f56324d847a3d77f37786f"
+    },
+    {
+      "directory": "results/opt3-final-phase-output",
+      "files": 300,
+      "bytes": 1184407,
+      "sortedPathSizeSha256InventoryDigest": "f9830fce5e911fb983dafd302f427958478a919b694a71902ef13f21e7acc35a"
+    }
+  ],
+  "phaseManifests": [
+    {
+      "path": "results/opt3-base-probe/phase-manifest.json",
+      "manifest": {
+        "originalHashes": {
+          "node": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "wasm": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e"
+        },
+        "instrumentedHashes": {
+          "node": "2783dad850d0364124b97710162d4847a4cf19ac7a87b58b184598c816fbb22f",
+          "wasm": "147ce77c491c361a8130e6beec5ab47ae3ac56698bf29b84e295371d22df07d6"
+        },
+        "probeSha256": "762d46874707d55509f1487c680ac6b907098b912800794fffa4b7504bf77da0",
+        "generatorSha256": "89e863da3a729d9a1d004eb4c9858cf39b63e3196b8e20e5c334f6501ecc35ba",
+        "limitations": [
+          "Diagnostic durations include probe overhead; compare with uninstrumented controls.",
+          "Concurrent worker wall spans must not be added as whole-process elapsed time.",
+          "Thread CPU excludes background compiler threads; kernel wall time includes compilation waits.",
+          "Phase CPU is sampled with threadCpuUsage, not hardware performance counters.",
+          "Consume includes read, parse, scheduling and instrumentation; phases are nested.",
+          "Only the default synchronous reader is instrumented completely.",
+          "Per-thread JSON is written at exit, after the recorded exit mark."
+        ]
+      }
+    },
+    {
+      "path": "results/opt3-int-probe/phase-manifest.json",
+      "manifest": {
+        "originalHashes": {
+          "node": "ec66a35dd5617a960e1f08073107e11912a132ebf0ec0f205d598bf8405b74f6",
+          "wasm": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e"
+        },
+        "instrumentedHashes": {
+          "node": "50c01658b99b4fad3322c518e5ace2cc516d0c584c9e7e8044ddf1879b8718da",
+          "wasm": "147ce77c491c361a8130e6beec5ab47ae3ac56698bf29b84e295371d22df07d6"
+        },
+        "probeSha256": "762d46874707d55509f1487c680ac6b907098b912800794fffa4b7504bf77da0",
+        "generatorSha256": "89e863da3a729d9a1d004eb4c9858cf39b63e3196b8e20e5c334f6501ecc35ba",
+        "limitations": [
+          "Diagnostic durations include probe overhead; compare with uninstrumented controls.",
+          "Concurrent worker wall spans must not be added as whole-process elapsed time.",
+          "Thread CPU excludes background compiler threads; kernel wall time includes compilation waits.",
+          "Phase CPU is sampled with threadCpuUsage, not hardware performance counters.",
+          "Consume includes read, parse, scheduling and instrumentation; phases are nested.",
+          "Only the default synchronous reader is instrumented completely.",
+          "Per-thread JSON is written at exit, after the recorded exit mark."
+        ]
+      }
+    },
+    {
+      "path": "results/opt3-local-int-probe/phase-manifest.json",
+      "manifest": {
+        "originalHashes": {
+          "node": "326d1bd30fec9dcb715037fcd27ee10c2f72838898e5a0c7417e15153c1f4540",
+          "wasm": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e"
+        },
+        "instrumentedHashes": {
+          "node": "7671c9e2635cf84f53575ba404949d3cf467251ac38984115f642b0caed38e14",
+          "wasm": "147ce77c491c361a8130e6beec5ab47ae3ac56698bf29b84e295371d22df07d6"
+        },
+        "probeSha256": "762d46874707d55509f1487c680ac6b907098b912800794fffa4b7504bf77da0",
+        "generatorSha256": "89e863da3a729d9a1d004eb4c9858cf39b63e3196b8e20e5c334f6501ecc35ba",
+        "limitations": [
+          "Diagnostic durations include probe overhead; compare with uninstrumented controls.",
+          "Concurrent worker wall spans must not be added as whole-process elapsed time.",
+          "Thread CPU excludes background compiler threads; kernel wall time includes compilation waits.",
+          "Phase CPU is sampled with threadCpuUsage, not hardware performance counters.",
+          "Consume includes read, parse, scheduling and instrumentation; phases are nested.",
+          "Only the default synchronous reader is instrumented completely.",
+          "Per-thread JSON is written at exit, after the recorded exit mark."
+        ]
+      }
+    }
+  ],
+  "validation": {
+    "exactFullFile": {
+      "date": "2026-10-21T07:35:32.494Z",
+      "nodeVersion": "v26.12.0",
+      "file": "measurements.txt",
+      "measurements": 1000000000,
+      "stations": 413,
+      "exactTuplesMatch": true,
+      "expectedStdoutMatches": true,
+      "sources": {
+        "node": "326d1bd30fec9dcb715037fcd27ee10c2f72838898e5a0c7417e15153c1f4540",
+        "wasm": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e"
+      }
+    },
+    "verificationArtifact": {
+      "path": "results/1792568132495-2069560-verify-engines.json",
+      "bytes": 389,
+      "sha256": "98d8fc78b52f01fe4c28dc8b1e7780835bfac53e3e61d7b81b337916016b8b42"
+    },
+    "node26Tests": {
+      "path": "results/opt3-final-tests-node26.txt",
+      "bytes": 4507,
+      "sha256": "55c409a1f6467e2272fe03f3ef2b778ca5cd05c2b6dc610b4643ab729a102389"
+    },
+    "node24Tests": {
+      "path": "results/opt3-final-tests-node24.txt",
+      "bytes": 4510,
+      "sha256": "77fbeb0ac9b8ff57d4b5290fdfe0840d684dd977f25f24f4681ad51ac7dd4221"
+    },
+    "testsPassedPerRuntime": 56,
+    "biome": "pass",
+    "clangFormat": "pass",
+    "gitDiffCheck": "pass",
+    "allComparedOutputsCorrect": true,
+    "allMeasuredFilesystemInputsZero": true
+  },
+  "unsignedCheckpoints": [
+    "ae7fdf177081f1bc547a1af7a3752b368d8aea63",
+    "25d7c6bfe1b75e11f0d1a33c2a90a8f226b2ae2e",
+    "0fd4e2a7282fa89188217267a139eafa904a2de3",
+    "6ca732efe0cf179ce5a69481f2e5619e86224334",
+    "a2af3829bfaa47550247e22f2161e785aa8d2f7d",
+    "915d3f13ffc9e9f8215fb7ad9ab474b6082a991d",
+    "87fe74d8422c666e3b1e9f30d75faddec1c2e711",
+    "9b34a04ed2596022305e8a6fb9d54712b359f2f3",
+    "eae4a75dfca05de0a31fea070447ed01614010e2",
+    "0e186a5fcd09fe0564441493e9f197ea83d2d82e",
+    "2ae08e2765c2c59a135c4abb71fe8a95ae7c957c",
+    "cf9bf9b6d892db494f849330ace2f9ebcfc510cf",
+    "68f2e3055de458bcaca1b59c1d451a054b674da2",
+    "3e59970edf40be113e2151e7f7529292eec10f86"
+  ],
+  "totals": {
+    "comparisonBatches": 16,
+    "warmupProcesses": 97,
+    "measuredProcesses": 415,
+    "nativeProfileProcesses": 7
+  }
+}
