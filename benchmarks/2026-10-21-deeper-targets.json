@@ -1,0 +1,4648 @@
+{
+  "date": "2026-10-21",
+  "baseline": "7aacb10",
+  "scope": "Fresh profiling and ranked optimization targets. No production changes and no new solver speedup claim.",
+  "planCheckpoint": "c4e6dea",
+  "machine": {
+    "cpu": "AMD Ryzen 9 7900",
+    "physicalCores": 12,
+    "logicalCpus": 24,
+    "linux": "7.0.0-38-generic",
+    "governor": "powersave",
+    "energyPerformancePreference": "balance_performance",
+    "node": "v26.12.0"
+  },
+  "input": {
+    "path": "measurements.txt",
+    "rows": 1000000000,
+    "bytes": 13795455110,
+    "stations": 413,
+    "expectedOutputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5"
+  },
+  "sourceSha256": {
+    "node": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+    "wasm": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e"
+  },
+  "method": {
+    "cpu": "Three full-file CPU captures per engine, alternating engine order; 24 workers, all 25 isolates, 1000 us samples.",
+    "native": "One full-file single-worker raw-PC capture per engine at 250 us with same-process native disassembly.",
+    "phases": "Isolated copies add thread CPU and monotonic wall clocks around chunk read/parse, kernel setup, consume and result export, plus lifecycle marks. Production hot-loop source and Wasm bytes are unchanged.",
+    "phaseAggregation": "One warm-up per case is excluded from the phase analysis, matching the paired controls. Never add concurrent wall spans as whole-process elapsed time. Consume includes read and parse.",
+    "tier": "V8 GetOptimizationStatus observed before and after each Node parser call in a diagnostic copy only; --allow-natives-syntax does not ship. No forced optimization. Status bits checked in the local Node 26.12.0 source, runtime.h:1117 and runtime-test.cc:895.",
+    "limitations": [
+      "Raw sample percentages are not elapsed-time components or predicted speedups. CPU profiles include main-thread idle.",
+      "Single-worker native shares are not the 24-worker distribution. PC sampling does not identify cache misses, branch misses or individual instruction latency.",
+      "Phase probes add measured overhead and can perturb tier timing. Early/steady comparisons diagnose costs, not a candidate speedup.",
+      "threadCpuUsage is quantized; aggregate many chunks. It excludes background compiler threads. Pending optimization status does not distinguish queue wait from active compilation.",
+      "Tier status at call boundaries does not identify on-stack replacement within a call, or measure compiler CPU.",
+      "12/24-worker comparisons are five-round screens and are not sufficient to change production defaults.",
+      "Hardware/software perf counters remain unavailable under perf_event_paranoid=4; system settings unchanged.",
+      "Short-phase attribution is approximate: the 12-worker read CPU estimate reaches 107% of read wall spans. Do not treat phase ratios as exact blocked-time accounting."
+    ]
+  },
+  "cpuProfiles": [
+    {
+      "capture": "deep-20261021-node-cpu24-1",
+      "profiles": 25,
+      "samples": 23012,
+      "self": [
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 6165,
+          "percentSamples": 26.790370241613072
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 6158,
+          "percentSamples": 26.759951329741003
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 3818,
+          "percentSamples": 16.59134364679298
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 2636,
+          "percentSamples": 11.454893099252564
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1149,
+          "percentSamples": 4.993047105857813
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "samples": 1143,
+          "percentSamples": 4.966973752824614
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 974,
+          "percentSamples": 4.232574309056145
+        },
+        {
+          "functionName": "find",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 309,
+          "percentSamples": 1.3427776812098036
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 103,
+          "percentSamples": 0.44759256040326784
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 72,
+          "percentSamples": 0.31288023639840085
+        },
+        {
+          "functionName": "parse",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 70,
+          "percentSamples": 0.30418911872066745
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 43,
+          "percentSamples": 0.18685903007126717
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 55,
+          "ticks": 2349,
+          "percentSamples": 10.207717712497827
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 93,
+          "ticks": 2194,
+          "percentSamples": 9.534156092473491
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 167,
+          "ticks": 2170,
+          "percentSamples": 9.429862680340692
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 143,
+          "ticks": 1716,
+          "percentSamples": 7.45697896749522
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1149,
+          "percentSamples": 4.993047105857813
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "lineOneBased": 20,
+          "ticks": 1143,
+          "percentSamples": 4.966973752824614
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 136,
+          "ticks": 924,
+          "percentSamples": 4.015296367112811
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 96,
+          "ticks": 628,
+          "percentSamples": 2.729010950808274
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 92,
+          "ticks": 627,
+          "percentSamples": 2.724665391969407
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 104,
+          "ticks": 592,
+          "percentSamples": 2.5725708326090735
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 141,
+          "ticks": 586,
+          "percentSamples": 2.5464974795758732
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 103,
+          "ticks": 536,
+          "percentSamples": 2.3292195376325395
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/deep-20261021/deep-20261021-node-cpu24-1-summary.json",
+        "bytes": 783083,
+        "sha256": "e32c00b90eb3f21ddfeb95f34a85f14ff48105aaa0f86b8381a9e20967eca61c"
+      }
+    },
+    {
+      "capture": "deep-20261021-node-cpu24-2",
+      "profiles": 25,
+      "samples": 21682,
+      "self": [
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 5899,
+          "percentSamples": 27.206899732497003
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 5868,
+          "percentSamples": 27.063923992251638
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 3637,
+          "percentSamples": 16.774282815238447
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 2271,
+          "percentSamples": 10.474126003136242
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1198,
+          "percentSamples": 5.525320542385389
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "samples": 1071,
+          "percentSamples": 4.939581219444701
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 858,
+          "percentSamples": 3.957199520339452
+        },
+        {
+          "functionName": "find",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 259,
+          "percentSamples": 1.1945392491467577
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 110,
+          "percentSamples": 0.5073332718383913
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 72,
+          "percentSamples": 0.3320726870214925
+        },
+        {
+          "functionName": "claim",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 46,
+          "percentSamples": 0.21215755004150907
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 42,
+          "percentSamples": 0.19370906742920393
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 55,
+          "ticks": 2289,
+          "percentSamples": 10.557144174891615
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 93,
+          "ticks": 2158,
+          "percentSamples": 9.952956369338622
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 167,
+          "ticks": 1852,
+          "percentSamples": 8.54164744949728
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 143,
+          "ticks": 1733,
+          "percentSamples": 7.992805091781201
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1198,
+          "percentSamples": 5.525320542385389
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "lineOneBased": 20,
+          "ticks": 1071,
+          "percentSamples": 4.939581219444701
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 136,
+          "ticks": 885,
+          "percentSamples": 4.081726777972512
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 96,
+          "ticks": 628,
+          "percentSamples": 2.8964117701319068
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 141,
+          "ticks": 596,
+          "percentSamples": 2.7488239092334656
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 104,
+          "ticks": 569,
+          "percentSamples": 2.624296651600406
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 92,
+          "ticks": 541,
+          "percentSamples": 2.4951572733142697
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 59,
+          "ticks": 479,
+          "percentSamples": 2.2092057928235405
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/deep-20261021/deep-20261021-node-cpu24-2-summary.json",
+        "bytes": 753149,
+        "sha256": "8edf46da15629825fbede018cb5b22849691c58e6d6079d96acb02497d5fbf50"
+      }
+    },
+    {
+      "capture": "deep-20261021-node-cpu24-3",
+      "profiles": 25,
+      "samples": 21970,
+      "self": [
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 5965,
+          "percentSamples": 27.150659990896678
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 5836,
+          "percentSamples": 26.56349567592171
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 3669,
+          "percentSamples": 16.700045516613564
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 2506,
+          "percentSamples": 11.40646335912608
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1108,
+          "percentSamples": 5.0432407828857535
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "samples": 1088,
+          "percentSamples": 4.952207555757852
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 927,
+          "percentSamples": 4.219390077378243
+        },
+        {
+          "functionName": "find",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "samples": 263,
+          "percentSamples": 1.1970869367319072
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 91,
+          "percentSamples": 0.41420118343195267
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 78,
+          "percentSamples": 0.35502958579881655
+        },
+        {
+          "functionName": "parse",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/read.mjs",
+          "samples": 46,
+          "percentSamples": 0.20937642239417387
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 43,
+          "percentSamples": 0.19572143832498862
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 55,
+          "ticks": 2267,
+          "percentSamples": 10.318616294947656
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 167,
+          "ticks": 2115,
+          "percentSamples": 9.626763768775604
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 93,
+          "ticks": 2073,
+          "percentSamples": 9.435593991807009
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 143,
+          "ticks": 1769,
+          "percentSamples": 8.051888939462904
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1108,
+          "percentSamples": 5.0432407828857535
+        },
+        {
+          "functionName": "temperatureBase",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+          "lineOneBased": 20,
+          "ticks": 1088,
+          "percentSamples": 4.952207555757852
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 136,
+          "ticks": 829,
+          "percentSamples": 3.7733272644515248
+        },
+        {
+          "functionName": "update",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 141,
+          "ticks": 678,
+          "percentSamples": 3.086026399635867
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 104,
+          "ticks": 581,
+          "percentSamples": 2.644515248065544
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 92,
+          "ticks": 578,
+          "percentSamples": 2.6308602639963587
+        },
+        {
+          "functionName": "scan",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 96,
+          "ticks": 546,
+          "percentSamples": 2.485207100591716
+        },
+        {
+          "functionName": "equal",
+          "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+          "lineOneBased": 59,
+          "ticks": 520,
+          "percentSamples": 2.366863905325444
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/deep-20261021/deep-20261021-node-cpu24-3-summary.json",
+        "bytes": 768323,
+        "sha256": "9b16e9d2d33a738d5765b349c586e41ed89f585a05bfed18e13a2f65500564f7"
+      }
+    },
+    {
+      "capture": "deep-20261021-wasm-cpu24-1",
+      "profiles": 25,
+      "samples": 8814,
+      "self": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/c4019fba",
+          "samples": 6263,
+          "percentSamples": 71.05740866802813
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1266,
+          "percentSamples": 14.363512593601088
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/c4019fba",
+          "samples": 452,
+          "percentSamples": 5.128205128205129
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 400,
+          "percentSamples": 4.538234626730202
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "samples": 62,
+          "percentSamples": 0.7034263671431813
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 42,
+          "percentSamples": 0.4765146358066712
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 37,
+          "percentSamples": 0.41978670297254367
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "samples": 23,
+          "percentSamples": 0.2609484910369866
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "samples": 20,
+          "percentSamples": 0.2269117313365101
+        },
+        {
+          "functionName": "(program)",
+          "url": "",
+          "samples": 16,
+          "percentSamples": 0.18152938506920807
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "samples": 16,
+          "percentSamples": 0.18152938506920807
+        },
+        {
+          "functionName": "calculate",
+          "url": "file:///home/mmv/projects/1brc-node/calculate.mjs",
+          "samples": 15,
+          "percentSamples": 0.17018379850238258
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/c4019fba",
+          "lineOneBased": 1,
+          "ticks": 6263,
+          "percentSamples": 71.05740866802813
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1266,
+          "percentSamples": 14.363512593601088
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/c4019fba",
+          "lineOneBased": 1,
+          "ticks": 452,
+          "percentSamples": 5.128205128205129
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "lineOneBased": 437,
+          "ticks": 37,
+          "percentSamples": 0.41978670297254367
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "lineOneBased": 20,
+          "ticks": 14,
+          "percentSamples": 0.15883821193555706
+        },
+        {
+          "functionName": "getCLIOptionsValues",
+          "url": "",
+          "lineOneBased": 34,
+          "ticks": 13,
+          "percentSamples": 0.14749262536873156
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "lineOneBased": 57,
+          "ticks": 12,
+          "percentSamples": 0.13614703880190607
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "lineOneBased": 542,
+          "ticks": 10,
+          "percentSamples": 0.11345586566825505
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "lineOneBased": 544,
+          "ticks": 10,
+          "percentSamples": 0.11345586566825505
+        },
+        {
+          "functionName": "wasm-function[0]",
+          "url": "wasm://wasm/c4019fba",
+          "lineOneBased": 1,
+          "ticks": 9,
+          "percentSamples": 0.10211027910142954
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/worker.mjs",
+          "lineOneBased": 4,
+          "ticks": 7,
+          "percentSamples": 0.07941910596777853
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "lineOneBased": 12,
+          "ticks": 7,
+          "percentSamples": 0.07941910596777853
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/deep-20261021/deep-20261021-wasm-cpu24-1-summary.json",
+        "bytes": 479628,
+        "sha256": "7adb2a7fec28affcf29cda151f7af5bde2ddb97175c196b529deb242ddc491d5"
+      }
+    },
+    {
+      "capture": "deep-20261021-wasm-cpu24-2",
+      "profiles": 25,
+      "samples": 8669,
+      "self": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/c4019fba",
+          "samples": 6213,
+          "percentSamples": 71.6691659937709
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1173,
+          "percentSamples": 13.530972430499482
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/c4019fba",
+          "samples": 467,
+          "percentSamples": 5.3870111892951895
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 399,
+          "percentSamples": 4.602606990425655
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "samples": 63,
+          "percentSamples": 0.7267274195408928
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 52,
+          "percentSamples": 0.5998385050178798
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 31,
+          "percentSamples": 0.3575960318375822
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "samples": 21,
+          "percentSamples": 0.24224247318029762
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "samples": 17,
+          "percentSamples": 0.1961010497173838
+        },
+        {
+          "functionName": "(program)",
+          "url": "",
+          "samples": 14,
+          "percentSamples": 0.16149498212019842
+        },
+        {
+          "functionName": "calculate",
+          "url": "file:///home/mmv/projects/1brc-node/calculate.mjs",
+          "samples": 14,
+          "percentSamples": 0.16149498212019842
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "samples": 13,
+          "percentSamples": 0.14995962625446996
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/c4019fba",
+          "lineOneBased": 1,
+          "ticks": 6213,
+          "percentSamples": 71.6691659937709
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1173,
+          "percentSamples": 13.530972430499482
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/c4019fba",
+          "lineOneBased": 1,
+          "ticks": 467,
+          "percentSamples": 5.3870111892951895
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "lineOneBased": 437,
+          "ticks": 30,
+          "percentSamples": 0.34606067597185375
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "lineOneBased": 57,
+          "ticks": 15,
+          "percentSamples": 0.17303033798592687
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "lineOneBased": 20,
+          "ticks": 12,
+          "percentSamples": 0.1384242703887415
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/worker.mjs",
+          "lineOneBased": 4,
+          "ticks": 11,
+          "percentSamples": 0.12688891452301304
+        },
+        {
+          "functionName": "getCLIOptionsValues",
+          "url": "",
+          "lineOneBased": 34,
+          "ticks": 9,
+          "percentSamples": 0.10381820279155612
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "lineOneBased": 12,
+          "ticks": 8,
+          "percentSamples": 0.09228284692582767
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "lineOneBased": 19,
+          "ticks": 7,
+          "percentSamples": 0.08074749106009921
+        },
+        {
+          "functionName": "compileSourceTextModule",
+          "url": "node:internal/modules/esm/utils",
+          "lineOneBased": 355,
+          "ticks": 7,
+          "percentSamples": 0.08074749106009921
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "lineOneBased": 544,
+          "ticks": 7,
+          "percentSamples": 0.08074749106009921
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/deep-20261021/deep-20261021-wasm-cpu24-2-summary.json",
+        "bytes": 473884,
+        "sha256": "2c3dc07e7d737567a804276d64f73e21fb420971fb89a04f95f149d3ad850d75"
+      }
+    },
+    {
+      "capture": "deep-20261021-wasm-cpu24-3",
+      "profiles": 25,
+      "samples": 8747,
+      "self": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/c4019fba",
+          "samples": 6189,
+          "percentSamples": 70.75568766434206
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "samples": 1245,
+          "percentSamples": 14.233451469075112
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/c4019fba",
+          "samples": 522,
+          "percentSamples": 5.967760374985709
+        },
+        {
+          "functionName": "(idle)",
+          "url": "",
+          "samples": 395,
+          "percentSamples": 4.51583400022865
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "samples": 52,
+          "percentSamples": 0.5944895392706071
+        },
+        {
+          "functionName": "(garbage collector)",
+          "url": "",
+          "samples": 49,
+          "percentSamples": 0.560192065851149
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "samples": 39,
+          "percentSamples": 0.44586715445295527
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "node:internal/validators",
+          "samples": 22,
+          "percentSamples": 0.2515148050760261
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "samples": 18,
+          "percentSamples": 0.2057848405167486
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "samples": 18,
+          "percentSamples": 0.2057848405167486
+        },
+        {
+          "functionName": "readSync",
+          "url": "node:fs",
+          "samples": 18,
+          "percentSamples": 0.2057848405167486
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/worker.mjs",
+          "samples": 15,
+          "percentSamples": 0.1714873670972905
+        }
+      ],
+      "sourcePositions": [
+        {
+          "functionName": "wasm-function[8]",
+          "url": "wasm://wasm/c4019fba",
+          "lineOneBased": 1,
+          "ticks": 6189,
+          "percentSamples": 70.75568766434206
+        },
+        {
+          "functionName": "read",
+          "url": "",
+          "lineOneBased": 1005,
+          "ticks": 1245,
+          "percentSamples": 14.233451469075112
+        },
+        {
+          "functionName": "wasm-function[10]",
+          "url": "wasm://wasm/c4019fba",
+          "lineOneBased": 1,
+          "ticks": 522,
+          "percentSamples": 5.967760374985709
+        },
+        {
+          "functionName": "compileForInternalLoader",
+          "url": "node:internal/bootstrap/realm",
+          "lineOneBased": 437,
+          "ticks": 38,
+          "percentSamples": 0.4344346633131359
+        },
+        {
+          "functionName": "(anonymous)",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/worker.mjs",
+          "lineOneBased": 4,
+          "ticks": 15,
+          "percentSamples": 0.1714873670972905
+        },
+        {
+          "functionName": "consume",
+          "url": "file:///home/mmv/projects/1brc-node/lib/read.mjs",
+          "lineOneBased": 20,
+          "ticks": 13,
+          "percentSamples": 0.14862238481765178
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "lineOneBased": 57,
+          "ticks": 11,
+          "percentSamples": 0.12575740253801304
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "lineOneBased": 542,
+          "ticks": 10,
+          "percentSamples": 0.11432491139819366
+        },
+        {
+          "functionName": "wrappedFn",
+          "url": "node:internal/errors",
+          "lineOneBased": 544,
+          "ticks": 8,
+          "percentSamples": 0.09145992911855494
+        },
+        {
+          "functionName": "wasm-function[0]",
+          "url": "wasm://wasm/c4019fba",
+          "lineOneBased": 1,
+          "ticks": 7,
+          "percentSamples": 0.08002743797873557
+        },
+        {
+          "functionName": "aggregate",
+          "url": "file:///home/mmv/projects/1brc-node/wasm/engine.mjs",
+          "lineOneBased": 56,
+          "ticks": 5,
+          "percentSamples": 0.05716245569909683
+        },
+        {
+          "functionName": "_fill",
+          "url": "node:buffer",
+          "lineOneBased": 1258,
+          "ticks": 5,
+          "percentSamples": 0.05716245569909683
+        }
+      ],
+      "summaryArtifact": {
+        "path": "results/deep-20261021/deep-20261021-wasm-cpu24-3-summary.json",
+        "bytes": 465352,
+        "sha256": "115754c9c5c695bb7a6290e01c93d3a33f6ca893ed4c6dd517721377980fc6db"
+      }
+    }
+  ],
+  "captures": [
+    {
+      "label": "deep-20261021-node-cpu24-1",
+      "engine": "node",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/deep-20261021-node-cpu24-1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/deep-20261021-node-cpu24-1",
+        "plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 1.2160524718929082,
+      "usage": {
+        "user": 23.47,
+        "system": 1.79,
+        "maxRssKiB": 419512,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "rawInventory": {
+        "directory": "results/profiles/deep-20261021-node-cpu24-1",
+        "files": 29,
+        "bytes": 723492,
+        "sortedPathSizeSha256InventoryDigest": "2b46e85af40aebd5f6e774d9168d3ce41d035c26ef72c845dae5862914944a4b"
+      }
+    },
+    {
+      "label": "deep-20261021-node-cpu24-2",
+      "engine": "node",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/deep-20261021-node-cpu24-2/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/deep-20261021-node-cpu24-2",
+        "plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 1.1164106570649892,
+      "usage": {
+        "user": 22.0,
+        "system": 1.78,
+        "maxRssKiB": 418180,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "rawInventory": {
+        "directory": "results/profiles/deep-20261021-node-cpu24-2",
+        "files": 29,
+        "bytes": 687646,
+        "sortedPathSizeSha256InventoryDigest": "568f2d17e882a19805c31aa98c2067e99b81af9e9aa36e2203f771c11dbc756b"
+      }
+    },
+    {
+      "label": "deep-20261021-node-cpu24-3",
+      "engine": "node",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/deep-20261021-node-cpu24-3/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/deep-20261021-node-cpu24-3",
+        "plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 1.1660526199266315,
+      "usage": {
+        "user": 22.59,
+        "system": 1.71,
+        "maxRssKiB": 419288,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "rawInventory": {
+        "directory": "results/profiles/deep-20261021-node-cpu24-3",
+        "files": 29,
+        "bytes": 696478,
+        "sortedPathSizeSha256InventoryDigest": "2337b09cf6312e020b0c4b73875cc305ead52d90de517dcd52fdcd29b1584e89"
+      }
+    },
+    {
+      "label": "deep-20261021-node-native1",
+      "engine": "node",
+      "workers": 1,
+      "mode": "js-ticks",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/deep-20261021-node-native1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--prof",
+        "--prof-sampling-interval=250",
+        "--logfile=/home/mmv/projects/1brc-node/results/profiles/deep-20261021-node-native1/v8.log",
+        "--print-opt-code",
+        "--code-comments",
+        "--log-source-code",
+        "--log-source-position",
+        "--trace-deopt",
+        "plain/calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 9.325628916034475,
+      "usage": {
+        "user": 8.18,
+        "system": 1.45,
+        "maxRssKiB": 65388,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "rawInventory": {
+        "directory": "results/profiles/deep-20261021-node-native1",
+        "files": 6,
+        "bytes": 6704242,
+        "sortedPathSizeSha256InventoryDigest": "e6f3a8869e834fc2cb55044056624333c135ddf99588b76a24384173c3a28941"
+      }
+    },
+    {
+      "label": "deep-20261021-wasm-cpu24-1",
+      "engine": "wasm",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/deep-20261021-wasm-cpu24-1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/deep-20261021-wasm-cpu24-1",
+        "calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 0.5153216801118106,
+      "usage": {
+        "user": 8.21,
+        "system": 1.72,
+        "maxRssKiB": 401988,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "rawInventory": {
+        "directory": "results/profiles/deep-20261021-wasm-cpu24-1",
+        "files": 29,
+        "bytes": 456554,
+        "sortedPathSizeSha256InventoryDigest": "9714b5d39f210370fe5ea87f1ab628f3921b9c80b237a641c103d95c490c687f"
+      }
+    },
+    {
+      "label": "deep-20261021-wasm-cpu24-2",
+      "engine": "wasm",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/deep-20261021-wasm-cpu24-2/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/deep-20261021-wasm-cpu24-2",
+        "calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 0.5149507280439138,
+      "usage": {
+        "user": 8.11,
+        "system": 1.7,
+        "maxRssKiB": 404508,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "rawInventory": {
+        "directory": "results/profiles/deep-20261021-wasm-cpu24-2",
+        "files": 29,
+        "bytes": 465101,
+        "sortedPathSizeSha256InventoryDigest": "9fbd0c085715562c34ad57b59445ec0b99fb0ebf14748d3ede675b8756313627"
+      }
+    },
+    {
+      "label": "deep-20261021-wasm-cpu24-3",
+      "engine": "wasm",
+      "workers": 24,
+      "mode": "cpu",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/deep-20261021-wasm-cpu24-3/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--cpu-prof",
+        "--cpu-prof-interval=1000",
+        "--cpu-prof-dir=/home/mmv/projects/1brc-node/results/profiles/deep-20261021-wasm-cpu24-3",
+        "calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 0.5149016149807721,
+      "usage": {
+        "user": 8.25,
+        "system": 1.7,
+        "maxRssKiB": 403732,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "rawInventory": {
+        "directory": "results/profiles/deep-20261021-wasm-cpu24-3",
+        "files": 29,
+        "bytes": 442125,
+        "sortedPathSizeSha256InventoryDigest": "8b2e8b07086740d4f8561196ec1dcb8bf41e37c3f8a7946dbce0459df5218b4e"
+      }
+    },
+    {
+      "label": "deep-20261021-wasm-native1",
+      "engine": "wasm",
+      "workers": 1,
+      "mode": "ticks",
+      "command": [
+        "/usr/bin/time",
+        "-o",
+        "results/profiles/deep-20261021-wasm-native1/usage.json",
+        "-f",
+        "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+        "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+        "--prof",
+        "--prof-sampling-interval=250",
+        "--logfile=/home/mmv/projects/1brc-node/results/profiles/deep-20261021-wasm-native1/v8.log",
+        "--print-wasm-code",
+        "--print-wasm-code-function-index=8",
+        "--code-comments",
+        "--redirect-code-traces",
+        "--redirect-code-traces-to=/home/mmv/projects/1brc-node/results/profiles/deep-20261021-wasm-native1/native.asm",
+        "calculate.mjs",
+        "measurements.txt"
+      ],
+      "secondsWithProfiling": 4.069973554927856,
+      "usage": {
+        "user": 3.31,
+        "system": 0.9,
+        "maxRssKiB": 66664,
+        "filesystemInputs": 0
+      },
+      "sourceSha256": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e",
+      "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+      "correct": true,
+      "rawInventory": {
+        "directory": "results/profiles/deep-20261021-wasm-native1",
+        "files": 7,
+        "bytes": 4076145,
+        "sortedPathSizeSha256InventoryDigest": "64afcd524794e70ee64889b227f18d4e03f127044752cd9e026ac57a8346fdcb"
+      }
+    }
+  ],
+  "nodeNative": {
+    "artifact": {
+      "path": "results/deep-20261021/node-native.json",
+      "bytes": 1935441,
+      "sha256": "dd8f86f2da9ee5fc7a699ffb6de9ff09fa71ac4cc85621e0aaffb83f952b3c45"
+    },
+    "totalTicks": 30700,
+    "parserTicks": 27668,
+    "parserBytes": 12520,
+    "sourcePositions": [
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 55,
+        "source": "if (records[r + 1] !== head) return false;",
+        "ticks": 3498,
+        "percentParserTicks": 12.64276420413474
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 143,
+        "source": "sums[id] += value;",
+        "ticks": 3264,
+        "percentParserTicks": 11.79702183027324
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 93,
+        "source": "const prediction = prefixCache[prefixSlot];",
+        "ticks": 2516,
+        "percentParserTicks": 9.093537660835622
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 136,
+        "source": "let value = temperatureBase(digits) + (buffer[p + width - 2] & 15);",
+        "ticks": 1422,
+        "percentParserTicks": 5.139511348850657
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 103,
+        "source": "if (buffer[end] === 59 && equal(view, start, length, r, head)) {",
+        "ticks": 1351,
+        "percentParserTicks": 4.882897209773023
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/parse-utils.mjs",
+        "line": 20,
+        "source": "return temperaturePrefixes[digits & 0x0f0f];",
+        "ticks": 1156,
+        "percentParserTicks": 4.178111898221773
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 59,
+        "source": "if (view.getInt32(start + Math.min(4, length - 4), true) !== records[r + 3]) return false;",
+        "ticks": 1088,
+        "percentParserTicks": 3.93234061009108
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 104,
+        "source": "temperatures[lane] = end + 1;",
+        "ticks": 1013,
+        "percentParserTicks": 3.661269336417522
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 141,
+        "source": "if (value < records[r + 6]) records[r + 6] = value;",
+        "ticks": 990,
+        "percentParserTicks": 3.578140812490964
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 95,
+        "source": "if (predicted >= 0) {",
+        "ticks": 976,
+        "percentParserTicks": 3.5275408414052336
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 63,
+        "source": "if (view.getInt32(start + i, true) !== keys.getInt32(offset + i, true)) return false;",
+        "ticks": 856,
+        "percentParserTicks": 3.093826803527541
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 98,
+        "source": "const end = start + length;",
+        "ticks": 814,
+        "percentParserTicks": 2.9420268902703484
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 167,
+        "source": "while (a < endA && b < end) {",
+        "ticks": 798,
+        "percentParserTicks": 2.884198351886656
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 135,
+        "source": "const width = 4 + negative + ((digits >>> 12) & 1);",
+        "ticks": 788,
+        "percentParserTicks": 2.8480555153968483
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 133,
+        "source": "const negative = (~word & 0x10) >>> 4;",
+        "ticks": 755,
+        "percentParserTicks": 2.7287841549804828
+      },
+      {
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 57,
+        "source": "if (view.getInt32(start + length - 4, true) !== records[r + 2]) return false;",
+        "ticks": 669,
+        "percentParserTicks": 2.4179557611681366
+      }
+    ],
+    "headAndPredictionRegions": [
+      {
+        "startOffset": 498,
+        "endOffsetExclusive": 543,
+        "inlineId": 6,
+        "origin": "scan file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:87:18",
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 93,
+        "source": "const prediction = prefixCache[prefixSlot];",
+        "ticks": 1776,
+        "instructions": [
+          {
+            "address": 125303548579890,
+            "offset": 498,
+            "operation": "REX.W movq [rbp-0x88],rcx",
+            "ticks": 73
+          },
+          {
+            "address": 125303548579897,
+            "offset": 505,
+            "operation": "REX.W movq [rbp-0xc0],r11",
+            "ticks": 35
+          },
+          {
+            "address": 125303548579904,
+            "offset": 512,
+            "operation": "cmpl r11,0x8000",
+            "ticks": 217
+          },
+          {
+            "address": 125303548579911,
+            "offset": 519,
+            "operation": "jnc 0x71f68180b876  <+0x2a36>",
+            "ticks": 45
+          },
+          {
+            "address": 125303548579917,
+            "offset": 525,
+            "operation": "movl rbx,[r11*4+0x1e2ddc50]",
+            "ticks": 0
+          },
+          {
+            "address": 125303548579925,
+            "offset": 533,
+            "operation": "REX.W movq r11,0x2edbb1465911    ;; object: 0x2edbb1465911 <Uint32Array map = 0x2b133998f049>",
+            "ticks": 1406
+          }
+        ]
+      },
+      {
+        "startOffset": 621,
+        "endOffsetExclusive": 625,
+        "inlineId": 7,
+        "origin": "equal file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:54:17",
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 55,
+        "source": "if (records[r + 1] !== head) return false;",
+        "ticks": 314,
+        "instructions": [
+          {
+            "address": 125303548580013,
+            "offset": 621,
+            "operation": "leal r12,[r11+0x1]",
+            "ticks": 314
+          }
+        ]
+      },
+      {
+        "startOffset": 648,
+        "endOffsetExclusive": 664,
+        "inlineId": 7,
+        "origin": "equal file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:54:17",
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 55,
+        "source": "if (records[r + 1] !== head) return false;",
+        "ticks": 1651,
+        "instructions": [
+          {
+            "address": 125303548580040,
+            "offset": 648,
+            "operation": "REX.W movq rcx,0x71f6b108b010",
+            "ticks": 2
+          },
+          {
+            "address": 125303548580050,
+            "offset": 658,
+            "operation": "cmpl [rcx+r12*4],r8",
+            "ticks": 0
+          },
+          {
+            "address": 125303548580054,
+            "offset": 662,
+            "operation": "jnz 0x71f681809070  <+0x230>",
+            "ticks": 1649
+          }
+        ]
+      },
+      {
+        "startOffset": 3929,
+        "endOffsetExclusive": 3961,
+        "inlineId": 4,
+        "origin": "scan file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:87:18",
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 93,
+        "source": "const prediction = prefixCache[prefixSlot];",
+        "ticks": 740,
+        "instructions": [
+          {
+            "address": 125303548583321,
+            "offset": 3929,
+            "operation": "REX.W movq [rbp-0x48],rax",
+            "ticks": 77
+          },
+          {
+            "address": 125303548583325,
+            "offset": 3933,
+            "operation": "cmp rax,0x8000",
+            "ticks": 13
+          },
+          {
+            "address": 125303548583330,
+            "offset": 3938,
+            "operation": "jnc 0x71f68180b98d  <+0x2b4d>",
+            "ticks": 29
+          },
+          {
+            "address": 125303548583336,
+            "offset": 3944,
+            "operation": "movl rcx,[rax*4+0x1e2ddc50]",
+            "ticks": 0
+          },
+          {
+            "address": 125303548583343,
+            "offset": 3951,
+            "operation": "REX.W movq rdx,0x2edbb1465911    ;; object: 0x2edbb1465911 <Uint32Array map = 0x2b133998f049>",
+            "ticks": 621
+          }
+        ]
+      },
+      {
+        "startOffset": 4039,
+        "endOffsetExclusive": 4042,
+        "inlineId": 5,
+        "origin": "equal file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:54:17",
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 55,
+        "source": "if (records[r + 1] !== head) return false;",
+        "ticks": 178,
+        "instructions": [
+          {
+            "address": 125303548583431,
+            "offset": 4039,
+            "operation": "leal rdx,[rax+0x1]",
+            "ticks": 178
+          }
+        ]
+      },
+      {
+        "startOffset": 4064,
+        "endOffsetExclusive": 4077,
+        "inlineId": 5,
+        "origin": "equal file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:54:17",
+        "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+        "line": 55,
+        "source": "if (records[r + 1] !== head) return false;",
+        "ticks": 1323,
+        "instructions": [
+          {
+            "address": 125303548583456,
+            "offset": 4064,
+            "operation": "REX.W movq r8,[rip+0xfffff2a3]",
+            "ticks": 8
+          },
+          {
+            "address": 125303548583463,
+            "offset": 4071,
+            "operation": "cmpl [r8+rdx*4],r15",
+            "ticks": 22
+          },
+          {
+            "address": 125303548583467,
+            "offset": 4075,
+            "operation": "jnz 0x71f681809dc7  <+0xf87>",
+            "ticks": 1293
+          }
+        ]
+      }
+    ],
+    "loopAttributionCaveat": "Line 167 has 798/27668 parser ticks here (2.88%), including tagged comparisons, stack reloads and cursor shifts. Its 8.5-9.6% multiworker line attribution does not prove a branch bottleneck."
+  },
+  "wasmNative": {
+    "artifact": {
+      "path": "results/deep-20261021/wasm-native.json",
+      "bytes": 1089374,
+      "sha256": "9b73b965cc096c56ac3512b6c70c1213d9f8060eeaad661d69020fe6e9fb5ae4"
+    },
+    "totalTicks": 13243,
+    "parserTicks": 9835,
+    "parserBytes": 11932,
+    "shortKeyBlocksTicks": 4105,
+    "shortKeyBlocksPercentParserTicks": 41.73868835790544,
+    "shortKeyBlocksPercentAllTicks": 30.997508117496036,
+    "verifiedShortKeyBlocks": [
+      {
+        "start": 838,
+        "endExclusive": 866,
+        "ticks": 26,
+        "instructions": [
+          {
+            "offset": 838,
+            "operation": "vmovdqu xmm4,[r11+rsi*1+0x18]"
+          },
+          {
+            "offset": 845,
+            "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+          },
+          {
+            "offset": 849,
+            "operation": "vpmovmskb r9,xmm0"
+          },
+          {
+            "offset": 853,
+            "operation": "cmpl r9,0xffff"
+          },
+          {
+            "offset": 860,
+            "operation": "jnz 0x29ed9a7a3781  <+0x1f41>"
+          }
+        ]
+      },
+      {
+        "start": 1115,
+        "endExclusive": 1142,
+        "ticks": 8,
+        "instructions": [
+          {
+            "offset": 1115,
+            "operation": "vmovdqu xmm2,[r11+r15*1+0x18]"
+          },
+          {
+            "offset": 1122,
+            "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+          },
+          {
+            "offset": 1126,
+            "operation": "vpmovmskb rcx,xmm0"
+          },
+          {
+            "offset": 1130,
+            "operation": "cmpl rcx,0xffff"
+          },
+          {
+            "offset": 1136,
+            "operation": "jnz 0x29ed9a7a385b  <+0x201b>"
+          }
+        ]
+      },
+      {
+        "start": 1381,
+        "endExclusive": 1408,
+        "ticks": 2,
+        "instructions": [
+          {
+            "offset": 1381,
+            "operation": "vmovdqu xmm2,[r11+rax*1+0x18]"
+          },
+          {
+            "offset": 1388,
+            "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+          },
+          {
+            "offset": 1392,
+            "operation": "vpmovmskb rbx,xmm0"
+          },
+          {
+            "offset": 1396,
+            "operation": "cmpl rbx,0xffff"
+          },
+          {
+            "offset": 1402,
+            "operation": "jnz 0x29ed9a7a38f2  <+0x20b2>"
+          }
+        ]
+      },
+      {
+        "start": 1790,
+        "endExclusive": 1818,
+        "ticks": 612,
+        "instructions": [
+          {
+            "offset": 1790,
+            "operation": "vmovdqu xmm4,[r11+rcx*1+0x18]"
+          },
+          {
+            "offset": 1797,
+            "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+          },
+          {
+            "offset": 1801,
+            "operation": "vpmovmskb r9,xmm0"
+          },
+          {
+            "offset": 1805,
+            "operation": "cmpl r9,0xffff"
+          },
+          {
+            "offset": 1812,
+            "operation": "jnz 0x29ed9a7a39de  <+0x219e>"
+          }
+        ]
+      },
+      {
+        "start": 2058,
+        "endExclusive": 2085,
+        "ticks": 179,
+        "instructions": [
+          {
+            "offset": 2058,
+            "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+          },
+          {
+            "offset": 2065,
+            "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+          },
+          {
+            "offset": 2069,
+            "operation": "vpmovmskb rcx,xmm0"
+          },
+          {
+            "offset": 2073,
+            "operation": "cmpl rcx,0xffff"
+          },
+          {
+            "offset": 2079,
+            "operation": "jnz 0x29ed9a7a3ab0  <+0x2270>"
+          }
+        ]
+      },
+      {
+        "start": 2327,
+        "endExclusive": 2354,
+        "ticks": 180,
+        "instructions": [
+          {
+            "offset": 2327,
+            "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+          },
+          {
+            "offset": 2334,
+            "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+          },
+          {
+            "offset": 2338,
+            "operation": "vpmovmskb rbx,xmm0"
+          },
+          {
+            "offset": 2342,
+            "operation": "cmpl rbx,0xffff"
+          },
+          {
+            "offset": 2348,
+            "operation": "jnz 0x29ed9a7a3b3f  <+0x22ff>"
+          }
+        ]
+      },
+      {
+        "start": 2645,
+        "endExclusive": 2672,
+        "ticks": 604,
+        "instructions": [
+          {
+            "offset": 2645,
+            "operation": "vmovdqu xmm4,[r11+rdx*1+0x18]"
+          },
+          {
+            "offset": 2652,
+            "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+          },
+          {
+            "offset": 2656,
+            "operation": "vpmovmskb rsi,xmm0"
+          },
+          {
+            "offset": 2660,
+            "operation": "cmpl rsi,0xffff"
+          },
+          {
+            "offset": 2666,
+            "operation": "jnz 0x29ed9a7a3bf2  <+0x23b2>"
+          }
+        ]
+      },
+      {
+        "start": 2917,
+        "endExclusive": 2944,
+        "ticks": 195,
+        "instructions": [
+          {
+            "offset": 2917,
+            "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+          },
+          {
+            "offset": 2924,
+            "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+          },
+          {
+            "offset": 2928,
+            "operation": "vpmovmskb rcx,xmm0"
+          },
+          {
+            "offset": 2932,
+            "operation": "cmpl rcx,0xffff"
+          },
+          {
+            "offset": 2938,
+            "operation": "jnz 0x29ed9a7a3cbc  <+0x247c>"
+          }
+        ]
+      },
+      {
+        "start": 3186,
+        "endExclusive": 3213,
+        "ticks": 199,
+        "instructions": [
+          {
+            "offset": 3186,
+            "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+          },
+          {
+            "offset": 3193,
+            "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+          },
+          {
+            "offset": 3197,
+            "operation": "vpmovmskb rbx,xmm0"
+          },
+          {
+            "offset": 3201,
+            "operation": "cmpl rbx,0xffff"
+          },
+          {
+            "offset": 3207,
+            "operation": "jnz 0x29ed9a7a3d3f  <+0x24ff>"
+          }
+        ]
+      },
+      {
+        "start": 3505,
+        "endExclusive": 3532,
+        "ticks": 637,
+        "instructions": [
+          {
+            "offset": 3505,
+            "operation": "vmovdqu xmm4,[r11+rdx*1+0x18]"
+          },
+          {
+            "offset": 3512,
+            "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+          },
+          {
+            "offset": 3516,
+            "operation": "vpmovmskb rsi,xmm0"
+          },
+          {
+            "offset": 3520,
+            "operation": "cmpl rsi,0xffff"
+          },
+          {
+            "offset": 3526,
+            "operation": "jnz 0x29ed9a7a3dec  <+0x25ac>"
+          }
+        ]
+      },
+      {
+        "start": 3777,
+        "endExclusive": 3804,
+        "ticks": 192,
+        "instructions": [
+          {
+            "offset": 3777,
+            "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+          },
+          {
+            "offset": 3784,
+            "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+          },
+          {
+            "offset": 3788,
+            "operation": "vpmovmskb rcx,xmm0"
+          },
+          {
+            "offset": 3792,
+            "operation": "cmpl rcx,0xffff"
+          },
+          {
+            "offset": 3798,
+            "operation": "jnz 0x29ed9a7a3ebc  <+0x267c>"
+          }
+        ]
+      },
+      {
+        "start": 4046,
+        "endExclusive": 4073,
+        "ticks": 191,
+        "instructions": [
+          {
+            "offset": 4046,
+            "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+          },
+          {
+            "offset": 4053,
+            "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+          },
+          {
+            "offset": 4057,
+            "operation": "vpmovmskb rbx,xmm0"
+          },
+          {
+            "offset": 4061,
+            "operation": "cmpl rbx,0xffff"
+          },
+          {
+            "offset": 4067,
+            "operation": "jnz 0x29ed9a7a3f4b  <+0x270b>"
+          }
+        ]
+      },
+      {
+        "start": 4365,
+        "endExclusive": 4392,
+        "ticks": 661,
+        "instructions": [
+          {
+            "offset": 4365,
+            "operation": "vmovdqu xmm4,[r11+rdx*1+0x18]"
+          },
+          {
+            "offset": 4372,
+            "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+          },
+          {
+            "offset": 4376,
+            "operation": "vpmovmskb rsi,xmm0"
+          },
+          {
+            "offset": 4380,
+            "operation": "cmpl rsi,0xffff"
+          },
+          {
+            "offset": 4386,
+            "operation": "jnz 0x29ed9a7a3ff8  <+0x27b8>"
+          }
+        ]
+      },
+      {
+        "start": 4637,
+        "endExclusive": 4664,
+        "ticks": 205,
+        "instructions": [
+          {
+            "offset": 4637,
+            "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+          },
+          {
+            "offset": 4644,
+            "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+          },
+          {
+            "offset": 4648,
+            "operation": "vpmovmskb rcx,xmm0"
+          },
+          {
+            "offset": 4652,
+            "operation": "cmpl rcx,0xffff"
+          },
+          {
+            "offset": 4658,
+            "operation": "jnz 0x29ed9a7a40c8  <+0x2888>"
+          }
+        ]
+      },
+      {
+        "start": 4906,
+        "endExclusive": 4933,
+        "ticks": 214,
+        "instructions": [
+          {
+            "offset": 4906,
+            "operation": "vmovdqu xmm2,[r11+r14*1+0x18]"
+          },
+          {
+            "offset": 4913,
+            "operation": "vpcmpeqb xmm0,xmm2,xmm0"
+          },
+          {
+            "offset": 4917,
+            "operation": "vpmovmskb rbx,xmm0"
+          },
+          {
+            "offset": 4921,
+            "operation": "cmpl rbx,0xffff"
+          },
+          {
+            "offset": 4927,
+            "operation": "jnz 0x29ed9a7a415d  <+0x291d>"
+          }
+        ]
+      }
+    ],
+    "dependencyExample": [
+      {
+        "address": "0x29ed9a7a2942",
+        "offset": 4354,
+        "bytes": "c1e202",
+        "operation": "shll rdx,2"
+      },
+      {
+        "address": "0x29ed9a7a2945",
+        "offset": 4357,
+        "bytes": "418b941380050000",
+        "operation": "movl rdx,[r11+rdx*1+0x580]"
+      },
+      {
+        "address": "0x29ed9a7a294d",
+        "offset": 4365,
+        "bytes": "c4c17a6f641318",
+        "operation": "vmovdqu xmm4,[r11+rdx*1+0x18]"
+      },
+      {
+        "address": "0x29ed9a7a2954",
+        "offset": 4372,
+        "bytes": "c5d974c0",
+        "operation": "vpcmpeqb xmm0,xmm4,xmm0"
+      },
+      {
+        "address": "0x29ed9a7a2958",
+        "offset": 4376,
+        "bytes": "c5f9d7f0",
+        "operation": "vpmovmskb rsi,xmm0"
+      },
+      {
+        "address": "0x29ed9a7a295c",
+        "offset": 4380,
+        "bytes": "81feffff0000",
+        "operation": "cmpl rsi,0xffff"
+      },
+      {
+        "address": "0x29ed9a7a2962",
+        "offset": 4386,
+        "bytes": "0f8590160000",
+        "operation": "jnz 0x29ed9a7a3ff8  <+0x27b8>"
+      }
+    ],
+    "interpretation": "Verified 15 actual SIMD station-head load/equality blocks in fresh disassembly. The bucket pointer supplies the next key-load address. This proves a dependency, not its hardware stall cost."
+  },
+  "phaseBatches": [
+    {
+      "label": "deep-phases24",
+      "checkpoint": "74ef85f",
+      "benchmark": "benchmarks/experiments/deep-phases24-results.json",
+      "manifest": {
+        "originalHashes": {
+          "node": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "wasm": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e"
+        },
+        "instrumentedHashes": {
+          "node": "ba4d25f0892b53b4e514f3de66ae5d987fcdc8c5ec398a45bf341bd01b7a82ee",
+          "wasm": "ff4adee04dba2a6c7c4a1c25fc026f2215a5bfd960461b0ff3cd5052852d81ea"
+        },
+        "probeSha256": "863461736864b44f6fb7c27728290b6385b6132500e42cce45f666ab47bc5e8a",
+        "generatorSha256": "a4773687c6ffc8eec9f368312b54c1cd0ea3f15fb316a3d78008b929241953e6",
+        "limitations": [
+          "Diagnostic durations include probe overhead; compare with uninstrumented controls.",
+          "Concurrent worker wall spans must not be added as whole-process elapsed time.",
+          "Thread CPU excludes background compiler threads; kernel wall time includes compilation waits.",
+          "Phase CPU is sampled with threadCpuUsage, not hardware performance counters.",
+          "Consume includes read, parse, scheduling and instrumentation; phases are nested.",
+          "Only the default synchronous reader is instrumented completely.",
+          "Per-thread JSON is written at exit, after the recorded exit mark."
+        ]
+      },
+      "rawPhaseInventory": {
+        "directory": "results/deep-20261021/phases24",
+        "files": 300,
+        "bytes": 410312,
+        "sortedPathSizeSha256InventoryDigest": "b135a2f996e60dbcd47b6a9a72f9af7dad81347c2c3a964481fd3c508d74f857"
+      },
+      "controls": [
+        {
+          "control": "node control",
+          "instrumented": "node phases",
+          "controlSeconds": 1.0689354190000007,
+          "instrumentedSeconds": 1.1210735036666668,
+          "instrumentationOverheadPercent": 4.87757106181792
+        },
+        {
+          "control": "wasm control",
+          "instrumented": "wasm phases",
+          "controlSeconds": 0.47287968666666685,
+          "instrumentedSeconds": 0.49769750066666746,
+          "instrumentationOverheadPercent": 5.248230088913641
+        }
+      ],
+      "groups": [
+        {
+          "engine": "node",
+          "workers": 24,
+          "measuredRuns": 5,
+          "excludedWarmupPids": [1960406],
+          "processes": [
+            {
+              "pid": 1960540,
+              "firstReadMs": 28.380786895751953,
+              "allWorkersFirstReadMs": 104.57287883758545,
+              "consumeFinishSpreadMs": 0.14983391761779785,
+              "mergeMs": 2.880250930786133,
+              "formatMs": 0.48970794677734375,
+              "outputEndMs": 1029.2557108402252,
+              "mainExitMs": 1032.1476738452911,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 23069.227313280106,
+                  "userUs": 20666600,
+                  "systemUs": 1376598
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1526.7069253921509,
+                  "userUs": 267697,
+                  "systemUs": 1220180
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 0,
+                  "wallMs": 21146.19076180458,
+                  "userUs": 20066017,
+                  "systemUs": 83296
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 11.421284437179565,
+                  "userUs": 23066,
+                  "systemUs": 171
+                }
+              }
+            },
+            {
+              "pid": 1960701,
+              "firstReadMs": 43.62166094779968,
+              "allWorkersFirstReadMs": 91.68478298187256,
+              "consumeFinishSpreadMs": 1.4298200607299805,
+              "mergeMs": 3.077144145965576,
+              "formatMs": 0.6880440711975098,
+              "outputEndMs": 1077.3237121105194,
+              "mainExitMs": 1079.4161989688873,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 24119.799236297607,
+                  "userUs": 21421244,
+                  "systemUs": 1294088
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1533.341301202774,
+                  "userUs": 250383,
+                  "systemUs": 1139314
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 0,
+                  "wallMs": 22180.585359334946,
+                  "userUs": 20859781,
+                  "systemUs": 85569
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 11.169250249862671,
+                  "userUs": 19520,
+                  "systemUs": 192
+                }
+              }
+            },
+            {
+              "pid": 1960840,
+              "firstReadMs": 30.62602400779724,
+              "allWorkersFirstReadMs": 94.49202585220337,
+              "consumeFinishSpreadMs": 0.17306804656982422,
+              "mergeMs": 3.893332004547119,
+              "formatMs": 0.48658299446105957,
+              "outputEndMs": 1060.8252940177917,
+              "mainExitMs": 1063.0929930210114,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 23876.585717201233,
+                  "userUs": 21510545,
+                  "systemUs": 1317472
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1516.5542705059052,
+                  "userUs": 246645,
+                  "systemUs": 1173967
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 0,
+                  "wallMs": 21959.712282180786,
+                  "userUs": 20955802,
+                  "systemUs": 74499
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 14.759562969207764,
+                  "userUs": 15902,
+                  "systemUs": 428
+                }
+              }
+            },
+            {
+              "pid": 1961000,
+              "firstReadMs": 43.054555892944336,
+              "allWorkersFirstReadMs": 87.47280883789062,
+              "consumeFinishSpreadMs": 0.1702730655670166,
+              "mergeMs": 3.9455912113189697,
+              "formatMs": 0.39482903480529785,
+              "outputEndMs": 1068.7374639511108,
+              "mainExitMs": 1071.901211977005,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 24031.97314453125,
+                  "userUs": 21515232,
+                  "systemUs": 1358201
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1511.7336158752441,
+                  "userUs": 270926,
+                  "systemUs": 1191579
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 0,
+                  "wallMs": 22129.728561401367,
+                  "userUs": 20941703,
+                  "systemUs": 86407
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 12.934164047241211,
+                  "userUs": 4860,
+                  "systemUs": 152
+                }
+              }
+            },
+            {
+              "pid": 1961099,
+              "firstReadMs": 31.62710189819336,
+              "allWorkersFirstReadMs": 83.27395796775818,
+              "consumeFinishSpreadMs": 0.16536283493041992,
+              "mergeMs": 3.801938056945801,
+              "formatMs": 0.4393730163574219,
+              "outputEndMs": 1099.692801952362,
+              "mainExitMs": 1106.7492499351501,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 25019.3549554348,
+                  "userUs": 22460806,
+                  "systemUs": 1337730
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1490.5593733787537,
+                  "userUs": 250216,
+                  "systemUs": 1183400
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 0,
+                  "wallMs": 23126.821639060974,
+                  "userUs": 21901486,
+                  "systemUs": 81901
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 11.430830240249634,
+                  "userUs": 10634,
+                  "systemUs": 40
+                }
+              }
+            }
+          ],
+          "phaseMeansPerProcess": {
+            "consume": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 24023.388073349,
+              "userUs": 21514885.4,
+              "systemUs": 1336817.8
+            },
+            "read": {
+              "calls": 105251.0,
+              "bytes": 13808927111.0,
+              "wallMs": 1515.7790972709656,
+              "userUs": 257173.4,
+              "systemUs": 1181688.0
+            },
+            "parse": {
+              "calls": 105251.0,
+              "bytes": 0.0,
+              "wallMs": 22108.607720756532,
+              "userUs": 20944957.8,
+              "systemUs": 82334.4
+            },
+            "export": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 12.343018388748169,
+              "userUs": 14796.4,
+              "systemUs": 196.6
+            }
+          },
+          "parserWindows": {}
+        },
+        {
+          "engine": "wasm",
+          "workers": 24,
+          "measuredRuns": 5,
+          "excludedWarmupPids": [1960470],
+          "processes": [
+            {
+              "pid": 1960605,
+              "firstReadMs": 39.35934090614319,
+              "allWorkersFirstReadMs": 66.98619794845581,
+              "consumeFinishSpreadMs": 0.28775501251220703,
+              "mergeMs": 3.6120479106903076,
+              "formatMs": 0.43628692626953125,
+              "outputEndMs": 446.8770580291748,
+              "mainExitMs": 451.22655391693115,
+              "phases": {
+                "kernel": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 25.45033359527588,
+                  "userUs": 12919,
+                  "systemUs": 4785
+                },
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 9269.591492176056,
+                  "userUs": 7533566,
+                  "systemUs": 1374477
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1486.953646659851,
+                  "userUs": 139567,
+                  "systemUs": 1277313
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 0,
+                  "wallMs": 7614.637221097946,
+                  "userUs": 7253137,
+                  "systemUs": 56838
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 26.422385454177856,
+                  "userUs": 20667,
+                  "systemUs": 1341
+                }
+              }
+            },
+            {
+              "pid": 1960637,
+              "firstReadMs": 50.3451189994812,
+              "allWorkersFirstReadMs": 82.74090790748596,
+              "consumeFinishSpreadMs": 0.26642608642578125,
+              "mergeMs": 4.510020017623901,
+              "formatMs": 0.41840314865112305,
+              "outputEndMs": 457.4997570514679,
+              "mainExitMs": 462.06249809265137,
+              "phases": {
+                "kernel": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 29.048149824142456,
+                  "userUs": 13998,
+                  "systemUs": 9551
+                },
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 9268.360790252686,
+                  "userUs": 7471759,
+                  "systemUs": 1450786
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1491.686475276947,
+                  "userUs": 136223,
+                  "systemUs": 1328965
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 0,
+                  "wallMs": 7610.747452497482,
+                  "userUs": 7202471,
+                  "systemUs": 78139
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 21.239988803863525,
+                  "userUs": 20300,
+                  "systemUs": 521
+                }
+              }
+            },
+            {
+              "pid": 1960904,
+              "firstReadMs": 37.47850513458252,
+              "allWorkersFirstReadMs": 65.04017901420593,
+              "consumeFinishSpreadMs": 0.2650320529937744,
+              "mergeMs": 3.6492888927459717,
+              "formatMs": 0.473376989364624,
+              "outputEndMs": 441.5012559890747,
+              "mainExitMs": 446.6572411060333,
+              "phases": {
+                "kernel": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 35.352864503860474,
+                  "userUs": 16029,
+                  "systemUs": 7978
+                },
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 9362.584876537323,
+                  "userUs": 7552259,
+                  "systemUs": 1434539
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1533.8287479877472,
+                  "userUs": 148067,
+                  "systemUs": 1336010
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 0,
+                  "wallMs": 7666.719347000122,
+                  "userUs": 7261009,
+                  "systemUs": 66026
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 26.11094331741333,
+                  "userUs": 16381,
+                  "systemUs": 296
+                }
+              }
+            },
+            {
+              "pid": 1960936,
+              "firstReadMs": 40.889100074768066,
+              "allWorkersFirstReadMs": 66.46873712539673,
+              "consumeFinishSpreadMs": 0.2990071773529053,
+              "mergeMs": 6.035261869430542,
+              "formatMs": 0.6217789649963379,
+              "outputEndMs": 453.96571612358093,
+              "mainExitMs": 455.8748462200165,
+              "phases": {
+                "kernel": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 44.24042344093323,
+                  "userUs": 15428,
+                  "systemUs": 8150
+                },
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 9403.040885448456,
+                  "userUs": 7549081,
+                  "systemUs": 1395350
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1518.9971132278442,
+                  "userUs": 141187,
+                  "systemUs": 1280385
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 0,
+                  "wallMs": 7695.8929278850555,
+                  "userUs": 7262308,
+                  "systemUs": 73035
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 20.56514859199524,
+                  "userUs": 21442,
+                  "systemUs": 978
+                }
+              }
+            },
+            {
+              "pid": 1961163,
+              "firstReadMs": 36.556877851486206,
+              "allWorkersFirstReadMs": 80.7274808883667,
+              "consumeFinishSpreadMs": 0.2876548767089844,
+              "mergeMs": 3.051044225692749,
+              "formatMs": 0.49487900733947754,
+              "outputEndMs": 449.7932868003845,
+              "mainExitMs": 456.43864583969116,
+              "phases": {
+                "kernel": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 39.5578875541687,
+                  "userUs": 12134,
+                  "systemUs": 8094
+                },
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 9279.57898759842,
+                  "userUs": 7401555,
+                  "systemUs": 1466039
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1537.4533653259277,
+                  "userUs": 151286,
+                  "systemUs": 1353563
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 0,
+                  "wallMs": 7547.363573312759,
+                  "userUs": 7108953,
+                  "systemUs": 75138
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 28.461049556732178,
+                  "userUs": 13939,
+                  "systemUs": 880
+                }
+              }
+            }
+          ],
+          "phaseMeansPerProcess": {
+            "kernel": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 34.72993178367615,
+              "userUs": 14101.6,
+              "systemUs": 7711.6
+            },
+            "consume": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 9316.631406402588,
+              "userUs": 7501644.0,
+              "systemUs": 1424238.2
+            },
+            "read": {
+              "calls": 26313.0,
+              "bytes": 13798823047.0,
+              "wallMs": 1513.7838696956635,
+              "userUs": 143266.0,
+              "systemUs": 1315247.2
+            },
+            "parse": {
+              "calls": 26313.0,
+              "bytes": 0.0,
+              "wallMs": 7627.072104358673,
+              "userUs": 7217575.6,
+              "systemUs": 69835.2
+            },
+            "export": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 24.559903144836426,
+              "userUs": 18545.8,
+              "systemUs": 803.2
+            }
+          },
+          "parserWindows": {}
+        }
+      ]
+    },
+    {
+      "label": "deep-phases-v2",
+      "checkpoint": "ff763cf",
+      "benchmark": "benchmarks/experiments/deep-phases-v2-results.json",
+      "manifest": {
+        "originalHashes": {
+          "node": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "wasm": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e"
+        },
+        "instrumentedHashes": {
+          "node": "6ba2f69260e3629ea5773a65ffd1c6c63e05cadceb605636d65cf718e88b16f4",
+          "wasm": "147ce77c491c361a8130e6beec5ab47ae3ac56698bf29b84e295371d22df07d6"
+        },
+        "probeSha256": "f9f389f17a42146c3d6b6cae945a9a83a1c5f8de0cb605647e4784a364b222a4",
+        "generatorSha256": "b266d417d5af560cb1d498644ac46f1a02251d0f19b97ac3944b77783cb8d528",
+        "limitations": [
+          "Diagnostic durations include probe overhead; compare with uninstrumented controls.",
+          "Concurrent worker wall spans must not be added as whole-process elapsed time.",
+          "Thread CPU excludes background compiler threads; kernel wall time includes compilation waits.",
+          "Phase CPU is sampled with threadCpuUsage, not hardware performance counters.",
+          "Consume includes read, parse, scheduling and instrumentation; phases are nested.",
+          "Only the default synchronous reader is instrumented completely.",
+          "Per-thread JSON is written at exit, after the recorded exit mark."
+        ]
+      },
+      "rawPhaseInventory": {
+        "directory": "results/deep-20261021/phases-v2",
+        "files": 456,
+        "bytes": 1101388,
+        "sortedPathSizeSha256InventoryDigest": "b9083e417a60f248f7f69a6f814eb90980e05834b85ca587676a3f77386fa290"
+      },
+      "controls": [
+        {
+          "control": "node 24 control",
+          "instrumented": "node 24 phases",
+          "controlSeconds": 1.0619578346666676,
+          "instrumentedSeconds": 1.1415242253333358,
+          "instrumentationOverheadPercent": 7.492424658427499
+        },
+        {
+          "control": "wasm 24 control",
+          "instrumented": "wasm 24 phases",
+          "controlSeconds": 0.4755603463333337,
+          "instrumentedSeconds": 0.5032782846666669,
+          "instrumentationOverheadPercent": 5.828479718093416
+        },
+        {
+          "control": "node 12 control",
+          "instrumented": "node 12 phases",
+          "controlSeconds": 1.0599039670000014,
+          "instrumentedSeconds": 1.1012890200000014,
+          "instrumentationOverheadPercent": 3.904604029093117
+        },
+        {
+          "control": "wasm 12 control",
+          "instrumented": "wasm 12 phases",
+          "controlSeconds": 0.4740949609999994,
+          "instrumentedSeconds": 0.4972297909999992,
+          "instrumentationOverheadPercent": 4.879788207662439
+        }
+      ],
+      "groups": [
+        {
+          "engine": "node",
+          "workers": 12,
+          "measuredRuns": 5,
+          "excludedWarmupPids": [1966751],
+          "processes": [
+            {
+              "pid": 1966959,
+              "firstReadMs": 38.28729701042175,
+              "allWorkersFirstReadMs": 52.9732391834259,
+              "consumeFinishSpreadMs": 0.08809685707092285,
+              "mergeMs": 2.741456985473633,
+              "formatMs": 0.5125720500946045,
+              "outputEndMs": 1077.503072977066,
+              "mainExitMs": 1078.4836010932922,
+              "phases": {
+                "consume": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 12340.759321689606,
+                  "userUs": 11184823,
+                  "systemUs": 1147552
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1088.96639418602,
+                  "userUs": 138974,
+                  "systemUs": 1064862
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 11048.686386823654,
+                  "userUs": 10892181,
+                  "systemUs": 39533
+                },
+                "export": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 3.0994484424591064,
+                  "userUs": 5431,
+                  "systemUs": 152
+                }
+              }
+            },
+            {
+              "pid": 1967110,
+              "firstReadMs": 26.096884965896606,
+              "allWorkersFirstReadMs": 39.66310381889343,
+              "consumeFinishSpreadMs": 0.05349111557006836,
+              "mergeMs": 2.9485299587249756,
+              "formatMs": 0.43745899200439453,
+              "outputEndMs": 1048.2041659355164,
+              "mainExitMs": 1049.1649370193481,
+              "phases": {
+                "consume": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 12131.87076640129,
+                  "userUs": 11010184,
+                  "systemUs": 1113069
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1070.6071214675903,
+                  "userUs": 122275,
+                  "systemUs": 1018260
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 10861.082195043564,
+                  "userUs": 10724016,
+                  "systemUs": 35890
+                },
+                "export": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 3.5022788047790527,
+                  "userUs": 10606,
+                  "systemUs": 1273
+                }
+              }
+            },
+            {
+              "pid": 1967432,
+              "firstReadMs": 28.202687978744507,
+              "allWorkersFirstReadMs": 42.78389096260071,
+              "consumeFinishSpreadMs": 0.09702420234680176,
+              "mergeMs": 2.37235689163208,
+              "formatMs": 0.42745089530944824,
+              "outputEndMs": 1055.3826248645782,
+              "mainExitMs": 1062.3489029407501,
+              "phases": {
+                "consume": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 12210.051601171494,
+                  "userUs": 11124949,
+                  "systemUs": 1079923
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1074.6655204296112,
+                  "userUs": 127845,
+                  "systemUs": 1003829
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 10935.837827205658,
+                  "userUs": 10859982,
+                  "systemUs": 31391
+                },
+                "export": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 3.0162675380706787,
+                  "userUs": 655,
+                  "systemUs": 59
+                }
+              }
+            },
+            {
+              "pid": 1967533,
+              "firstReadMs": 27.043319940567017,
+              "allWorkersFirstReadMs": 43.309818983078,
+              "consumeFinishSpreadMs": 0.06274914741516113,
+              "mergeMs": 2.780210018157959,
+              "formatMs": 0.4648408889770508,
+              "outputEndMs": 1051.7148921489716,
+              "mainExitMs": 1052.7148180007935,
+              "phases": {
+                "consume": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 12162.920704603195,
+                  "userUs": 11025903,
+                  "systemUs": 1131914
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1084.2783043384552,
+                  "userUs": 136831,
+                  "systemUs": 1046152
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 10879.741683721542,
+                  "userUs": 10741097,
+                  "systemUs": 35535
+                },
+                "export": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 3.5491678714752197,
+                  "userUs": 1699,
+                  "systemUs": 174
+                }
+              }
+            },
+            {
+              "pid": 1967853,
+              "firstReadMs": 27.45708417892456,
+              "allWorkersFirstReadMs": 42.37954521179199,
+              "consumeFinishSpreadMs": 0.07822799682617188,
+              "mergeMs": 2.693135976791382,
+              "formatMs": 0.41152000427246094,
+              "outputEndMs": 1058.6462020874023,
+              "mainExitMs": 1059.7506761550903,
+              "phases": {
+                "consume": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 12248.256727695465,
+                  "userUs": 11160223,
+                  "systemUs": 1080563
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1067.129450559616,
+                  "userUs": 139496,
+                  "systemUs": 985551
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 10980.817863702774,
+                  "userUs": 10881790,
+                  "systemUs": 34849
+                },
+                "export": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 3.253507137298584,
+                  "userUs": 3539,
+                  "systemUs": 359
+                }
+              }
+            }
+          ],
+          "phaseMeansPerProcess": {
+            "consume": {
+              "calls": 12.0,
+              "bytes": 0.0,
+              "wallMs": 12218.77182431221,
+              "userUs": 11101216.4,
+              "systemUs": 1110604.2
+            },
+            "read": {
+              "calls": 105251.0,
+              "bytes": 13808927111.0,
+              "wallMs": 1077.1293581962586,
+              "userUs": 133084.2,
+              "systemUs": 1023730.8
+            },
+            "parse": {
+              "calls": 105251.0,
+              "bytes": 13794747516.0,
+              "wallMs": 10941.233191299438,
+              "userUs": 10819813.2,
+              "systemUs": 35439.6
+            },
+            "export": {
+              "calls": 12.0,
+              "bytes": 0.0,
+              "wallMs": 3.284133958816528,
+              "userUs": 4386.0,
+              "systemUs": 403.4
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 480,
+              "bytes": 62911363,
+              "wallMs": 711.1277832984924,
+              "userUs": 674198,
+              "systemUs": 19042,
+              "threadCpuNsPerLogicalByte": 11.019312997558167
+            },
+            "9-32": {
+              "calls": 1440,
+              "bytes": 188734039,
+              "wallMs": 546.5083210468292,
+              "userUs": 544510,
+              "systemUs": 2746,
+              "threadCpuNsPerLogicalByte": 2.8996147324542765
+            },
+            "33-128": {
+              "calls": 5760,
+              "bytes": 754936056,
+              "wallMs": 1125.4483442306519,
+              "userUs": 1077684,
+              "systemUs": 13627,
+              "threadCpuNsPerLogicalByte": 1.4455674640608238
+            },
+            "129-512": {
+              "calls": 23040,
+              "bytes": 3019743390,
+              "wallMs": 2684.079180240631,
+              "userUs": 2655753,
+              "systemUs": 17633,
+              "threadCpuNsPerLogicalByte": 0.8853023766367115
+            },
+            "513-2048": {
+              "calls": 92160,
+              "bytes": 12078977820,
+              "wallMs": 9334.251267671585,
+              "userUs": 9216490,
+              "systemUs": 24151,
+              "threadCpuNsPerLogicalByte": 0.7650184591530279
+            },
+            "2049+": {
+              "calls": 403375,
+              "bytes": 52868434912,
+              "wallMs": 40304.751060009,
+              "userUs": 39930431,
+              "systemUs": 99999,
+              "threadCpuNsPerLogicalByte": 0.7571707024547071
+            }
+          }
+        },
+        {
+          "engine": "node",
+          "workers": 24,
+          "measuredRuns": 5,
+          "excludedWarmupPids": [1966636],
+          "processes": [
+            {
+              "pid": 1966842,
+              "firstReadMs": 27.50630784034729,
+              "allWorkersFirstReadMs": 92.9447078704834,
+              "consumeFinishSpreadMs": 0.1634199619293213,
+              "mergeMs": 3.2521250247955322,
+              "formatMs": 0.4013509750366211,
+              "outputEndMs": 1049.4648158550262,
+              "mainExitMs": 1052.8281228542328,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 23638.149012088776,
+                  "userUs": 21233808,
+                  "systemUs": 1292156
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1472.2008736133575,
+                  "userUs": 263469,
+                  "systemUs": 1127700
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 21715.466192007065,
+                  "userUs": 20661626,
+                  "systemUs": 79840
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 12.212034940719604,
+                  "userUs": 22105,
+                  "systemUs": 1928
+                }
+              }
+            },
+            {
+              "pid": 1967215,
+              "firstReadMs": 56.3328070640564,
+              "allWorkersFirstReadMs": 99.10506701469421,
+              "consumeFinishSpreadMs": 0.14953398704528809,
+              "mergeMs": 3.902919054031372,
+              "formatMs": 0.4257171154022217,
+              "outputEndMs": 1091.7788560390472,
+              "mainExitMs": 1098.48029088974,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 24275.526075601578,
+                  "userUs": 21568655,
+                  "systemUs": 1413964
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1512.1057164669037,
+                  "userUs": 250521,
+                  "systemUs": 1235228
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 22316.606074810028,
+                  "userUs": 20964299,
+                  "systemUs": 80211
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 12.529675483703613,
+                  "userUs": 22708,
+                  "systemUs": 874
+                }
+              }
+            },
+            {
+              "pid": 1967316,
+              "firstReadMs": 39.68952512741089,
+              "allWorkersFirstReadMs": 96.47223615646362,
+              "consumeFinishSpreadMs": 0.16324996948242188,
+              "mergeMs": 3.2145450115203857,
+              "formatMs": 0.5228309631347656,
+              "outputEndMs": 1085.6359510421753,
+              "mainExitMs": 1087.6826012134552,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 24583.876725912094,
+                  "userUs": 21979680,
+                  "systemUs": 1345275
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1560.4103808403015,
+                  "userUs": 272174,
+                  "systemUs": 1206147
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 22556.207522153854,
+                  "userUs": 21351838,
+                  "systemUs": 68120
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 10.90204906463623,
+                  "userUs": 5180,
+                  "systemUs": 215
+                }
+              }
+            },
+            {
+              "pid": 1967638,
+              "firstReadMs": 44.32811903953552,
+              "allWorkersFirstReadMs": 84.04343295097351,
+              "consumeFinishSpreadMs": 0.12777304649353027,
+              "mergeMs": 3.1021409034729004,
+              "formatMs": 0.5079231262207031,
+              "outputEndMs": 1087.045049905777,
+              "mainExitMs": 1089.758143901825,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 24510.00007200241,
+                  "userUs": 21828374,
+                  "systemUs": 1476018
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1539.5806243419647,
+                  "userUs": 264689,
+                  "systemUs": 1291691
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 22521.169719696045,
+                  "userUs": 21211096,
+                  "systemUs": 94239
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 14.176389217376709,
+                  "userUs": 7617,
+                  "systemUs": 278
+                }
+              }
+            },
+            {
+              "pid": 1967734,
+              "firstReadMs": 41.303674936294556,
+              "allWorkersFirstReadMs": 88.02742600440979,
+              "consumeFinishSpreadMs": 0.20057988166809082,
+              "mergeMs": 3.3955469131469727,
+              "formatMs": 0.5119009017944336,
+              "outputEndMs": 1110.7546219825745,
+              "mainExitMs": 1113.5068600177765,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 25076.074555397034,
+                  "userUs": 22379743,
+                  "systemUs": 1409852
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1478.6690649986267,
+                  "userUs": 256297,
+                  "systemUs": 1245964
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 23156.71718788147,
+                  "userUs": 21778131,
+                  "systemUs": 75923
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 12.786705017089844,
+                  "userUs": 15080,
+                  "systemUs": 435
+                }
+              }
+            }
+          ],
+          "phaseMeansPerProcess": {
+            "consume": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 24416.725288200378,
+              "userUs": 21798052.0,
+              "systemUs": 1387453.0
+            },
+            "read": {
+              "calls": 105251.0,
+              "bytes": 13808927111.0,
+              "wallMs": 1512.5933320522308,
+              "userUs": 261430.0,
+              "systemUs": 1221346.0
+            },
+            "parse": {
+              "calls": 105251.0,
+              "bytes": 13794747516.0,
+              "wallMs": 22453.233339309692,
+              "userUs": 21193398.0,
+              "systemUs": 79666.6
+            },
+            "export": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 12.5213707447052,
+              "userUs": 14538.0,
+              "systemUs": 746.0
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 960,
+              "bytes": 125822732,
+              "wallMs": 4384.464509010315,
+              "userUs": 3260911,
+              "systemUs": 78066,
+              "threadCpuNsPerLogicalByte": 26.537152285009995
+            },
+            "9-32": {
+              "calls": 2880,
+              "bytes": 377467891,
+              "wallMs": 2079.0869681835175,
+              "userUs": 1759681,
+              "systemUs": 6126,
+              "threadCpuNsPerLogicalByte": 4.678032336265656
+            },
+            "33-128": {
+              "calls": 11520,
+              "bytes": 1509871368,
+              "wallMs": 4521.354568243027,
+              "userUs": 3848393,
+              "systemUs": 24978,
+              "threadCpuNsPerLogicalByte": 2.565364892726411
+            },
+            "129-512": {
+              "calls": 46080,
+              "bytes": 6039487264,
+              "wallMs": 10437.824123620987,
+              "userUs": 9575682,
+              "systemUs": 46657,
+              "threadCpuNsPerLogicalByte": 1.593237733500418
+            },
+            "513-2048": {
+              "calls": 184320,
+              "bytes": 24157955201,
+              "wallMs": 35800.59677219391,
+              "userUs": 34719727,
+              "systemUs": 118071,
+              "threadCpuNsPerLogicalByte": 1.442083889556924
+            },
+            "2049+": {
+              "calls": 280495,
+              "bytes": 36763133124,
+              "wallMs": 55042.83975529671,
+              "userUs": 52802596,
+              "systemUs": 124435,
+              "threadCpuNsPerLogicalByte": 1.43967683117432
+            }
+          }
+        },
+        {
+          "engine": "wasm",
+          "workers": 12,
+          "measuredRuns": 5,
+          "excludedWarmupPids": [1966789],
+          "processes": [
+            {
+              "pid": 1967050,
+              "firstReadMs": 31.038514137268066,
+              "allWorkersFirstReadMs": 44.83296608924866,
+              "consumeFinishSpreadMs": 0.17335915565490723,
+              "mergeMs": 2.193578004837036,
+              "formatMs": 0.42461490631103516,
+              "outputEndMs": 453.6068260669708,
+              "mainExitMs": 454.5947389602661,
+              "phases": {
+                "kernel": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 7.466773509979248,
+                  "userUs": 7134,
+                  "systemUs": 1383
+                },
+                "consume": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 4952.259162902832,
+                  "userUs": 3906215,
+                  "systemUs": 1036372
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1044.598739862442,
+                  "userUs": 46135,
+                  "systemUs": 998351
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 13795278052,
+                  "wallMs": 3821.05628156662,
+                  "userUs": 3798230,
+                  "systemUs": 16325
+                },
+                "export": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 8.072843551635742,
+                  "userUs": 9760,
+                  "systemUs": 0
+                }
+              }
+            },
+            {
+              "pid": 1967070,
+              "firstReadMs": 21.908926010131836,
+              "allWorkersFirstReadMs": 31.133053064346313,
+              "consumeFinishSpreadMs": 0.16075396537780762,
+              "mergeMs": 2.1323020458221436,
+              "formatMs": 0.46450090408325195,
+              "outputEndMs": 451.40349793434143,
+              "mainExitMs": 452.52871108055115,
+              "phases": {
+                "kernel": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 26.069754123687744,
+                  "userUs": 6148,
+                  "systemUs": 4490
+                },
+                "consume": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 5059.260680437088,
+                  "userUs": 3891759,
+                  "systemUs": 1146318
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1072.5162463188171,
+                  "userUs": 57955,
+                  "systemUs": 1100331
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 13795278052,
+                  "wallMs": 3895.954494714737,
+                  "userUs": 3764514,
+                  "systemUs": 12104
+                },
+                "export": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 6.179214715957642,
+                  "userUs": 11852,
+                  "systemUs": 0
+                }
+              }
+            },
+            {
+              "pid": 1967473,
+              "firstReadMs": 26.9863920211792,
+              "allWorkersFirstReadMs": 40.48122596740723,
+              "consumeFinishSpreadMs": 0.1354670524597168,
+              "mergeMs": 1.9953131675720215,
+              "formatMs": 0.43261003494262695,
+              "outputEndMs": 464.65960001945496,
+              "mainExitMs": 465.83094096183777,
+              "phases": {
+                "kernel": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 8.327309608459473,
+                  "userUs": 2019,
+                  "systemUs": 7607
+                },
+                "consume": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 5135.629916667938,
+                  "userUs": 4058975,
+                  "systemUs": 1058649
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1059.80512881279,
+                  "userUs": 55263,
+                  "systemUs": 1020742
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 13795278052,
+                  "wallMs": 3987.0238087177277,
+                  "userUs": 3936105,
+                  "systemUs": 21614
+                },
+                "export": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 7.364678859710693,
+                  "userUs": 11581,
+                  "systemUs": 284
+                }
+              }
+            },
+            {
+              "pid": 1967493,
+              "firstReadMs": 33.193819999694824,
+              "allWorkersFirstReadMs": 47.05699300765991,
+              "consumeFinishSpreadMs": 0.14289093017578125,
+              "mergeMs": 2.936666965484619,
+              "formatMs": 0.4538600444793701,
+              "outputEndMs": 462.2500720024109,
+              "mainExitMs": 463.2414209842682,
+              "phases": {
+                "kernel": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 7.740894794464111,
+                  "userUs": 5309,
+                  "systemUs": 2258
+                },
+                "consume": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 5018.140027046204,
+                  "userUs": 3995453,
+                  "systemUs": 1011244
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1037.8933446407318,
+                  "userUs": 49499,
+                  "systemUs": 976917
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 13795278052,
+                  "wallMs": 3890.7391917705536,
+                  "userUs": 3879317,
+                  "systemUs": 17152
+                },
+                "export": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 7.143038272857666,
+                  "userUs": 5723,
+                  "systemUs": 780
+                }
+              }
+            },
+            {
+              "pid": 1967893,
+              "firstReadMs": 31.87522006034851,
+              "allWorkersFirstReadMs": 46.635303020477295,
+              "consumeFinishSpreadMs": 0.17643380165100098,
+              "mergeMs": 2.3640410900115967,
+              "formatMs": 0.444612979888916,
+              "outputEndMs": 464.7473862171173,
+              "mainExitMs": 465.80895805358887,
+              "phases": {
+                "kernel": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 6.915271282196045,
+                  "userUs": 6578,
+                  "systemUs": 505
+                },
+                "consume": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 5069.760896921158,
+                  "userUs": 3943967,
+                  "systemUs": 1111827
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1059.7565405368805,
+                  "userUs": 59366,
+                  "systemUs": 1072023
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 13795278052,
+                  "wallMs": 3920.277060031891,
+                  "userUs": 3810460,
+                  "systemUs": 19088
+                },
+                "export": {
+                  "calls": 12,
+                  "bytes": 0,
+                  "wallMs": 6.385597229003906,
+                  "userUs": 11639,
+                  "systemUs": 2
+                }
+              }
+            }
+          ],
+          "phaseMeansPerProcess": {
+            "kernel": {
+              "calls": 12.0,
+              "bytes": 0.0,
+              "wallMs": 11.304000663757325,
+              "userUs": 5437.6,
+              "systemUs": 3248.6
+            },
+            "consume": {
+              "calls": 12.0,
+              "bytes": 0.0,
+              "wallMs": 5047.010136795044,
+              "userUs": 3959273.8,
+              "systemUs": 1072882.0
+            },
+            "read": {
+              "calls": 26313.0,
+              "bytes": 13798823047.0,
+              "wallMs": 1054.9140000343323,
+              "userUs": 53643.6,
+              "systemUs": 1033672.8
+            },
+            "parse": {
+              "calls": 26313.0,
+              "bytes": 13795278052.0,
+              "wallMs": 3903.010167360306,
+              "userUs": 3837725.2,
+              "systemUs": 17256.6
+            },
+            "export": {
+              "calls": 12.0,
+              "bytes": 0.0,
+              "wallMs": 7.0290745258331295,
+              "userUs": 10111.0,
+              "systemUs": 213.2
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 480,
+              "bytes": 251655028,
+              "wallMs": 194.01447939872742,
+              "userUs": 170768,
+              "systemUs": 4746,
+              "threadCpuNsPerLogicalByte": 0.6974388765242553
+            },
+            "9-32": {
+              "calls": 1440,
+              "bytes": 754965466,
+              "wallMs": 241.36932802200317,
+              "userUs": 225624,
+              "systemUs": 2586,
+              "threadCpuNsPerLogicalByte": 0.3022787270113359
+            },
+            "33-128": {
+              "calls": 5760,
+              "bytes": 3019859894,
+              "wallMs": 904.1964704990387,
+              "userUs": 878327,
+              "systemUs": 6633,
+              "threadCpuNsPerLogicalByte": 0.2930467078152467
+            },
+            "129-512": {
+              "calls": 23040,
+              "bytes": 12079441148,
+              "wallMs": 3417.7789914608,
+              "userUs": 3372300,
+              "systemUs": 27425,
+              "threadCpuNsPerLogicalByte": 0.2814472092165368
+            },
+            "513-2048": {
+              "calls": 91911,
+              "bytes": 48187216441,
+              "wallMs": 13488.481372594833,
+              "userUs": 13290573,
+              "systemUs": 42662,
+              "threadCpuNsPerLogicalByte": 0.276696517972253
+            },
+            "2049+": {
+              "calls": 8934,
+              "bytes": 4683252283,
+              "wallMs": 1269.210194826126,
+              "userUs": 1251034,
+              "systemUs": 2231,
+              "threadCpuNsPerLogicalByte": 0.2676056988322617
+            }
+          }
+        },
+        {
+          "engine": "wasm",
+          "workers": 24,
+          "measuredRuns": 5,
+          "excludedWarmupPids": [1966698],
+          "processes": [
+            {
+              "pid": 1966906,
+              "firstReadMs": 49.285857915878296,
+              "allWorkersFirstReadMs": 82.09601092338562,
+              "consumeFinishSpreadMs": 0.2798800468444824,
+              "mergeMs": 3.13020396232605,
+              "formatMs": 0.44687700271606445,
+              "outputEndMs": 460.36762285232544,
+              "mainExitMs": 467.04362988471985,
+              "phases": {
+                "kernel": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 42.951411724090576,
+                  "userUs": 13209,
+                  "systemUs": 6444
+                },
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 9389.619301319122,
+                  "userUs": 7514844,
+                  "systemUs": 1441267
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1561.6753561496735,
+                  "userUs": 140309,
+                  "systemUs": 1315215
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 13795278052,
+                  "wallMs": 7613.801571130753,
+                  "userUs": 7192157,
+                  "systemUs": 83894
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 25.53579545021057,
+                  "userUs": 17127,
+                  "systemUs": 741
+                }
+              }
+            },
+            {
+              "pid": 1967151,
+              "firstReadMs": 43.70064902305603,
+              "allWorkersFirstReadMs": 76.67048501968384,
+              "consumeFinishSpreadMs": 0.2519679069519043,
+              "mergeMs": 5.811677932739258,
+              "formatMs": 0.42786192893981934,
+              "outputEndMs": 459.38951897621155,
+              "mainExitMs": 462.957072019577,
+              "phases": {
+                "kernel": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 43.62558841705322,
+                  "userUs": 14035,
+                  "systemUs": 7753
+                },
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 9311.454186201096,
+                  "userUs": 7527150,
+                  "systemUs": 1390921
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1542.621333360672,
+                  "userUs": 136646,
+                  "systemUs": 1270236
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 13795278052,
+                  "wallMs": 7563.771936178207,
+                  "userUs": 7194742,
+                  "systemUs": 69095
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 20.82988667488098,
+                  "userUs": 8034,
+                  "systemUs": 475
+                }
+              }
+            },
+            {
+              "pid": 1967380,
+              "firstReadMs": 26.305410861968994,
+              "allWorkersFirstReadMs": 81.87069296836853,
+              "consumeFinishSpreadMs": 0.27847790718078613,
+              "mergeMs": 6.5494959354400635,
+              "formatMs": 0.46922898292541504,
+              "outputEndMs": 452.9468638896942,
+              "mainExitMs": 454.546236038208,
+              "phases": {
+                "kernel": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 75.87591862678528,
+                  "userUs": 10343,
+                  "systemUs": 6619
+                },
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 9213.16791677475,
+                  "userUs": 7429754,
+                  "systemUs": 1417325
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1540.1678884029388,
+                  "userUs": 125760,
+                  "systemUs": 1274344
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 13795278052,
+                  "wallMs": 7463.909465789795,
+                  "userUs": 7126370,
+                  "systemUs": 98297
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 19.642739295959473,
+                  "userUs": 20019,
+                  "systemUs": 361
+                }
+              }
+            },
+            {
+              "pid": 1967573,
+              "firstReadMs": 38.8568069934845,
+              "allWorkersFirstReadMs": 77.57473921775818,
+              "consumeFinishSpreadMs": 1.3791348934173584,
+              "mergeMs": 4.083291053771973,
+              "formatMs": 0.5636987686157227,
+              "outputEndMs": 452.4972221851349,
+              "mainExitMs": 455.79837107658386,
+              "phases": {
+                "kernel": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 66.49690008163452,
+                  "userUs": 15055,
+                  "systemUs": 4462
+                },
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 9389.576664924622,
+                  "userUs": 7493054,
+                  "systemUs": 1461794
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1565.7652089595795,
+                  "userUs": 144143,
+                  "systemUs": 1334008
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 13795278052,
+                  "wallMs": 7592.783752441406,
+                  "userUs": 7148121,
+                  "systemUs": 82114
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 20.573303937911987,
+                  "userUs": 21864,
+                  "systemUs": 116
+                }
+              }
+            },
+            {
+              "pid": 1967801,
+              "firstReadMs": 44.70442199707031,
+              "allWorkersFirstReadMs": 76.54804301261902,
+              "consumeFinishSpreadMs": 0.24680709838867188,
+              "mergeMs": 4.63455605506897,
+              "formatMs": 0.6591000556945801,
+              "outputEndMs": 462.71128606796265,
+              "mainExitMs": 465.1172971725464,
+              "phases": {
+                "kernel": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 40.62746286392212,
+                  "userUs": 14940,
+                  "systemUs": 6029
+                },
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 9422.918858289719,
+                  "userUs": 7505564,
+                  "systemUs": 1397952
+                },
+                "read": {
+                  "calls": 26313,
+                  "bytes": 13798823047,
+                  "wallMs": 1579.758386850357,
+                  "userUs": 137881,
+                  "systemUs": 1294409
+                },
+                "parse": {
+                  "calls": 26313,
+                  "bytes": 13795278052,
+                  "wallMs": 7606.0136687755585,
+                  "userUs": 7169473,
+                  "systemUs": 61746
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 19.43873381614685,
+                  "userUs": 21373,
+                  "systemUs": 410
+                }
+              }
+            }
+          ],
+          "phaseMeansPerProcess": {
+            "kernel": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 53.91545634269714,
+              "userUs": 13516.4,
+              "systemUs": 6261.4
+            },
+            "consume": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 9345.347385501862,
+              "userUs": 7494073.2,
+              "systemUs": 1421851.8
+            },
+            "read": {
+              "calls": 26313.0,
+              "bytes": 13798823047.0,
+              "wallMs": 1557.997634744644,
+              "userUs": 136947.8,
+              "systemUs": 1297642.4
+            },
+            "parse": {
+              "calls": 26313.0,
+              "bytes": 13795278052.0,
+              "wallMs": 7568.056078863144,
+              "userUs": 7166172.6,
+              "systemUs": 79029.2
+            },
+            "export": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 21.204091835021973,
+              "userUs": 17683.4,
+              "systemUs": 420.6
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 960,
+              "bytes": 503310098,
+              "wallMs": 439.1147723197937,
+              "userUs": 360128,
+              "systemUs": 15565,
+              "threadCpuNsPerLogicalByte": 0.7464443918230307
+            },
+            "9-32": {
+              "calls": 2880,
+              "bytes": 1509930605,
+              "wallMs": 772.202094078064,
+              "userUs": 710703,
+              "systemUs": 16537,
+              "threadCpuNsPerLogicalByte": 0.48163802865629046
+            },
+            "33-128": {
+              "calls": 11520,
+              "bytes": 6039720015,
+              "wallMs": 3069.1474583148956,
+              "userUs": 2907313,
+              "systemUs": 46325,
+              "threadCpuNsPerLogicalByte": 0.4890355832165177
+            },
+            "129-512": {
+              "calls": 46080,
+              "bytes": 24158880800,
+              "wallMs": 13218.033507347107,
+              "userUs": 12521085,
+              "systemUs": 170539,
+              "threadCpuNsPerLogicalByte": 0.5253398990237992
+            },
+            "513-2048": {
+              "calls": 70125,
+              "bytes": 36764548742,
+              "wallMs": 20341.78256225586,
+              "userUs": 19331634,
+              "systemUs": 146180,
+              "threadCpuNsPerLogicalByte": 0.5297988052753779
+            }
+          }
+        }
+      ]
+    },
+    {
+      "label": "deep-tier",
+      "checkpoint": "5760edc",
+      "benchmark": "benchmarks/experiments/deep-tier-results.json",
+      "manifest": {
+        "originalHashes": {
+          "node": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+          "wasm": "652a959144be0f2ec7112fc70a91629b5b69129c82fae0f2e9c17867db06958e"
+        },
+        "instrumentedHashes": {
+          "node": "2783dad850d0364124b97710162d4847a4cf19ac7a87b58b184598c816fbb22f",
+          "wasm": "147ce77c491c361a8130e6beec5ab47ae3ac56698bf29b84e295371d22df07d6"
+        },
+        "probeSha256": "da51f4e9784c79fe6d6da44a9102c6472582004d60d3f05ca6e473a319dc7840",
+        "generatorSha256": "81139235bdba379be3d3fddd3fb294431fe713c1a3590b66408adf35010a4304",
+        "limitations": [
+          "Diagnostic durations include probe overhead; compare with uninstrumented controls.",
+          "Concurrent worker wall spans must not be added as whole-process elapsed time.",
+          "Thread CPU excludes background compiler threads; kernel wall time includes compilation waits.",
+          "Phase CPU is sampled with threadCpuUsage, not hardware performance counters.",
+          "Consume includes read, parse, scheduling and instrumentation; phases are nested.",
+          "Only the default synchronous reader is instrumented completely.",
+          "Per-thread JSON is written at exit, after the recorded exit mark."
+        ]
+      },
+      "rawPhaseInventory": {
+        "directory": "results/deep-20261021/phases-tier",
+        "files": 100,
+        "bytes": 384639,
+        "sortedPathSizeSha256InventoryDigest": "aa952e950712630c8e2a4e94835d16b3339848b1fae1e212ecb8e8c39483fd3b"
+      },
+      "controls": [
+        {
+          "control": "node 24 control",
+          "instrumented": "node 24 tier phases",
+          "controlSeconds": 1.0638530703333333,
+          "instrumentedSeconds": 1.1162927280000001,
+          "instrumentationOverheadPercent": 4.929219939200435
+        }
+      ],
+      "groups": [
+        {
+          "engine": "node",
+          "workers": 24,
+          "measuredRuns": 3,
+          "excludedWarmupPids": [1976921],
+          "processes": [
+            {
+              "pid": 1976987,
+              "firstReadMs": 29.108754873275757,
+              "allWorkersFirstReadMs": 80.23892998695374,
+              "consumeFinishSpreadMs": 0.16725707054138184,
+              "mergeMs": 3.794804096221924,
+              "formatMs": 0.46155500411987305,
+              "outputEndMs": 1056.86834192276,
+              "mainExitMs": 1059.3855137825012,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 23764.59410572052,
+                  "userUs": 21309477,
+                  "systemUs": 1398396
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1494.5145506858826,
+                  "userUs": 243256,
+                  "systemUs": 1246849
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 21561.706348896027,
+                  "userUs": 20473893,
+                  "systemUs": 71872
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 11.690571308135986,
+                  "userUs": 20584,
+                  "systemUs": 337
+                }
+              },
+              "firstCallWithAttachedTurboFanAfterFirstParseMs": {
+                "min": 14.80802297592163,
+                "median": 84.91424345970154,
+                "max": 185.3629081249237
+              }
+            },
+            {
+              "pid": 1977021,
+              "firstReadMs": 30.308830976486206,
+              "allWorkersFirstReadMs": 100.21937990188599,
+              "consumeFinishSpreadMs": 0.15528416633605957,
+              "mergeMs": 3.8746650218963623,
+              "formatMs": 0.4846689701080322,
+              "outputEndMs": 1079.9121799468994,
+              "mainExitMs": 1082.1974618434906,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 24371.63595557213,
+                  "userUs": 21688267,
+                  "systemUs": 1352626
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1521.1188752651215,
+                  "userUs": 235432,
+                  "systemUs": 1178480
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 22127.94994688034,
+                  "userUs": 20825466,
+                  "systemUs": 74176
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 18.81282353401184,
+                  "userUs": 13750,
+                  "systemUs": 655
+                }
+              },
+              "firstCallWithAttachedTurboFanAfterFirstParseMs": {
+                "min": 19.124496936798096,
+                "median": 101.0713495016098,
+                "max": 220.48250889778137
+              }
+            },
+            {
+              "pid": 1977156,
+              "firstReadMs": 30.200414896011353,
+              "allWorkersFirstReadMs": 91.0457079410553,
+              "consumeFinishSpreadMs": 0.16872000694274902,
+              "mergeMs": 4.79886794090271,
+              "formatMs": 0.5299949645996094,
+              "outputEndMs": 1060.4558029174805,
+              "mainExitMs": 1063.5924198627472,
+              "phases": {
+                "consume": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 23739.140899658203,
+                  "userUs": 21406702,
+                  "systemUs": 1353646
+                },
+                "read": {
+                  "calls": 105251,
+                  "bytes": 13808927111,
+                  "wallMs": 1472.3338723182678,
+                  "userUs": 249129,
+                  "systemUs": 1192445
+                },
+                "parse": {
+                  "calls": 105251,
+                  "bytes": 13794747516,
+                  "wallMs": 21560.098388433456,
+                  "userUs": 20571716,
+                  "systemUs": 70706
+                },
+                "export": {
+                  "calls": 24,
+                  "bytes": 0,
+                  "wallMs": 11.237813711166382,
+                  "userUs": 20328,
+                  "systemUs": 327
+                }
+              },
+              "firstCallWithAttachedTurboFanAfterFirstParseMs": {
+                "min": 17.025798082351685,
+                "median": 83.1541119813919,
+                "max": 175.29968905448914
+              }
+            }
+          ],
+          "phaseMeansPerProcess": {
+            "consume": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 23958.456986983616,
+              "userUs": 21468148.666666668,
+              "systemUs": 1368222.6666666667
+            },
+            "read": {
+              "calls": 105251.0,
+              "bytes": 13808927111.0,
+              "wallMs": 1495.9890994230907,
+              "userUs": 242605.66666666666,
+              "systemUs": 1205924.6666666667
+            },
+            "parse": {
+              "calls": 105251.0,
+              "bytes": 13794747516.0,
+              "wallMs": 21749.918228069942,
+              "userUs": 20623691.666666668,
+              "systemUs": 72251.33333333333
+            },
+            "export": {
+              "calls": 24.0,
+              "bytes": 0.0,
+              "wallMs": 13.91373618443807,
+              "userUs": 18220.666666666668,
+              "systemUs": 439.6666666666667
+            }
+          },
+          "parserWindows": {
+            "1-8": {
+              "calls": 576,
+              "bytes": 75493676,
+              "wallMs": 1637.0162756443024,
+              "userUs": 1220017,
+              "systemUs": 47051,
+              "threadCpuNsPerLogicalByte": 16.78376345059684
+            },
+            "9-32": {
+              "calls": 1728,
+              "bytes": 226480468,
+              "wallMs": 1060.8534824848175,
+              "userUs": 864648,
+              "systemUs": 300,
+              "threadCpuNsPerLogicalByte": 3.819084301786236
+            },
+            "33-128": {
+              "calls": 6912,
+              "bytes": 905923429,
+              "wallMs": 2475.3786194324493,
+              "userUs": 2066109,
+              "systemUs": 13415,
+              "threadCpuNsPerLogicalByte": 2.2954743562548927
+            },
+            "129-512": {
+              "calls": 27648,
+              "bytes": 3623692594,
+              "wallMs": 5976.024408817291,
+              "userUs": 5505583,
+              "systemUs": 20015,
+              "threadCpuNsPerLogicalByte": 1.5248528556614094
+            },
+            "513-2048": {
+              "calls": 110592,
+              "bytes": 14494773091,
+              "wallMs": 21468.185994148254,
+              "userUs": 20698930,
+              "systemUs": 59331,
+              "threadCpuNsPerLogicalByte": 1.432120452640206
+            },
+            "2049+": {
+              "calls": 168297,
+              "bytes": 22057879290,
+              "wallMs": 32632.29590368271,
+              "userUs": 31515788,
+              "systemUs": 76642,
+              "threadCpuNsPerLogicalByte": 1.43225146826887
+            }
+          },
+          "parserTierTransitions": {
+            "131073->4194369": {
+              "calls": 44,
+              "bytes": 5766899,
+              "wallMs": 460.9581046104431,
+              "userUs": 323490,
+              "systemUs": 16906
+            },
+            "4194369->65": {
+              "calls": 27,
+              "bytes": 3538763,
+              "wallMs": 257.35022354125977,
+              "userUs": 183323,
+              "systemUs": 7586
+            },
+            "65->321": {
+              "calls": 4,
+              "bytes": 524265,
+              "wallMs": 12.985628366470337,
+              "userUs": 9757,
+              "systemUs": 0
+            },
+            "321->577": {
+              "calls": 3,
+              "bytes": 393197,
+              "wallMs": 1.4895527362823486,
+              "userUs": 0,
+              "systemUs": 0
+            },
+            "577->577": {
+              "calls": 45,
+              "bytes": 5897949,
+              "wallMs": 24.127044916152954,
+              "userUs": 21884,
+              "systemUs": 1099
+            },
+            "577->513": {
+              "calls": 3,
+              "bytes": 393189,
+              "wallMs": 1.815791130065918,
+              "userUs": 1999,
+              "systemUs": 0
+            },
+            "513->16897": {
+              "calls": 4,
+              "bytes": 524259,
+              "wallMs": 2.350515842437744,
+              "userUs": 3010,
+              "systemUs": 0
+            },
+            "16897->16897": {
+              "calls": 7244,
+              "bytes": 949436885,
+              "wallMs": 2481.7056863307953,
+              "userUs": 2145445,
+              "systemUs": 6061
+            },
+            "16897->41": {
+              "calls": 63,
+              "bytes": 8257115,
+              "wallMs": 51.82973504066467,
+              "userUs": 24462,
+              "systemUs": 12495
+            },
+            "41->41": {
+              "calls": 304039,
+              "bytes": 39848943882,
+              "wallMs": 59139.98806452751,
+              "userUs": 56835214,
+              "systemUs": 148343
+            },
+            "65->1": {
+              "calls": 18,
+              "bytes": 2359189,
+              "wallMs": 108.58076071739197,
+              "userUs": 89888,
+              "systemUs": 3589
+            },
+            "1->16641": {
+              "calls": 20,
+              "bytes": 2621338,
+              "wallMs": 28.922382593154907,
+              "userUs": 17143,
+              "systemUs": 2
+            },
+            "16641->16641": {
+              "calls": 1247,
+              "bytes": 163438293,
+              "wallMs": 684.9526238441467,
+              "userUs": 578850,
+              "systemUs": 1918
+            },
+            "16641->16385": {
+              "calls": 1128,
+              "bytes": 147841665,
+              "wallMs": 604.4988174438477,
+              "userUs": 492521,
+              "systemUs": 1722
+            },
+            "16385->16641": {
+              "calls": 1162,
+              "bytes": 152297796,
+              "wallMs": 625.7637960910797,
+              "userUs": 542005,
+              "systemUs": 225
+            },
+            "16641->16897": {
+              "calls": 64,
+              "bytes": 8388150,
+              "wallMs": 29.370225429534912,
+              "userUs": 20110,
+              "systemUs": 9
+            },
+            "4194369->257": {
+              "calls": 2,
+              "bytes": 262136,
+              "wallMs": 8.976369142532349,
+              "userUs": 4618,
+              "systemUs": 0
+            },
+            "257->16385": {
+              "calls": 4,
+              "bytes": 524256,
+              "wallMs": 2.378619909286499,
+              "userUs": 1990,
+              "systemUs": 0
+            },
+            "4194369->1": {
+              "calls": 13,
+              "bytes": 1703835,
+              "wallMs": 108.75953102111816,
+              "userUs": 70777,
+              "systemUs": 5304
+            },
+            "16385->4210689": {
+              "calls": 4,
+              "bytes": 524266,
+              "wallMs": 2.0068140029907227,
+              "userUs": 2979,
+              "systemUs": 0
+            },
+            "4210689->16897": {
+              "calls": 4,
+              "bytes": 524265,
+              "wallMs": 4.0036609172821045,
+              "userUs": 2003,
+              "systemUs": 0
+            },
+            "16897->25": {
+              "calls": 3,
+              "bytes": 393207,
+              "wallMs": 3.978121757507324,
+              "userUs": 993,
+              "systemUs": 0
+            },
+            "25->25": {
+              "calls": 116,
+              "bytes": 15203608,
+              "wallMs": 37.94544839859009,
+              "userUs": 31999,
+              "systemUs": 7
+            },
+            "25->281": {
+              "calls": 4,
+              "bytes": 524264,
+              "wallMs": 1.1041548252105713,
+              "userUs": 0,
+              "systemUs": 0
+            },
+            "281->537": {
+              "calls": 4,
+              "bytes": 524274,
+              "wallMs": 4.177680969238281,
+              "userUs": 992,
+              "systemUs": 0
+            },
+            "537->537": {
+              "calls": 226,
+              "bytes": 29620834,
+              "wallMs": 67.85344076156616,
+              "userUs": 62220,
+              "systemUs": 35
+            },
+            "537->41": {
+              "calls": 4,
+              "bytes": 524262,
+              "wallMs": 1.4357919692993164,
+              "userUs": 1000,
+              "systemUs": 0
+            },
+            "1->16385": {
+              "calls": 14,
+              "bytes": 1834886,
+              "wallMs": 66.99818897247314,
+              "userUs": 52957,
+              "systemUs": 1985
+            },
+            "131073->4194305": {
+              "calls": 28,
+              "bytes": 3669841,
+              "wallMs": 144.56320452690125,
+              "userUs": 98146,
+              "systemUs": 4869
+            },
+            "4194305->16385": {
+              "calls": 20,
+              "bytes": 2621338,
+              "wallMs": 45.47726655006409,
+              "userUs": 37318,
+              "systemUs": 752
+            },
+            "4194305->16641": {
+              "calls": 9,
+              "bytes": 1179582,
+              "wallMs": 9.633765459060669,
+              "userUs": 7841,
+              "systemUs": 0
+            },
+            "16385->16385": {
+              "calls": 162,
+              "bytes": 21232489,
+              "wallMs": 112.74272346496582,
+              "userUs": 106813,
+              "systemUs": 49
+            },
+            "321->513": {
+              "calls": 1,
+              "bytes": 131063,
+              "wallMs": 0.6126019954681396,
+              "userUs": 1001,
+              "systemUs": 0
+            },
+            "65->257": {
+              "calls": 3,
+              "bytes": 393195,
+              "wallMs": 9.643462896347046,
+              "userUs": 5019,
+              "systemUs": 0
+            },
+            "65->65": {
+              "calls": 14,
+              "bytes": 1834925,
+              "wallMs": 92.22164821624756,
+              "userUs": 86674,
+              "systemUs": 3769
+            },
+            "4194369->321": {
+              "calls": 1,
+              "bytes": 131057,
+              "wallMs": 7.352168083190918,
+              "userUs": 4643,
+              "systemUs": 29
+            },
+            "321->65": {
+              "calls": 1,
+              "bytes": 131061,
+              "wallMs": 0.5810210704803467,
+              "userUs": 981,
+              "systemUs": 0
+            },
+            "257->16641": {
+              "calls": 1,
+              "bytes": 131070,
+              "wallMs": 0.6200461387634277,
+              "userUs": 1010,
+              "systemUs": 0
+            }
+          },
+          "parserTierGroups": {
+            "OtherOrTransition": {
+              "calls": 11714,
+              "bytes": 1535298666,
+              "wallMs": 6109.766619682312,
+              "userUs": 5035861,
+              "systemUs": 68411
+            },
+            "TurboFanBeforeAndAfter": {
+              "calls": 304039,
+              "bytes": 39848943882,
+              "wallMs": 59139.98806452751,
+              "userUs": 56835214,
+              "systemUs": 148343
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "rankedTargets": [
+    {
+      "rank": 1,
+      "engine": "wasm",
+      "name": "Hash-indexed short-key side table with dense statistics",
+      "evidence": "15 short-key load/equality blocks take 4105/9835 optimized parser ticks (41.74%, 31.00% of all single-worker ticks). Native code has hash -> bucket pointer -> key address -> SIMD equality.",
+      "experiment": "Keep dense Station aggregates and existing bucket pointers. Add a 16-byte canonical short-key entry indexed directly by the hash slot, so key validation can load independently of the bucket pointer. Preserve complete 16-byte equality, collision fallback, resets and retuning.",
+      "differenceFromRejected": "b6a3e22 only rescheduled dependent loads and grew native code to 17444 bytes without a gain. 583395f moved BOTH stats and keys into sparse 32-byte slots and lost on the earlier CPU. This experiment keeps writes dense and changes only the key-address dependency.",
+      "risk": "The new 512 KiB key table increases footprint and retune/reset work. The sample share is not a predicted saving. Native ordering and real timings decide."
+    },
+    {
+      "rank": 2,
+      "engine": "node",
+      "name": "Shorten cold parsing and normal tier-up",
+      "evidence": "At 24 workers, first-eight-chunk parser CPU is 26.54 ns/logical byte versus 1.44 after chunk 2048 in the five-run phase diagnostic. A separate three-run tier diagnostic finds 3.71% of bytes but 8.22% of parser thread CPU in calls without TurboFan attached at both boundaries; some are in baseline code with concurrent optimization pending.",
+      "experiment": "First compare normal earlier TurboFan/OSR thresholds and V8 background pool widths against the current defaults. Then, independently, specialize the default two-lane parser entry and outline cold miss work if native/bytecode evidence shows a smaller compilation job. Keep complete CLI startup in every benchmark; no V8 intrinsics in production.",
+      "localDefaults": {
+        "v8PoolSize": 4,
+        "invocationCountForTurbofan": 3000,
+        "invocationCountForOsr": 500,
+        "concurrentTurbofanMaxThreads": 4
+      },
+      "provenance": "Local Node 26.12.0 --v8-options; src/node_options.h:413, src/node.cc:1371, deps/v8/src/compiler-dispatcher/optimizing-compile-dispatcher.cc.",
+      "differenceFromRejected": "Prior eager-tier experiments targeted Wasm; this targets observed JavaScript lower-tier work. Earlier additive-feedback controls did not establish a compiler cause and are not treated as proof here.",
+      "risk": "Pending optimization includes queueing and compilation; no compiler CPU claim. Earlier compilation can use weaker feedback or compete for cores. Probes themselves perturb tier timing, so only uninstrumented confirmations count."
+    },
+    {
+      "rank": 3,
+      "engine": "node",
+      "name": "Compact packed-prediction plus exact-head cache",
+      "evidence": "The exact head comparison is 10.21-10.56% of all 24-worker samples and 3498/27668 native parser ticks. The current record-head load depends on the ID fetched from the predictor.",
+      "experiment": "Test an eight-byte predictor entry containing the current packed ID/length and the exact first four name bytes. Load both from the hash-derived slot, removing the ID-dependent head load. Keep tail/middle/full-name and delimiter validation plus the authoritative fallback.",
+      "differenceFromRejected": "89f8830 copied head, tail and middle into a 16-byte entry (512 KiB) and lost. This is a bounded revisit using only two words (256 KiB), with the retained packed metadata and current equality helper; it is not a claim that the old layout now wins.",
+      "risk": "Doubles the current 128 KiB cache, so cache footprint may outweigh the removed dependency. Confirm both hot lanes actually lose the record-head load before benchmark confirmation."
+    }
+  ],
+  "deprioritized": [
+    "Read calls are approximately 96% CPU time in the first phase capture batch. Async IO cannot hide much blocked read time in this cached-file workload. A copy-avoidance redesign is a different hypothesis; the prior mmap experiment lost.",
+    "Wasm kernel compile/instantiate/reset averages about 1-2 ms per worker; sharing its compilation again is not a leading target.",
+    "24-worker consume completion spread is about 0.1-0.2 ms for Node and usually 0.3 ms for Wasm. The existing chunk queue already controls the end tail well.",
+    "Merge takes about 3 ms for Node and 5 ms for Wasm, formatting below 1 ms. GC remains below 0.6% of CPU samples. These are small targets.",
+    "The five-round 12/24 control timings are effectively tied (Node 1.060/1.062 s, Wasm 0.474/0.476 s). Earlier worker-count screens were inconsistent, so defaults remain unchanged.",
+    "Do not repeat generic attributes, comparison spellings or the rejected three-lane key staging under a new label.",
+    "No theoretical optimum is established, and these profiles do not demonstrate a large achievable speedup."
+  ],
+  "validation": {
+    "profileCaptures": 8,
+    "fullFileComparisonProcesses": 80,
+    "measuredComparisonProcesses": 66,
+    "completeOutputMatchedEveryProcess": true,
+    "sourceHashesStableForEveryCaptureAndComparison": true,
+    "phaseReadAndParseChunkCountsAndOverlapBytesValidated": true,
+    "phaseProbeHashesMatchCopiedManifests": true,
+    "productionChanged": false,
+    "measuredComparisonFilesystemInputsAllZero": true,
+    "finalHelperSmoke": {
+      "inputBytes": 2097147,
+      "cases": [
+        {
+          "engine": "node",
+          "tierProbe": false,
+          "outputSha256": "bed81d9b81ccab6c65e0ab3a1e01587596703b6f1a751f1e7121e7ee56d34508",
+          "matchesControl": true
+        },
+        {
+          "engine": "node",
+          "tierProbe": true,
+          "outputSha256": "bed81d9b81ccab6c65e0ab3a1e01587596703b6f1a751f1e7121e7ee56d34508",
+          "matchesControl": true
+        },
+        {
+          "engine": "wasm",
+          "tierProbe": false,
+          "outputSha256": "bed81d9b81ccab6c65e0ab3a1e01587596703b6f1a751f1e7121e7ee56d34508",
+          "matchesControl": true
+        }
+      ],
+      "unsupportedAsyncRejected": true
+    },
+    "biome": "Passed: 124 files, no changes required",
+    "productionDiffAgainst7aacb10": "Empty for plain/, calculate.mjs, wasm/, lib/, benchmark-config.mjs and compare.mjs",
+    "finalHelperHashes": {
+      "tools/profile-phases.mjs": "89e863da3a729d9a1d004eb4c9858cf39b63e3196b8e20e5c334f6501ecc35ba",
+      "tools/profile-phase-runtime.mjs": "762d46874707d55509f1487c680ac6b907098b912800794fffa4b7504bf77da0"
+    }
+  },
+  "analysisArtifact": {
+    "path": "results/deep-20261021/summarize.py",
+    "purpose": "Local report assembly; original capture/helper checkpoints and raw data are recorded separately.",
+    "sha256": "1ae04153808d2a50d8891367c51763b76d01445c01d7d12a364df9b11423bef0"
+  }
+}

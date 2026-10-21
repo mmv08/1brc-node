@@ -1,5 +1,148 @@
 # Benchmark and experiment log
 
+## Profiling follow-up: larger targets, 2026-10-21
+
+Production remains at **`7aacb10`**, including its two measured improvements.
+This pass identifies the next experiments; it does not claim another speedup.
+The unsigned checkpoints are `c4e6dea` (plan), `74ef85f` (phase probes),
+`ff763cf` (early/steady windows), and `5760edc` (observed V8 tiers).
+[The evidence report](benchmarks/2026-10-21-deeper-targets.json) contains commands,
+source hashes, raw-artifact inventory digests, native instructions, per-process
+phase measurements, control timings and the ranked experiments.
+
+### Fresh samples and native code
+
+Same Ryzen 9 7900, Node 26.12.0 and full billion-row input. Three fresh CPU
+captures per engine use 24 workers and include all 25 isolates. Separate
+single-worker captures join raw PCs to native disassembly from that process.
+
+| Region | Raw sample share across the three 24-worker captures |
+| --- | ---: |
+| Node station scanning / exact key equality | 26.6–27.1% / 16.6–16.8% |
+| Node statistics update, including temperature decoding | 26.8–27.2% |
+| Node predictor load / first-word comparison source lines | 9.4–10.0% / 10.2–10.6% |
+| Wasm main parser / long-name helper | 70.8–71.7% / 5.1–6.0% |
+| Reads, Node / Wasm | 5.0–5.5% / 13.5–14.4% |
+
+The Wasm short-key load/equality blocks still account for **4,105 / 9,835
+optimized parser ticks (41.7%)**, or 31.0% of all single-worker ticks. The actual
+dependency is `hash → bucket pointer → station key load → equality`. Fifteen
+blocks were checked against the fresh disassembly. The recently rejected
+three-lane scheduling experiment left this dependency in place.
+
+Node's first-word equality accounts for 3,498 / 27,668 native parser ticks
+(12.6%). Its address depends on the ID fetched from the predictor. The apparent
+loop-condition hotspot in the line profile is less specific: native samples
+also land on tagged comparisons, stack reloads and cursor shifts. It does not
+establish that branch prediction is the problem.
+
+These sample shares are neither elapsed-time components nor predicted savings.
+Hardware counters remain unavailable at `perf_event_paranoid=4`; no cache-miss,
+branch-miss or instruction-latency explanation is asserted.
+
+### Phase measurements and actual tier state
+
+The new [copy generator](tools/profile-phases.mjs) and
+[probe runtime](tools/profile-phase-runtime.mjs) instrument isolated copies at
+chunk boundaries. They measure reads, parsing, kernel setup, aggregation export
+and worker/main lifecycle using monotonic wall clocks and `threadCpuUsage()`.
+The hot-loop source and Wasm binary remain unchanged. Matched controls quantify
+probe overhead: about **4.9–5.2%** initially and **3.9–7.5%** after adding chunk
+windows, depending on engine and worker count. These are diagnostic timings.
+
+After excluding the warm-up, the five-run 24-worker Node diagnostic measures
+**26.54 ns of parser thread CPU per logical byte in each worker's first eight
+chunks**, versus **1.44 ns/byte after chunk 2,048**. A separate three-run capture
+observes `%GetOptimizationStatus` before and after each parser call, without
+forcing optimization. Calls without TurboFan attached at both boundaries
+process **3.71% of bytes but consume 8.22% of measured parser thread CPU**.
+Some run baseline code with concurrent optimization pending. The per-process
+median first call with TurboFan attached occurs **83–101 ms after that worker's
+first parse**. The status bits were checked against the local Node 26.12.0 V8
+source. Call-boundary status cannot identify on-stack replacement inside a call,
+separate queued from active compilation, or measure background compiler CPU.
+The probes can themselves affect tier timing, so this is a target, not a gain.
+
+The other phase observations narrow the search:
+
+- At 24 workers, measured read CPU is roughly 92–98% of summed read wall spans
+  across the diagnostic batches. This does not reveal a large blocked-I/O
+  opportunity. Short-phase CPU attribution is approximate: the 12-worker read
+  estimate reaches 107% of wall time, so these ratios must not be interpreted
+  as an exact accounting of blocked time.
+- Wasm compile/instantiate/reset averages about **1.4–2.2 ms per worker** in the
+  24-worker batches. This is much smaller than worker readiness: all workers
+  make their first read about **65–83 ms** after calculation starts. Earlier
+  workers are already parsing during that interval.
+- In the five-run chunk-window batch, worker consume completion spread is
+  **0.13–0.20 ms for Node** and **0.25–1.38 ms for Wasm**. The chunk queue already
+  controls the end-of-file tail well. Merge takes approximately 3–5 ms and
+  formatting stays below 1 ms.
+- Uninstrumented five-round controls at 12 / 24 workers are **1.060 / 1.062 s
+  for Node** and **0.474 / 0.476 s for Wasm**. This screen and earlier inconsistent
+  worker-count results do not justify changing the default.
+
+Concurrent worker spans overlap and cannot be summed as process elapsed time.
+CPU accounting is quantized; comparisons aggregate many chunks. `consume`
+includes read and parse, so those phases must not be added again.
+
+### Next experiments, in priority order
+
+1. **Wasm: address short keys directly from the hash slot, while keeping
+   statistics dense.** Test a separate 16-byte canonical-key table. Key loading
+   can then proceed independently of the bucket-pointer load, preserving full
+   key equality and the collision fallback. This differs from rejected
+   `583395f`, which moved both keys and mutable statistics into sparse 32-byte
+   slots, and from the just-rejected load staging in `b6a3e22`. The 512 KiB
+   side table adds footprint and reset/retune work, so it may still lose.
+2. **Node: shorten cold parsing and normal tier-up.** First compare earlier
+   TurboFan/OSR thresholds and V8 background pool widths against the defaults
+   (pool size 4, TurboFan threshold 3,000, OSR threshold 500). Then test a
+   dedicated two-lane parser entry or outlined cold miss path if bytecode and
+   native evidence show a smaller compilation job. Earlier compilation can
+   compete with parsing or use insufficient feedback. Production must use
+   normal runtime controls/source changes; the V8 status intrinsic is only a
+   diagnostic. Every benchmark must continue to include fresh CLI startup.
+3. **Node: test an eight-byte predictor entry with packed ID/length plus the
+   exact first word.** Both loads would use the known hash slot, removing the
+   ID-dependent first-word load. Preserve all remaining key and delimiter
+   checks. This is a controlled revisit of `89f8830`: that rejected version
+   stored head, tail and middle in a 16-byte entry, using 512 KiB. The proposed
+   256 KiB version is smaller but still doubles the current predictor, so its
+   footprint may outweigh the removed dependency.
+
+Each experiment needs a separate unsigned checkpoint, native-code evidence,
+complete correctness checks and repeatable uninstrumented paired timing before
+selection. GC, output formatting, repeated generic attributes, another spelling
+of SIMD equality, and repeating the rejected load-staging approach have lower
+priority. No theoretical optimum or large achievable speedup is established.
+
+All **eight full-file profile captures and 80 comparison processes** matched
+complete expected stdout. All **66 measured comparison processes** and eight
+profile captures reported zero filesystem inputs. Source hashes were checked
+before and after every process. Phase records also validate the complete read
+and parse chunk counts and expected overlap byte totals. Production sources
+remain unchanged.
+
+To create a fresh diagnostic copy (the destination must not already exist):
+
+```sh
+node tools/profile-phases.mjs results/my-phase-copy
+mkdir -p results/my-phase-output
+ENGINE=node WORKERS=24 PROFILE_PHASE_DIR="$PWD/results/my-phase-output" \
+  .runtimes/node-v26.12.0/bin/node \
+  --max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000 \
+  results/my-phase-copy/plain/calculate.mjs measurements.txt
+```
+
+Use `tools/compare.mjs` to pair that copy with production, following the saved
+[initial controls](benchmarks/experiments/deep-phases24-results.json),
+[chunk-window controls](benchmarks/experiments/deep-phases-v2-results.json), and
+[tier controls](benchmarks/experiments/deep-tier-results.json). For the optional
+tier observer, set `PROFILE_TIER=1` and add `--allow-natives-syntax` only to the
+diagnostic command. Captured helper versions and hashes are in the report;
+later helper changes reject unsupported async mode and create the parent folder.
+
 ## Current: two measured improvements from the profile targets, 2026-10-21
 
 The retained Node change is **`266d94c`**: pack the predicted station ID and

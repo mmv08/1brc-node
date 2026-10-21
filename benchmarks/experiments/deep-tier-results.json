@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-21T06:45:05.896Z",
+  "label": "deep-tier",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "node 24 control",
+      "round": 1,
+      "seconds": 1.093803295
+    },
+    {
+      "name": "node 24 tier phases",
+      "round": 1,
+      "seconds": 1.1217380239999997
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "node 24 control",
+      "script": "plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "WORKERS": "24"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "times": [1.0633148840000004, 1.0521023859999996, 1.076141941],
+      "usage": [
+        {
+          "user": 22.04,
+          "system": 1.37,
+          "maxRssKiB": 340196,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.61,
+          "system": 1.44,
+          "maxRssKiB": 337724,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.08,
+          "system": 1.42,
+          "maxRssKiB": 341348,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.0638530703333333,
+      "best": 1.0521023859999996
+    },
+    {
+      "name": "node 24 tier phases",
+      "script": "results/deep-phase-v3/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "WORKERS": "24",
+        "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000 --allow-natives-syntax",
+        "PROFILE_PHASE_DIR": "/home/mmv/projects/1brc-node/results/deep-20261021/phases-tier",
+        "PROFILE_TIER": "1"
+      },
+      "flags": [
+        "--max-inlined-bytecode-size=1000",
+        "--max-inlined-bytecode-size-cumulative=4000",
+        "--allow-natives-syntax"
+      ],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "2783dad850d0364124b97710162d4847a4cf19ac7a87b58b184598c816fbb22f",
+      "times": [1.1020619220000003, 1.1320834180000001, 1.1147328440000002],
+      "usage": [
+        {
+          "user": 22.73,
+          "system": 1.6,
+          "maxRssKiB": 350848,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 23.06,
+          "system": 1.54,
+          "maxRssKiB": 348944,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.76,
+          "system": 1.55,
+          "maxRssKiB": 349252,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.1162927280000001,
+      "best": 1.1020619220000003
+    }
+  ]
+}

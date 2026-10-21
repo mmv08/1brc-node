@@ -9,6 +9,7 @@ import { dirname, resolve } from 'node:path';
 import { sourceHash } from './benchmark-config.mjs';
 
 const destination = resolve(process.argv[2] ?? 'results/phase-copy');
+mkdirSync(dirname(destination), { recursive: true });
 mkdirSync(destination); // Refuse to overwrite an existing experiment.
 const originalHashes = { node: sourceHash('node'), wasm: sourceHash('wasm') };
 const files = [

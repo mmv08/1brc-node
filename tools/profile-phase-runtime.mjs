@@ -7,6 +7,8 @@ import { isMainThread, threadId } from 'node:worker_threads';
 const directory = process.env.PROFILE_PHASE_DIR;
 if (!directory) throw new Error('PROFILE_PHASE_DIR is required');
 if (!process.threadCpuUsage) throw new Error('This diagnostic needs process.threadCpuUsage');
+if (process.env.IO && process.env.IO !== 'sync')
+  throw new Error('This diagnostic instruments only IO=sync');
 const now = () => Number(process.hrtime.bigint()) / 1e6;
 // Optional V8 diagnostic, requiring --allow-natives-syntax. This only observes
 // attached code before/after a call; it cannot identify on-stack replacement
