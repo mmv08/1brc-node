@@ -16,12 +16,13 @@
       "id": "shift-range",
       "source_commit": "8f4ca627",
       "scope": "general Word32/Word64 signed shifted add/sub overflow elimination",
-      "state": "built; 44 tests pass; native inspection and benchmarks next"
+      "state": "completed; 44 tests pass; targeted branches removed; no clear benchmark gain; preserved as neutral"
     },
     {
       "id": "constant-phi-expression",
       "scope": "repair expression-wide foldability proof",
-      "state": "isolated source worktree"
+      "state": "building",
+      "source_commit": "d7fff2e2"
     },
     {
       "id": "bounded-dispatch-cloning",

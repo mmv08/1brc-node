@@ -1,0 +1,78 @@
+{
+  "source_commit": "8f4ca627",
+  "baseline_commit": "f090ad58",
+  "tests": {
+    "passed": 44,
+    "failed": 0,
+    "log": "results/v8-general/shift-range-tests.log",
+    "selection": [
+      "unittests/MachineOptimizationReducerTest.*",
+      "unittests/JSCallReducerTest.*",
+      "mjsunit/compiler/shifted-overflow",
+      "mjsunit/compiler/division-by-constant",
+      "mjsunit/compiler/regress-intoverflow",
+      "mjsunit/compiler/regress-shift-right",
+      "mjsunit/compiler/number-divide",
+      "mjsunit/compiler/array-buffer-byte-length"
+    ]
+  },
+  "native": {
+    "before": {
+      "capture": {
+        "argv": [
+          "taskset",
+          "-c",
+          "2",
+          "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-byte-length/d8",
+          "--print-opt-code",
+          "--print-opt-code-filter=doFloatIterations",
+          "run.js"
+        ],
+        "returncode": 0,
+        "elapsed_s": 6.021356821060181
+      },
+      "raw_path": "results/v8-general/profiles/followups-shift-range/before",
+      "code_objects": [
+        {
+          "name": "doFloatIterations",
+          "instruction_bytes": 1716,
+          "jo_count": 3
+        },
+        {
+          "name": "doFloatIterations",
+          "instruction_bytes": 2368,
+          "jo_count": 6
+        }
+      ]
+    },
+    "after": {
+      "capture": {
+        "argv": [
+          "taskset",
+          "-c",
+          "2",
+          "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-shift-range/d8",
+          "--print-opt-code",
+          "--print-opt-code-filter=doFloatIterations",
+          "run.js"
+        ],
+        "returncode": 0,
+        "elapsed_s": 6.01941180229187
+      },
+      "raw_path": "results/v8-general/profiles/followups-shift-range/after",
+      "code_objects": [
+        {
+          "name": "doFloatIterations",
+          "instruction_bytes": 1716,
+          "jo_count": 3
+        },
+        {
+          "name": "doFloatIterations",
+          "instruction_bytes": 2344,
+          "jo_count": 4
+        }
+      ]
+    }
+  },
+  "interpretation": "The two targeted overflow branches disappear, but every individual benchmark confidence interval includes no change. No demonstrated speedup; do not include in the winning stack on this evidence."
+}
