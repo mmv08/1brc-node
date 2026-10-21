@@ -1,0 +1,64 @@
+{
+  "source_commit": "fcc58178",
+  "baseline_commit": "f090ad58",
+  "includes": [
+    "terminal-peeling",
+    "constant-phi-expression",
+    "bounded-dispatch-cloning"
+  ],
+  "excludes": [
+    "shift-range",
+    "mask-implication"
+  ],
+  "tests": {
+    "passed": 56,
+    "failed": 0,
+    "log": "results/v8-general/winning-followups-tests.log",
+    "run_skipped": true,
+    "selection": "Union of the 37 terminal-peeling and 20 dispatch-cloning tests; common getter regression counted once."
+  },
+  "native": {
+    "capture": {
+      "argv": [
+        "taskset",
+        "-c",
+        "2",
+        "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-winning-followups/d8",
+        "--no-concurrent-recompilation",
+        "--print-opt-code",
+        "run.js"
+      ],
+      "returncode": 0,
+      "elapsed_s": 6.026401198003441
+    },
+    "raw_path": "results/v8-general/profiles/followups-winning/native",
+    "code_objects": [
+      {
+        "name": "doFloatIterations",
+        "instruction_bytes": 1716,
+        "integer_method_constant_loads": 0
+      },
+      {
+        "name": "doOneIterationJS",
+        "instruction_bytes": 2348,
+        "integer_method_constant_loads": 0
+      },
+      {
+        "name": "doOneIterationJS",
+        "instruction_bytes": 4584,
+        "integer_method_constant_loads": 0
+      },
+      {
+        "name": "doOneFloatIterationJS",
+        "instruction_bytes": 1016,
+        "integer_method_constant_loads": 0
+      },
+      {
+        "name": "doFloatIterations",
+        "instruction_bytes": 2636,
+        "integer_method_constant_loads": 0
+      }
+    ]
+  },
+  "interpretation": "Combined polymorphic integer function4584bytes, versus3296baseline and5116peeling-only. Integer method constants remain eliminated. Runtime interactions and compilation costs are measured separately."
+}
