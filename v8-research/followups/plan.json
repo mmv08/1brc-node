@@ -57,7 +57,7 @@
       "id": "winning-followups",
       "source_commit": "fcc58178",
       "scope": "combine measured dispatch and terminal-peeling candidates; excludes neutral shift/mask experiments",
-      "state": "56 tests pass; native interactions verified; 21-pair runtime benchmark running; controls pending"
+      "state": "21-pair combined gain confirmed; 56 tests pass; official controls running"
     }
   ]
 }

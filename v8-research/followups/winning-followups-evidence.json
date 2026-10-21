@@ -60,5 +60,15 @@
       }
     ]
   },
-  "interpretation": "Combined polymorphic integer function4584bytes, versus3296baseline and5116peeling-only. Integer method constants remain eliminated. Runtime interactions and compilation costs are measured separately."
+  "interpretation": "Combined polymorphic integer function4584bytes, versus3296baseline and5116peeling-only. Integer method constants remain eliminated. Runtime interactions and compilation costs are measured separately.",
+  "benchmark": {
+    "file": "winning-followups-results.json",
+    "pairs": 21,
+    "geometric_mean_score_change_percent": 8.940239684533058,
+    "paired_bootstrap_95_percent_ci": [
+      8.81001423679917,
+      9.11425704937483
+    ],
+    "interpretation": "Combined typed-array cases improve29.844%,18.616%,4.678%, all21wins; DataView LittleEndian+3.299%,21wins. DataView BigEndian+0.347%; DataView Floats interval includes zero. Controls pending."
+  }
 }

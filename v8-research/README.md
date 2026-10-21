@@ -87,6 +87,37 @@ The rejected experiment is retained in [store-bitcast.patch](store-bitcast.patch
 
 The local unit-test launcher initially rejected a direct multi-test invocation because current V8 requires a fresh process per test. `tools/run-tests.py` provided the supported isolation and all 39 selected tests passed.
 
-## Remaining targets
+## Follow-up experiments
 
 The [fresh profiling investigation](next-targets/README.md) records three samples of the winning build (58,888 ticks), native code and compiler IR. It identifies redundant polymorphic dispatch, terminal exception paths that block loop peeling, and removable integer checks. The report distinguishes proven compiler gaps from unmeasured performance gains and ranks the next experiments. Hardware perf counters were unavailable; the evidence uses V8's sampling profiler.
+
+Those targets were implemented as independent experiments, each starting from the earlier getter winner `f090ad58`. The numbers below are **incremental to that winner**, using the same unchanged official DataView benchmark and 21 alternating pairs. Every experiment has unsigned source checkpoints, a preserved binary, a tracked patch, native/IR evidence and all raw measurements. Rejected and neutral experiments remain available.
+
+| Experiment | Evidence and outcome | Disposition |
+|---|---|---|
+| Signed-shift range proof | Removes two overflow branches; hot float function 2,368 → 2,344 bytes. Every score interval includes zero. | Neutral; excluded from combined candidate. |
+| Constant-Phi expression proof | Tracks Phi dependence across the whole expression and accepts constant operands outside the merge block. Matched native diagnostics retain the integer dispatch until the cloning budget is also fixed. | Prerequisite for the next experiment. |
+| Bounded dispatch cloning | Counts executable operations separately from Phi/FrameState metadata, retaining a total-storage cap and the Wasm deopt restriction. Hot integer function 3,296 → 3,080 bytes; TypedArray LittleEndian **+12.53%**, DataView LittleEndian **+3.24%**. | Candidate for combination. |
+| Dominating zero-mask guards | Removes `i & 3` after a successful `i & 7` guard; hot float function 2,368 → 2,352 bytes. Every score interval includes zero. | Neutral; excluded from combined candidate. |
+| Terminal-path loop peeling | Safely copies bounded throwing side paths and their frame states. Monomorphic loop field loads 8 → 0; polymorphic loads 66 → 64. TypedArray BigEndian **+29.74%**, LittleEndian **+5.96%**, Floats **+3.95%**. | Candidate for combination; compilation/code-size costs require measurement. |
+
+The small independent peeling regression in DataView BigEndian is retained: **−0.26%**, interval **−0.47% to −0.06%**. Its matched native function size is unchanged; no cause is assigned. The other two DataView intervals include zero. The helper-only experiment's sub-percent positive movements are also retained without treating them as evidence that the primary dispatch target was removed. Its float result differs substantially by AB/BA order.
+
+Peeling increases native code: monomorphic integer 1,844 → 2,348 bytes and polymorphic integer 3,296 → 5,116 bytes. Native inspection confirms cached metadata in the monomorphic loop; the polymorphic loop still performs reader-map dispatch and most metadata loads. This is not a claim of complete invariant-load hoisting.
+
+Correctness checks passed for each independent candidate: 44 selected tests for shift ranges, 20 for full dispatch cloning, 29 for masks, and 37 for terminal peeling. Mask tests cover dominance, merges, cloning, loop boundaries, JS and Wasm deoptimization; a separate trace confirms actual OSR entry. Peeling tests include direct and transitive dependencies on shared loop exits, external control, nested loops, frame/effect remapping, bounds on graph growth, detached/resizable buffers, and exceptions. Initial draft issues and test corrections are preserved in the unsigned checkpoint history.
+
+The combined dispatch/peeling candidate is `fcc58178`, with 56 selected checks passing. Its polymorphic integer function is 4,584 bytes, and the redundant method constants are absent. The combined 21-pair result improves the six-case geometric mean **8.94%** over the getter winner (paired 95% interval **8.81–9.11%**).
+
+| Official DataView test | Combined score change | 95% interval | Wins |
+|---|---:|---:|---:|
+| DataView-BigEndian | +0.35% | +0.17% to +0.52% | 14/21 |
+| DataView-Floats | +0.03% | −0.14% to +0.20% | 9/21 |
+| DataView-LittleEndian | +3.30% | +3.21% to +3.38% | 21/21 |
+| TypedArray-BigEndian | +29.84% | +29.48% to +30.27% | 21/21 |
+| TypedArray-Floats | +4.68% | +4.17% to +5.35% | 21/21 |
+| TypedArray-LittleEndian | +18.62% | +18.47% to +18.80% | 21/21 |
+
+Raw combined measurements: [winning-followups-results.json](followups/winning-followups-results.json). These are local results for this specific official microbenchmark group, not a whole-V8 or browser-performance claim. The combined binary is separately preserved as `out/x64.release-winning-followups/d8`. Official compilation/runtime controls and target compilation-cost measurements are being recorded before final disposition.
+
+The [protocol](followups/plan.json), individual `*-results.json`, `*-evidence.json` and patch series are under [followups](followups/). The combined [patch series](followups/winning-followups.patch) applies on `f090ad58`; do not also apply its overlapping standalone dispatch/peeling patches. Neutral shift/mask patches are independent and are not included in that series.
