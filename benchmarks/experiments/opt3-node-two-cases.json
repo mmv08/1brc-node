@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Node baseline",
+    "script": "results/opt3-base/plain/calculate.mjs",
+    "env": { "ENGINE": "node", "WORKERS": "24" }
+  },
+  {
+    "name": "Node dedicated two-lane entry",
+    "script": "plain/calculate.mjs",
+    "env": { "ENGINE": "node", "WORKERS": "24" }
+  }
+]

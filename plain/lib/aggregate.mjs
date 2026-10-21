@@ -152,6 +152,24 @@ export async function aggregate(config) {
       }
     }
 
+    // Select the common entry once, so its bytecode need not carry the other
+    // lane counts or allocate a boundary closure for every chunk.
+    if (streams === 2) {
+      return function parseTwo(start, end) {
+        const endA = Math.min(end, buffer.indexOf(10, start + Math.floor((end - start) / 2)) + 1);
+        let a = start;
+        let b = endA;
+        while (a < endA && b < end) {
+          const idA = scan(a, 0);
+          const idB = scan(b, 1);
+          a = update(temperatures[0], idA);
+          b = update(temperatures[1], idB);
+        }
+        remainder(a, endA);
+        remainder(b, end);
+      };
+    }
+
     return (start, end) => {
       if (streams === 1) return remainder(start, end);
       const boundary = (part) =>
@@ -163,14 +181,7 @@ export async function aggregate(config) {
       let b = endA;
       let c = endB;
       let d = endC;
-      if (streams === 2) {
-        while (a < endA && b < end) {
-          const idA = scan(a, 0);
-          const idB = scan(b, 1);
-          a = update(temperatures[0], idA);
-          b = update(temperatures[1], idB);
-        }
-      } else if (streams === 3) {
+      if (streams === 3) {
         while (a < endA && b < endB && c < end) {
           const idA = scan(a, 0);
           const idB = scan(b, 1);
