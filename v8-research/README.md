@@ -311,3 +311,36 @@ All **97 selected checks passed**, including local/global safepoints, the new de
 Disassembly confirms that the reducer's load/test/set/or/test/branch sequence becomes load/test/branch. `GraphReducer::Reduce` shrinks from **1,458 to 1,442 bytes**; `ReduceTop` stays at 1,303. The [native evidence](reducer-cost/safepoint-predicate-native-evidence.json) records unchanged names and instruction sizes for all 25 generated DataView functions. The [slow path](reducer-cost/safepoint-slow-path-after.txt) retains its relaxed reload and returns immediately for parked callers.
 
 There is a concrete concurrency tradeoff: polling while parked with a request pending now takes an out-of-line call and an extra relaxed load. Background compiler phases can perform IR work and poll while parked during GC. The synchronous official Compiler benchmark does not quantify that throughput cost, and passing concurrency tests establishes correctness only. The [source review](reducer-cost/source-review.json) records the relevant owner-state and request invariants.
+
+| Official Compiler case | Safepoint-predicate score change | 95% interval | Wins |
+|---|---:|---:|---:|
+| Large-Copy | +0.40% | -0.42% to +0.90% | 11/12 |
+| Medium-Copy | +0.72% | -0.50% to +1.42% | 11/12 |
+| Medium-Eratosthenes | +1.00% | +0.14% to +1.65% | 10/12 |
+| Medium-Fact | +0.02% | -0.81% to +0.65% | 8/12 |
+| Medium-Prime | -0.25% | -1.01% to +0.34% | 5/12 |
+| Small-Add | -0.04% | -0.77% to +0.59% | 7/12 |
+| Small-Constant | +0.43% | -0.48% to +1.21% | 9/12 |
+| Small-Empty | +0.25% | -0.68% to +1.02% | 8/12 |
+| Small-Load | -0.00% | -1.06% to +0.92% | 8/12 |
+
+Medium-Eratosthenes improves **1.00%**, interval **+0.14% to +1.65%**, with AB **+1.61%** and BA **+0.39%**. Every other case interval spans zero. The nine-case geometric mean is **+0.28%**, interval **−0.54% to +0.85%**, with opposing order splits (AB **+0.88%**, BA **−0.32%**). This does not establish a whole-suite improvement. All twelve pairs remain in the [raw official results](reducer-cost/safepoint-predicate-compiler-results.json), including the broad negative sixth pair and the negative tenth and twelfth pairs. No cause has been assigned to those movements.
+
+The six-pair [cost diagnostic](reducer-cost/safepoint-predicate-cost-summary.json) reports total pipeline time **−1.90%**, interval **−2.83% to −1.04%**, with AB **−2.49%** and BA **−1.30%**. Integer-target compilation time changes **−1.33%**, interval **−2.04% to −0.76%**. Zone allocation is essentially unchanged and loop-peeling allocation remains 991,280 bytes. All fourteen diagnostic processes complete 25 pipelines and two normal target compilations, with no target OSR compilation or traced abort. These instrumented results do not replace the mixed official Compiler result.
+
+| Official DataView case | Safepoint-predicate score change | 95% interval |
+|---|---:|---:|
+| DataView-BigEndian | -0.10% | -0.30% to +0.11% |
+| DataView-Floats | +0.03% | -0.06% to +0.11% |
+| DataView-LittleEndian | -0.02% | -0.10% to +0.06% |
+| TypedArray-BigEndian | +0.12% | +0.05% to +0.20% |
+| TypedArray-Floats | +0.02% | -0.06% to +0.09% |
+| TypedArray-LittleEndian | +0.04% | -0.04% to +0.12% |
+
+The completed **21-pair stock runtime** comparison has a six-case geometric mean of **+0.015%**, interval **−0.021% to +0.052%**. No individual case has a negative interval excluding zero. The small TypedArray-BigEndian movement has not been causally isolated and is not attributed to the safepoint change. All observations and order splits are retained in the [raw runtime results](reducer-cost/safepoint-predicate-runtime-results.json) and [audited summary](reducer-cost/validation-summary.json).
+
+The [post-change native profile](reducer-cost/safepoint-predicate-post-profile.json) contains 33,178 included compiler ticks and zero unaccounted ticks. `Reduce` accounts for 1,566 self ticks (**4.72%**, versus baseline **5.61%**); `ReduceTop` remains **6.33%**. These sample shares support continued investigation of graph reduction but do not establish another paired speedup. Profiling-only source-position wrappers remain excluded as stock targets.
+
+**Safepoint disposition:** preserve as an independent research candidate for the individual Medium-Eratosthenes improvement. Do not promote it over the marker candidate: the aggregate Compiler result is inconclusive, and the parked-with-request call overhead has not been quantified under concurrent GC. The stock DataView result does not close that gap. The final preserved binary is `out/x64.release-safepoint-predicate/d8`; the marker build remains `out/x64.release-encoded-marker/d8`.
+
+Both experiments and their full results have unsigned checkpoints. Neither is stacked with the other. The marker branch is the preferred follow-up for further validation; neither change removes the earlier loop/dispatch graph-growth cost, and no new comparison against the historical getter-only build is claimed. The production Node and Wasm programs remain unchanged.

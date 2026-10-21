@@ -37,12 +37,15 @@
       "hypothesis": "The reducer's safepoint poll contains a dependent test/set/or/test sequence for running-and-requested. Investigate moving the parked-state guard to the cold path, without removing polls or weakening atomic ordering.",
       "evidence": "Reduce: 1849 self ticks, 5.61% of included compiler samples. 700 samples at the three request/predicate test-or instructions, with additional nearby samples.",
       "safety": "Source review must establish parked-state and asynchronous request semantics before selecting an implementation. GC correctness takes precedence over native code size.",
-      "state": "97 selected tests, 6 cost pairs and 12 official Compiler pairs complete; fixed runtime validation next",
+      "state": "Complete: 97 selected checks, 6 cost pairs, 12 Compiler pairs, 21 runtime pairs and matched native post-profile",
       "source_commit": "15e78039",
       "native": "Reduce 1458 -> 1442 bytes; ReduceTop unchanged at 1303; request predicate is now load/test/branch; all 25 generated DataView names and sizes match the baseline",
       "official": "Medium-Eratosthenes +0.995% [0.144,1.646], both orders positive. Nine-case mean +0.280% [-0.541,0.849], with AB +0.880% and BA -0.317%; overall evidence is inconclusive.",
-      "disposition": "Retained as a separate research candidate for the individual official Compiler improvement; not promoted over the marker candidate. The parked-with-request call overhead remains an unmeasured concurrency tradeoff."
+      "disposition": "Retained as a separate research candidate for the individual official Compiler improvement; not promoted over the marker candidate. The parked-with-request call overhead remains an unmeasured concurrency tradeoff.",
+      "runtime": "21 pairs: six-case mean +0.015% [-0.021,0.052]; no individual negative interval excluding zero. Does not quantify concurrent parked compiler polling during GC.",
+      "post_profile": "33178 included compiler ticks, zero unaccounted; ReduceTop 6.33%, Reduce 4.72%. Single profile changes are not paired speedup evidence."
     }
   ],
-  "limits": "Hardware perf counters remain denied. V8 native sampler PCs identify sampled code, not precise instruction latency or branch counts. Profiling-only source-position wrappers are excluded as stock optimization targets."
+  "limits": "Hardware perf counters remain denied. V8 native sampler PCs identify sampled code, not precise instruction latency or branch counts. Profiling-only source-position wrappers are excluded as stock optimization targets.",
+  "preferred_followup": "encoded-marker; preserved safepoint candidate remains experimental because its aggregate Compiler result is inconclusive and concurrent-GC throughput is unmeasured"
 }
