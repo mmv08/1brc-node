@@ -1,0 +1,101 @@
+diff --git a/src/heap/local-heap.cc b/src/heap/local-heap.cc
+index 2bf90536..a8733c2a 100644
+--- a/src/heap/local-heap.cc
++++ b/src/heap/local-heap.cc
+@@ -359,6 +359,10 @@ void LocalHeap::EnsureParkedBeforeDestruction() {
+ 
+ void LocalHeap::SafepointSlowPath() {
+   ThreadState current_state = state_.load_relaxed();
++  // Parked threads may poll too, but must not acknowledge a safepoint again.
++  // Only the owning thread changes the parked bit, so it cannot change between
++  // the inline request check and this reload.
++  if (current_state.IsParked()) return;
+   DCHECK(current_state.IsRunning());
+ 
+   if (is_main_thread()) {
+diff --git a/src/heap/local-heap.h b/src/heap/local-heap.h
+index 5f628c69..153a3a68 100644
+--- a/src/heap/local-heap.h
++++ b/src/heap/local-heap.h
+@@ -74,7 +74,7 @@ class V8_EXPORT_PRIVATE LocalHeap {
+ 
+     ThreadState current = state_.load_relaxed();
+ 
+-    if (V8_UNLIKELY(current.IsRunningWithSlowPathFlag())) {
++    if (V8_UNLIKELY(current.HasSlowPathFlag())) {
+       SafepointSlowPath();
+     }
+   }
+@@ -297,9 +297,9 @@ class V8_EXPORT_PRIVATE LocalHeap {
+       return CollectionRequestedBit::decode(raw_state_);
+     }
+ 
+-    constexpr bool IsRunningWithSlowPathFlag() const {
+-      return IsRunning() && (raw_state_ & (SafepointRequestedBit::kMask |
+-                                           CollectionRequestedBit::kMask));
++    constexpr bool HasSlowPathFlag() const {
++      return raw_state_ &
++             (SafepointRequestedBit::kMask | CollectionRequestedBit::kMask);
+     }
+ 
+    private:
+diff --git a/test/unittests/heap/safepoint-unittest.cc b/test/unittests/heap/safepoint-unittest.cc
+index 8115085a..50097191 100644
+--- a/test/unittests/heap/safepoint-unittest.cc
++++ b/test/unittests/heap/safepoint-unittest.cc
+@@ -6,6 +6,7 @@
+ 
+ #include "src/base/platform/mutex.h"
+ #include "src/base/platform/platform.h"
++#include "src/base/platform/semaphore.h"
+ #include "src/heap/heap.h"
+ #include "src/heap/local-heap.h"
+ #include "src/heap/parked-scope.h"
+@@ -82,6 +83,47 @@ TEST_F(SafepointTest, StopParkedThreads) {
+   CHECK_EQ(safepoints, kRuns);
+ }
+ 
++class ParkedPollingThread final : public base::Thread {
++ public:
++  explicit ParkedPollingThread(Heap* heap)
++      : base::Thread(base::Thread::Options("ParkedPollingThread")),
++        heap_(heap) {}
++
++  void Run() override {
++    LocalHeap local_heap(heap_, ThreadKind::kBackground);
++    CHECK(local_heap.IsParked());
++    ready_.Signal();
++    poll_.Wait();
++    local_heap.Safepoint();
++    CHECK(local_heap.IsParked());
++    polled_.Signal();
++    // Destruction needs the local-heaps mutex held by the safepoint scope.
++    finish_.Wait();
++  }
++
++  Heap* heap_;
++  base::Semaphore ready_{0};
++  base::Semaphore poll_{0};
++  base::Semaphore polled_{0};
++  base::Semaphore finish_{0};
++};
++
++TEST_F(SafepointTest, ParkedThreadCanPollDuringSafepoint) {
++  Heap* heap = i_isolate()->heap();
++  ParkedPollingThread thread(heap);
++  CHECK(thread.Start());
++  thread.ready_.Wait();
++  {
++    IsolateSafepointScope scope(heap);
++    thread.poll_.Signal();
++    // Polling must return while the request is still set, without waiting for
++    // the safepoint scope to exit or acknowledging an already parked thread.
++    thread.polled_.Wait();
++  }
++  thread.finish_.Signal();
++  thread.Join();
++}
++
+ static const int kIterations = 10000;
+ 
+ class RunningThread final : public v8::base::Thread {
