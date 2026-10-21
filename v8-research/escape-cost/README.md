@@ -16,7 +16,7 @@ The merge-cache candidate starts independently from the same baseline. It snapsh
 
 ## Measurement protocol
 
-[Fixed protocol](plan.json): CPU 2, fresh processes, one warmup per binary, six alternating DataView compilation-cost pairs and twelve alternating official Compiler pairs for each correctness-valid candidate. Retained candidates receive twenty-one stock DataView pairs. Builds, tests, profiles and benchmark workloads run serially. Every observation is retained. Intervals use 10,000 paired bootstrap resamples, seed 20261021, and are not corrected for multiple comparisons. The nine-case mean summarizes this Compiler group, not whole-V8 or browser performance.
+[Fixed protocol](plan.json), with commands checked against the [official default registrations](official-registrations.json): AMD Ryzen 9 7900, Linux x64 release builds, CPU 2, fresh processes, one warmup per binary, six alternating DataView compilation-cost pairs and twelve alternating official Compiler pairs for each correctness-valid candidate. Retained candidates receive twenty-one stock DataView pairs. Builds, tests, profiles and benchmark workloads run serially. Every observation is retained. Intervals use 10,000 paired bootstrap resamples, seed 20261021, and are not corrected for multiple comparisons. The nine-case mean summarizes this Compiler group, not whole-V8 or browser performance.
 
 The separate one-compilation Large-Copy diagnostic compares zone allocation only. Its durations are not paired timing evidence. Zone allocation is not RSS. Instrumented DataView scores are not used as stock throughput evidence.
 
@@ -87,5 +87,20 @@ The [DataView cost result](merge-input-cache-cost-summary.json) has total pipeli
 
 The exact earlier lookup patch is committed as `e6293c24` on pristine `293377af`, without the other optimizations. Only `src/compiler/load-elimination.cc` and its unit tests differ from pristine. Those two files were identical between pristine and the earlier experiment baseline, and the new patch is byte-for-byte identical to the saved earlier patch. The preserved pristine d8 hash matches the original baseline measurements.
 
-Build, correctness and fixed official benchmark validation are in progress. This section will be completed with the full results.
+The standalone build passes **58 selected checks**, including all four new fresh-allocation regression tests. The [native comparison](standalone-fresh-allocation-native-evidence.json) has matching names and instruction sizes for all 23 generated DataView functions on pristine and candidate. This does not prove byte-identical generated code. The completed [twelve-pair Compiler comparison](standalone-fresh-allocation-compiler-summary.json) confirms the gain independently: **Large-Copy +35.17%**, interval **+34.82% to +35.59%**, with twelve wins and positive AB/BA results. The nine-case mean is **+3.29%**, interval **+2.74% to +3.78%**. Small-case negative point estimates remain in the table; their intervals include zero, which does not establish that they are regression-free. The small Medium-Copy movement has not been causally isolated.
+
+| Official Compiler case | Score change | 95% interval | AB / BA | Wins |
+|---|---:|---:|---:|---:|
+| Large-Copy | +35.17% | +34.82% to +35.59% | +34.81% / +35.54% | 12/12 |
+| Medium-Copy | +0.36% | +0.01% to +0.75% | +0.22% / +0.51% | 7/12 |
+| Medium-Eratosthenes | +0.24% | -0.12% to +0.52% | +0.08% / +0.40% | 8/12 |
+| Medium-Fact | -0.12% | -0.73% to +0.44% | -0.04% / -0.19% | 7/12 |
+| Medium-Prime | +0.21% | -0.09% to +0.51% | +0.12% / +0.30% | 7/12 |
+| Small-Add | +0.28% | -0.60% to +1.09% | -0.03% / +0.59% | 9/12 |
+| Small-Constant | -0.72% | -1.85% to +0.30% | -0.68% / -0.76% | 3/12 |
+| Small-Empty | -0.58% | -1.91% to +0.60% | -0.67% / -0.50% | 5/12 |
+| Small-Load | -0.68% | -1.57% to +0.15% | -0.91% / -0.44% | 2/12 |
+
+The fixed twenty-one-pair stock DataView control is running. Its full result will complete this validation.
+
 

@@ -33,6 +33,9 @@ def audit(experiment):
         assert (directory / name).stat().st_size == info['size_bytes']
     assert sha256(ROOT / manifest['baseline_binary']) == manifest['baseline_sha256']
     assert (directory / 'args.gn').read_text() == manifest['gn_args']
+    baseline_args = (ROOT / manifest['baseline_binary']).parent / 'args.gn'
+    parse_args = lambda text: dict(re.findall(r'^([a-z_]+)\s*=\s*(.+)$', text, re.M))
+    assert parse_args(baseline_args.read_text()) == parse_args(manifest['gn_args'])
     patch = git('diff', manifest['base_commit'], manifest['source_commit'])
     assert patch == (HERE / f'{experiment}.patch').read_text()
     commit = git('cat-file', '-p', manifest['source_commit'])
@@ -129,10 +132,31 @@ def main():
         assert sha256(ROOT / record['registration']) == record['sha256']
         flags = record['root_flags'] + record['suite'].get('flags', [])
         assert flags == (['--allow-natives-syntax'] if name == 'Compiler' else [])
+    plan = json.loads((HERE / 'plan.json').read_text())
+    source_checkpoints = set()
+    for experiment in plan['experiments']:
+        source_checkpoints.add(experiment['source_commit'])
+        source_checkpoints.update(experiment.get('source_checkpoints', []))
+    for commit in source_checkpoints:
+        assert '\ngpgsig ' not in git('cat-file', '-p', commit)
+    root_head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    root_signatures = subprocess.check_output(
+        ['git', 'log', '--format=%H %G?', '20e333d..HEAD'], cwd=ROOT, text=True).splitlines()
+    assert root_signatures and all(line.endswith(' N') for line in root_signatures)
+    changed = subprocess.check_output(
+        ['git', 'diff', '--name-only', '20e333d'], cwd=ROOT, text=True).splitlines()
+    untracked = subprocess.check_output(
+        ['git', 'ls-files', '--others', '--exclude-standard'], cwd=ROOT, text=True).splitlines()
+    assert all(path.startswith('v8-research/escape-cost/') or path == 'v8-research/README.md'
+               for path in changed + untracked)
     output = {'experiments': {name: audit(name) for name in args.experiments},
               'diagnostic_compilations': {'Compiler': 441, 'DataView': 25},
               'profiles': profiles,
               'official_default_configurations_verified': True,
+              'unsigned_source_checkpoints': sorted(source_checkpoints),
+              'root_history_checked_through': root_head,
+              'unsigned_root_checkpoints_checked': len(root_signatures),
+              'production_programs_unchanged_since': '20e333d',
               'statistics': 'Fixed alternating pairs, seed 20261021, 10000 bootstrap '
                             'resamples. Per-case intervals are not corrected for multiple comparisons.',
               'limits': 'Single-machine results for these suites. Zone allocation is not RSS. '

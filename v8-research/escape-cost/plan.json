@@ -42,7 +42,7 @@
     },
     {
       "id": "standalone-fresh-allocation",
-      "state": "58 checks passed; generated names and sizes match pristine; twelve Compiler and twenty-one runtime pairs running serially",
+      "state": "twelve Compiler pairs complete: Large-Copy +35.17%, nine-case mean +3.29%; twenty-one runtime pairs running",
       "source_commit": "e6293c24"
     }
   ],
