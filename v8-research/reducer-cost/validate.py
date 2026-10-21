@@ -55,6 +55,7 @@ def prepare(experiment, directory, expected_commit):
     elif experiment == 'safepoint-predicate':
         tests += ['unittests/LocalHeapTest.*', 'unittests/SafepointTest.*',
                   'unittests/GlobalSafepointTest.*',
+                  'mjsunit/turboshaft/regress-539984773',
                   'cctest/test-concurrent-allocation/ConcurrentAllocationWhileMainThreadRunsWithSafepoints',
                   'cctest/test-concurrent-allocation/ConcurrentAllocationWhileMainThreadParksAndUnparks',
                   'cctest/test-concurrent-allocation/ConcurrentAllocationWhileMainThreadIsParked']

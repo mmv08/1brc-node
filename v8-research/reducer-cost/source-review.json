@@ -16,7 +16,8 @@
     "parked_requests": "A parked caller may observe a request that clears before the reload. It remains parked and returns before assertions, tracing, heap access or acknowledgement. Parked polling with request bits now takes a call and an extra relaxed load; this cold-path cost is a real tradeoff.",
     "unchanged": "Polling frequency, deterministic tick counts, atomic write ordering and write-barrier verification checks.",
     "deterministic_test": "Worker registers a parked LocalHeap before ready signal. Main holds IsolateSafepointScope while worker polls and signals completion. Worker remains alive until scope exits, avoiding destructor mutex interference.",
-    "existing_tests": "LocalHeapTest.GCEpilogue; SafepointTest.*; GlobalSafepointTest.Interrupt; three concurrent-allocation cctests covering running safepoint polling, parked main thread, and parking/unparking."
+    "existing_tests": "LocalHeapTest.GCEpilogue; SafepointTest.*; GlobalSafepointTest.Interrupt; three concurrent-allocation cctests covering running safepoint polling, parked main thread, and parking/unparking.",
+    "concurrent_compilation_scope": "Background jobs enter with a parked LocalIsolate (optimizing-compile-dispatcher.cc and compiler.cc). EarlyOptimization, Untyper and the first escape-analysis ReduceGraph can process nodes and poll without unparking. GC requests include parked heaps, allowing that work to continue during GC. The added call/reload therefore applies to real concurrent work; its throughput effect is not established by the synchronous official Compiler benchmark."
   },
   "review": "Main source inspection plus independent read-only review by compile_cost_source_review; no correctness defect found. Performance claims require completed measurements."
 }
