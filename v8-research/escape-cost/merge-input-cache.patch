@@ -1,5 +1,5 @@
 diff --git a/src/compiler/escape-analysis.cc b/src/compiler/escape-analysis.cc
-index 87757ff5..15d08731 100644
+index 87757ff5..3a35f91e 100644
 --- a/src/compiler/escape-analysis.cc
 +++ b/src/compiler/escape-analysis.cc
 @@ -157,6 +157,7 @@ class VariableTracker {
@@ -18,11 +18,14 @@ index 87757ff5..15d08731 100644
        buffer_(zone),
        reducer_(reducer),
        tick_counter_(reducer->tick_counter()) {}
-@@ -455,6 +457,17 @@ VariableTracker::State VariableTracker::MergeInputs(Node* effect_phi) {
+@@ -455,7 +457,21 @@ VariableTracker::State VariableTracker::MergeInputs(Node* effect_phi) {
  
    State first_input = table_.Get(NodeProperties::GetEffectInput(effect_phi, 0));
    State result = first_input;
-+  if (first_input.begin() == first_input.end()) return result;
+-  for (std::pair<Variable, Node*> var_value : first_input) {
++  auto current = first_input.begin();
++  const auto end = first_input.end();
++  if (current == end) return result;
 +
 +  // The table is updated by Scope only after this merge returns. Revisit and
 +  // AddRoot queue work, so these snapshots remain valid for every variable.
@@ -33,10 +36,12 @@ index 87757ff5..15d08731 100644
 +    merge_input_states_.push_back(
 +        table_.Get(NodeProperties::GetEffectInput(effect_phi, i)));
 +  }
-   for (std::pair<Variable, Node*> var_value : first_input) {
++  for (; current != end; ++current) {
++    std::pair<Variable, Node*> var_value = *current;
      tick_counter_->TickAndMaybeEnterSafepoint();
      if (Node* value = var_value.second) {
-@@ -466,8 +479,7 @@ VariableTracker::State VariableTracker::MergeInputs(Node* effect_phi) {
+       Variable var = var_value.first;
+@@ -466,8 +482,7 @@ VariableTracker::State VariableTracker::MergeInputs(Node* effect_phi) {
        int num_defined_inputs = 1;
        TRACE("  input 0: %s#%d\n", value->op()->mnemonic(), value->id());
        for (int i = 1; i < arity; ++i) {
@@ -46,7 +51,7 @@ index 87757ff5..15d08731 100644
          if (next_value != value) identical_inputs = false;
          if (next_value != nullptr) {
            num_defined_inputs++;
-@@ -479,7 +491,7 @@ VariableTracker::State VariableTracker::MergeInputs(Node* effect_phi) {
+@@ -479,7 +494,7 @@ VariableTracker::State VariableTracker::MergeInputs(Node* effect_phi) {
          buffer_.push_back(next_value);
        }
  

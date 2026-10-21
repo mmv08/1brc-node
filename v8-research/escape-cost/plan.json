@@ -15,7 +15,8 @@
     "runtime": "Each retained candidate gets twenty-one fixed stock DataView pairs.",
     "statistics": "One warmup per binary, fresh processes, paired bootstrap with 10000 resamples and seed 20261021. Per-case intervals are not corrected for multiple comparisons.",
     "checkpoints": "Unsigned source and evidence commits for every experiment, including diagnostics and rejected candidates. Preserve original binaries and all measured rounds.",
-    "upstream_validation": "After the bounded escape-analysis round, apply the existing fresh-allocation lookup patch alone on pristine 293377af. Validate correctness and collect twelve fixed official Compiler pairs and twenty-one stock DataView pairs against the preserved pristine build. No upload or publication."
+    "upstream_validation": "After the bounded escape-analysis round, apply the existing fresh-allocation lookup patch alone on pristine 293377af. Validate correctness and collect twelve fixed official Compiler pairs and twenty-one stock DataView pairs against the preserved pristine build. No upload or publication.",
+    "large_allocation": "Run one original Large-Copy callback per binary with phase statistics after timed measurements. Compare zone bytes only; do not interpret these one-shot durations as performance evidence."
   },
   "experiments": [
     {
@@ -25,7 +26,7 @@
     },
     {
       "id": "indexed-storage",
-      "state": "122 checks passed; six cost pairs complete; twelve official Compiler pairs running",
+      "state": "retained for runtime and profile validation: Large-Copy +10.70%, Medium-Copy +9.40%, nine-case mean +2.29%",
       "decision": "Large-Copy state density is 90,492 / 99,734 = 90.73%. Current live hash storage estimate is 5,166,632 bytes versus 2,419,568 for 64-entry chunks. Sparse virtual entries require 23,912 chunk bytes versus 1,272 hash bytes, small relative to state savings. Sixty-four-entry chunks limit DataView padding compared with 256/1024. Preserve shared defaults with a presence bitmap and stable chunk addresses; measure actual zone allocation before retaining.",
       "source_commit": "cefc3a78"
     },
@@ -33,7 +34,11 @@
       "id": "merge-input-cache",
       "state": "source committed; build deferred until storage measurements finish",
       "decision": "Large-Copy makes 870,249 of 1,530,955 state reads inside MergeInputs (56.84%); Medium-Copy makes 33,300 of 63,460 (52.47%). These counters support caching predecessor/old-state snapshots outside the variable loop.",
-      "source_commit": "796241d8"
+      "source_commit": "b6943c13",
+      "source_checkpoints": [
+        "796241d8",
+        "b6943c13"
+      ]
     },
     {
       "id": "standalone-fresh-allocation",
