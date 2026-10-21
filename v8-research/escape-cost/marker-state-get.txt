@@ -1,0 +1,90 @@
+
+/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8:	file format elf64-x86-64
+
+Disassembly of section .text:
+
+00000000013fbdf0 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const>:
+ 13fbdf0: 4c 8b 47 20                  	movq	0x20(%rdi), %r8
+ 13fbdf4: 4d 85 c0                     	testq	%r8, %r8
+ 13fbdf7: 0f 84 fc 00 00 00            	je	0x13fbef9 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x109>
+ 13fbdfd: 48 83 7f 40 00               	cmpq	$0x0, 0x40(%rdi)
+ 13fbe02: 0f 84 f1 00 00 00            	je	0x13fbef9 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x109>
+ 13fbe08: 8b 76 14                     	movl	0x14(%rsi), %esi
+ 13fbe0b: 81 e6 ff ff ff 00            	andl	$0xffffff, %esi         # imm = 0xFFFFFF
+ 13fbe11: 48 b9 a5 78 6c aa cc 8d 35 2d	movabsq	$0x2d358dccaa6c78a5, %rcx # imm = 0x2D358DCCAA6C78A5
+ 13fbe1b: 48 31 f1                     	xorq	%rsi, %rcx
+ 13fbe1e: 48 b8 c9 ac 2e 96 93 4b b8 8b	movabsq	$-0x7447b46c69d15337, %rax # imm = 0x8BB84B93962EACC9
+ 13fbe28: 48 31 f0                     	xorq	%rsi, %rax
+ 13fbe2b: 48 f7 e1                     	mulq	%rcx
+ 13fbe2e: 48 31 c2                     	xorq	%rax, %rdx
+ 13fbe31: 41 89 d1                     	movl	%edx, %r9d
+ 13fbe34: 4d 8d 58 ff                  	leaq	-0x1(%r8), %r11
+ 13fbe38: 4d 85 d8                     	testq	%r11, %r8
+ 13fbe3b: 74 13                        	je	0x13fbe50 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x60>
+ 13fbe3d: 4c 89 c9                     	movq	%r9, %rcx
+ 13fbe40: 4d 39 c1                     	cmpq	%r8, %r9
+ 13fbe43: 72 12                        	jb	0x13fbe57 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x67>
+ 13fbe45: 89 d0                        	movl	%edx, %eax
+ 13fbe47: 31 d2                        	xorl	%edx, %edx
+ 13fbe49: 41 f7 f0                     	divl	%r8d
+ 13fbe4c: 89 d1                        	movl	%edx, %ecx
+ 13fbe4e: eb 07                        	jmp	0x13fbe57 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x67>
+ 13fbe50: 41 8d 48 ff                  	leal	-0x1(%r8), %ecx
+ 13fbe54: 44 21 c9                     	andl	%r9d, %ecx
+ 13fbe57: 55                           	pushq	%rbp
+ 13fbe58: 48 89 e5                     	movq	%rsp, %rbp
+ 13fbe5b: 48 8b 47 18                  	movq	0x18(%rdi), %rax
+ 13fbe5f: 48 8b 04 c8                  	movq	(%rax,%rcx,8), %rax
+ 13fbe63: 48 85 c0                     	testq	%rax, %rax
+ 13fbe66: 0f 84 8c 00 00 00            	je	0x13fbef8 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x108>
+ 13fbe6c: 4c 8b 10                     	movq	(%rax), %r10
+ 13fbe6f: 4d 85 d2                     	testq	%r10, %r10
+ 13fbe72: 0f 84 80 00 00 00            	je	0x13fbef8 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x108>
+ 13fbe78: 4d 85 d8                     	testq	%r11, %r8
+ 13fbe7b: 75 11                        	jne	0x13fbe8e <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x9e>
+ 13fbe7d: eb 5f                        	jmp	0x13fbede <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0xee>
+ 13fbe7f: 90                           	nop
+ 13fbe80: 41 39 72 10                  	cmpl	%esi, 0x10(%r10)
+ 13fbe84: 74 6b                        	je	0x13fbef1 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x101>
+ 13fbe86: 4d 8b 12                     	movq	(%r10), %r10
+ 13fbe89: 4d 85 d2                     	testq	%r10, %r10
+ 13fbe8c: 74 6a                        	je	0x13fbef8 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x108>
+ 13fbe8e: 49 8b 42 08                  	movq	0x8(%r10), %rax
+ 13fbe92: 49 39 c1                     	cmpq	%rax, %r9
+ 13fbe95: 74 e9                        	je	0x13fbe80 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x90>
+ 13fbe97: 4c 39 c0                     	cmpq	%r8, %rax
+ 13fbe9a: 72 14                        	jb	0x13fbeb0 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0xc0>
+ 13fbe9c: 48 89 c2                     	movq	%rax, %rdx
+ 13fbe9f: 4c 09 c2                     	orq	%r8, %rdx
+ 13fbea2: 48 c1 ea 20                  	shrq	$0x20, %rdx
+ 13fbea6: 74 0f                        	je	0x13fbeb7 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0xc7>
+ 13fbea8: 31 d2                        	xorl	%edx, %edx
+ 13fbeaa: 49 f7 f0                     	divq	%r8
+ 13fbead: 48 89 d0                     	movq	%rdx, %rax
+ 13fbeb0: 48 39 c8                     	cmpq	%rcx, %rax
+ 13fbeb3: 74 d1                        	je	0x13fbe86 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x96>
+ 13fbeb5: eb 41                        	jmp	0x13fbef8 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x108>
+ 13fbeb7: 31 d2                        	xorl	%edx, %edx
+ 13fbeb9: 41 f7 f0                     	divl	%r8d
+ 13fbebc: 89 d0                        	movl	%edx, %eax
+ 13fbebe: 48 39 c8                     	cmpq	%rcx, %rax
+ 13fbec1: 74 c3                        	je	0x13fbe86 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x96>
+ 13fbec3: eb 33                        	jmp	0x13fbef8 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x108>
+ 13fbec5: 66 66 2e 0f 1f 84 00 00 00 00 00     	nopw	%cs:(%rax,%rax)
+ 13fbed0: 41 39 72 10                  	cmpl	%esi, 0x10(%r10)
+ 13fbed4: 74 1b                        	je	0x13fbef1 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x101>
+ 13fbed6: 4d 8b 12                     	movq	(%r10), %r10
+ 13fbed9: 4d 85 d2                     	testq	%r10, %r10
+ 13fbedc: 74 1a                        	je	0x13fbef8 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x108>
+ 13fbede: 49 8b 42 08                  	movq	0x8(%r10), %rax
+ 13fbee2: 49 39 c1                     	cmpq	%rax, %r9
+ 13fbee5: 74 e9                        	je	0x13fbed0 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0xe0>
+ 13fbee7: 4c 21 d8                     	andq	%r11, %rax
+ 13fbeea: 48 39 c8                     	cmpq	%rcx, %rax
+ 13fbeed: 74 e7                        	je	0x13fbed6 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0xe6>
+ 13fbeef: eb 07                        	jmp	0x13fbef8 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x108>
+ 13fbef1: 49 83 c2 18                  	addq	$0x18, %r10
+ 13fbef5: 4c 89 d7                     	movq	%r10, %rdi
+ 13fbef8: 5d                           	popq	%rbp
+ 13fbef9: 48 89 f8                     	movq	%rdi, %rax
+ 13fbefc: c3                           	retq

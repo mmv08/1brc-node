@@ -36,5 +36,6 @@
       "state": "planned after escape-analysis experiments"
     }
   ],
-  "limits": "Hardware perf remains unavailable (perf_event_paranoid=4). Use the native sampler, phase statistics, counters and disassembly. Sample shares are not promised gains. Preserve default/reference semantics, traversal, safepoints, allocation budgets and generated-program behavior."
+  "limits": "Hardware perf remains unavailable (perf_event_paranoid=4). Use the native sampler, phase statistics, counters and disassembly. Sample shares are not promised gains. Preserve default/reference semantics, traversal, safepoints, allocation budgets and generated-program behavior.",
+  "pristine_baseline_sha256": "542379894b54399a99a8d00325d39ea0890c7b8fa36766b20a305cb77cf7f790"
 }

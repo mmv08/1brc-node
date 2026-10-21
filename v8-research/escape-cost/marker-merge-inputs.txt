@@ -1,0 +1,666 @@
+
+/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8:	file format elf64-x86-64
+
+Disassembly of section .text:
+
+00000000013fb3c0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)>:
+ 13fb3c0: 55                           	pushq	%rbp
+ 13fb3c1: 48 89 e5                     	movq	%rsp, %rbp
+ 13fb3c4: 41 57                        	pushq	%r15
+ 13fb3c6: 41 56                        	pushq	%r14
+ 13fb3c8: 41 55                        	pushq	%r13
+ 13fb3ca: 41 54                        	pushq	%r12
+ 13fb3cc: 53                           	pushq	%rbx
+ 13fb3cd: 48 81 ec 98 01 00 00         	subq	$0x198, %rsp            # imm = 0x198
+ 13fb3d4: 48 89 7d c0                  	movq	%rdi, -0x40(%rbp)
+ 13fb3d8: 48 8b 3a                     	movq	(%rdx), %rdi
+ 13fb3db: 83 7f 1c 00                  	cmpl	$0x0, 0x1c(%rdi)
+ 13fb3df: 0f 8e 94 09 00 00            	jle	0x13fbd79 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x9b9>
+ 13fb3e5: 49 89 f7                     	movq	%rsi, %r15
+ 13fb3e8: 8b 47 18                     	movl	0x18(%rdi), %eax
+ 13fb3eb: 48 89 45 b8                  	movq	%rax, -0x48(%rbp)
+ 13fb3ef: 44 8b 77 14                  	movl	0x14(%rdi), %r14d
+ 13fb3f3: 48 89 55 a8                  	movq	%rdx, -0x58(%rbp)
+ 13fb3f7: e8 a4 d5 0e 00               	callq	0x14e89a0 <v8::internal::compiler::OperatorProperties::HasContextInput(v8::internal::compiler::Operator const*)>
+ 13fb3fc: 89 c3                        	movl	%eax, %ebx
+ 13fb3fe: 48 8b 45 a8                  	movq	-0x58(%rbp), %rax
+ 13fb402: 48 8b 38                     	movq	(%rax), %rdi
+ 13fb405: e8 16 d6 0e 00               	callq	0x14e8a20 <v8::internal::compiler::OperatorProperties::HasFrameStateInput(v8::internal::compiler::Operator const*)>
+ 13fb40a: 4c 8b 45 a8                  	movq	-0x58(%rbp), %r8
+ 13fb40e: 49 8b 38                     	movq	(%r8), %rdi
+ 13fb411: 8b 4f 18                     	movl	0x18(%rdi), %ecx
+ 13fb414: 41 8b 70 14                  	movl	0x14(%r8), %esi
+ 13fb418: f7 d6                        	notl	%esi
+ 13fb41a: 49 8d 50 20                  	leaq	0x20(%r8), %rdx
+ 13fb41e: 48 89 55 88                  	movq	%rdx, -0x78(%rbp)
+ 13fb422: f7 c6 00 00 00 0f            	testl	$0xf000000, %esi        # imm = 0xF000000
+ 13fb428: 75 0b                        	jne	0x13fb435 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x75>
+ 13fb42a: 49 8d 50 20                  	leaq	0x20(%r8), %rdx
+ 13fb42e: 48 8b 12                     	movq	(%rdx), %rdx
+ 13fb431: 48 83 c2 10                  	addq	$0x10, %rdx
+ 13fb435: 0f b6 f3                     	movzbl	%bl, %esi
+ 13fb438: 0f b6 c0                     	movzbl	%al, %eax
+ 13fb43b: 01 f0                        	addl	%esi, %eax
+ 13fb43d: 41 01 c6                     	addl	%eax, %r14d
+ 13fb440: 41 01 ce                     	addl	%ecx, %r14d
+ 13fb443: 49 63 c6                     	movslq	%r14d, %rax
+ 13fb446: 48 8b 04 c2                  	movq	(%rdx,%rax,8), %rax
+ 13fb44a: 48 89 85 68 ff ff ff         	movq	%rax, -0x98(%rbp)
+ 13fb451: 48 8b 00                     	movq	(%rax), %rax
+ 13fb454: 0f b7 40 10                  	movzwl	0x10(%rax), %eax
+ 13fb458: 66 89 45 a6                  	movw	%ax, -0x5a(%rbp)
+ 13fb45c: 49 8d 47 60                  	leaq	0x60(%r15), %rax
+ 13fb460: 48 89 45 80                  	movq	%rax, -0x80(%rbp)
+ 13fb464: 48 8b 45 b8                  	movq	-0x48(%rbp), %rax
+ 13fb468: ff c0                        	incl	%eax
+ 13fb46a: 89 85 74 ff ff ff            	movl	%eax, -0x8c(%rbp)
+ 13fb470: 48 63 f0                     	movslq	%eax, %rsi
+ 13fb473: 49 8b 47 78                  	movq	0x78(%r15), %rax
+ 13fb477: 49 2b 47 68                  	subq	0x68(%r15), %rax
+ 13fb47b: 48 c1 f8 03                  	sarq	$0x3, %rax
+ 13fb47f: 48 39 f0                     	cmpq	%rsi, %rax
+ 13fb482: 0f 82 0b 09 00 00            	jb	0x13fbd93 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x9d3>
+ 13fb488: 85 c9                        	testl	%ecx, %ecx
+ 13fb48a: 0f 8e 1e 09 00 00            	jle	0x13fbdae <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x9ee>
+ 13fb490: 4c 89 7d d0                  	movq	%r15, -0x30(%rbp)
+ 13fb494: 4d 8d 67 10                  	leaq	0x10(%r15), %r12
+ 13fb498: 44 8b 77 14                  	movl	0x14(%rdi), %r14d
+ 13fb49c: 4d 89 c7                     	movq	%r8, %r15
+ 13fb49f: e8 fc d4 0e 00               	callq	0x14e89a0 <v8::internal::compiler::OperatorProperties::HasContextInput(v8::internal::compiler::Operator const*)>
+ 13fb4a4: 89 c3                        	movl	%eax, %ebx
+ 13fb4a6: 49 8b 3f                     	movq	(%r15), %rdi
+ 13fb4a9: e8 72 d5 0e 00               	callq	0x14e8a20 <v8::internal::compiler::OperatorProperties::HasFrameStateInput(v8::internal::compiler::Operator const*)>
+ 13fb4ae: 41 8b 57 14                  	movl	0x14(%r15), %edx
+ 13fb4b2: f7 d2                        	notl	%edx
+ 13fb4b4: 48 8b 4d 88                  	movq	-0x78(%rbp), %rcx
+ 13fb4b8: f7 c2 00 00 00 0f            	testl	$0xf000000, %edx        # imm = 0xF000000
+ 13fb4be: 75 0b                        	jne	0x13fb4cb <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x10b>
+ 13fb4c0: 48 8b 4d 88                  	movq	-0x78(%rbp), %rcx
+ 13fb4c4: 48 8b 09                     	movq	(%rcx), %rcx
+ 13fb4c7: 48 83 c1 10                  	addq	$0x10, %rcx
+ 13fb4cb: 0f b6 d3                     	movzbl	%bl, %edx
+ 13fb4ce: 0f b6 c0                     	movzbl	%al, %eax
+ 13fb4d1: 01 d0                        	addl	%edx, %eax
+ 13fb4d3: 41 01 c6                     	addl	%eax, %r14d
+ 13fb4d6: 49 63 c6                     	movslq	%r14d, %rax
+ 13fb4d9: 48 8b 34 c1                  	movq	(%rcx,%rax,8), %rsi
+ 13fb4dd: 4c 89 e7                     	movq	%r12, %rdi
+ 13fb4e0: e8 0b 09 00 00               	callq	0x13fbdf0 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const>
+ 13fb4e5: 48 8b 38                     	movq	(%rax), %rdi
+ 13fb4e8: 4c 8b 70 08                  	movq	0x8(%rax), %r14
+ 13fb4ec: 0f 10 40 08                  	movups	0x8(%rax), %xmm0
+ 13fb4f0: 48 8b 45 c0                  	movq	-0x40(%rbp), %rax
+ 13fb4f4: 48 89 38                     	movq	%rdi, (%rax)
+ 13fb4f7: 0f 11 40 08                  	movups	%xmm0, 0x8(%rax)
+ 13fb4fb: 48 85 ff                     	testq	%rdi, %rdi
+ 13fb4fe: 4c 8b 7d d0                  	movq	-0x30(%rbp), %r15
+ 13fb502: 0f 84 89 00 00 00            	je	0x13fb591 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x1d1>
+ 13fb508: c7 85 48 fe ff ff 00 00 00 00	movl	$0x0, -0x1b8(%rbp)
+ 13fb512: 0f 57 c0                     	xorps	%xmm0, %xmm0
+ 13fb515: 0f 11 85 50 fe ff ff         	movups	%xmm0, -0x1b0(%rbp)
+ 13fb51c: 4c 89 b5 60 ff ff ff         	movq	%r14, -0xa0(%rbp)
+ 13fb523: 48 8d 95 60 fe ff ff         	leaq	-0x1a0(%rbp), %rdx
+ 13fb52a: 48 8d b5 48 fe ff ff         	leaq	-0x1b8(%rbp), %rsi
+ 13fb531: e8 7a 29 00 00               	callq	0x13fdeb0 <v8::internal::compiler::PersistentMap<v8::internal::compiler::Node*, v8::internal::compiler::WasmLoadElimination::FieldOrElementValue, v8::base::hash<v8::internal::compiler::Node*>>::FindLeftmost(v8::internal::compiler::PersistentMap<v8::internal::compiler::Node*, v8::internal::compiler::WasmLoadElimination::FieldOrElementValue, v8::base::hash<v8::internal::compiler::Node*>>::FocusedTree const*, int*, std::__Cr::array<v8::internal::compiler::PersistentMap<v8::internal::compiler::Node*, v8::internal::compiler::WasmLoadElimination::FieldOrElementValue, v8::base::hash<v8::internal::compiler::Node*>>::FocusedTree const*, 32ul>*)>
+ 13fb536: 48 89 85 58 fe ff ff         	movq	%rax, -0x1a8(%rbp)
+ 13fb53d: 48 8b 48 18                  	movq	0x18(%rax), %rcx
+ 13fb541: 48 85 c9                     	testq	%rcx, %rcx
+ 13fb544: 74 0a                        	je	0x13fb550 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x190>
+ 13fb546: 48 8b 09                     	movq	(%rcx), %rcx
+ 13fb549: 48 89 8d 50 fe ff ff         	movq	%rcx, -0x1b0(%rbp)
+ 13fb550: 48 85 c0                     	testq	%rax, %rax
+ 13fb553: 74 3c                        	je	0x13fb591 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x1d1>
+ 13fb555: 48 8d 9d 48 fe ff ff         	leaq	-0x1b8(%rbp), %rbx
+ 13fb55c: 0f 1f 40 00                  	nopl	(%rax)
+ 13fb560: 48 8d 48 08                  	leaq	0x8(%rax), %rcx
+ 13fb564: 48 8b 95 50 fe ff ff         	movq	-0x1b0(%rbp), %rdx
+ 13fb56b: 48 83 c2 28                  	addq	$0x28, %rdx
+ 13fb56f: 48 83 78 18 00               	cmpq	$0x0, 0x18(%rax)
+ 13fb574: 48 0f 44 d1                  	cmoveq	%rcx, %rdx
+ 13fb578: 4c 39 32                     	cmpq	%r14, (%rdx)
+ 13fb57b: 75 2a                        	jne	0x13fb5a7 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x1e7>
+ 13fb57d: 48 89 df                     	movq	%rbx, %rdi
+ 13fb580: e8 0b 0c 00 00               	callq	0x13fc190 <v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable>>::iterator::operator++()>
+ 13fb585: 48 8b 85 58 fe ff ff         	movq	-0x1a8(%rbp), %rax
+ 13fb58c: 48 85 c0                     	testq	%rax, %rax
+ 13fb58f: 75 cf                        	jne	0x13fb560 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x1a0>
+ 13fb591: 48 8b 45 c0                  	movq	-0x40(%rbp), %rax
+ 13fb595: 48 81 c4 98 01 00 00         	addq	$0x198, %rsp            # imm = 0x198
+ 13fb59c: 5b                           	popq	%rbx
+ 13fb59d: 41 5c                        	popq	%r12
+ 13fb59f: 41 5d                        	popq	%r13
+ 13fb5a1: 41 5e                        	popq	%r14
+ 13fb5a3: 41 5f                        	popq	%r15
+ 13fb5a5: 5d                           	popq	%rbp
+ 13fb5a6: c3                           	retq
+ 13fb5a7: 4c 89 65 b0                  	movq	%r12, -0x50(%rbp)
+ 13fb5ab: eb 3d                        	jmp	0x13fb5ea <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x22a>
+ 13fb5ad: 0f 1f 00                     	nopl	(%rax)
+ 13fb5b0: 41 83 fd ff                  	cmpl	$-0x1, %r13d
+ 13fb5b4: 0f 84 8b 07 00 00            	je	0x13fbd45 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x985>
+ 13fb5ba: 48 8b 45 90                  	movq	-0x70(%rbp), %rax
+ 13fb5be: 48 89 45 c8                  	movq	%rax, -0x38(%rbp)
+ 13fb5c2: 48 8b 7d c0                  	movq	-0x40(%rbp), %rdi
+ 13fb5c6: 44 89 ee                     	movl	%r13d, %esi
+ 13fb5c9: 48 8d 55 c8                  	leaq	-0x38(%rbp), %rdx
+ 13fb5cd: e8 ae 29 00 00               	callq	0x13fdf80 <void v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable>>::Modify<v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable>>::Set(v8::internal::compiler::Variable, v8::internal::compiler::Node*)::'lambda'(v8::internal::compiler::Node**)>(v8::internal::compiler::Variable, v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable>>::Set(v8::internal::compiler::Variable, v8::internal::compiler::Node*)::'lambda'(v8::internal::compiler::Node**))>
+ 13fb5d2: 48 8d bd 48 fe ff ff         	leaq	-0x1b8(%rbp), %rdi
+ 13fb5d9: e8 b2 0b 00 00               	callq	0x13fc190 <v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable>>::iterator::operator++()>
+ 13fb5de: 48 8b 85 58 fe ff ff         	movq	-0x1a8(%rbp), %rax
+ 13fb5e5: 48 85 c0                     	testq	%rax, %rax
+ 13fb5e8: 74 a7                        	je	0x13fb591 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x1d1>
+ 13fb5ea: 48 8d 48 08                  	leaq	0x8(%rax), %rcx
+ 13fb5ee: 48 8b 95 50 fe ff ff         	movq	-0x1b0(%rbp), %rdx
+ 13fb5f5: 48 8d 72 20                  	leaq	0x20(%rdx), %rsi
+ 13fb5f9: 48 83 c2 28                  	addq	$0x28, %rdx
+ 13fb5fd: 48 83 78 18 00               	cmpq	$0x0, 0x18(%rax)
+ 13fb602: 48 0f 44 d1                  	cmoveq	%rcx, %rdx
+ 13fb606: 48 0f 44 f0                  	cmoveq	%rax, %rsi
+ 13fb60a: 44 8b 2e                     	movl	(%rsi), %r13d
+ 13fb60d: 48 8b 02                     	movq	(%rdx), %rax
+ 13fb610: 48 89 45 90                  	movq	%rax, -0x70(%rbp)
+ 13fb614: 49 8b 87 90 00 00 00         	movq	0x90(%r15), %rax
+ 13fb61b: 48 ff 00                     	incq	(%rax)
+ 13fb61e: 48 8b 78 08                  	movq	0x8(%rax), %rdi
+ 13fb622: 48 85 ff                     	testq	%rdi, %rdi
+ 13fb625: 74 14                        	je	0x13fb63b <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x27b>
+ 13fb627: 0f b6 47 09                  	movzbl	0x9(%rdi), %eax
+ 13fb62b: a8 06                        	testb	$0x6, %al
+ 13fb62d: 0f 94 c1                     	sete	%cl
+ 13fb630: 08 c1                        	orb	%al, %cl
+ 13fb632: f6 c1 01                     	testb	$0x1, %cl
+ 13fb635: 0f 84 bc 06 00 00            	je	0x13fbcf7 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x937>
+ 13fb63b: 48 83 7d 90 00               	cmpq	$0x0, -0x70(%rbp)
+ 13fb640: 74 90                        	je	0x13fb5d2 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x212>
+ 13fb642: 49 8b 47 68                  	movq	0x68(%r15), %rax
+ 13fb646: 49 8b 77 78                  	movq	0x78(%r15), %rsi
+ 13fb64a: 49 89 47 70                  	movq	%rax, 0x70(%r15)
+ 13fb64e: 48 39 f0                     	cmpq	%rsi, %rax
+ 13fb651: 0f 83 b5 06 00 00            	jae	0x13fbd0c <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x94c>
+ 13fb657: 48 8d 48 08                  	leaq	0x8(%rax), %rcx
+ 13fb65b: 49 89 4f 70                  	movq	%rcx, 0x70(%r15)
+ 13fb65f: 48 8b 4d 90                  	movq	-0x70(%rbp), %rcx
+ 13fb663: 48 89 08                     	movq	%rcx, (%rax)
+ 13fb666: 83 7d b8 02                  	cmpl	$0x2, -0x48(%rbp)
+ 13fb66a: 4c 8b 5d a8                  	movq	-0x58(%rbp), %r11
+ 13fb66e: 4c 89 ad 78 ff ff ff         	movq	%r13, -0x88(%rbp)
+ 13fb675: 0f 8c 35 03 00 00            	jl	0x13fb9b0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x5f0>
+ 13fb67b: 4c 89 e9                     	movq	%r13, %rcx
+ 13fb67e: 48 b8 a5 78 6c aa cc 8d 35 2d	movabsq	$0x2d358dccaa6c78a5, %rax # imm = 0x2D358DCCAA6C78A5
+ 13fb688: 48 31 c1                     	xorq	%rax, %rcx
+ 13fb68b: 48 ba c9 ac 2e 96 93 4b b8 8b	movabsq	$-0x7447b46c69d15337, %rdx # imm = 0x8BB84B93962EACC9
+ 13fb695: 49 31 d5                     	xorq	%rdx, %r13
+ 13fb698: 4c 89 e8                     	movq	%r13, %rax
+ 13fb69b: 48 f7 e1                     	mulq	%rcx
+ 13fb69e: 49 89 d4                     	movq	%rdx, %r12
+ 13fb6a1: 41 31 c4                     	xorl	%eax, %r12d
+ 13fb6a4: 41 b8 01 00 00 00            	movl	$0x1, %r8d
+ 13fb6aa: 41 b6 01                     	movb	$0x1, %r14b
+ 13fb6ad: bb 01 00 00 00               	movl	$0x1, %ebx
+ 13fb6b2: 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00    	nopw	%cs:(%rax,%rax)
+ 13fb6c0: 49 8b 3b                     	movq	(%r11), %rdi
+ 13fb6c3: 3b 5f 18                     	cmpl	0x18(%rdi), %ebx
+ 13fb6c6: 0f 8d e2 06 00 00            	jge	0x13fbdae <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x9ee>
+ 13fb6cc: 44 89 45 98                  	movl	%r8d, -0x68(%rbp)
+ 13fb6d0: 44 8b 7f 14                  	movl	0x14(%rdi), %r15d
+ 13fb6d4: e8 c7 d2 0e 00               	callq	0x14e89a0 <v8::internal::compiler::OperatorProperties::HasContextInput(v8::internal::compiler::Operator const*)>
+ 13fb6d9: 41 89 c5                     	movl	%eax, %r13d
+ 13fb6dc: 48 8b 45 a8                  	movq	-0x58(%rbp), %rax
+ 13fb6e0: 48 8b 38                     	movq	(%rax), %rdi
+ 13fb6e3: e8 38 d3 0e 00               	callq	0x14e8a20 <v8::internal::compiler::OperatorProperties::HasFrameStateInput(v8::internal::compiler::Operator const*)>
+ 13fb6e8: 4c 8b 5d a8                  	movq	-0x58(%rbp), %r11
+ 13fb6ec: 41 8b 53 14                  	movl	0x14(%r11), %edx
+ 13fb6f0: f7 d2                        	notl	%edx
+ 13fb6f2: 48 8b 4d 88                  	movq	-0x78(%rbp), %rcx
+ 13fb6f6: f7 c2 00 00 00 0f            	testl	$0xf000000, %edx        # imm = 0xF000000
+ 13fb6fc: 75 0b                        	jne	0x13fb709 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x349>
+ 13fb6fe: 48 8b 4d 88                  	movq	-0x78(%rbp), %rcx
+ 13fb702: 48 8b 09                     	movq	(%rcx), %rcx
+ 13fb705: 48 83 c1 10                  	addq	$0x10, %rcx
+ 13fb709: 48 8b 55 d0                  	movq	-0x30(%rbp), %rdx
+ 13fb70d: 48 8b 7a 30                  	movq	0x30(%rdx), %rdi
+ 13fb711: 48 8b 75 b0                  	movq	-0x50(%rbp), %rsi
+ 13fb715: 48 89 f2                     	movq	%rsi, %rdx
+ 13fb718: 48 85 ff                     	testq	%rdi, %rdi
+ 13fb71b: 0f 84 4f 01 00 00            	je	0x13fb870 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4b0>
+ 13fb721: 48 8b 55 d0                  	movq	-0x30(%rbp), %rdx
+ 13fb725: 48 83 7a 50 00               	cmpq	$0x0, 0x50(%rdx)
+ 13fb72a: 48 89 f2                     	movq	%rsi, %rdx
+ 13fb72d: 0f 84 3d 01 00 00            	je	0x13fb870 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4b0>
+ 13fb733: 41 0f b6 d5                  	movzbl	%r13b, %edx
+ 13fb737: 0f b6 c0                     	movzbl	%al, %eax
+ 13fb73a: 01 d0                        	addl	%edx, %eax
+ 13fb73c: 41 01 df                     	addl	%ebx, %r15d
+ 13fb73f: 41 01 c7                     	addl	%eax, %r15d
+ 13fb742: 49 63 c7                     	movslq	%r15d, %rax
+ 13fb745: 48 8b 04 c1                  	movq	(%rcx,%rax,8), %rax
+ 13fb749: 8b 70 14                     	movl	0x14(%rax), %esi
+ 13fb74c: 81 e6 ff ff ff 00            	andl	$0xffffff, %esi         # imm = 0xFFFFFF
+ 13fb752: 48 89 f1                     	movq	%rsi, %rcx
+ 13fb755: 48 b8 a5 78 6c aa cc 8d 35 2d	movabsq	$0x2d358dccaa6c78a5, %rax # imm = 0x2D358DCCAA6C78A5
+ 13fb75f: 48 31 c1                     	xorq	%rax, %rcx
+ 13fb762: 48 89 f0                     	movq	%rsi, %rax
+ 13fb765: 48 ba c9 ac 2e 96 93 4b b8 8b	movabsq	$-0x7447b46c69d15337, %rdx # imm = 0x8BB84B93962EACC9
+ 13fb76f: 48 31 d0                     	xorq	%rdx, %rax
+ 13fb772: 48 f7 e1                     	mulq	%rcx
+ 13fb775: 48 31 c2                     	xorq	%rax, %rdx
+ 13fb778: 41 89 d0                     	movl	%edx, %r8d
+ 13fb77b: 4c 8d 57 ff                  	leaq	-0x1(%rdi), %r10
+ 13fb77f: 4c 85 d7                     	testq	%r10, %rdi
+ 13fb782: 74 16                        	je	0x13fb79a <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x3da>
+ 13fb784: 4c 89 c1                     	movq	%r8, %rcx
+ 13fb787: 49 39 f8                     	cmpq	%rdi, %r8
+ 13fb78a: 4c 8b 4d d0                  	movq	-0x30(%rbp), %r9
+ 13fb78e: 72 14                        	jb	0x13fb7a4 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x3e4>
+ 13fb790: 89 d0                        	movl	%edx, %eax
+ 13fb792: 31 d2                        	xorl	%edx, %edx
+ 13fb794: f7 f7                        	divl	%edi
+ 13fb796: 89 d1                        	movl	%edx, %ecx
+ 13fb798: eb 0a                        	jmp	0x13fb7a4 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x3e4>
+ 13fb79a: 8d 4f ff                     	leal	-0x1(%rdi), %ecx
+ 13fb79d: 44 21 c1                     	andl	%r8d, %ecx
+ 13fb7a0: 4c 8b 4d d0                  	movq	-0x30(%rbp), %r9
+ 13fb7a4: 49 8b 41 28                  	movq	0x28(%r9), %rax
+ 13fb7a8: 48 8b 04 c8                  	movq	(%rax,%rcx,8), %rax
+ 13fb7ac: 4c 8b 7d b0                  	movq	-0x50(%rbp), %r15
+ 13fb7b0: 4c 89 fa                     	movq	%r15, %rdx
+ 13fb7b3: 48 85 c0                     	testq	%rax, %rax
+ 13fb7b6: 0f 84 b4 00 00 00            	je	0x13fb870 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4b0>
+ 13fb7bc: 4c 8b 08                     	movq	(%rax), %r9
+ 13fb7bf: 4c 89 fa                     	movq	%r15, %rdx
+ 13fb7c2: 4d 85 c9                     	testq	%r9, %r9
+ 13fb7c5: 0f 84 a5 00 00 00            	je	0x13fb870 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4b0>
+ 13fb7cb: 4c 85 d7                     	testq	%r10, %rdi
+ 13fb7ce: 75 1e                        	jne	0x13fb7ee <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x42e>
+ 13fb7d0: eb 6c                        	jmp	0x13fb83e <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x47e>
+ 13fb7d2: 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00    	nopw	%cs:(%rax,%rax)
+ 13fb7e0: 41 39 71 10                  	cmpl	%esi, 0x10(%r9)
+ 13fb7e4: 74 7f                        	je	0x13fb865 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4a5>
+ 13fb7e6: 4d 8b 09                     	movq	(%r9), %r9
+ 13fb7e9: 4d 85 c9                     	testq	%r9, %r9
+ 13fb7ec: 74 61                        	je	0x13fb84f <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x48f>
+ 13fb7ee: 49 8b 41 08                  	movq	0x8(%r9), %rax
+ 13fb7f2: 49 39 c0                     	cmpq	%rax, %r8
+ 13fb7f5: 74 e9                        	je	0x13fb7e0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x420>
+ 13fb7f7: 48 39 f8                     	cmpq	%rdi, %rax
+ 13fb7fa: 72 14                        	jb	0x13fb810 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x450>
+ 13fb7fc: 48 89 c2                     	movq	%rax, %rdx
+ 13fb7ff: 48 09 fa                     	orq	%rdi, %rdx
+ 13fb802: 48 c1 ea 20                  	shrq	$0x20, %rdx
+ 13fb806: 74 0f                        	je	0x13fb817 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x457>
+ 13fb808: 31 d2                        	xorl	%edx, %edx
+ 13fb80a: 48 f7 f7                     	divq	%rdi
+ 13fb80d: 48 89 d0                     	movq	%rdx, %rax
+ 13fb810: 48 39 c8                     	cmpq	%rcx, %rax
+ 13fb813: 74 d1                        	je	0x13fb7e6 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x426>
+ 13fb815: eb 38                        	jmp	0x13fb84f <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x48f>
+ 13fb817: 31 d2                        	xorl	%edx, %edx
+ 13fb819: f7 f7                        	divl	%edi
+ 13fb81b: 89 d0                        	movl	%edx, %eax
+ 13fb81d: 48 39 c8                     	cmpq	%rcx, %rax
+ 13fb820: 74 c4                        	je	0x13fb7e6 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x426>
+ 13fb822: eb 2b                        	jmp	0x13fb84f <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x48f>
+ 13fb824: 66 66 66 2e 0f 1f 84 00 00 00 00 00  	nopw	%cs:(%rax,%rax)
+ 13fb830: 41 39 71 10                  	cmpl	%esi, 0x10(%r9)
+ 13fb834: 74 2f                        	je	0x13fb865 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4a5>
+ 13fb836: 4d 8b 09                     	movq	(%r9), %r9
+ 13fb839: 4d 85 c9                     	testq	%r9, %r9
+ 13fb83c: 74 11                        	je	0x13fb84f <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x48f>
+ 13fb83e: 49 8b 41 08                  	movq	0x8(%r9), %rax
+ 13fb842: 49 39 c0                     	cmpq	%rax, %r8
+ 13fb845: 74 e9                        	je	0x13fb830 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x470>
+ 13fb847: 4c 21 d0                     	andq	%r10, %rax
+ 13fb84a: 48 39 c8                     	cmpq	%rcx, %rax
+ 13fb84d: 74 e7                        	je	0x13fb836 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x476>
+ 13fb84f: 48 8b 55 b0                  	movq	-0x50(%rbp), %rdx
+ 13fb853: 4c 8b ad 78 ff ff ff         	movq	-0x88(%rbp), %r13
+ 13fb85a: 41 83 fd ff                  	cmpl	$-0x1, %r13d
+ 13fb85e: 75 21                        	jne	0x13fb881 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4c1>
+ 13fb860: e9 e0 04 00 00               	jmp	0x13fbd45 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x985>
+ 13fb865: 49 83 c1 18                  	addq	$0x18, %r9
+ 13fb869: 4c 89 ca                     	movq	%r9, %rdx
+ 13fb86c: 0f 1f 40 00                  	nopl	(%rax)
+ 13fb870: 4c 8b ad 78 ff ff ff         	movq	-0x88(%rbp), %r13
+ 13fb877: 41 83 fd ff                  	cmpl	$-0x1, %r13d
+ 13fb87b: 0f 84 c4 04 00 00            	je	0x13fbd45 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x985>
+ 13fb881: 48 8b 02                     	movq	(%rdx), %rax
+ 13fb884: 48 85 c0                     	testq	%rax, %rax
+ 13fb887: 74 57                        	je	0x13fb8e0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x520>
+ 13fb889: 31 c9                        	xorl	%ecx, %ecx
+ 13fb88b: 4c 8b 7d d0                  	movq	-0x30(%rbp), %r15
+ 13fb88f: 44 8b 45 98                  	movl	-0x68(%rbp), %r8d
+ 13fb893: 66 66 66 66 2e 0f 1f 84 00 00 00 00 00       	nopw	%cs:(%rax,%rax)
+ 13fb8a0: 8b 70 14                     	movl	0x14(%rax), %esi
+ 13fb8a3: 44 39 e6                     	cmpl	%r12d, %esi
+ 13fb8a6: 0f 84 84 00 00 00            	je	0x13fb930 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x570>
+ 13fb8ac: 44 31 e6                     	xorl	%r12d, %esi
+ 13fb8af: 90                           	nop
+ 13fb8b0: 89 f7                        	movl	%esi, %edi
+ 13fb8b2: d3 e7                        	shll	%cl, %edi
+ 13fb8b4: ff c1                        	incl	%ecx
+ 13fb8b6: f7 c7 00 00 00 80            	testl	$0x80000000, %edi       # imm = 0x80000000
+ 13fb8bc: 74 f2                        	je	0x13fb8b0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4f0>
+ 13fb8be: 0f be 78 10                  	movsbl	0x10(%rax), %edi
+ 13fb8c2: 8d 71 ff                     	leal	-0x1(%rcx), %esi
+ 13fb8c5: 39 fe                        	cmpl	%edi, %esi
+ 13fb8c7: 7d 1f                        	jge	0x13fb8e8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x528>
+ 13fb8c9: 48 63 f6                     	movslq	%esi, %rsi
+ 13fb8cc: 48 8b 44 f0 20               	movq	0x20(%rax,%rsi,8), %rax
+ 13fb8d1: 48 85 c0                     	testq	%rax, %rax
+ 13fb8d4: 75 ca                        	jne	0x13fb8a0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4e0>
+ 13fb8d6: eb 10                        	jmp	0x13fb8e8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x528>
+ 13fb8d8: 0f 1f 84 00 00 00 00 00      	nopl	(%rax,%rax)
+ 13fb8e0: 4c 8b 7d d0                  	movq	-0x30(%rbp), %r15
+ 13fb8e4: 44 8b 45 98                  	movl	-0x68(%rbp), %r8d
+ 13fb8e8: 48 8b 42 08                  	movq	0x8(%rdx), %rax
+ 13fb8ec: 48 3b 45 90                  	cmpq	-0x70(%rbp), %rax
+ 13fb8f0: 0f 94 c1                     	sete	%cl
+ 13fb8f3: 48 83 f8 01                  	cmpq	$0x1, %rax
+ 13fb8f7: 41 83 d8 ff                  	sbbl	$-0x1, %r8d
+ 13fb8fb: 49 8b 57 70                  	movq	0x70(%r15), %rdx
+ 13fb8ff: 49 8b 77 78                  	movq	0x78(%r15), %rsi
+ 13fb903: 48 39 f2                     	cmpq	%rsi, %rdx
+ 13fb906: 0f 83 83 00 00 00            	jae	0x13fb98f <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x5cf>
+ 13fb90c: 41 20 ce                     	andb	%cl, %r14b
+ 13fb90f: 48 8d 4a 08                  	leaq	0x8(%rdx), %rcx
+ 13fb913: 49 89 4f 70                  	movq	%rcx, 0x70(%r15)
+ 13fb917: 48 89 02                     	movq	%rax, (%rdx)
+ 13fb91a: ff c3                        	incl	%ebx
+ 13fb91c: 3b 5d b8                     	cmpl	-0x48(%rbp), %ebx
+ 13fb91f: 0f 85 9b fd ff ff            	jne	0x13fb6c0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x300>
+ 13fb925: e9 8f 00 00 00               	jmp	0x13fb9b9 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x5f9>
+ 13fb92a: 66 0f 1f 44 00 00            	nopw	(%rax,%rax)
+ 13fb930: 48 8b 48 18                  	movq	0x18(%rax), %rcx
+ 13fb934: 48 85 c9                     	testq	%rcx, %rcx
+ 13fb937: 74 3a                        	je	0x13fb973 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x5b3>
+ 13fb939: 48 8b 41 08                  	movq	0x8(%rcx), %rax
+ 13fb93d: 48 85 c0                     	testq	%rax, %rax
+ 13fb940: 74 a6                        	je	0x13fb8e8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x528>
+ 13fb942: 48 83 c1 08                  	addq	$0x8, %rcx
+ 13fb946: eb 10                        	jmp	0x13fb958 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x598>
+ 13fb948: 0f 1f 84 00 00 00 00 00      	nopl	(%rax,%rax)
+ 13fb950: 48 8b 00                     	movq	(%rax), %rax
+ 13fb953: 48 85 c0                     	testq	%rax, %rax
+ 13fb956: 74 90                        	je	0x13fb8e8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x528>
+ 13fb958: 8b 70 20                     	movl	0x20(%rax), %esi
+ 13fb95b: 41 39 f5                     	cmpl	%esi, %r13d
+ 13fb95e: 7c f0                        	jl	0x13fb950 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x590>
+ 13fb960: 44 39 ee                     	cmpl	%r13d, %esi
+ 13fb963: 7d 1a                        	jge	0x13fb97f <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x5bf>
+ 13fb965: 48 8b 40 08                  	movq	0x8(%rax), %rax
+ 13fb969: 48 85 c0                     	testq	%rax, %rax
+ 13fb96c: 75 ea                        	jne	0x13fb958 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x598>
+ 13fb96e: e9 75 ff ff ff               	jmp	0x13fb8e8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x528>
+ 13fb973: 44 3b 28                     	cmpl	(%rax), %r13d
+ 13fb976: 48 0f 44 d0                  	cmoveq	%rax, %rdx
+ 13fb97a: e9 69 ff ff ff               	jmp	0x13fb8e8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x528>
+ 13fb97f: 48 8d 70 20                  	leaq	0x20(%rax), %rsi
+ 13fb983: 48 39 c8                     	cmpq	%rcx, %rax
+ 13fb986: 48 0f 45 d6                  	cmovneq	%rsi, %rdx
+ 13fb98a: e9 59 ff ff ff               	jmp	0x13fb8e8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x528>
+ 13fb98f: 49 2b 77 68                  	subq	0x68(%r15), %rsi
+ 13fb993: 48 c1 fe 03                  	sarq	$0x3, %rsi
+ 13fb997: 48 ff c6                     	incq	%rsi
+ 13fb99a: 48 8b 7d 80                  	movq	-0x80(%rbp), %rdi
+ 13fb99e: e8 bd cd 2a ff               	callq	0x6a8760 <v8::internal::ZoneVector<v8::internal::compiler::Node**>::Grow(unsigned long)>
+ 13fb9a3: 4c 8b 5d a8                  	movq	-0x58(%rbp), %r11
+ 13fb9a7: 49 8b 57 70                  	movq	0x70(%r15), %rdx
+ 13fb9ab: e9 5c ff ff ff               	jmp	0x13fb90c <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x54c>
+ 13fb9b0: 41 b6 01                     	movb	$0x1, %r14b
+ 13fb9b3: 41 b8 01 00 00 00            	movl	$0x1, %r8d
+ 13fb9b9: 44 89 45 98                  	movl	%r8d, -0x68(%rbp)
+ 13fb9bd: 48 8b 7d b0                  	movq	-0x50(%rbp), %rdi
+ 13fb9c1: 4c 89 de                     	movq	%r11, %rsi
+ 13fb9c4: e8 27 04 00 00               	callq	0x13fbdf0 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const>
+ 13fb9c9: 48 89 c7                     	movq	%rax, %rdi
+ 13fb9cc: 44 89 ee                     	movl	%r13d, %esi
+ 13fb9cf: e8 bc 06 00 00               	callq	0x13fc090 <v8::internal::compiler::VariableTracker::State::Get(v8::internal::compiler::Variable) const>
+ 13fb9d4: 48 85 c0                     	testq	%rax, %rax
+ 13fb9d7: 74 7f                        	je	0x13fba58 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x698>
+ 13fb9d9: 49 89 c4                     	movq	%rax, %r12
+ 13fb9dc: 48 8b 38                     	movq	(%rax), %rdi
+ 13fb9df: 66 83 7f 10 24               	cmpw	$0x24, 0x10(%rdi)
+ 13fb9e4: 75 72                        	jne	0x13fba58 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x698>
+ 13fb9e6: 83 7f 1c 00                  	cmpl	$0x0, 0x1c(%rdi)
+ 13fb9ea: 0f 8e 89 03 00 00            	jle	0x13fbd79 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x9b9>
+ 13fb9f0: 44 8b 7f 14                  	movl	0x14(%rdi), %r15d
+ 13fb9f4: e8 a7 cf 0e 00               	callq	0x14e89a0 <v8::internal::compiler::OperatorProperties::HasContextInput(v8::internal::compiler::Operator const*)>
+ 13fb9f9: 41 89 c5                     	movl	%eax, %r13d
+ 13fb9fc: 49 8b 3c 24                  	movq	(%r12), %rdi
+ 13fba00: e8 1b d0 0e 00               	callq	0x14e8a20 <v8::internal::compiler::OperatorProperties::HasFrameStateInput(v8::internal::compiler::Operator const*)>
+ 13fba05: 41 8b 54 24 14               	movl	0x14(%r12), %edx
+ 13fba0a: f7 d2                        	notl	%edx
+ 13fba0c: 4c 89 e3                     	movq	%r12, %rbx
+ 13fba0f: 48 83 c3 20                  	addq	$0x20, %rbx
+ 13fba13: 48 89 d9                     	movq	%rbx, %rcx
+ 13fba16: f7 c2 00 00 00 0f            	testl	$0xf000000, %edx        # imm = 0xF000000
+ 13fba1c: 75 07                        	jne	0x13fba25 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x665>
+ 13fba1e: 48 8b 0b                     	movq	(%rbx), %rcx
+ 13fba21: 48 83 c1 10                  	addq	$0x10, %rcx
+ 13fba25: 49 8b 14 24                  	movq	(%r12), %rdx
+ 13fba29: 41 0f b6 f5                  	movzbl	%r13b, %esi
+ 13fba2d: 0f b6 c0                     	movzbl	%al, %eax
+ 13fba30: 01 f0                        	addl	%esi, %eax
+ 13fba32: 41 01 c7                     	addl	%eax, %r15d
+ 13fba35: 44 03 7a 18                  	addl	0x18(%rdx), %r15d
+ 13fba39: 49 63 c7                     	movslq	%r15d, %rax
+ 13fba3c: 48 8b 95 68 ff ff ff         	movq	-0x98(%rbp), %rdx
+ 13fba43: 48 39 14 c1                  	cmpq	%rdx, (%rcx,%rax,8)
+ 13fba47: 4c 8b 7d d0                  	movq	-0x30(%rbp), %r15
+ 13fba4b: 4c 8b ad 78 ff ff ff         	movq	-0x88(%rbp), %r13
+ 13fba52: 0f 84 27 01 00 00            	je	0x13fbb7f <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x7bf>
+ 13fba58: 66 83 7d a6 01               	cmpw	$0x1, -0x5a(%rbp)
+ 13fba5d: 8b 45 98                     	movl	-0x68(%rbp), %eax
+ 13fba60: 75 09                        	jne	0x13fba6b <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x6ab>
+ 13fba62: 83 f8 01                     	cmpl	$0x1, %eax
+ 13fba65: 0f 84 45 fb ff ff            	je	0x13fb5b0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x1f0>
+ 13fba6b: 3b 45 b8                     	cmpl	-0x48(%rbp), %eax
+ 13fba6e: 7d 17                        	jge	0x13fba87 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x6c7>
+ 13fba70: 41 83 fd ff                  	cmpl	$-0x1, %r13d
+ 13fba74: 0f 84 cb 02 00 00            	je	0x13fbd45 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x985>
+ 13fba7a: 48 c7 45 c8 00 00 00 00      	movq	$0x0, -0x38(%rbp)
+ 13fba82: e9 3b fb ff ff               	jmp	0x13fb5c2 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x202>
+ 13fba87: 45 84 f6                     	testb	%r14b, %r14b
+ 13fba8a: 0f 85 20 fb ff ff            	jne	0x13fb5b0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x1f0>
+ 13fba90: 49 8b 47 70                  	movq	0x70(%r15), %rax
+ 13fba94: 49 8b 77 78                  	movq	0x78(%r15), %rsi
+ 13fba98: 48 39 f0                     	cmpq	%rsi, %rax
+ 13fba9b: 0f 83 87 02 00 00            	jae	0x13fbd28 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x968>
+ 13fbaa1: 48 8d 48 08                  	leaq	0x8(%rax), %rcx
+ 13fbaa5: 49 89 4f 70                  	movq	%rcx, 0x70(%r15)
+ 13fbaa9: 48 8b 8d 68 ff ff ff         	movq	-0x98(%rbp), %rcx
+ 13fbab0: 48 89 08                     	movq	%rcx, (%rax)
+ 13fbab3: 49 8b 47 08                  	movq	0x8(%r15), %rax
+ 13fbab7: 4c 8b 20                     	movq	(%rax), %r12
+ 13fbaba: 48 8b 78 08                  	movq	0x8(%rax), %rdi
+ 13fbabe: be 09 00 00 00               	movl	$0x9, %esi
+ 13fbac3: 48 8b 55 b8                  	movq	-0x48(%rbp), %rdx
+ 13fbac7: e8 54 38 fe ff               	callq	0x13df320 <v8::internal::compiler::CommonOperatorBuilder::Phi(v8::internal::MachineRepresentation, int)>
+ 13fbacc: 49 8b 4f 68                  	movq	0x68(%r15), %rcx
+ 13fbad0: 4c 89 e7                     	movq	%r12, %rdi
+ 13fbad3: 48 89 c6                     	movq	%rax, %rsi
+ 13fbad6: 8b 95 74 ff ff ff            	movl	-0x8c(%rbp), %edx
+ 13fbadc: 45 31 c0                     	xorl	%r8d, %r8d
+ 13fbadf: e8 4c 0b 19 00               	callq	0x158c630 <v8::internal::compiler::TFGraph::NewNode(v8::internal::compiler::Operator const*, int, v8::internal::compiler::Node* const*, bool)>
+ 13fbae4: 49 89 c4                     	movq	%rax, %r12
+ 13fbae7: 48 c7 40 08 ff ff ff ff      	movq	$-0x1, 0x8(%rax)
+ 13fbaef: 49 8b 9f 80 00 00 00         	movq	0x80(%r15), %rbx
+ 13fbaf6: 8b 43 10                     	movl	0x10(%rbx), %eax
+ 13fbaf9: ff c0                        	incl	%eax
+ 13fbafb: 41 89 44 24 10               	movl	%eax, 0x10(%r12)
+ 13fbb00: 48 8b 43 20                  	movq	0x20(%rbx), %rax
+ 13fbb04: 48 8b 4b 28                  	movq	0x28(%rbx), %rcx
+ 13fbb08: 48 89 ca                     	movq	%rcx, %rdx
+ 13fbb0b: 48 29 c2                     	subq	%rax, %rdx
+ 13fbb0e: 48 8d 14 d5 ff ff ff ff      	leaq	-0x1(,%rdx,8), %rdx
+ 13fbb16: be 00 00 00 00               	movl	$0x0, %esi
+ 13fbb1b: 48 0f 45 f2                  	cmovneq	%rdx, %rsi
+ 13fbb1f: 48 8b 53 50                  	movq	0x50(%rbx), %rdx
+ 13fbb23: 48 03 53 48                  	addq	0x48(%rbx), %rdx
+ 13fbb27: 48 39 d6                     	cmpq	%rdx, %rsi
+ 13fbb2a: 75 11                        	jne	0x13fbb3d <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x77d>
+ 13fbb2c: 48 8d 7b 18                  	leaq	0x18(%rbx), %rdi
+ 13fbb30: e8 5b 22 5d ff               	callq	0x9cdd90 <std::__Cr::deque<unsigned long, v8::internal::RecyclingZoneAllocator<unsigned long>>::__add_back_capacity[abi:sqn240000]()>
+ 13fbb35: 48 8b 43 20                  	movq	0x20(%rbx), %rax
+ 13fbb39: 48 8b 4b 28                  	movq	0x28(%rbx), %rcx
+ 13fbb3d: 48 39 c8                     	cmpq	%rcx, %rax
+ 13fbb40: 0f 84 82 02 00 00            	je	0x13fbdc8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0xa08>
+ 13fbb46: 48 8b 4b 50                  	movq	0x50(%rbx), %rcx
+ 13fbb4a: 48 03 4b 48                  	addq	0x48(%rbx), %rcx
+ 13fbb4e: 48 89 ca                     	movq	%rcx, %rdx
+ 13fbb51: 48 c1 ea 06                  	shrq	$0x6, %rdx
+ 13fbb55: 83 e1 3f                     	andl	$0x3f, %ecx
+ 13fbb58: c1 e1 03                     	shll	$0x3, %ecx
+ 13fbb5b: 48 03 0c d0                  	addq	(%rax,%rdx,8), %rcx
+ 13fbb5f: 0f 84 63 02 00 00            	je	0x13fbdc8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0xa08>
+ 13fbb65: 4c 89 21                     	movq	%r12, (%rcx)
+ 13fbb68: 48 ff 43 50                  	incq	0x50(%rbx)
+ 13fbb6c: 41 83 fd ff                  	cmpl	$-0x1, %r13d
+ 13fbb70: 0f 84 cf 01 00 00            	je	0x13fbd45 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x985>
+ 13fbb76: 4c 89 65 c8                  	movq	%r12, -0x38(%rbp)
+ 13fbb7a: e9 43 fa ff ff               	jmp	0x13fb5c2 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x202>
+ 13fbb7f: 83 7d b8 00                  	cmpl	$0x0, -0x48(%rbp)
+ 13fbb83: 0f 8e 55 01 00 00            	jle	0x13fbcde <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x91e>
+ 13fbb89: 45 31 ed                     	xorl	%r13d, %r13d
+ 13fbb8c: eb 0f                        	jmp	0x13fbb9d <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x7dd>
+ 13fbb8e: 66 90                        	nop
+ 13fbb90: 49 ff c5                     	incq	%r13
+ 13fbb93: 4c 39 6d b8                  	cmpq	%r13, -0x48(%rbp)
+ 13fbb97: 0f 84 41 01 00 00            	je	0x13fbcde <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x91e>
+ 13fbb9d: 49 8b 04 24                  	movq	(%r12), %rax
+ 13fbba1: 48 63 40 14                  	movslq	0x14(%rax), %rax
+ 13fbba5: 49 39 c5                     	cmpq	%rax, %r13
+ 13fbba8: 0f 8d b1 01 00 00            	jge	0x13fbd5f <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x99f>
+ 13fbbae: 41 8b 4c 24 14               	movl	0x14(%r12), %ecx
+ 13fbbb3: f7 d1                        	notl	%ecx
+ 13fbbb5: 48 89 d8                     	movq	%rbx, %rax
+ 13fbbb8: f7 c1 00 00 00 0f            	testl	$0xf000000, %ecx        # imm = 0xF000000
+ 13fbbbe: 75 07                        	jne	0x13fbbc7 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x807>
+ 13fbbc0: 48 8b 03                     	movq	(%rbx), %rax
+ 13fbbc3: 48 83 c0 10                  	addq	$0x10, %rax
+ 13fbbc7: 4e 8b 34 e8                  	movq	(%rax,%r13,8), %r14
+ 13fbbcb: 49 8b 47 68                  	movq	0x68(%r15), %rax
+ 13fbbcf: 4a 8b 34 e8                  	movq	(%rax,%r13,8), %rsi
+ 13fbbd3: 48 85 f6                     	testq	%rsi, %rsi
+ 13fbbd6: 75 18                        	jne	0x13fbbf0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x830>
+ 13fbbd8: 48 8b 45 d0                  	movq	-0x30(%rbp), %rax
+ 13fbbdc: 4c 8b 78 08                  	movq	0x8(%rax), %r15
+ 13fbbe0: 49 8b b7 b8 02 00 00         	movq	0x2b8(%r15), %rsi
+ 13fbbe7: 48 85 f6                     	testq	%rsi, %rsi
+ 13fbbea: 0f 84 af 00 00 00            	je	0x13fbc9f <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x8df>
+ 13fbbf0: 49 39 f6                     	cmpq	%rsi, %r14
+ 13fbbf3: 4c 8b 7d d0                  	movq	-0x30(%rbp), %r15
+ 13fbbf7: 74 97                        	je	0x13fbb90 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x7d0>
+ 13fbbf9: 4c 89 e7                     	movq	%r12, %rdi
+ 13fbbfc: 44 89 ea                     	movl	%r13d, %edx
+ 13fbbff: e8 cc 5d 0e 00               	callq	0x14e19d0 <v8::internal::compiler::NodeProperties::ReplaceValueInput(v8::internal::compiler::Node*, v8::internal::compiler::Node*, int)>
+ 13fbc04: 4d 8b b7 80 00 00 00         	movq	0x80(%r15), %r14
+ 13fbc0b: 41 8b 4c 24 10               	movl	0x10(%r12), %ecx
+ 13fbc10: 41 8b 46 10                  	movl	0x10(%r14), %eax
+ 13fbc14: 29 c1                        	subl	%eax, %ecx
+ 13fbc16: ba 00 00 00 00               	movl	$0x0, %edx
+ 13fbc1b: 0f 42 ca                     	cmovbl	%edx, %ecx
+ 13fbc1e: 80 f9 03                     	cmpb	$0x3, %cl
+ 13fbc21: 0f 85 69 ff ff ff            	jne	0x13fbb90 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x7d0>
+ 13fbc27: ff c0                        	incl	%eax
+ 13fbc29: 41 89 44 24 10               	movl	%eax, 0x10(%r12)
+ 13fbc2e: 49 8b 46 20                  	movq	0x20(%r14), %rax
+ 13fbc32: 49 8b 4e 28                  	movq	0x28(%r14), %rcx
+ 13fbc36: 48 89 ca                     	movq	%rcx, %rdx
+ 13fbc39: 48 29 c2                     	subq	%rax, %rdx
+ 13fbc3c: 48 8d 14 d5 ff ff ff ff      	leaq	-0x1(,%rdx,8), %rdx
+ 13fbc44: be 00 00 00 00               	movl	$0x0, %esi
+ 13fbc49: 48 0f 45 f2                  	cmovneq	%rdx, %rsi
+ 13fbc4d: 49 8b 56 50                  	movq	0x50(%r14), %rdx
+ 13fbc51: 49 03 56 48                  	addq	0x48(%r14), %rdx
+ 13fbc55: 48 39 d6                     	cmpq	%rdx, %rsi
+ 13fbc58: 75 11                        	jne	0x13fbc6b <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x8ab>
+ 13fbc5a: 49 8d 7e 18                  	leaq	0x18(%r14), %rdi
+ 13fbc5e: e8 2d 21 5d ff               	callq	0x9cdd90 <std::__Cr::deque<unsigned long, v8::internal::RecyclingZoneAllocator<unsigned long>>::__add_back_capacity[abi:sqn240000]()>
+ 13fbc63: 49 8b 46 20                  	movq	0x20(%r14), %rax
+ 13fbc67: 49 8b 4e 28                  	movq	0x28(%r14), %rcx
+ 13fbc6b: 48 39 c8                     	cmpq	%rcx, %rax
+ 13fbc6e: 0f 84 54 01 00 00            	je	0x13fbdc8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0xa08>
+ 13fbc74: 49 8b 4e 50                  	movq	0x50(%r14), %rcx
+ 13fbc78: 49 03 4e 48                  	addq	0x48(%r14), %rcx
+ 13fbc7c: 48 89 ca                     	movq	%rcx, %rdx
+ 13fbc7f: 48 c1 ea 06                  	shrq	$0x6, %rdx
+ 13fbc83: 83 e1 3f                     	andl	$0x3f, %ecx
+ 13fbc86: c1 e1 03                     	shll	$0x3, %ecx
+ 13fbc89: 48 03 0c d0                  	addq	(%rax,%rdx,8), %rcx
+ 13fbc8d: 0f 84 35 01 00 00            	je	0x13fbdc8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0xa08>
+ 13fbc93: 4c 89 21                     	movq	%r12, (%rcx)
+ 13fbc96: 49 ff 46 50                  	incq	0x50(%r14)
+ 13fbc9a: e9 f1 fe ff ff               	jmp	0x13fbb90 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x7d0>
+ 13fbc9f: 49 8b 07                     	movq	(%r15), %rax
+ 13fbca2: 48 89 45 98                  	movq	%rax, -0x68(%rbp)
+ 13fbca6: 49 8b 7f 08                  	movq	0x8(%r15), %rdi
+ 13fbcaa: e8 b1 1c fe ff               	callq	0x13dd960 <v8::internal::compiler::SimplifiedOperatorBuilder::NumberEqual()>
+ 13fbcaf: 48 8b 7d 98                  	movq	-0x68(%rbp), %rdi
+ 13fbcb3: 48 89 c6                     	movq	%rax, %rsi
+ 13fbcb6: 31 d2                        	xorl	%edx, %edx
+ 13fbcb8: 31 c9                        	xorl	%ecx, %ecx
+ 13fbcba: 45 31 c0                     	xorl	%r8d, %r8d
+ 13fbcbd: e8 6e 09 19 00               	callq	0x158c630 <v8::internal::compiler::TFGraph::NewNode(v8::internal::compiler::Operator const*, int, v8::internal::compiler::Node* const*, bool)>
+ 13fbcc2: 48 89 c6                     	movq	%rax, %rsi
+ 13fbcc5: 49 89 87 b8 02 00 00         	movq	%rax, 0x2b8(%r15)
+ 13fbccc: 49 39 f6                     	cmpq	%rsi, %r14
+ 13fbccf: 4c 8b 7d d0                  	movq	-0x30(%rbp), %r15
+ 13fbcd3: 0f 85 20 ff ff ff            	jne	0x13fbbf9 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x839>
+ 13fbcd9: e9 b2 fe ff ff               	jmp	0x13fbb90 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x7d0>
+ 13fbcde: 48 8b b5 78 ff ff ff         	movq	-0x88(%rbp), %rsi
+ 13fbce5: 83 fe ff                     	cmpl	$-0x1, %esi
+ 13fbce8: 74 5b                        	je	0x13fbd45 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x985>
+ 13fbcea: 4c 89 65 c8                  	movq	%r12, -0x38(%rbp)
+ 13fbcee: 48 8b 7d c0                  	movq	-0x40(%rbp), %rdi
+ 13fbcf2: e9 d2 f8 ff ff               	jmp	0x13fb5c9 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x209>
+ 13fbcf7: e8 34 b3 4c ff               	callq	0x8c7030 <v8::internal::LocalHeap::SafepointSlowPath()>
+ 13fbcfc: 48 83 7d 90 00               	cmpq	$0x0, -0x70(%rbp)
+ 13fbd01: 0f 85 3b f9 ff ff            	jne	0x13fb642 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x282>
+ 13fbd07: e9 c6 f8 ff ff               	jmp	0x13fb5d2 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x212>
+ 13fbd0c: 48 29 c6                     	subq	%rax, %rsi
+ 13fbd0f: 48 c1 fe 03                  	sarq	$0x3, %rsi
+ 13fbd13: 48 ff c6                     	incq	%rsi
+ 13fbd16: 48 8b 7d 80                  	movq	-0x80(%rbp), %rdi
+ 13fbd1a: e8 41 ca 2a ff               	callq	0x6a8760 <v8::internal::ZoneVector<v8::internal::compiler::Node**>::Grow(unsigned long)>
+ 13fbd1f: 49 8b 47 70                  	movq	0x70(%r15), %rax
+ 13fbd23: e9 2f f9 ff ff               	jmp	0x13fb657 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x297>
+ 13fbd28: 49 2b 77 68                  	subq	0x68(%r15), %rsi
+ 13fbd2c: 48 c1 fe 03                  	sarq	$0x3, %rsi
+ 13fbd30: 48 ff c6                     	incq	%rsi
+ 13fbd33: 48 8b 7d 80                  	movq	-0x80(%rbp), %rdi
+ 13fbd37: e8 24 ca 2a ff               	callq	0x6a8760 <v8::internal::ZoneVector<v8::internal::compiler::Node**>::Grow(unsigned long)>
+ 13fbd3c: 49 8b 47 70                  	movq	0x70(%r15), %rax
+ 13fbd40: e9 5c fd ff ff               	jmp	0x13fbaa1 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x6e1>
+ 13fbd45: 48 8d 3d 07 8a d6 fe         	leaq	-0x12975f9(%rip), %rdi  # 0x164753 <v8::internal::wasm::fuzzing::(anonymous namespace)::BodyGen::choose_sub_type(v8::internal::wasm::HeapType, v8::internal::wasm::fuzzing::(anonymous namespace)::DataRange*)::generic_types+0x4f19b>
+ 13fbd4c: 48 8d 35 58 6c db fe         	leaq	-0x12493a8(%rip), %rsi  # 0x1b29ab <v8::internal::wasm::fuzzing::(anonymous namespace)::BodyGen::choose_sub_type(v8::internal::wasm::HeapType, v8::internal::wasm::fuzzing::(anonymous namespace)::DataRange*)::generic_types+0x9d3f3>
+ 13fbd53: 31 c0                        	xorl	%eax, %eax
+ 13fbd55: e8 36 04 b4 00               	callq	0x1f3c190 <V8_Fatal(char const*, ...)>
+ 13fbd5a: 67 0f b9 40 01               	ud1l	0x1(%eax), %eax
+ 13fbd5f: 48 8d 3d ed 89 d6 fe         	leaq	-0x1297613(%rip), %rdi  # 0x164753 <v8::internal::wasm::fuzzing::(anonymous namespace)::BodyGen::choose_sub_type(v8::internal::wasm::HeapType, v8::internal::wasm::fuzzing::(anonymous namespace)::DataRange*)::generic_types+0x4f19b>
+ 13fbd66: 48 8d 35 92 6c d3 fe         	leaq	-0x12c936e(%rip), %rsi  # 0x1329ff <v8::internal::wasm::fuzzing::(anonymous namespace)::BodyGen::choose_sub_type(v8::internal::wasm::HeapType, v8::internal::wasm::fuzzing::(anonymous namespace)::DataRange*)::generic_types+0x1d447>
+ 13fbd6d: 31 c0                        	xorl	%eax, %eax
+ 13fbd6f: e8 1c 04 b4 00               	callq	0x1f3c190 <V8_Fatal(char const*, ...)>
+ 13fbd74: 67 0f b9 40 01               	ud1l	0x1(%eax), %eax
+ 13fbd79: 48 8d 3d d3 89 d6 fe         	leaq	-0x129762d(%rip), %rdi  # 0x164753 <v8::internal::wasm::fuzzing::(anonymous namespace)::BodyGen::choose_sub_type(v8::internal::wasm::HeapType, v8::internal::wasm::fuzzing::(anonymous namespace)::DataRange*)::generic_types+0x4f19b>
+ 13fbd80: 48 8d 35 82 c3 d8 fe         	leaq	-0x1273c7e(%rip), %rsi  # 0x188109 <v8::internal::wasm::fuzzing::(anonymous namespace)::BodyGen::choose_sub_type(v8::internal::wasm::HeapType, v8::internal::wasm::fuzzing::(anonymous namespace)::DataRange*)::generic_types+0x72b51>
+ 13fbd87: 31 c0                        	xorl	%eax, %eax
+ 13fbd89: e8 02 04 b4 00               	callq	0x1f3c190 <V8_Fatal(char const*, ...)>
+ 13fbd8e: 67 0f b9 40 01               	ud1l	0x1(%eax), %eax
+ 13fbd93: 49 8d 7f 60                  	leaq	0x60(%r15), %rdi
+ 13fbd97: e8 c4 c9 2a ff               	callq	0x6a8760 <v8::internal::ZoneVector<v8::internal::compiler::Node**>::Grow(unsigned long)>
+ 13fbd9c: 4c 8b 45 a8                  	movq	-0x58(%rbp), %r8
+ 13fbda0: 49 8b 38                     	movq	(%r8), %rdi
+ 13fbda3: 8b 4f 18                     	movl	0x18(%rdi), %ecx
+ 13fbda6: 85 c9                        	testl	%ecx, %ecx
+ 13fbda8: 0f 8f e2 f6 ff ff            	jg	0x13fb490 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0xd0>
+ 13fbdae: 48 8d 3d 9e 89 d6 fe         	leaq	-0x1297662(%rip), %rdi  # 0x164753 <v8::internal::wasm::fuzzing::(anonymous namespace)::BodyGen::choose_sub_type(v8::internal::wasm::HeapType, v8::internal::wasm::fuzzing::(anonymous namespace)::DataRange*)::generic_types+0x4f19b>
+ 13fbdb5: 48 8d 35 a1 00 d8 fe         	leaq	-0x127ff5f(%rip), %rsi  # 0x17be5d <v8::internal::wasm::fuzzing::(anonymous namespace)::BodyGen::choose_sub_type(v8::internal::wasm::HeapType, v8::internal::wasm::fuzzing::(anonymous namespace)::DataRange*)::generic_types+0x668a5>
+ 13fbdbc: 31 c0                        	xorl	%eax, %eax
+ 13fbdbe: e8 cd 03 b4 00               	callq	0x1f3c190 <V8_Fatal(char const*, ...)>
+ 13fbdc3: 67 0f b9 40 01               	ud1l	0x1(%eax), %eax
+ 13fbdc8: 48 8d 3d 96 89 d6 fe         	leaq	-0x129766a(%rip), %rdi  # 0x164765 <v8::internal::wasm::fuzzing::(anonymous namespace)::BodyGen::choose_sub_type(v8::internal::wasm::HeapType, v8::internal::wasm::fuzzing::(anonymous namespace)::DataRange*)::generic_types+0x4f1ad>
+ 13fbdcf: 48 8d 35 cf d1 d8 fe         	leaq	-0x1272e31(%rip), %rsi  # 0x188fa5 <v8::internal::wasm::fuzzing::(anonymous namespace)::BodyGen::choose_sub_type(v8::internal::wasm::HeapType, v8::internal::wasm::fuzzing::(anonymous namespace)::DataRange*)::generic_types+0x739ed>
+ 13fbdd6: 31 c0                        	xorl	%eax, %eax
+ 13fbdd8: e8 03 13 d4 00               	callq	0x213d0e0 <std::__Cr::__libcpp_verbose_abort(char const*, ...)>
+ 13fbddd: 67 0f b9 40 01               	ud1l	0x1(%eax), %eax

@@ -1,0 +1,1731 @@
+{
+  "binary_sha256": "e50dd57bcd9a2c6f1a2c4bd10c2bee4ab6a3e45140c59bd64dfd34d58bdc1ddb",
+  "profile_sha256": "df50d9b80ef426aad0797ab1dc8c3c00bf99bbbdd87c12b3acd2aae4169da5ca",
+  "included_compiler_ticks": 169430,
+  "text_vma_file_offset_difference": 4096,
+  "functions": {
+    "merge-inputs": {
+      "symbol": "v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)",
+      "address": "0x13fb3c0",
+      "instruction_bytes": 2594,
+      "self_ticks": 4026,
+      "sampled_pcs": [
+        {
+          "pc": "0x13fb8a3",
+          "offset": "0x4e3",
+          "ticks": 385,
+          "instruction": "13fb8a3: 44 39 e6                     \tcmpl\t%r12d, %esi"
+        },
+        {
+          "pc": "0x13fb8b2",
+          "offset": "0x4f2",
+          "ticks": 228,
+          "instruction": "13fb8b2: d3 e7                        \tshll\t%cl, %edi"
+        },
+        {
+          "pc": "0x13fb9df",
+          "offset": "0x61f",
+          "ticks": 196,
+          "instruction": "13fb9df: 66 83 7f 10 24               \tcmpw\t$0x24, 0x10(%rdi)"
+        },
+        {
+          "pc": "0x13fb794",
+          "offset": "0x3d4",
+          "ticks": 196,
+          "instruction": "13fb794: f7 f7                        \tdivl\t%edi"
+        },
+        {
+          "pc": "0x13fb7ac",
+          "offset": "0x3ec",
+          "ticks": 171,
+          "instruction": "13fb7ac: 4c 8b 7d b0                  \tmovq\t-0x50(%rbp), %r15"
+        },
+        {
+          "pc": "0x13fb8b6",
+          "offset": "0x4f6",
+          "ticks": 162,
+          "instruction": "13fb8b6: f7 c7 00 00 00 80            \ttestl\t$0x80000000, %edi       # imm = 0x80000000"
+        },
+        {
+          "pc": "0x13fb8a6",
+          "offset": "0x4e6",
+          "ticks": 136,
+          "instruction": "13fb8a6: 0f 84 84 00 00 00            \tje\t0x13fb930 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x570>"
+        },
+        {
+          "pc": "0x13fb8c2",
+          "offset": "0x502",
+          "ticks": 133,
+          "instruction": "13fb8c2: 8d 71 ff                     \tleal\t-0x1(%rcx), %esi"
+        },
+        {
+          "pc": "0x13fb9e4",
+          "offset": "0x624",
+          "ticks": 127,
+          "instruction": "13fb9e4: 75 72                        \tjne\t0x13fba58 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x698>"
+        },
+        {
+          "pc": "0x13fb8ec",
+          "offset": "0x52c",
+          "ticks": 116,
+          "instruction": "13fb8ec: 48 3b 45 90                  \tcmpq\t-0x70(%rbp), %rax"
+        },
+        {
+          "pc": "0x13fb640",
+          "offset": "0x280",
+          "ticks": 111,
+          "instruction": "13fb640: 74 90                        \tje\t0x13fb5d2 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x212>"
+        },
+        {
+          "pc": "0x13fb7bf",
+          "offset": "0x3ff",
+          "ticks": 107,
+          "instruction": "13fb7bf: 4c 89 fa                     \tmovq\t%r15, %rdx"
+        },
+        {
+          "pc": "0x13fb7f2",
+          "offset": "0x432",
+          "ticks": 100,
+          "instruction": "13fb7f2: 49 39 c0                     \tcmpq\t%rax, %r8"
+        },
+        {
+          "pc": "0x13fb60d",
+          "offset": "0x24d",
+          "ticks": 94,
+          "instruction": "13fb60d: 48 8b 02                     \tmovq\t(%rdx), %rax"
+        },
+        {
+          "pc": "0x13fb778",
+          "offset": "0x3b8",
+          "ticks": 78,
+          "instruction": "13fb778: 41 89 d0                     \tmovl\t%edx, %r8d"
+        },
+        {
+          "pc": "0x13fba47",
+          "offset": "0x687",
+          "ticks": 68,
+          "instruction": "13fba47: 4c 8b 7d d0                  \tmovq\t-0x30(%rbp), %r15"
+        },
+        {
+          "pc": "0x13fb819",
+          "offset": "0x459",
+          "ticks": 62,
+          "instruction": "13fb819: f7 f7                        \tdivl\t%edi"
+        },
+        {
+          "pc": "0x13fb74c",
+          "offset": "0x38c",
+          "ticks": 57,
+          "instruction": "13fb74c: 81 e6 ff ff ff 00            \tandl\t$0xffffff, %esi         # imm = 0xFFFFFF"
+        },
+        {
+          "pc": "0x13fb8d1",
+          "offset": "0x511",
+          "ticks": 55,
+          "instruction": "13fb8d1: 48 85 c0                     \ttestq\t%rax, %rax"
+        },
+        {
+          "pc": "0x13fb8bc",
+          "offset": "0x4fc",
+          "ticks": 49,
+          "instruction": "13fb8bc: 74 f2                        \tje\t0x13fb8b0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4f0>"
+        },
+        {
+          "pc": "0x13fb8c5",
+          "offset": "0x505",
+          "ticks": 41,
+          "instruction": "13fb8c5: 39 fe                        \tcmpl\t%edi, %esi"
+        },
+        {
+          "pc": "0x13fb7e4",
+          "offset": "0x424",
+          "ticks": 36,
+          "instruction": "13fb7e4: 74 7f                        \tje\t0x13fb865 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4a5>"
+        },
+        {
+          "pc": "0x13fb976",
+          "offset": "0x5b6",
+          "ticks": 35,
+          "instruction": "13fb976: 48 0f 44 d0                  \tcmoveq\t%rax, %rdx"
+        },
+        {
+          "pc": "0x13fb749",
+          "offset": "0x389",
+          "ticks": 34,
+          "instruction": "13fb749: 8b 70 14                     \tmovl\t0x14(%rax), %esi"
+        },
+        {
+          "pc": "0x13fb8d4",
+          "offset": "0x514",
+          "ticks": 33,
+          "instruction": "13fb8d4: 75 ca                        \tjne\t0x13fb8a0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4e0>"
+        },
+        {
+          "pc": "0x13fb66a",
+          "offset": "0x2aa",
+          "ticks": 31,
+          "instruction": "13fb66a: 4c 8b 5d a8                  \tmovq\t-0x58(%rbp), %r11"
+        },
+        {
+          "pc": "0x13fb8f0",
+          "offset": "0x530",
+          "ticks": 30,
+          "instruction": "13fb8f0: 0f 94 c1                     \tsete\t%cl"
+        },
+        {
+          "pc": "0x13fb7c2",
+          "offset": "0x402",
+          "ticks": 29,
+          "instruction": "13fb7c2: 4d 85 c9                     \ttestq\t%r9, %r9"
+        },
+        {
+          "pc": "0x13fb642",
+          "offset": "0x282",
+          "ticks": 29,
+          "instruction": "13fb642: 49 8b 47 68                  \tmovq\t0x68(%r15), %rax"
+        },
+        {
+          "pc": "0x13fb934",
+          "offset": "0x574",
+          "ticks": 28,
+          "instruction": "13fb934: 48 85 c9                     \ttestq\t%rcx, %rcx"
+        },
+        {
+          "pc": "0x13fb8af",
+          "offset": "0x4ef",
+          "ticks": 27,
+          "instruction": "13fb8af: 90                           \tnop"
+        },
+        {
+          "pc": "0x13fb97a",
+          "offset": "0x5ba",
+          "ticks": 26,
+          "instruction": "13fb97a: e9 69 ff ff ff               \tjmp\t0x13fb8e8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x528>"
+        },
+        {
+          "pc": "0x13fb8f3",
+          "offset": "0x533",
+          "ticks": 26,
+          "instruction": "13fb8f3: 48 83 f8 01                  \tcmpq\t$0x1, %rax"
+        },
+        {
+          "pc": "0x13fb6e3",
+          "offset": "0x323",
+          "ticks": 26,
+          "instruction": "13fb6e3: e8 38 d3 0e 00               \tcallq\t0x14e8a20 <v8::internal::compiler::OperatorProperties::HasFrameStateInput(v8::internal::compiler::Operator const*)>"
+        },
+        {
+          "pc": "0x13fb7b3",
+          "offset": "0x3f3",
+          "ticks": 26,
+          "instruction": "13fb7b3: 48 85 c0                     \ttestq\t%rax, %rax"
+        },
+        {
+          "pc": "0x13fb90f",
+          "offset": "0x54f",
+          "ticks": 24,
+          "instruction": "13fb90f: 48 8d 4a 08                  \tleaq\t0x8(%rdx), %rcx"
+        },
+        {
+          "pc": "0x13fb787",
+          "offset": "0x3c7",
+          "ticks": 23,
+          "instruction": "13fb787: 49 39 f8                     \tcmpq\t%rdi, %r8"
+        },
+        {
+          "pc": "0x13fb6c0",
+          "offset": "0x300",
+          "ticks": 23,
+          "instruction": "13fb6c0: 49 8b 3b                     \tmovq\t(%r11), %rdi"
+        },
+        {
+          "pc": "0x13fb7f5",
+          "offset": "0x435",
+          "ticks": 23,
+          "instruction": "13fb7f5: 74 e9                        \tje\t0x13fb7e0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x420>"
+        },
+        {
+          "pc": "0x13fb884",
+          "offset": "0x4c4",
+          "ticks": 22,
+          "instruction": "13fb884: 48 85 c0                     \ttestq\t%rax, %rax"
+        },
+        {
+          "pc": "0x13fb752",
+          "offset": "0x392",
+          "ticks": 22,
+          "instruction": "13fb752: 48 89 f1                     \tmovq\t%rsi, %rcx"
+        },
+        {
+          "pc": "0x13fbc96",
+          "offset": "0x8d6",
+          "ticks": 21,
+          "instruction": "13fbc96: 49 ff 46 50                  \tincq\t0x50(%r14)"
+        },
+        {
+          "pc": "0x13fb78e",
+          "offset": "0x3ce",
+          "ticks": 20,
+          "instruction": "13fb78e: 72 14                        \tjb\t0x13fb7a4 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x3e4>"
+        },
+        {
+          "pc": "0x13fba5d",
+          "offset": "0x69d",
+          "ticks": 19,
+          "instruction": "13fba5d: 8b 45 98                     \tmovl\t-0x68(%rbp), %eax"
+        },
+        {
+          "pc": "0x13fb81d",
+          "offset": "0x45d",
+          "ticks": 19,
+          "instruction": "13fb81d: 48 39 c8                     \tcmpq\t%rcx, %rax"
+        },
+        {
+          "pc": "0x13fb5d2",
+          "offset": "0x212",
+          "ticks": 19,
+          "instruction": "13fb5d2: 48 8d bd 48 fe ff ff         \tleaq\t-0x1b8(%rbp), %rdi"
+        },
+        {
+          "pc": "0x13fb606",
+          "offset": "0x246",
+          "ticks": 19,
+          "instruction": "13fb606: 48 0f 44 f0                  \tcmoveq\t%rax, %rsi"
+        },
+        {
+          "pc": "0x13fb602",
+          "offset": "0x242",
+          "ticks": 19,
+          "instruction": "13fb602: 48 0f 44 d1                  \tcmoveq\t%rcx, %rdx"
+        },
+        {
+          "pc": "0x13fb70d",
+          "offset": "0x34d",
+          "ticks": 18,
+          "instruction": "13fb70d: 48 8b 7a 30                  \tmovq\t0x30(%rdx), %rdi"
+        },
+        {
+          "pc": "0x13fb9d7",
+          "offset": "0x617",
+          "ticks": 18,
+          "instruction": "13fb9d7: 74 7f                        \tje\t0x13fba58 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x698>"
+        },
+        {
+          "pc": "0x13fb937",
+          "offset": "0x577",
+          "ticks": 18,
+          "instruction": "13fb937: 74 3a                        \tje\t0x13fb973 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x5b3>"
+        },
+        {
+          "pc": "0x13fb775",
+          "offset": "0x3b5",
+          "ticks": 18,
+          "instruction": "13fb775: 48 31 c2                     \txorq\t%rax, %rdx"
+        },
+        {
+          "pc": "0x13fb62b",
+          "offset": "0x26b",
+          "ticks": 17,
+          "instruction": "13fb62b: a8 06                        \ttestb\t$0x6, %al"
+        },
+        {
+          "pc": "0x13fb9ea",
+          "offset": "0x62a",
+          "ticks": 16,
+          "instruction": "13fb9ea: 0f 8e 89 03 00 00            \tjle\t0x13fbd79 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x9b9>"
+        },
+        {
+          "pc": "0x13fb698",
+          "offset": "0x2d8",
+          "ticks": 16,
+          "instruction": "13fb698: 4c 89 e8                     \tmovq\t%r13, %rax"
+        },
+        {
+          "pc": "0x13fb9c1",
+          "offset": "0x601",
+          "ticks": 15,
+          "instruction": "13fb9c1: 4c 89 de                     \tmovq\t%r11, %rsi"
+        },
+        {
+          "pc": "0x13fb762",
+          "offset": "0x3a2",
+          "ticks": 14,
+          "instruction": "13fb762: 48 89 f0                     \tmovq\t%rsi, %rax"
+        },
+        {
+          "pc": "0x13fb8b4",
+          "offset": "0x4f4",
+          "ticks": 14,
+          "instruction": "13fb8b4: ff c1                        \tincl\t%ecx"
+        },
+        {
+          "pc": "0x13fb632",
+          "offset": "0x272",
+          "ticks": 13,
+          "instruction": "13fb632: f6 c1 01                     \ttestb\t$0x1, %cl"
+        },
+        {
+          "pc": "0x13fb73c",
+          "offset": "0x37c",
+          "ticks": 13,
+          "instruction": "13fb73c: 41 01 df                     \taddl\t%ebx, %r15d"
+        },
+        {
+          "pc": "0x13fb73a",
+          "offset": "0x37a",
+          "ticks": 13,
+          "instruction": "13fb73a: 01 d0                        \taddl\t%edx, %eax"
+        },
+        {
+          "pc": "0x13fba6e",
+          "offset": "0x6ae",
+          "ticks": 11,
+          "instruction": "13fba6e: 7d 17                        \tjge\t0x13fba87 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x6c7>"
+        },
+        {
+          "pc": "0x13fb7fa",
+          "offset": "0x43a",
+          "ticks": 11,
+          "instruction": "13fb7fa: 72 14                        \tjb\t0x13fb810 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x450>"
+        },
+        {
+          "pc": "0x13fb820",
+          "offset": "0x460",
+          "ticks": 10,
+          "instruction": "13fb820: 74 c4                        \tje\t0x13fb7e6 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x426>"
+        },
+        {
+          "pc": "0x13fb715",
+          "offset": "0x355",
+          "ticks": 10,
+          "instruction": "13fb715: 48 89 f2                     \tmovq\t%rsi, %rdx"
+        },
+        {
+          "pc": "0x13fb9cf",
+          "offset": "0x60f",
+          "ticks": 10,
+          "instruction": "13fb9cf: e8 bc 06 00 00               \tcallq\t0x13fc090 <v8::internal::compiler::VariableTracker::State::Get(v8::internal::compiler::Variable) const>"
+        },
+        {
+          "pc": "0x13fb5e5",
+          "offset": "0x225",
+          "ticks": 10,
+          "instruction": "13fb5e5: 48 85 c0                     \ttestq\t%rax, %rax"
+        },
+        {
+          "pc": "0x13fbbb5",
+          "offset": "0x7f5",
+          "ticks": 9,
+          "instruction": "13fbbb5: 48 89 d8                     \tmovq\t%rbx, %rax"
+        },
+        {
+          "pc": "0x13fbb0e",
+          "offset": "0x74e",
+          "ticks": 9,
+          "instruction": "13fbb0e: 48 8d 14 d5 ff ff ff ff      \tleaq\t-0x1(,%rdx,8), %rdx"
+        },
+        {
+          "pc": "0x13fba39",
+          "offset": "0x679",
+          "ticks": 9,
+          "instruction": "13fba39: 49 63 c7                     \tmovslq\t%r15d, %rax"
+        },
+        {
+          "pc": "0x13fb9e6",
+          "offset": "0x626",
+          "ticks": 9,
+          "instruction": "13fb9e6: 83 7f 1c 00                  \tcmpl\t$0x0, 0x1c(%rdi)"
+        },
+        {
+          "pc": "0x13fb817",
+          "offset": "0x457",
+          "ticks": 9,
+          "instruction": "13fb817: 31 d2                        \txorl\t%edx, %edx"
+        },
+        {
+          "pc": "0x13fb60a",
+          "offset": "0x24a",
+          "ticks": 8,
+          "instruction": "13fb60a: 44 8b 2e                     \tmovl\t(%rsi), %r13d"
+        },
+        {
+          "pc": "0x13fb5fd",
+          "offset": "0x23d",
+          "ticks": 8,
+          "instruction": "13fb5fd: 48 83 78 18 00               \tcmpq\t$0x0, 0x18(%rax)"
+        },
+        {
+          "pc": "0x13fbab3",
+          "offset": "0x6f3",
+          "ticks": 8,
+          "instruction": "13fbab3: 49 8b 47 08                  \tmovq\t0x8(%r15), %rax"
+        },
+        {
+          "pc": "0x13fbce5",
+          "offset": "0x925",
+          "ticks": 8,
+          "instruction": "13fbce5: 83 fe ff                     \tcmpl\t$-0x1, %esi"
+        },
+        {
+          "pc": "0x13fb5e8",
+          "offset": "0x228",
+          "ticks": 8,
+          "instruction": "13fb5e8: 74 a7                        \tje\t0x13fb591 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x1d1>"
+        },
+        {
+          "pc": "0x13fbb93",
+          "offset": "0x7d3",
+          "ticks": 8,
+          "instruction": "13fbb93: 4c 39 6d b8                  \tcmpq\t%r13, -0x48(%rbp)"
+        },
+        {
+          "pc": "0x13fbb6c",
+          "offset": "0x7ac",
+          "ticks": 8,
+          "instruction": "13fbb6c: 41 83 fd ff                  \tcmpl\t$-0x1, %r13d"
+        },
+        {
+          "pc": "0x13fbb4a",
+          "offset": "0x78a",
+          "ticks": 7,
+          "instruction": "13fbb4a: 48 03 4b 48                  \taddq\t0x48(%rbx), %rcx"
+        },
+        {
+          "pc": "0x13fbc8d",
+          "offset": "0x8cd",
+          "ticks": 7,
+          "instruction": "13fbc8d: 0f 84 35 01 00 00            \tje\t0x13fbdc8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0xa08>"
+        },
+        {
+          "pc": "0x13fb9cc",
+          "offset": "0x60c",
+          "ticks": 7,
+          "instruction": "13fb9cc: 44 89 ee                     \tmovl\t%r13d, %esi"
+        },
+        {
+          "pc": "0x13fba52",
+          "offset": "0x692",
+          "ticks": 7,
+          "instruction": "13fba52: 0f 84 27 01 00 00            \tje\t0x13fbb7f <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x7bf>"
+        },
+        {
+          "pc": "0x13fbaa9",
+          "offset": "0x6e9",
+          "ticks": 7,
+          "instruction": "13fbaa9: 48 8b 8d 68 ff ff ff         \tmovq\t-0x98(%rbp), %rcx"
+        },
+        {
+          "pc": "0x13fb61e",
+          "offset": "0x25e",
+          "ticks": 7,
+          "instruction": "13fb61e: 48 8b 78 08                  \tmovq\t0x8(%rax), %rdi"
+        },
+        {
+          "pc": "0x13fba0f",
+          "offset": "0x64f",
+          "ticks": 7,
+          "instruction": "13fba0f: 48 83 c3 20                  \taddq\t$0x20, %rbx"
+        },
+        {
+          "pc": "0x13fb610",
+          "offset": "0x250",
+          "ticks": 6,
+          "instruction": "13fb610: 48 89 45 90                  \tmovq\t%rax, -0x70(%rbp)"
+        },
+        {
+          "pc": "0x13fba3c",
+          "offset": "0x67c",
+          "ticks": 6,
+          "instruction": "13fba3c: 48 8b 95 68 ff ff ff         \tmovq\t-0x98(%rbp), %rdx"
+        },
+        {
+          "pc": "0x13fb893",
+          "offset": "0x4d3",
+          "ticks": 6,
+          "instruction": "13fb893: 66 66 66 66 2e 0f 1f 84 00 00 00 00 00       \tnopw\t%cs:(%rax,%rax)"
+        },
+        {
+          "pc": "0x13fbc7c",
+          "offset": "0x8bc",
+          "ticks": 6,
+          "instruction": "13fbc7c: 48 89 ca                     \tmovq\t%rcx, %rdx"
+        },
+        {
+          "pc": "0x13fbaef",
+          "offset": "0x72f",
+          "ticks": 6,
+          "instruction": "13fbaef: 49 8b 9f 80 00 00 00         \tmovq\t0x80(%r15), %rbx"
+        },
+        {
+          "pc": "0x13fb630",
+          "offset": "0x270",
+          "ticks": 5,
+          "instruction": "13fb630: 08 c1                        \torb\t%al, %cl"
+        },
+        {
+          "pc": "0x13fb869",
+          "offset": "0x4a9",
+          "ticks": 5,
+          "instruction": "13fb869: 4c 89 ca                     \tmovq\t%r9, %rdx"
+        },
+        {
+          "pc": "0x13fb9f0",
+          "offset": "0x630",
+          "ticks": 5,
+          "instruction": "13fb9f0: 44 8b 7f 14                  \tmovl\t0x14(%rdi), %r15d"
+        },
+        {
+          "pc": "0x13fba32",
+          "offset": "0x672",
+          "ticks": 5,
+          "instruction": "13fba32: 41 01 c7                     \taddl\t%eax, %r15d"
+        },
+        {
+          "pc": "0x13fb75f",
+          "offset": "0x39f",
+          "ticks": 5,
+          "instruction": "13fb75f: 48 31 c1                     \txorq\t%rax, %rcx"
+        },
+        {
+          "pc": "0x13fb6a1",
+          "offset": "0x2e1",
+          "ticks": 5,
+          "instruction": "13fb6a1: 41 31 c4                     \txorl\t%eax, %r12d"
+        },
+        {
+          "pc": "0x13fb6f2",
+          "offset": "0x332",
+          "ticks": 5,
+          "instruction": "13fb6f2: 48 8b 4d 88                  \tmovq\t-0x78(%rbp), %rcx"
+        },
+        {
+          "pc": "0x13fb806",
+          "offset": "0x446",
+          "ticks": 4,
+          "instruction": "13fb806: 74 0f                        \tje\t0x13fb817 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x457>"
+        },
+        {
+          "pc": "0x13fb8a0",
+          "offset": "0x4e0",
+          "ticks": 4,
+          "instruction": "13fb8a0: 8b 70 14                     \tmovl\t0x14(%rax), %esi"
+        },
+        {
+          "pc": "0x13fb9f4",
+          "offset": "0x634",
+          "ticks": 4,
+          "instruction": "13fb9f4: e8 a7 cf 0e 00               \tcallq\t0x14e89a0 <v8::internal::compiler::OperatorProperties::HasContextInput(v8::internal::compiler::Operator const*)>"
+        },
+        {
+          "pc": "0x13fbb68",
+          "offset": "0x7a8",
+          "ticks": 4,
+          "instruction": "13fbb68: 48 ff 43 50                  \tincq\t0x50(%rbx)"
+        },
+        {
+          "pc": "0x13fb87b",
+          "offset": "0x4bb",
+          "ticks": 4,
+          "instruction": "13fb87b: 0f 84 c4 04 00 00            \tje\t0x13fbd45 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x985>"
+        },
+        {
+          "pc": "0x13fba58",
+          "offset": "0x698",
+          "ticks": 4,
+          "instruction": "13fba58: 66 83 7d a6 01               \tcmpw\t$0x1, -0x5a(%rbp)"
+        },
+        {
+          "pc": "0x13fb711",
+          "offset": "0x351",
+          "ticks": 4,
+          "instruction": "13fb711: 48 8b 75 b0                  \tmovq\t-0x50(%rbp), %rsi"
+        },
+        {
+          "pc": "0x13fb72a",
+          "offset": "0x36a",
+          "ticks": 3,
+          "instruction": "13fb72a: 48 89 f2                     \tmovq\t%rsi, %rdx"
+        },
+        {
+          "pc": "0x13fb7a8",
+          "offset": "0x3e8",
+          "ticks": 3,
+          "instruction": "13fb7a8: 48 8b 04 c8                  \tmovq\t(%rax,%rcx,8), %rax"
+        },
+        {
+          "pc": "0x13fb5d9",
+          "offset": "0x219",
+          "ticks": 3,
+          "instruction": "13fb5d9: e8 b2 0b 00 00               \tcallq\t0x13fc190 <v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable>>::iterator::operator++()>"
+        },
+        {
+          "pc": "0x13fb6c6",
+          "offset": "0x306",
+          "ticks": 3,
+          "instruction": "13fb6c6: 0f 8d e2 06 00 00            \tjge\t0x13fbdae <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x9ee>"
+        },
+        {
+          "pc": "0x13fb745",
+          "offset": "0x385",
+          "ticks": 3,
+          "instruction": "13fb745: 48 8b 04 c1                  \tmovq\t(%rcx,%rax,8), %rax"
+        },
+        {
+          "pc": "0x13fb6f0",
+          "offset": "0x330",
+          "ticks": 3,
+          "instruction": "13fb6f0: f7 d2                        \tnotl\t%edx"
+        },
+        {
+          "pc": "0x13fbb5f",
+          "offset": "0x79f",
+          "ticks": 3,
+          "instruction": "13fbb5f: 0f 84 63 02 00 00            \tje\t0x13fbdc8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0xa08>"
+        },
+        {
+          "pc": "0x13fb622",
+          "offset": "0x262",
+          "ticks": 3,
+          "instruction": "13fb622: 48 85 ff                     \ttestq\t%rdi, %rdi"
+        },
+        {
+          "pc": "0x13fb9d4",
+          "offset": "0x614",
+          "ticks": 3,
+          "instruction": "13fb9d4: 48 85 c0                     \ttestq\t%rax, %rax"
+        },
+        {
+          "pc": "0x13fbc49",
+          "offset": "0x889",
+          "ticks": 3,
+          "instruction": "13fbc49: 48 0f 45 f2                  \tcmovneq\t%rdx, %rsi"
+        },
+        {
+          "pc": "0x13fbc21",
+          "offset": "0x861",
+          "ticks": 3,
+          "instruction": "13fbc21: 0f 85 69 ff ff ff            \tjne\t0x13fbb90 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x7d0>"
+        },
+        {
+          "pc": "0x13fbc32",
+          "offset": "0x872",
+          "ticks": 3,
+          "instruction": "13fbc32: 49 8b 4e 28                  \tmovq\t0x28(%r14), %rcx"
+        },
+        {
+          "pc": "0x13fb5de",
+          "offset": "0x21e",
+          "ticks": 3,
+          "instruction": "13fb5de: 48 8b 85 58 fe ff ff         \tmovq\t-0x1a8(%rbp), %rax"
+        },
+        {
+          "pc": "0x13fb6f6",
+          "offset": "0x336",
+          "ticks": 3,
+          "instruction": "13fb6f6: f7 c2 00 00 00 0f            \ttestl\t$0xf000000, %edx        # imm = 0xF000000"
+        },
+        {
+          "pc": "0x13fbacc",
+          "offset": "0x70c",
+          "ticks": 3,
+          "instruction": "13fbacc: 49 8b 4f 68                  \tmovq\t0x68(%r15), %rcx"
+        },
+        {
+          "pc": "0x13fb8cc",
+          "offset": "0x50c",
+          "ticks": 3,
+          "instruction": "13fb8cc: 48 8b 44 f0 20               \tmovq\t0x20(%rax,%rsi,8), %rax"
+        },
+        {
+          "pc": "0x13fb88f",
+          "offset": "0x4cf",
+          "ticks": 3,
+          "instruction": "13fb88f: 44 8b 45 98                  \tmovl\t-0x68(%rbp), %r8d"
+        },
+        {
+          "pc": "0x13fb877",
+          "offset": "0x4b7",
+          "ticks": 3,
+          "instruction": "13fb877: 41 83 fd ff                  \tcmpl\t$-0x1, %r13d"
+        },
+        {
+          "pc": "0x13fb5ee",
+          "offset": "0x22e",
+          "ticks": 3,
+          "instruction": "13fb5ee: 48 8b 95 50 fe ff ff         \tmovq\t-0x1b0(%rbp), %rdx"
+        },
+        {
+          "pc": "0x13fb72d",
+          "offset": "0x36d",
+          "ticks": 3,
+          "instruction": "13fb72d: 0f 84 3d 01 00 00            \tje\t0x13fb870 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x4b0>"
+        },
+        {
+          "pc": "0x13fbb7f",
+          "offset": "0x7bf",
+          "ticks": 3,
+          "instruction": "13fbb7f: 83 7d b8 00                  \tcmpl\t$0x0, -0x48(%rbp)"
+        },
+        {
+          "pc": "0x13fb6d4",
+          "offset": "0x314",
+          "ticks": 3,
+          "instruction": "13fb6d4: e8 c7 d2 0e 00               \tcallq\t0x14e89a0 <v8::internal::compiler::OperatorProperties::HasContextInput(v8::internal::compiler::Operator const*)>"
+        },
+        {
+          "pc": "0x13fba98",
+          "offset": "0x6d8",
+          "ticks": 2,
+          "instruction": "13fba98: 48 39 f0                     \tcmpq\t%rsi, %rax"
+        },
+        {
+          "pc": "0x13fbc3c",
+          "offset": "0x87c",
+          "ticks": 2,
+          "instruction": "13fbc3c: 48 8d 14 d5 ff ff ff ff      \tleaq\t-0x1(,%rdx,8), %rdx"
+        },
+        {
+          "pc": "0x13fb9c9",
+          "offset": "0x609",
+          "ticks": 2,
+          "instruction": "13fb9c9: 48 89 c7                     \tmovq\t%rax, %rdi"
+        },
+        {
+          "pc": "0x13fb6ad",
+          "offset": "0x2ed",
+          "ticks": 2,
+          "instruction": "13fb6ad: bb 01 00 00 00               \tmovl\t$0x1, %ebx"
+        },
+        {
+          "pc": "0x13fb614",
+          "offset": "0x254",
+          "ticks": 2,
+          "instruction": "13fb614: 49 8b 87 90 00 00 00         \tmovq\t0x90(%r15), %rax"
+        },
+        {
+          "pc": "0x13fbc7f",
+          "offset": "0x8bf",
+          "ticks": 2,
+          "instruction": "13fbc7f: 48 c1 ea 06                  \tshrq\t$0x6, %rdx"
+        },
+        {
+          "pc": "0x13fb725",
+          "offset": "0x365",
+          "ticks": 2,
+          "instruction": "13fb725: 48 83 7a 50 00               \tcmpq\t$0x0, 0x50(%rdx)"
+        },
+        {
+          "pc": "0x13fb663",
+          "offset": "0x2a3",
+          "ticks": 2,
+          "instruction": "13fb663: 48 89 08                     \tmovq\t%rcx, (%rax)"
+        },
+        {
+          "pc": "0x13fb742",
+          "offset": "0x382",
+          "ticks": 2,
+          "instruction": "13fb742: 49 63 c7                     \tmovslq\t%r15d, %rax"
+        },
+        {
+          "pc": "0x13fba05",
+          "offset": "0x645",
+          "ticks": 2,
+          "instruction": "13fba05: 41 8b 54 24 14               \tmovl\t0x14(%r12), %edx"
+        },
+        {
+          "pc": "0x13fbc10",
+          "offset": "0x850",
+          "ticks": 2,
+          "instruction": "13fbc10: 41 8b 46 10                  \tmovl\t0x10(%r14), %eax"
+        },
+        {
+          "pc": "0x13fb77b",
+          "offset": "0x3bb",
+          "ticks": 2,
+          "instruction": "13fb77b: 4c 8d 57 ff                  \tleaq\t-0x1(%rdi), %r10"
+        },
+        {
+          "pc": "0x13fbbd3",
+          "offset": "0x813",
+          "ticks": 2,
+          "instruction": "13fbbd3: 48 85 f6                     \ttestq\t%rsi, %rsi"
+        },
+        {
+          "pc": "0x13fb755",
+          "offset": "0x395",
+          "ticks": 2,
+          "instruction": "13fb755: 48 b8 a5 78 6c aa cc 8d 35 2d\tmovabsq\t$0x2d358dccaa6c78a5, %rax # imm = 0x2D358DCCAA6C78A5"
+        },
+        {
+          "pc": "0x13fb8c7",
+          "offset": "0x507",
+          "ticks": 2,
+          "instruction": "13fb8c7: 7d 1f                        \tjge\t0x13fb8e8 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x528>"
+        },
+        {
+          "pc": "0x13fbc78",
+          "offset": "0x8b8",
+          "ticks": 2,
+          "instruction": "13fbc78: 49 03 4e 48                  \taddq\t0x48(%r14), %rcx"
+        },
+        {
+          "pc": "0x13fbaa5",
+          "offset": "0x6e5",
+          "ticks": 2,
+          "instruction": "13fbaa5: 49 89 4f 70                  \tmovq\t%rcx, 0x70(%r15)"
+        },
+        {
+          "pc": "0x13fb7e9",
+          "offset": "0x429",
+          "ticks": 2,
+          "instruction": "13fb7e9: 4d 85 c9                     \ttestq\t%r9, %r9"
+        },
+        {
+          "pc": "0x13fbbfc",
+          "offset": "0x83c",
+          "ticks": 2,
+          "instruction": "13fbbfc: 44 89 ea                     \tmovl\t%r13d, %edx"
+        },
+        {
+          "pc": "0x13fb9dc",
+          "offset": "0x61c",
+          "ticks": 1,
+          "instruction": "13fb9dc: 48 8b 38                     \tmovq\t(%rax), %rdi"
+        },
+        {
+          "pc": "0x13fba60",
+          "offset": "0x6a0",
+          "ticks": 1,
+          "instruction": "13fba60: 75 09                        \tjne\t0x13fba6b <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x6ab>"
+        },
+        {
+          "pc": "0x13fb5f9",
+          "offset": "0x239",
+          "ticks": 1,
+          "instruction": "13fb5f9: 48 83 c2 28                  \taddq\t$0x28, %rdx"
+        },
+        {
+          "pc": "0x13fb5c2",
+          "offset": "0x202",
+          "ticks": 1,
+          "instruction": "13fb5c2: 48 8b 7d c0                  \tmovq\t-0x40(%rbp), %rdi"
+        },
+        {
+          "pc": "0x13fbc1b",
+          "offset": "0x85b",
+          "ticks": 1,
+          "instruction": "13fbc1b: 0f 42 ca                     \tcmovbl\t%edx, %ecx"
+        },
+        {
+          "pc": "0x13fbbb3",
+          "offset": "0x7f3",
+          "ticks": 1,
+          "instruction": "13fbbb3: f7 d1                        \tnotl\t%ecx"
+        },
+        {
+          "pc": "0x13fbb2a",
+          "offset": "0x76a",
+          "ticks": 1,
+          "instruction": "13fbb2a: 75 11                        \tjne\t0x13fbb3d <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x77d>"
+        },
+        {
+          "pc": "0x13fb44a",
+          "offset": "0x8a",
+          "ticks": 1,
+          "instruction": "13fb44a: 48 89 85 68 ff ff ff         \tmovq\t%rax, -0x98(%rbp)"
+        },
+        {
+          "pc": "0x13fb5cd",
+          "offset": "0x20d",
+          "ticks": 1,
+          "instruction": "13fb5cd: e8 ae 29 00 00               \tcallq\t0x13fdf80 <void v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable>>::Modify<v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable>>::Set(v8::internal::compiler::Variable, v8::internal::compiler::Node*)::'lambda'(v8::internal::compiler::Node**)>(v8::internal::compiler::Variable, v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable>>::Set(v8::internal::compiler::Variable, v8::internal::compiler::Node*)::'lambda'(v8::internal::compiler::Node**))>"
+        },
+        {
+          "pc": "0x13fbbcb",
+          "offset": "0x80b",
+          "ticks": 1,
+          "instruction": "13fbbcb: 49 8b 47 68                  \tmovq\t0x68(%r15), %rax"
+        },
+        {
+          "pc": "0x13fba8a",
+          "offset": "0x6ca",
+          "ticks": 1,
+          "instruction": "13fba8a: 0f 85 20 fb ff ff            \tjne\t0x13fb5b0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x1f0>"
+        },
+        {
+          "pc": "0x13fb4f4",
+          "offset": "0x134",
+          "ticks": 1,
+          "instruction": "13fb4f4: 48 89 38                     \tmovq\t%rdi, (%rax)"
+        },
+        {
+          "pc": "0x13fb91a",
+          "offset": "0x55a",
+          "ticks": 1,
+          "instruction": "13fb91a: ff c3                        \tincl\t%ebx"
+        },
+        {
+          "pc": "0x13fbac3",
+          "offset": "0x703",
+          "ticks": 1,
+          "instruction": "13fbac3: 48 8b 55 b8                  \tmovq\t-0x48(%rbp), %rdx"
+        },
+        {
+          "pc": "0x13fba0c",
+          "offset": "0x64c",
+          "ticks": 1,
+          "instruction": "13fba0c: 4c 89 e3                     \tmovq\t%r12, %rbx"
+        },
+        {
+          "pc": "0x13fbad3",
+          "offset": "0x713",
+          "ticks": 1,
+          "instruction": "13fbad3: 48 89 c6                     \tmovq\t%rax, %rsi"
+        },
+        {
+          "pc": "0x13fbc1e",
+          "offset": "0x85e",
+          "ticks": 1,
+          "instruction": "13fbc1e: 80 f9 03                     \tcmpb\t$0x3, %cl"
+        },
+        {
+          "pc": "0x13fbcee",
+          "offset": "0x92e",
+          "ticks": 1,
+          "instruction": "13fbcee: 48 8b 7d c0                  \tmovq\t-0x40(%rbp), %rdi"
+        },
+        {
+          "pc": "0x13fb6c3",
+          "offset": "0x303",
+          "ticks": 1,
+          "instruction": "13fb6c3: 3b 5f 18                     \tcmpl\t0x18(%rdi), %ebx"
+        },
+        {
+          "pc": "0x13fbc4d",
+          "offset": "0x88d",
+          "ticks": 1,
+          "instruction": "13fbc4d: 49 8b 56 50                  \tmovq\t0x50(%r14), %rdx"
+        },
+        {
+          "pc": "0x13fb458",
+          "offset": "0x98",
+          "ticks": 1,
+          "instruction": "13fb458: 66 89 45 a6                  \tmovw\t%ax, -0x5a(%rbp)"
+        },
+        {
+          "pc": "0x13fbbf3",
+          "offset": "0x833",
+          "ticks": 1,
+          "instruction": "13fbbf3: 4c 8b 7d d0                  \tmovq\t-0x30(%rbp), %r15"
+        },
+        {
+          "pc": "0x13fb6ec",
+          "offset": "0x32c",
+          "ticks": 1,
+          "instruction": "13fb6ec: 41 8b 53 14                  \tmovl\t0x14(%r11), %edx"
+        },
+        {
+          "pc": "0x13fbb04",
+          "offset": "0x744",
+          "ticks": 1,
+          "instruction": "13fbb04: 48 8b 4b 28                  \tmovq\t0x28(%rbx), %rcx"
+        },
+        {
+          "pc": "0x13fbbff",
+          "offset": "0x83f",
+          "ticks": 1,
+          "instruction": "13fbbff: e8 cc 5d 0e 00               \tcallq\t0x14e19d0 <v8::internal::compiler::NodeProperties::ReplaceValueInput(v8::internal::compiler::Node*, v8::internal::compiler::Node*, int)>"
+        },
+        {
+          "pc": "0x13fbb46",
+          "offset": "0x786",
+          "ticks": 1,
+          "instruction": "13fbb46: 48 8b 4b 50                  \tmovq\t0x50(%rbx), %rcx"
+        },
+        {
+          "pc": "0x13fb68b",
+          "offset": "0x2cb",
+          "ticks": 1,
+          "instruction": "13fb68b: 48 ba c9 ac 2e 96 93 4b b8 8b\tmovabsq\t$-0x7447b46c69d15337, %rdx # imm = 0x8BB84B93962EACC9"
+        },
+        {
+          "pc": "0x13fbb90",
+          "offset": "0x7d0",
+          "ticks": 1,
+          "instruction": "13fbb90: 49 ff c5                     \tincq\t%r13"
+        },
+        {
+          "pc": "0x13fbc9a",
+          "offset": "0x8da",
+          "ticks": 1,
+          "instruction": "13fbc9a: e9 f1 fe ff ff               \tjmp\t0x13fbb90 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x7d0>"
+        },
+        {
+          "pc": "0x13fbb4e",
+          "offset": "0x78e",
+          "ticks": 1,
+          "instruction": "13fbb4e: 48 89 ca                     \tmovq\t%rcx, %rdx"
+        },
+        {
+          "pc": "0x13fb91f",
+          "offset": "0x55f",
+          "ticks": 1,
+          "instruction": "13fb91f: 0f 85 9b fd ff ff            \tjne\t0x13fb6c0 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x300>"
+        },
+        {
+          "pc": "0x13fb64e",
+          "offset": "0x28e",
+          "ticks": 1,
+          "instruction": "13fb64e: 48 39 f0                     \tcmpq\t%rsi, %rax"
+        },
+        {
+          "pc": "0x13fb903",
+          "offset": "0x543",
+          "ticks": 1,
+          "instruction": "13fb903: 48 39 f2                     \tcmpq\t%rsi, %rdx"
+        },
+        {
+          "pc": "0x13fb4f0",
+          "offset": "0x130",
+          "ticks": 1,
+          "instruction": "13fb4f0: 48 8b 45 c0                  \tmovq\t-0x40(%rbp), %rax"
+        },
+        {
+          "pc": "0x13fbbcf",
+          "offset": "0x80f",
+          "ticks": 1,
+          "instruction": "13fbbcf: 4a 8b 34 e8                  \tmovq\t(%rax,%r13,8), %rsi"
+        },
+        {
+          "pc": "0x13fbba1",
+          "offset": "0x7e1",
+          "ticks": 1,
+          "instruction": "13fbba1: 48 63 40 14                  \tmovslq\t0x14(%rax), %rax"
+        },
+        {
+          "pc": "0x13fb6d9",
+          "offset": "0x319",
+          "ticks": 1,
+          "instruction": "13fb6d9: 41 89 c5                     \tmovl\t%eax, %r13d"
+        },
+        {
+          "pc": "0x13fbc16",
+          "offset": "0x856",
+          "ticks": 1,
+          "instruction": "13fbc16: ba 00 00 00 00               \tmovl\t$0x0, %edx"
+        },
+        {
+          "pc": "0x13fb802",
+          "offset": "0x442",
+          "ticks": 1,
+          "instruction": "13fb802: 48 c1 ea 20                  \tshrq\t$0x20, %rdx"
+        },
+        {
+          "pc": "0x13fbab7",
+          "offset": "0x6f7",
+          "ticks": 1,
+          "instruction": "13fbab7: 4c 8b 20                     \tmovq\t(%rax), %r12"
+        },
+        {
+          "pc": "0x13fbaba",
+          "offset": "0x6fa",
+          "ticks": 1,
+          "instruction": "13fbaba: 48 8b 78 08                  \tmovq\t0x8(%rax), %rdi"
+        },
+        {
+          "pc": "0x13fbbbe",
+          "offset": "0x7fe",
+          "ticks": 1,
+          "instruction": "13fbbbe: 75 07                        \tjne\t0x13fbbc7 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x807>"
+        },
+        {
+          "pc": "0x13fb718",
+          "offset": "0x358",
+          "ticks": 1,
+          "instruction": "13fb718: 48 85 ff                     \ttestq\t%rdi, %rdi"
+        },
+        {
+          "pc": "0x13fbba5",
+          "offset": "0x7e5",
+          "ticks": 1,
+          "instruction": "13fbba5: 49 39 c5                     \tcmpq\t%rax, %r13"
+        },
+        {
+          "pc": "0x13fb666",
+          "offset": "0x2a6",
+          "ticks": 1,
+          "instruction": "13fb666: 83 7d b8 02                  \tcmpl\t$0x2, -0x48(%rbp)"
+        },
+        {
+          "pc": "0x13fbbf7",
+          "offset": "0x837",
+          "ticks": 1,
+          "instruction": "13fbbf7: 74 97                        \tje\t0x13fbb90 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x7d0>"
+        },
+        {
+          "pc": "0x13fb646",
+          "offset": "0x286",
+          "ticks": 1,
+          "instruction": "13fb646: 49 8b 77 78                  \tmovq\t0x78(%r15), %rsi"
+        },
+        {
+          "pc": "0x13fb454",
+          "offset": "0x94",
+          "ticks": 1,
+          "instruction": "13fb454: 0f b7 40 10                  \tmovzwl\t0x10(%rax), %eax"
+        },
+        {
+          "pc": "0x13fb6d0",
+          "offset": "0x310",
+          "ticks": 1,
+          "instruction": "13fb6d0: 44 8b 7f 14                  \tmovl\t0x14(%rdi), %r15d"
+        },
+        {
+          "pc": "0x13fb76f",
+          "offset": "0x3af",
+          "ticks": 1,
+          "instruction": "13fb76f: 48 31 d0                     \txorq\t%rdx, %rax"
+        },
+        {
+          "pc": "0x13fbb7a",
+          "offset": "0x7ba",
+          "ticks": 1,
+          "instruction": "13fbb7a: e9 43 fa ff ff               \tjmp\t0x13fb5c2 <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x202>"
+        },
+        {
+          "pc": "0x13fb5f5",
+          "offset": "0x235",
+          "ticks": 1,
+          "instruction": "13fb5f5: 48 8d 72 20                  \tleaq\t0x20(%rdx), %rsi"
+        },
+        {
+          "pc": "0x13fbb97",
+          "offset": "0x7d7",
+          "ticks": 1,
+          "instruction": "13fbb97: 0f 84 41 01 00 00            \tje\t0x13fbcde <v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)+0x91e>"
+        }
+      ]
+    },
+    "state-get": {
+      "symbol": "v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const",
+      "address": "0x13fbdf0",
+      "instruction_bytes": 269,
+      "self_ticks": 5749,
+      "sampled_pcs": [
+        {
+          "pc": "0x13fbe92",
+          "offset": "0xa2",
+          "ticks": 1825,
+          "instruction": "13fbe92: 49 39 c1                     \tcmpq\t%rax, %r9"
+        },
+        {
+          "pc": "0x13fbe63",
+          "offset": "0x73",
+          "ticks": 1166,
+          "instruction": "13fbe63: 48 85 c0                     \ttestq\t%rax, %rax"
+        },
+        {
+          "pc": "0x13fbe6f",
+          "offset": "0x7f",
+          "ticks": 1067,
+          "instruction": "13fbe6f: 4d 85 d2                     \ttestq\t%r10, %r10"
+        },
+        {
+          "pc": "0x13fbeb9",
+          "offset": "0xc9",
+          "ticks": 418,
+          "instruction": "13fbeb9: 41 f7 f0                     \tdivl\t%r8d"
+        },
+        {
+          "pc": "0x13fbe49",
+          "offset": "0x59",
+          "ticks": 209,
+          "instruction": "13fbe49: 41 f7 f0                     \tdivl\t%r8d"
+        },
+        {
+          "pc": "0x13fbe89",
+          "offset": "0x99",
+          "ticks": 163,
+          "instruction": "13fbe89: 4d 85 d2                     \ttestq\t%r10, %r10"
+        },
+        {
+          "pc": "0x13fbef9",
+          "offset": "0x109",
+          "ticks": 154,
+          "instruction": "13fbef9: 48 89 f8                     \tmovq\t%rdi, %rax"
+        },
+        {
+          "pc": "0x13fbe31",
+          "offset": "0x41",
+          "ticks": 87,
+          "instruction": "13fbe31: 41 89 d1                     \tmovl\t%edx, %r9d"
+        },
+        {
+          "pc": "0x13fbec1",
+          "offset": "0xd1",
+          "ticks": 72,
+          "instruction": "13fbec1: 74 c3                        \tje\t0x13fbe86 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x96>"
+        },
+        {
+          "pc": "0x13fbe0b",
+          "offset": "0x1b",
+          "ticks": 68,
+          "instruction": "13fbe0b: 81 e6 ff ff ff 00            \tandl\t$0xffffff, %esi         # imm = 0xFFFFFF"
+        },
+        {
+          "pc": "0x13fbe9a",
+          "offset": "0xaa",
+          "ticks": 60,
+          "instruction": "13fbe9a: 72 14                        \tjb\t0x13fbeb0 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0xc0>"
+        },
+        {
+          "pc": "0x13fbe95",
+          "offset": "0xa5",
+          "ticks": 51,
+          "instruction": "13fbe95: 74 e9                        \tje\t0x13fbe80 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x90>"
+        },
+        {
+          "pc": "0x13fbe84",
+          "offset": "0x94",
+          "ticks": 50,
+          "instruction": "13fbe84: 74 6b                        \tje\t0x13fbef1 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x101>"
+        },
+        {
+          "pc": "0x13fbeb7",
+          "offset": "0xc7",
+          "ticks": 50,
+          "instruction": "13fbeb7: 31 d2                        \txorl\t%edx, %edx"
+        },
+        {
+          "pc": "0x13fbdf7",
+          "offset": "0x7",
+          "ticks": 36,
+          "instruction": "13fbdf7: 0f 84 fc 00 00 00            \tje\t0x13fbef9 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x109>"
+        },
+        {
+          "pc": "0x13fbef8",
+          "offset": "0x108",
+          "ticks": 36,
+          "instruction": "13fbef8: 5d                           \tpopq\t%rbp"
+        },
+        {
+          "pc": "0x13fbea6",
+          "offset": "0xb6",
+          "ticks": 34,
+          "instruction": "13fbea6: 74 0f                        \tje\t0x13fbeb7 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0xc7>"
+        },
+        {
+          "pc": "0x13fbe57",
+          "offset": "0x67",
+          "ticks": 29,
+          "instruction": "13fbe57: 55                           \tpushq\t%rbp"
+        },
+        {
+          "pc": "0x13fbe2b",
+          "offset": "0x3b",
+          "ticks": 26,
+          "instruction": "13fbe2b: 48 f7 e1                     \tmulq\t%rcx"
+        },
+        {
+          "pc": "0x13fbebe",
+          "offset": "0xce",
+          "ticks": 22,
+          "instruction": "13fbebe: 48 39 c8                     \tcmpq\t%rcx, %rax"
+        },
+        {
+          "pc": "0x13fbe2e",
+          "offset": "0x3e",
+          "ticks": 16,
+          "instruction": "13fbe2e: 48 31 c2                     \txorq\t%rax, %rdx"
+        },
+        {
+          "pc": "0x13fbe40",
+          "offset": "0x50",
+          "ticks": 13,
+          "instruction": "13fbe40: 4d 39 c1                     \tcmpq\t%r8, %r9"
+        },
+        {
+          "pc": "0x13fbe1e",
+          "offset": "0x2e",
+          "ticks": 12,
+          "instruction": "13fbe1e: 48 b8 c9 ac 2e 96 93 4b b8 8b\tmovabsq\t$-0x7447b46c69d15337, %rax # imm = 0x8BB84B93962EACC9"
+        },
+        {
+          "pc": "0x13fbe72",
+          "offset": "0x82",
+          "ticks": 11,
+          "instruction": "13fbe72: 0f 84 80 00 00 00            \tje\t0x13fbef8 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x108>"
+        },
+        {
+          "pc": "0x13fbdf4",
+          "offset": "0x4",
+          "ticks": 10,
+          "instruction": "13fbdf4: 4d 85 c0                     \ttestq\t%r8, %r8"
+        },
+        {
+          "pc": "0x13fbe11",
+          "offset": "0x21",
+          "ticks": 10,
+          "instruction": "13fbe11: 48 b9 a5 78 6c aa cc 8d 35 2d\tmovabsq\t$0x2d358dccaa6c78a5, %rcx # imm = 0x2D358DCCAA6C78A5"
+        },
+        {
+          "pc": "0x13fbdf0",
+          "offset": "0x0",
+          "ticks": 9,
+          "instruction": "13fbdf0: 4c 8b 47 20                  \tmovq\t0x20(%rdi), %r8"
+        },
+        {
+          "pc": "0x13fbe8c",
+          "offset": "0x9c",
+          "ticks": 9,
+          "instruction": "13fbe8c: 74 6a                        \tje\t0x13fbef8 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x108>"
+        },
+        {
+          "pc": "0x13fbe38",
+          "offset": "0x48",
+          "ticks": 6,
+          "instruction": "13fbe38: 4d 85 d8                     \ttestq\t%r11, %r8"
+        },
+        {
+          "pc": "0x13fbefc",
+          "offset": "0x10c",
+          "ticks": 5,
+          "instruction": "13fbefc: c3                           \tretq"
+        },
+        {
+          "pc": "0x13fbef5",
+          "offset": "0x105",
+          "ticks": 5,
+          "instruction": "13fbef5: 4c 89 d7                     \tmovq\t%r10, %rdi"
+        },
+        {
+          "pc": "0x13fbe02",
+          "offset": "0x12",
+          "ticks": 4,
+          "instruction": "13fbe02: 0f 84 f1 00 00 00            \tje\t0x13fbef9 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const+0x109>"
+        },
+        {
+          "pc": "0x13fbe28",
+          "offset": "0x38",
+          "ticks": 4,
+          "instruction": "13fbe28: 48 31 f0                     \txorq\t%rsi, %rax"
+        },
+        {
+          "pc": "0x13fbe1b",
+          "offset": "0x2b",
+          "ticks": 4,
+          "instruction": "13fbe1b: 48 31 f1                     \txorq\t%rsi, %rcx"
+        },
+        {
+          "pc": "0x13fbe5b",
+          "offset": "0x6b",
+          "ticks": 3,
+          "instruction": "13fbe5b: 48 8b 47 18                  \tmovq\t0x18(%rdi), %rax"
+        },
+        {
+          "pc": "0x13fbe08",
+          "offset": "0x18",
+          "ticks": 2,
+          "instruction": "13fbe08: 8b 76 14                     \tmovl\t0x14(%rsi), %esi"
+        },
+        {
+          "pc": "0x13fbe47",
+          "offset": "0x57",
+          "ticks": 2,
+          "instruction": "13fbe47: 31 d2                        \txorl\t%edx, %edx"
+        },
+        {
+          "pc": "0x13fbe58",
+          "offset": "0x68",
+          "ticks": 1,
+          "instruction": "13fbe58: 48 89 e5                     \tmovq\t%rsp, %rbp"
+        }
+      ]
+    },
+    "virtual-get": {
+      "symbol": "v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const",
+      "address": "0x13fd850",
+      "instruction_bytes": 269,
+      "self_ticks": 3443,
+      "sampled_pcs": [
+        {
+          "pc": "0x13fd919",
+          "offset": "0xc9",
+          "ticks": 648,
+          "instruction": "13fd919: 41 f7 f0                     \tdivl\t%r8d"
+        },
+        {
+          "pc": "0x13fd8a9",
+          "offset": "0x59",
+          "ticks": 449,
+          "instruction": "13fd8a9: 41 f7 f0                     \tdivl\t%r8d"
+        },
+        {
+          "pc": "0x13fd8c3",
+          "offset": "0x73",
+          "ticks": 393,
+          "instruction": "13fd8c3: 48 85 c0                     \ttestq\t%rax, %rax"
+        },
+        {
+          "pc": "0x13fd8cf",
+          "offset": "0x7f",
+          "ticks": 350,
+          "instruction": "13fd8cf: 4d 85 d2                     \ttestq\t%r10, %r10"
+        },
+        {
+          "pc": "0x13fd8f2",
+          "offset": "0xa2",
+          "ticks": 271,
+          "instruction": "13fd8f2: 49 39 c1                     \tcmpq\t%rax, %r9"
+        },
+        {
+          "pc": "0x13fd959",
+          "offset": "0x109",
+          "ticks": 240,
+          "instruction": "13fd959: 48 89 f8                     \tmovq\t%rdi, %rax"
+        },
+        {
+          "pc": "0x13fd891",
+          "offset": "0x41",
+          "ticks": 131,
+          "instruction": "13fd891: 41 89 d1                     \tmovl\t%edx, %r9d"
+        },
+        {
+          "pc": "0x13fd91e",
+          "offset": "0xce",
+          "ticks": 114,
+          "instruction": "13fd91e: 48 39 c8                     \tcmpq\t%rcx, %rax"
+        },
+        {
+          "pc": "0x13fd8e9",
+          "offset": "0x99",
+          "ticks": 105,
+          "instruction": "13fd8e9: 4d 85 d2                     \ttestq\t%r10, %r10"
+        },
+        {
+          "pc": "0x13fd86b",
+          "offset": "0x1b",
+          "ticks": 104,
+          "instruction": "13fd86b: 81 e6 ff ff ff 00            \tandl\t$0xffffff, %esi         # imm = 0xFFFFFF"
+        },
+        {
+          "pc": "0x13fd917",
+          "offset": "0xc7",
+          "ticks": 62,
+          "instruction": "13fd917: 31 d2                        \txorl\t%edx, %edx"
+        },
+        {
+          "pc": "0x13fd88e",
+          "offset": "0x3e",
+          "ticks": 53,
+          "instruction": "13fd88e: 48 31 c2                     \txorq\t%rax, %rdx"
+        },
+        {
+          "pc": "0x13fd8f5",
+          "offset": "0xa5",
+          "ticks": 50,
+          "instruction": "13fd8f5: 74 e9                        \tje\t0x13fd8e0 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0x90>"
+        },
+        {
+          "pc": "0x13fd8a0",
+          "offset": "0x50",
+          "ticks": 45,
+          "instruction": "13fd8a0: 4d 39 c1                     \tcmpq\t%r8, %r9"
+        },
+        {
+          "pc": "0x13fd871",
+          "offset": "0x21",
+          "ticks": 43,
+          "instruction": "13fd871: 48 b9 a5 78 6c aa cc 8d 35 2d\tmovabsq\t$0x2d358dccaa6c78a5, %rcx # imm = 0x2D358DCCAA6C78A5"
+        },
+        {
+          "pc": "0x13fd921",
+          "offset": "0xd1",
+          "ticks": 42,
+          "instruction": "13fd921: 74 c3                        \tje\t0x13fd8e6 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0x96>"
+        },
+        {
+          "pc": "0x13fd906",
+          "offset": "0xb6",
+          "ticks": 41,
+          "instruction": "13fd906: 74 0f                        \tje\t0x13fd917 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0xc7>"
+        },
+        {
+          "pc": "0x13fd958",
+          "offset": "0x108",
+          "ticks": 40,
+          "instruction": "13fd958: 5d                           \tpopq\t%rbp"
+        },
+        {
+          "pc": "0x13fd854",
+          "offset": "0x4",
+          "ticks": 33,
+          "instruction": "13fd854: 4d 85 c0                     \ttestq\t%r8, %r8"
+        },
+        {
+          "pc": "0x13fd87e",
+          "offset": "0x2e",
+          "ticks": 27,
+          "instruction": "13fd87e: 48 b8 c9 ac 2e 96 93 4b b8 8b\tmovabsq\t$-0x7447b46c69d15337, %rax # imm = 0x8BB84B93962EACC9"
+        },
+        {
+          "pc": "0x13fd868",
+          "offset": "0x18",
+          "ticks": 25,
+          "instruction": "13fd868: 8b 76 14                     \tmovl\t0x14(%rsi), %esi"
+        },
+        {
+          "pc": "0x13fd850",
+          "offset": "0x0",
+          "ticks": 19,
+          "instruction": "13fd850: 4c 8b 47 10                  \tmovq\t0x10(%rdi), %r8"
+        },
+        {
+          "pc": "0x13fd87b",
+          "offset": "0x2b",
+          "ticks": 16,
+          "instruction": "13fd87b: 48 31 f1                     \txorq\t%rsi, %rcx"
+        },
+        {
+          "pc": "0x13fd8bb",
+          "offset": "0x6b",
+          "ticks": 15,
+          "instruction": "13fd8bb: 48 8b 47 08                  \tmovq\t0x8(%rdi), %rax"
+        },
+        {
+          "pc": "0x13fd862",
+          "offset": "0x12",
+          "ticks": 14,
+          "instruction": "13fd862: 0f 84 f1 00 00 00            \tje\t0x13fd959 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0x109>"
+        },
+        {
+          "pc": "0x13fd898",
+          "offset": "0x48",
+          "ticks": 13,
+          "instruction": "13fd898: 4d 85 d8                     \ttestq\t%r11, %r8"
+        },
+        {
+          "pc": "0x13fd8d2",
+          "offset": "0x82",
+          "ticks": 12,
+          "instruction": "13fd8d2: 0f 84 80 00 00 00            \tje\t0x13fd958 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0x108>"
+        },
+        {
+          "pc": "0x13fd894",
+          "offset": "0x44",
+          "ticks": 12,
+          "instruction": "13fd894: 4d 8d 58 ff                  \tleaq\t-0x1(%r8), %r11"
+        },
+        {
+          "pc": "0x13fd8fa",
+          "offset": "0xaa",
+          "ticks": 11,
+          "instruction": "13fd8fa: 72 14                        \tjb\t0x13fd910 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0xc0>"
+        },
+        {
+          "pc": "0x13fd888",
+          "offset": "0x38",
+          "ticks": 11,
+          "instruction": "13fd888: 48 31 f0                     \txorq\t%rsi, %rax"
+        },
+        {
+          "pc": "0x13fd8b8",
+          "offset": "0x68",
+          "ticks": 10,
+          "instruction": "13fd8b8: 48 89 e5                     \tmovq\t%rsp, %rbp"
+        },
+        {
+          "pc": "0x13fd942",
+          "offset": "0xf2",
+          "ticks": 8,
+          "instruction": "13fd942: 49 39 c1                     \tcmpq\t%rax, %r9"
+        },
+        {
+          "pc": "0x13fd8ec",
+          "offset": "0x9c",
+          "ticks": 8,
+          "instruction": "13fd8ec: 74 6a                        \tje\t0x13fd958 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0x108>"
+        },
+        {
+          "pc": "0x13fd857",
+          "offset": "0x7",
+          "ticks": 5,
+          "instruction": "13fd857: 0f 84 fc 00 00 00            \tje\t0x13fd959 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0x109>"
+        },
+        {
+          "pc": "0x13fd8ff",
+          "offset": "0xaf",
+          "ticks": 5,
+          "instruction": "13fd8ff: 4c 09 c2                     \torq\t%r8, %rdx"
+        },
+        {
+          "pc": "0x13fd95c",
+          "offset": "0x10c",
+          "ticks": 3,
+          "instruction": "13fd95c: c3                           \tretq"
+        },
+        {
+          "pc": "0x13fd8db",
+          "offset": "0x8b",
+          "ticks": 3,
+          "instruction": "13fd8db: 75 11                        \tjne\t0x13fd8ee <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0x9e>"
+        },
+        {
+          "pc": "0x13fd8ae",
+          "offset": "0x5e",
+          "ticks": 2,
+          "instruction": "13fd8ae: eb 07                        \tjmp\t0x13fd8b7 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0x67>"
+        },
+        {
+          "pc": "0x13fd8a7",
+          "offset": "0x57",
+          "ticks": 2,
+          "instruction": "13fd8a7: 31 d2                        \txorl\t%edx, %edx"
+        },
+        {
+          "pc": "0x13fd88b",
+          "offset": "0x3b",
+          "ticks": 2,
+          "instruction": "13fd88b: 48 f7 e1                     \tmulq\t%rcx"
+        },
+        {
+          "pc": "0x13fd8b7",
+          "offset": "0x67",
+          "ticks": 1,
+          "instruction": "13fd8b7: 55                           \tpushq\t%rbp"
+        },
+        {
+          "pc": "0x13fd93c",
+          "offset": "0xec",
+          "ticks": 1,
+          "instruction": "13fd93c: 74 1a                        \tje\t0x13fd958 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0x108>"
+        },
+        {
+          "pc": "0x13fd939",
+          "offset": "0xe9",
+          "ticks": 1,
+          "instruction": "13fd939: 4d 85 d2                     \ttestq\t%r10, %r10"
+        },
+        {
+          "pc": "0x13fd955",
+          "offset": "0x105",
+          "ticks": 1,
+          "instruction": "13fd955: 4c 89 d7                     \tmovq\t%r10, %rdi"
+        },
+        {
+          "pc": "0x13fd945",
+          "offset": "0xf5",
+          "ticks": 1,
+          "instruction": "13fd945: 74 e9                        \tje\t0x13fd930 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0xe0>"
+        },
+        {
+          "pc": "0x13fd8e4",
+          "offset": "0x94",
+          "ticks": 1,
+          "instruction": "13fd8e4: 74 6b                        \tje\t0x13fd951 <v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const+0x101>"
+        }
+      ]
+    }
+  },
+  "limits": "Self samples identify sampled instructions, not branch counts or instruction latency. Counts match the official tick processor."
+}
