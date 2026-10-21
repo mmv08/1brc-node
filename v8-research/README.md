@@ -97,9 +97,9 @@ Those targets were implemented as independent experiments, each starting from th
 |---|---|---|
 | Signed-shift range proof | Removes two overflow branches; hot float function 2,368 → 2,344 bytes. Every score interval includes zero. | Neutral; excluded from combined candidate. |
 | Constant-Phi expression proof | Tracks Phi dependence across the whole expression and accepts constant operands outside the merge block. Matched native diagnostics retain the integer dispatch until the cloning budget is also fixed. | Prerequisite for the next experiment. |
-| Bounded dispatch cloning | Counts executable operations separately from Phi/FrameState metadata, retaining a total-storage cap and the Wasm deopt restriction. Hot integer function 3,296 → 3,080 bytes; TypedArray LittleEndian **+12.53%**, DataView LittleEndian **+3.24%**. | Candidate for combination. |
+| Bounded dispatch cloning | Counts executable operations separately from Phi/FrameState metadata, retaining a total-storage cap and the Wasm deopt restriction. Hot integer function 3,296 → 3,080 bytes; TypedArray LittleEndian **+12.53%**, DataView LittleEndian **+3.24%**. | Included in combined candidate. |
 | Dominating zero-mask guards | Removes `i & 3` after a successful `i & 7` guard; hot float function 2,368 → 2,352 bytes. Every score interval includes zero. | Neutral; excluded from combined candidate. |
-| Terminal-path loop peeling | Safely copies bounded throwing side paths and their frame states. Monomorphic loop field loads 8 → 0; polymorphic loads 66 → 64. TypedArray BigEndian **+29.74%**, LittleEndian **+5.96%**, Floats **+3.95%**. | Candidate for combination; compilation/code-size costs require measurement. |
+| Terminal-path loop peeling | Safely copies bounded throwing side paths and their frame states. Monomorphic loop field loads 8 → 0; polymorphic loads 66 → 64. TypedArray BigEndian **+29.74%**, LittleEndian **+5.96%**, Floats **+3.95%**. | Included in combined candidate; measured compilation/code-size costs below. |
 
 The small independent peeling regression in DataView BigEndian is retained: **−0.26%**, interval **−0.47% to −0.06%**. Its matched native function size is unchanged; no cause is assigned. The other two DataView intervals include zero. The helper-only experiment's sub-percent positive movements are also retained without treating them as evidence that the primary dispatch target was removed. Its float result differs substantially by AB/BA order.
 
@@ -118,6 +118,41 @@ The combined dispatch/peeling candidate is `fcc58178`, with 56 selected checks p
 | TypedArray-Floats | +4.68% | +4.17% to +5.35% | 21/21 |
 | TypedArray-LittleEndian | +18.62% | +18.47% to +18.80% | 21/21 |
 
-Raw combined measurements: [winning-followups-results.json](followups/winning-followups-results.json). These are local results for this specific official microbenchmark group, not a whole-V8 or browser-performance claim. The combined binary is separately preserved as `out/x64.release-winning-followups/d8`. Official compilation/runtime controls and target compilation-cost measurements are being recorded before final disposition.
+Raw combined measurements: [winning-followups-results.json](followups/winning-followups-results.json). These are local results for this specific official microbenchmark group, not a whole-V8 or browser-performance claim. The combined binary is separately preserved as `out/x64.release-winning-followups/d8`. V8's official `tools/run_perf.py` also completed this candidate with all six scores plus the group total and no errors ([output](followups/official-run-perf-winning.json)); that single run validates the official registration and is not the paired speedup evidence.
+
+Three unchanged official controls ran for **12 fixed alternating pairs each**, with the same CPU affinity and binaries. Five Compiler cases show small regressions with intervals excluding zero. Both loop-control intervals include zero; typed-array construction improves slightly. These controls have limited coverage and do not isolate which change causes the compilation regressions.
+
+| Official control | Score change | 95% interval |
+|---|---:|---:|
+| Compiler / Small-Empty | −0.38% | −1.30% to +0.54% |
+| Compiler / Small-Constant | −0.30% | −1.22% to +0.63% |
+| Compiler / Small-Add | **−0.96%** | −1.65% to −0.23% |
+| Compiler / Small-Load | −0.30% | −1.35% to +0.84% |
+| Compiler / Medium-Copy | **−0.76%** | −0.89% to −0.63% |
+| Compiler / Medium-Fact | **−0.72%** | −1.37% to −0.04% |
+| Compiler / Medium-Prime | **−0.63%** | −1.17% to −0.07% |
+| Compiler / Medium-Eratosthenes | **−0.92%** | −1.19% to −0.60% |
+| Compiler / Large-Copy | −0.08% | −0.29% to +0.13% |
+| ForLoops / Let | +0.23% | −0.01% to +0.53% |
+| ForLoops / Var | +0.20% | −0.36% to +0.73% |
+| TypedArrays / ConstructWithBuffer | +0.24% | +0.15% to +0.33% |
+
+Raw controls: [Compiler](followups/winning-compiler-results.json), [ForLoops](followups/winning-forloops-results.json), [construction](followups/winning-typedarray-construct-results.json). The first constructor invocation omitted d8's `--` argument separator and failed during warmup, before any measured pair. Its [failed record](followups/winning-typedarray-construct-failed-command.json) is preserved; the corrected command completed the full declared run.
+
+A separate **six-pair compilation diagnostic** ran the unchanged DataView suite with `--no-concurrent-recompilation --turbo-stats --turbo-stats-nvp --trace-opt`. Every measured process completed 25 TurboFan compilations, including two normal compilations of `doOneIterationJS`, with no target OSR compilation or traced abort. Positive changes in the next table mean **more compilation cost**, not higher benchmark scores.
+
+| Diagnostic | Baseline median | Candidate median | Paired cost change | 95% interval |
+|---|---:|---:|---:|---:|
+| Total compiler pipeline time | 18.00 ms | 19.78 ms | **+12.37%** | +9.20% to +17.76% |
+| Total compiler-zone allocation | 16,815,400 bytes | 18,813,440 bytes | **+11.88%** | +11.88% to +11.88% |
+| Loop-peeling phase time | 0.487 ms | 0.604 ms | +24.62% | +23.01% to +26.73% |
+| Loop-peeling zone allocation | 679,760 bytes | 991,280 bytes | +45.83% | +45.83% to +45.83% |
+| Two integer-target compilations, summed | 2.665 ms | 3.784 ms | **+42.15%** | +41.38% to +43.17% |
+
+Zone allocation is cumulative compiler allocation, not process RSS. Target times sum preparation, execution and finalization across both compilations. The paired percentage is not the ratio of the displayed medians. Instrumented benchmark scores are excluded from throughput claims. Detailed precision, counts and AB/BA results are in the [compilation summary](followups/winning-compile-cost-summary.json), with all [raw diagnostics](followups/winning-compile-cost-results.json) and the [parser](compilation_cost.py).
+
+**Disposition:** retain the combined patch as a measured runtime-performance candidate, with compilation and code-size costs explicitly recorded. The hot polymorphic function grows **39.08%**, from 3,296 to 4,584 bytes. These results justify further upstream work, but do not establish a regression-free or submission-ready change. The next engineering issue is reducing that cost while preserving the proven runtime transformations. No upstream publication has occurred.
 
 The [protocol](followups/plan.json), individual `*-results.json`, `*-evidence.json` and patch series are under [followups](followups/). The combined [patch series](followups/winning-followups.patch) applies on `f090ad58`; do not also apply its overlapping standalone dispatch/peeling patches. Neutral shift/mask patches are independent and are not included in that series.
+
+The [artifact manifest](followups/winning-build-manifest.json) records the preserved builds' source commits, GN arguments, executable, snapshot, ICU data and build-configuration hashes. To reproduce the incremental runtime comparison, use the earlier getter build as `--baseline`, the combined build as `--candidate`, the unchanged `DataView` directory as `--cwd`, and `--rounds 21` with [paired_benchmark.py](paired_benchmark.py). Exact commands, expected score names and source hashes are saved in every raw result. Every source experiment and result stage has an unsigned checkpoint; the production Node/Wasm solvers remain on stock Node.

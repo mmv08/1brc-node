@@ -29,13 +29,13 @@
     {
       "id": "bounded-dispatch-cloning",
       "scope": "bounded actual-operation budget including separate metadata bound",
-      "state": "completed: positive official benchmark result; retain pending controls",
+      "state": "completed; measured runtime gain; included in combined candidate; combined controls and compilation costs recorded",
       "source_commit": "c4f4ccdb"
     },
     {
       "id": "terminal-peeling",
       "scope": "safely clone bounded terminal-throw side exits",
-      "state": "completed: positive typed-array results, small DataView-BigEndian decline; retain pending combination and compile-cost controls",
+      "state": "completed; measured runtime gains and independent small regression; included in combined candidate with explicit native-size and compilation-cost tradeoffs",
       "source_commits": [
         "6500a6d2",
         "166b0ea4",
@@ -57,7 +57,7 @@
       "id": "winning-followups",
       "source_commit": "fcc58178",
       "scope": "combine measured dispatch and terminal-peeling candidates; excludes neutral shift/mask experiments",
-      "state": "21-pair combined gain confirmed; 56 tests pass; official controls running"
+      "state": "completed; 21 runtime pairs, 56 passing checks, three 12-pair official controls, six compilation-cost pairs, and official run_perf confirmation; retained as a local runtime candidate with compilation/code-size tradeoffs"
     }
   ]
 }

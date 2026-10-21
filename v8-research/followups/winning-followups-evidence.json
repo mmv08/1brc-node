@@ -69,7 +69,7 @@
       8.81001423679917,
       9.11425704937483
     ],
-    "interpretation": "Combined typed-array cases improve 29.844%, 18.616%, and 4.678%, all with 21 wins; DataView LittleEndian improves 3.299%, with 21 wins. DataView BigEndian improves 0.347%; the DataView Floats interval includes zero. Controls pending."
+    "interpretation": "Combined typed-array cases improve 29.844%, 18.616%, and 4.678%, all with 21 wins; DataView LittleEndian improves 3.299%, with 21 wins. DataView BigEndian improves 0.347%; the DataView Floats interval includes zero. Compilation and runtime controls are recorded below."
   },
   "audit": {
     "runtime_experiments": [
@@ -204,5 +204,83 @@
   "control_command_correction": {
     "file": "winning-typedarray-construct-failed-command.json",
     "reason": "Initial constructor invocation omitted the d8 -- argument separator and failed during baseline warmup with undefined.js. No measured pair was completed. Corrected command ran the full declared 12 pairs."
-  }
+  },
+  "compilation_cost": {
+    "pairs": 6,
+    "raw_file": "winning-compile-cost-results.json",
+    "summary_file": "winning-compile-cost-summary.json",
+    "summary": {
+      "pipeline_time_ms": {
+        "baseline_median": 18.0015,
+        "candidate_median": 19.783,
+        "paired_cost_change_percent": 12.367246552456312,
+        "paired_bootstrap_95_percent_interval": [
+          9.195671434879781,
+          17.758753966948305
+        ],
+        "ab_cost_change_percent": 10.29037044245229,
+        "ba_cost_change_percent": 14.483232281541314
+      },
+      "pipeline_zone_bytes": {
+        "baseline_median": 16815400.0,
+        "candidate_median": 18813440.0,
+        "paired_cost_change_percent": 11.88168035511068,
+        "paired_bootstrap_95_percent_interval": [
+          11.879895354918247,
+          11.883337019372453
+        ],
+        "ab_cost_change_percent": 11.879981009410212,
+        "ba_cost_change_percent": 11.883379726622545
+      },
+      "peeling_time_ms": {
+        "baseline_median": 0.4865,
+        "candidate_median": 0.604,
+        "paired_cost_change_percent": 24.616783031556523,
+        "paired_bootstrap_95_percent_interval": [
+          23.01381600760721,
+          26.72548184839396
+        ],
+        "ab_cost_change_percent": 23.643619903779612,
+        "ba_cost_change_percent": 25.59760564450544
+      },
+      "peeling_zone_bytes": {
+        "baseline_median": 679760.0,
+        "candidate_median": 991280.0,
+        "paired_cost_change_percent": 45.82793927268447,
+        "paired_bootstrap_95_percent_interval": [
+          45.82793927268447,
+          45.82793927268447
+        ],
+        "ab_cost_change_percent": 45.82793927268447,
+        "ba_cost_change_percent": 45.82793927268447
+      },
+      "target_normal_time_ms": {
+        "baseline_median": 2.6645,
+        "candidate_median": 3.7835,
+        "paired_cost_change_percent": 42.15161290319127,
+        "paired_bootstrap_95_percent_interval": [
+          41.37921561186646,
+          43.16989584515682
+        ],
+        "ab_cost_change_percent": 41.73592838334565,
+        "ba_cost_change_percent": 42.5685165466706
+      },
+      "target_osr_time_ms": {
+        "baseline_median": 0.0,
+        "candidate_median": 0.0,
+        "ratio_note": "Ratio undefined with zero-valued observations."
+      }
+    },
+    "work_counts": "Every measured process reports 25 compiler pipelines, 25 completed TurboFan compilations, exactly two normal doOneIterationJS compilations, no target OSR compilation, and no traced aborted compilation.",
+    "interpretation": "Separate synchronous instrumented diagnostic, not throughput evidence. Compiler-zone allocation is cumulative allocation, not process RSS. The target timing sums both normal compilations, including preparation/execution/finalization; it is not a single-compilation latency."
+  },
+  "official_runner": {
+    "file": "official-run-perf-winning.json",
+    "log": "results/v8-general/winning-official-run-perf.log",
+    "errors": [],
+    "traces": 7,
+    "purpose": "One validation run through V8 tools/run_perf.py and its unchanged JSTests5.json registration; not a paired speedup measurement."
+  },
+  "artifact_manifest": "winning-build-manifest.json",
+  "disposition": "Retain as a measured runtime-performance candidate with explicit compilation and code-size tradeoffs. Not presented as a regression-free or submission-ready V8 change. Neutral shift/mask experiments remain excluded. No upstream publication."
 }
