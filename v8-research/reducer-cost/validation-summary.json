@@ -154,6 +154,131 @@
           ]
         }
       },
+      "runtime": {
+        "raw_results": "v8-research/reducer-cost/encoded-marker-runtime-results.json",
+        "sha256": "f49e89772d29254aa904536088b192d51deeda61b446e677bcb261530d9b670f",
+        "pairs": 21,
+        "binaries": {
+          "baseline": {
+            "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-fresh-allocation/d8",
+            "sha256": "33127a72e7381aa41dbe855f30e551fa8531eb1be51ffd54f7e784e336356d87",
+            "size_bytes": 204279320
+          },
+          "candidate": {
+            "path": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8",
+            "sha256": "e50dd57bcd9a2c6f1a2c4bd10c2bee4ab6a3e45140c59bd64dfd34d58bdc1ddb",
+            "size_bytes": 204279448
+          }
+        },
+        "d8_args": [
+          "run.js"
+        ],
+        "source_sha256": {
+          "dataviewtest.js": "4344ee14a720332c908c5b629282611914ff8275d605379c1ccf2082462da95a",
+          "run.js": "a694941550458891a1711a2bbc6f38f7ba16e1845e3b646ab0a653221c7032a9",
+          "../base.js": "5ed309eef1538495cdca40cf8349ce85c41ad24d3c0620d3ea9d2a88c30e01e1"
+        },
+        "cases": {
+          "DataView-DataViewTest-DataView-BigEndian": {
+            "score_change_percent": 0.10111868611366592,
+            "ci95_percent": [
+              -0.009341664912076997,
+              0.22101541574142125
+            ],
+            "ab_change_percent": 0.20160812913076898,
+            "ba_change_percent": -0.00930330638617264,
+            "wins": 11,
+            "ties": 5
+          },
+          "DataView-DataViewTest-DataView-Floats": {
+            "score_change_percent": 0.24400917606484107,
+            "ci95_percent": [
+              0.1392513481543345,
+              0.35855646344202796
+            ],
+            "ab_change_percent": 0.2439619494275395,
+            "ba_change_percent": 0.24406112539157748,
+            "wins": 15,
+            "ties": 4
+          },
+          "DataView-DataViewTest-DataView-LittleEndian": {
+            "score_change_percent": 0.20044226441184865,
+            "ci95_percent": [
+              0.12577118233831897,
+              0.28111122377123543
+            ],
+            "ab_change_percent": 0.14562409356535386,
+            "ba_change_percent": 0.26077691062330965,
+            "wins": 17,
+            "ties": 3
+          },
+          "DataView-DataViewTest-TypedArray-BigEndian": {
+            "score_change_percent": 0.03233612806408104,
+            "ci95_percent": [
+              -0.04818458778560464,
+              0.12486667706845811
+            ],
+            "ab_change_percent": -0.019085135093041477,
+            "ba_change_percent": 0.08893006378003339,
+            "wins": 8,
+            "ties": 6
+          },
+          "DataView-DataViewTest-TypedArray-Floats": {
+            "score_change_percent": 0.4622163072424579,
+            "ci95_percent": [
+              -0.043065933880381824,
+              1.290455747666286
+            ],
+            "ab_change_percent": 0.007798015866877289,
+            "ba_change_percent": 0.9644616312369252,
+            "wins": 10,
+            "ties": 5
+          },
+          "DataView-DataViewTest-TypedArray-LittleEndian": {
+            "score_change_percent": -0.06146564931205356,
+            "ci95_percent": [
+              -0.16559293475852943,
+              0.050293422430658374
+            ],
+            "ab_change_percent": -0.13745562832187294,
+            "ba_change_percent": 0.022190116303325562,
+            "wins": 6,
+            "ties": 3
+          }
+        },
+        "case_geometric_mean": {
+          "score_change_percent": 0.16296913750824799,
+          "ci95_percent": [
+            0.06216903612216133,
+            0.31185478065618355
+          ],
+          "ab_change_percent": 0.07365190180943874,
+          "ba_change_percent": 0.261310172619265,
+          "per_pair_change_percent": [
+            -0.04103327617060431,
+            0.44038135181946325,
+            0.08591998809364738,
+            0.0385991936629502,
+            0.3242174877505086,
+            0.016548490905718905,
+            0.02328169960907624,
+            0.05173407186567302,
+            0.03680243017683257,
+            0.38207140321860467,
+            0.09481839742841137,
+            0.10583694133460778,
+            0.08857199535288494,
+            0.052300413876029586,
+            0.08445701416443635,
+            1.398508530944093,
+            -0.018967167099105082,
+            0.112985219574828,
+            -0.007482889684207925,
+            0.022269769965470143,
+            0.14008615547577652
+          ]
+        }
+      },
       "cost": {
         "summary_file": "v8-research/reducer-cost/encoded-marker-cost-summary.json",
         "sha256": "3067ed6e1f53341245dcc432422193cd5f8d1cc0a9f47e27a31b795b38a26266",

@@ -1,0 +1,239 @@
+{
+  "capture": {
+    "command": [
+      "taskset",
+      "-c",
+      "2",
+      "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8",
+      "--allow-natives-syntax",
+      "--no-concurrent-recompilation",
+      "--prof",
+      "--prof-sampling-interval=250",
+      "--no-logfile-per-isolate",
+      "--logfile=/home/mmv/projects/1brc-node/results/v8-general/profiles/reducer-cost/encoded-marker-target/v8.log",
+      "/home/mmv/projects/1brc-node/v8-research/compile-cost/recompile-dataview.js"
+    ],
+    "cwd": "/home/mmv/projects/1brc-node/results/v8-general/v8/test/js-perf-test/DataView",
+    "elapsed_seconds": 16.367792004952207,
+    "processor_command": [
+      "tools/linux-tick-processor",
+      "--compiler",
+      "/home/mmv/projects/1brc-node/results/v8-general/profiles/reducer-cost/encoded-marker-target/v8.log"
+    ],
+    "processor_D8_PATH": "/home/mmv/projects/1brc-node/results/v8-general/v8/out/x64.release-encoded-marker/d8",
+    "source_commit": "428ce5ce05f87a37ed4a355590d052dbfa2e7d1d",
+    "binary_sha256": "e50dd57bcd9a2c6f1a2c4bd10c2bee4ab6a3e45140c59bd64dfd34d58bdc1ddb",
+    "source_sha256": {
+      "dataviewtest.js": "4344ee14a720332c908c5b629282611914ff8275d605379c1ccf2082462da95a",
+      "run.js": "a694941550458891a1711a2bbc6f38f7ba16e1845e3b646ab0a653221c7032a9",
+      "../base.js": "5ed309eef1538495cdca40cf8349ce85c41ad24d3c0620d3ea9d2a88c30e01e1",
+      "../../../../../../v8-research/compile-cost/recompile-dataview.js": "b7d82f5a0478a1a5768205e4fba86482fd27f7b6abf9bc718991aa7379d88b75"
+    },
+    "log_sha256": "17b7aaab069d0def8236cd9749cde40a3019aedeee5f0248c6c2cdd4e79ac0e4",
+    "returncode": 0,
+    "processor_returncode": 0,
+    "diagnostic_scores": {
+      "DataView-DataViewTest-DataView-BigEndian": 4730.0,
+      "DataView-DataViewTest-DataView-LittleEndian": 5834.0,
+      "DataView-DataViewTest-DataView-Floats": 2340.0,
+      "DataView-DataViewTest-TypedArray-BigEndian": 2258.0,
+      "DataView-DataViewTest-TypedArray-LittleEndian": 1260.0,
+      "DataView-DataViewTest-TypedArray-Floats": 2200.0
+    }
+  },
+  "baseline": {
+    "report": "results/v8-general/profiles/compilation-cost/target-fresh-allocation/compiler-report.txt",
+    "sha256": "f2bccb6a1a39964715019fe6caa9fa28497190613ec539267a293a8ff6d996a6",
+    "total_ticks": 52475,
+    "excluded_ticks": 19516,
+    "included_ticks": 32959,
+    "unaccounted_ticks": 0,
+    "selected_symbols": [
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::ReduceTop()",
+        "self_ticks": 2182,
+        "percent_of_included_ticks": 6.620346491094997
+      },
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::Reduce(v8::internal::compiler::Node*)",
+        "self_ticks": 1849,
+        "percent_of_included_ticks": 5.610000303407263
+      }
+    ],
+    "top_cpp_symbols": [
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::ReduceTop()",
+        "self_ticks": 2182,
+        "percent_of_included_ticks": 6.620346491094997
+      },
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::Reduce(v8::internal::compiler::Node*)",
+        "self_ticks": 1849,
+        "percent_of_included_ticks": 5.610000303407263
+      },
+      {
+        "symbol": "v8::internal::compiler::(anonymous namespace)::SourcePositionWrapper::Reduce(v8::internal::compiler::Node*)",
+        "self_ticks": 680,
+        "percent_of_included_ticks": 2.063169392275251
+      },
+      {
+        "symbol": "v8::internal::compiler::Type::BitsetLub() const",
+        "self_ticks": 520,
+        "percent_of_included_ticks": 1.5777177705634273
+      },
+      {
+        "symbol": "v8::internal::compiler::Reducer::Reduce(v8::internal::compiler::Node*, v8::internal::compiler::ObserveNodeManager*)",
+        "self_ticks": 465,
+        "percent_of_included_ticks": 1.4108437755999879
+      },
+      {
+        "symbol": "v8::internal::compiler::GraphTrimmer::TrimGraph()",
+        "self_ticks": 377,
+        "percent_of_included_ticks": 1.1438453836584848
+      },
+      {
+        "symbol": "v8::internal::compiler::Type::SlowIs(v8::internal::compiler::Type) const",
+        "self_ticks": 341,
+        "percent_of_included_ticks": 1.0346187687733244
+      },
+      {
+        "symbol": "v8::internal::compiler::turboshaft::Operation::Effects() const",
+        "self_ticks": 337,
+        "percent_of_included_ticks": 1.0224824782305288
+      },
+      {
+        "symbol": "v8::internal::compiler::EffectGraphReducer::ReduceFrom(v8::internal::compiler::Node*)",
+        "self_ticks": 333,
+        "percent_of_included_ticks": 1.0103461876877333
+      },
+      {
+        "symbol": "v8::internal::compiler::LiveRangeBuilder::ProcessInstructions(v8::internal::compiler::InstructionBlock const*, v8::internal::SparseBitVector*)",
+        "self_ticks": 326,
+        "percent_of_included_ticks": 0.9891076792378409
+      },
+      {
+        "symbol": "v8::internal::compiler::DeadCodeElimination::ReduceNode(v8::internal::compiler::Node*)",
+        "self_ticks": 321,
+        "percent_of_included_ticks": 0.9739373160593464
+      },
+      {
+        "symbol": "v8::internal::compiler::ValueNumberingReducer::Reduce(v8::internal::compiler::Node*)",
+        "self_ticks": 311,
+        "percent_of_included_ticks": 0.9435965897023575
+      },
+      {
+        "symbol": "v8::internal::compiler::NodeProperties::HashCode(v8::internal::compiler::Node*)",
+        "self_ticks": 243,
+        "percent_of_included_ticks": 0.7372796504748323
+      },
+      {
+        "symbol": "v8::internal::compiler::SourcePositionTable::GetSourcePosition(v8::internal::compiler::Node*) const",
+        "self_ticks": 224,
+        "percent_of_included_ticks": 0.6796322703965533
+      },
+      {
+        "symbol": "v8::internal::compiler::DeadCodeElimination::ReduceEffectNode(v8::internal::compiler::Node*)",
+        "self_ticks": 221,
+        "percent_of_included_ticks": 0.6705300524894566
+      }
+    ]
+  },
+  "candidate": {
+    "report": "results/v8-general/profiles/reducer-cost/encoded-marker-target/compiler-report.txt",
+    "sha256": "837f4c5087f614f6ea050c936fd0c213ad379d26bb028b725fa2e042249d1f13",
+    "total_ticks": 52413,
+    "excluded_ticks": 19523,
+    "included_ticks": 32890,
+    "unaccounted_ticks": 0,
+    "selected_symbols": [
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::ReduceTop()",
+        "self_ticks": 2115,
+        "percent_of_included_ticks": 6.430525995743387
+      },
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::Reduce(v8::internal::compiler::Node*)",
+        "self_ticks": 1674,
+        "percent_of_included_ticks": 5.089692915779873
+      }
+    ],
+    "top_cpp_symbols": [
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::ReduceTop()",
+        "self_ticks": 2115,
+        "percent_of_included_ticks": 6.430525995743387
+      },
+      {
+        "symbol": "v8::internal::compiler::GraphReducer::Reduce(v8::internal::compiler::Node*)",
+        "self_ticks": 1674,
+        "percent_of_included_ticks": 5.089692915779873
+      },
+      {
+        "symbol": "v8::internal::compiler::(anonymous namespace)::SourcePositionWrapper::Reduce(v8::internal::compiler::Node*)",
+        "self_ticks": 738,
+        "percent_of_included_ticks": 2.2438431134083308
+      },
+      {
+        "symbol": "v8::internal::compiler::Type::BitsetLub() const",
+        "self_ticks": 487,
+        "percent_of_included_ticks": 1.4806932198236546
+      },
+      {
+        "symbol": "v8::internal::compiler::Reducer::Reduce(v8::internal::compiler::Node*, v8::internal::compiler::ObserveNodeManager*)",
+        "self_ticks": 458,
+        "percent_of_included_ticks": 1.3925205229553055
+      },
+      {
+        "symbol": "v8::internal::compiler::GraphTrimmer::TrimGraph()",
+        "self_ticks": 423,
+        "percent_of_included_ticks": 1.2861051991486774
+      },
+      {
+        "symbol": "v8::internal::compiler::EffectGraphReducer::ReduceFrom(v8::internal::compiler::Node*)",
+        "self_ticks": 371,
+        "percent_of_included_ticks": 1.1280024323502584
+      },
+      {
+        "symbol": "v8::internal::compiler::DeadCodeElimination::ReduceNode(v8::internal::compiler::Node*)",
+        "self_ticks": 368,
+        "percent_of_included_ticks": 1.118881118881119
+      },
+      {
+        "symbol": "v8::internal::compiler::LiveRangeBuilder::ProcessInstructions(v8::internal::compiler::InstructionBlock const*, v8::internal::SparseBitVector*)",
+        "self_ticks": 317,
+        "percent_of_included_ticks": 0.9638187899057464
+      },
+      {
+        "symbol": "v8::internal::compiler::Type::SlowIs(v8::internal::compiler::Type) const",
+        "self_ticks": 315,
+        "percent_of_included_ticks": 0.9577379142596534
+      },
+      {
+        "symbol": "v8::internal::compiler::turboshaft::Operation::Effects() const",
+        "self_ticks": 313,
+        "percent_of_included_ticks": 0.9516570386135603
+      },
+      {
+        "symbol": "v8::internal::compiler::ValueNumberingReducer::Reduce(v8::internal::compiler::Node*)",
+        "self_ticks": 281,
+        "percent_of_included_ticks": 0.8543630282760718
+      },
+      {
+        "symbol": "v8::internal::compiler::LoopFinderImpl::PropagateBackward()",
+        "self_ticks": 221,
+        "percent_of_included_ticks": 0.6719367588932806
+      },
+      {
+        "symbol": "v8::internal::compiler::LoadElimination::ComputeLoopState(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::AbstractState const*) const",
+        "self_ticks": 219,
+        "percent_of_included_ticks": 0.6658558832471876
+      },
+      {
+        "symbol": "v8::internal::compiler::NodeProperties::HashCode(v8::internal::compiler::Node*)",
+        "self_ticks": 217,
+        "percent_of_included_ticks": 0.6597750076010945
+      }
+    ]
+  },
+  "limits": "Compiler-state self samples from the same repeated-compilation diagnostic. Shares use total minus excluded ticks; fewer ticks do not establish speedup. Profiling enables source-position wrappers absent from stock measurements."
+}
