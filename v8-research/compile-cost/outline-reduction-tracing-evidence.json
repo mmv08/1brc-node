@@ -17,5 +17,7 @@
     "note": "Stack figures exclude unchanged saved-register pushes. Stream vtable setup no longer executes before the trace flag is checked."
   },
   "trace_validation": "trace-equivalence.json",
-  "rejected_target": "Out-of-line Reducer::Reduce samples originated from SourcePositionWrapper enabled by profiling; this wrapper is absent in stock official runs, so it was not optimized."
+  "rejected_target": "Out-of-line Reducer::Reduce samples originated from SourcePositionWrapper enabled by profiling; this wrapper is absent in stock official runs, so it was not optimized.",
+  "cost_summary": "outline-reduction-tracing-cost-summary.json",
+  "disposition": "Inconclusive total compilation time: +0.18%,95%interval -1.68..+2.03. Target time -0.58% interval -1.04..-0.11. Smaller hot native code is not evidence of total compilation gain. Excluded from leading candidate."
 }
