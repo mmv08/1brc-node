@@ -1,0 +1,866 @@
+{
+  "baseline": {
+    "header": "Statistical profiling result from /home/mmv/projects/1brc-node/results/v8-general/profiles/compilation-cost/baseline/v8.log, (213354 ticks, 0 unaccounted, 227 excluded).",
+    "cpp_self_samples": 206751,
+    "top_cpp_symbols": [
+      {
+        "ticks": 40399,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Kill(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 8519,
+        "symbol": "v8::internal::compiler::LoadElimination::AliasStateInfo::MayAlias(v8::internal::compiler::Node*) const"
+      },
+      {
+        "ticks": 6529,
+        "symbol": "v8::internal::compiler::GraphReducer::ReduceTop()"
+      },
+      {
+        "ticks": 5491,
+        "symbol": "v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const"
+      },
+      {
+        "ticks": 4783,
+        "symbol": "std::__Cr::optional<std::__Cr::pair<v8::internal::compiler::UseInterval, v8::internal::compiler::UseInterval> > v8::internal::compiler::AreUseIntervalsIntersecting<v8::internal::ZoneVector<v8::internal::compiler::UseInterval>, v8::internal::ZoneVector<v8::internal::compiler::UseInterval> >(v8::internal::ZoneVector<v8::internal::compiler::UseInterval> const&, v8::internal::ZoneVector<v8::internal::compiler::UseInterval> const&)"
+      },
+      {
+        "ticks": 4036,
+        "symbol": "v8::internal::compiler::GraphReducer::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 4025,
+        "symbol": "v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 3835,
+        "symbol": "__madvise@@GLIBC_PRIVATE"
+      },
+      {
+        "ticks": 3770,
+        "symbol": "v8::internal::compiler::turboshaft::RedundantStoreAnalysis::ProcessBlock(v8::internal::compiler::turboshaft::Block const&)"
+      },
+      {
+        "ticks": 3671,
+        "symbol": "std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>* std::__Cr::__tree<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, std::__Cr::__map_value_compare<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType>, std::__Cr::less<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> > >, v8::internal::ZoneAllocator<std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> > >::__construct_from_tree[abi:sqn240000]<std::__Cr::__tree<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, std::__Cr::__map_value_compare<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType>, std::__Cr::less<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> > >, v8::internal::ZoneAllocator<std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> > >::__copy_construct_tree[abi:sqn240000](std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>*)::{lambda(std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> const&)#1}>(std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>*, std::__Cr::__tree<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, std::__Cr::__map_value_compare<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType>, std::__Cr::less<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> > >, v8::internal::ZoneAllocator<std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> > >::__copy_construct_tree[abi:sqn240000](std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>*)::{lambda(std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> const&)#1})"
+      },
+      {
+        "ticks": 3336,
+        "symbol": "v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const"
+      },
+      {
+        "ticks": 2765,
+        "symbol": "v8::internal::compiler::EffectGraphReducer::ReduceFrom(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 2742,
+        "symbol": "v8::internal::Map::FindFieldOwner(v8::internal::InternalIndex) const"
+      },
+      {
+        "ticks": 2585,
+        "symbol": "v8::internal::compiler::SpillRange::TryMerge(v8::internal::compiler::SpillRange*)"
+      },
+      {
+        "ticks": 2371,
+        "symbol": "v8::internal::compiler::GraphTrimmer::TrimGraph()"
+      },
+      {
+        "ticks": 2290,
+        "symbol": "v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::FindLeftmost(v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::FocusedTree const*, int*, std::__Cr::array<v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::FocusedTree const*, 32ul>*)"
+      },
+      {
+        "ticks": 1849,
+        "symbol": "void v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::Modify<v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::Set(v8::internal::compiler::Variable, v8::internal::compiler::Node*)::{lambda(v8::internal::compiler::Node**)#1}>(v8::internal::compiler::Variable, v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::Set(v8::internal::compiler::Variable, v8::internal::compiler::Node*)::{lambda(v8::internal::compiler::Node**)#1})"
+      },
+      {
+        "ticks": 1829,
+        "symbol": "v8::internal::compiler::(anonymous namespace)::SourcePositionWrapper::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 1642,
+        "symbol": "v8::internal::compiler::Type::BitsetLub() const"
+      },
+      {
+        "ticks": 1534,
+        "symbol": "v8::internal::compiler::(anonymous namespace)::MayAlias(v8::internal::compiler::Node*, v8::internal::compiler::Node*)"
+      }
+    ],
+    "load_elimination_symbols": [
+      {
+        "ticks": 40399,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Kill(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 8519,
+        "symbol": "v8::internal::compiler::LoadElimination::AliasStateInfo::MayAlias(v8::internal::compiler::Node*) const"
+      },
+      {
+        "ticks": 322,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Kill(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 216,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::LookupField(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::compiler::ConstFieldInfo) const"
+      },
+      {
+        "ticks": 202,
+        "symbol": "std::__Cr::__tree<std::__Cr::__value_type<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::__map_value_compare<v8::internal::compiler::Node*, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::less<v8::internal::compiler::Node*> >, v8::internal::ZoneAllocator<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo> > >::__emplace_unique[abi:sqn240000]<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&>(std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&)::{lambda(v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&)#1}::operator()[abi:sqn240000](v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&) const"
+      },
+      {
+        "ticks": 171,
+        "symbol": "v8::internal::compiler::LoadElimination::UpdateState(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::AbstractState const*)"
+      },
+      {
+        "ticks": 131,
+        "symbol": "v8::internal::compiler::LoadElimination::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 120,
+        "symbol": "std::__Cr::__tree<std::__Cr::__value_type<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::__map_value_compare<v8::internal::compiler::Node*, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::less<v8::internal::compiler::Node*> >, v8::internal::ZoneAllocator<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo> > >::__emplace_unique[abi:sqn240000]<std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>, std::__Cr::tuple<> >(std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&)::{lambda(v8::internal::compiler::Node* const&, std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&)#1}::operator()[abi:sqn240000](v8::internal::compiler::Node* const&, std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&) const"
+      },
+      {
+        "ticks": 114,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceEffectPhi(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 102,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Merge(v8::internal::compiler::LoadElimination::AbstractField const*, v8::internal::Zone*, int*) const"
+      },
+      {
+        "ticks": 100,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceLoadField(v8::internal::compiler::Node*, v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 99,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::KillFields(v8::internal::compiler::Node*, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 83,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Extend(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo, v8::internal::Zone*, int) const"
+      },
+      {
+        "ticks": 78,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceStoreField(v8::internal::compiler::Node*, v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 67,
+        "symbol": "v8::internal::compiler::LoadElimination::FieldIndexOf(v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 63,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Merge(v8::internal::compiler::LoadElimination::AbstractMaps const*, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 34,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceOtherNode(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 32,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::AddField(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::compiler::LoadElimination::FieldInfo, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 23,
+        "symbol": "v8::internal::compiler::LoadElimination::ComputeLoopState(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::AbstractState const*) const"
+      },
+      {
+        "ticks": 14,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Extend(v8::internal::compiler::Node*, v8::internal::ZoneCompactSet<v8::internal::compiler::MapRef>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 14,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Equals(v8::internal::compiler::LoadElimination::AbstractMaps const*) const"
+      },
+      {
+        "ticks": 12,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceCheckMaps(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 8,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceMapGuard(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 8,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceCompareMaps(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 7,
+        "symbol": "v8::internal::compiler::LoadEliminationPhase::Run(v8::internal::compiler::TFPipelineData*, v8::internal::Zone*)"
+      },
+      {
+        "ticks": 5,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::Merge(v8::internal::compiler::LoadElimination::AbstractState const*, v8::internal::Zone*)"
+      },
+      {
+        "ticks": 4,
+        "symbol": "v8::internal::compiler::LoadElimination::UpdateStateForPhi(v8::internal::compiler::LoadElimination::AbstractState const*, v8::internal::compiler::Node*, v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 4,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::KillField(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 4,
+        "symbol": "std::__Cr::__tree<std::__Cr::__value_type<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::__map_value_compare<v8::internal::compiler::Node*, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::less<v8::internal::compiler::Node*> >, v8::internal::ZoneAllocator<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo> > >::__emplace_unique[abi:sqn240000]<std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo> >(std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>&&)::{lambda(v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>&&)#1}::operator()[abi:sqn240000](v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>&&) const"
+      },
+      {
+        "ticks": 2,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::KillAll(v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 2,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::AddElement(v8::internal::compiler::Node*, v8::internal::compiler::Node*, v8::internal::compiler::Node*, v8::internal::MachineRepresentation, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 2,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractElements::Kill(v8::internal::compiler::Node*, v8::internal::compiler::Node*, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceStoreElement(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceLoadElement(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::FieldsEquals(std::__Cr::array<v8::internal::compiler::LoadElimination::AbstractField const*, 32ul> const&, std::__Cr::array<v8::internal::compiler::LoadElimination::AbstractField const*, 32ul> const&) const"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps* v8::internal::Zone::New<v8::internal::compiler::LoadElimination::AbstractMaps, v8::internal::compiler::Node*&, v8::internal::ZoneCompactSet<v8::internal::compiler::MapRef>&, v8::internal::Zone*&>(v8::internal::compiler::Node*&, v8::internal::ZoneCompactSet<v8::internal::compiler::MapRef>&, v8::internal::Zone*&)"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractElements::Lookup(v8::internal::compiler::Node*, v8::internal::compiler::Node*, v8::internal::MachineRepresentation) const"
+      }
+    ],
+    "graph_reducer_self_samples": 11206
+  },
+  "candidate": {
+    "header": "Statistical profiling result from /home/mmv/projects/1brc-node/results/v8-general/profiles/compilation-cost/candidate/v8.log, (214890 ticks, 0 unaccounted, 232 excluded).",
+    "cpp_self_samples": 207931,
+    "top_cpp_symbols": [
+      {
+        "ticks": 40542,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Kill(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 8383,
+        "symbol": "v8::internal::compiler::LoadElimination::AliasStateInfo::MayAlias(v8::internal::compiler::Node*) const"
+      },
+      {
+        "ticks": 6479,
+        "symbol": "v8::internal::compiler::GraphReducer::ReduceTop()"
+      },
+      {
+        "ticks": 6068,
+        "symbol": "v8::internal::compiler::SparseSidetable<v8::internal::compiler::VariableTracker::State>::Get(v8::internal::compiler::Node const*) const"
+      },
+      {
+        "ticks": 4797,
+        "symbol": "std::__Cr::optional<std::__Cr::pair<v8::internal::compiler::UseInterval, v8::internal::compiler::UseInterval> > v8::internal::compiler::AreUseIntervalsIntersecting<v8::internal::ZoneVector<v8::internal::compiler::UseInterval>, v8::internal::ZoneVector<v8::internal::compiler::UseInterval> >(v8::internal::ZoneVector<v8::internal::compiler::UseInterval> const&, v8::internal::ZoneVector<v8::internal::compiler::UseInterval> const&)"
+      },
+      {
+        "ticks": 4382,
+        "symbol": "v8::internal::compiler::GraphReducer::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 4116,
+        "symbol": "v8::internal::compiler::VariableTracker::MergeInputs(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 3803,
+        "symbol": "__madvise@@GLIBC_PRIVATE"
+      },
+      {
+        "ticks": 3775,
+        "symbol": "v8::internal::compiler::turboshaft::RedundantStoreAnalysis::ProcessBlock(v8::internal::compiler::turboshaft::Block const&)"
+      },
+      {
+        "ticks": 3772,
+        "symbol": "std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>* std::__Cr::__tree<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, std::__Cr::__map_value_compare<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType>, std::__Cr::less<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> > >, v8::internal::ZoneAllocator<std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> > >::__construct_from_tree[abi:sqn240000]<std::__Cr::__tree<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, std::__Cr::__map_value_compare<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType>, std::__Cr::less<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> > >, v8::internal::ZoneAllocator<std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> > >::__copy_construct_tree[abi:sqn240000](std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>*)::{lambda(std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> const&)#1}>(std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>*, std::__Cr::__tree<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, std::__Cr::__map_value_compare<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType>, std::__Cr::less<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> > >, v8::internal::ZoneAllocator<std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> > >::__copy_construct_tree[abi:sqn240000](std::__Cr::__tree_node<std::__Cr::__value_type<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long>, v8::internal::compiler::NodeWithType>, void*>*)::{lambda(std::__Cr::pair<std::__Cr::pair<v8::internal::compiler::Node*, unsigned long> const, v8::internal::compiler::NodeWithType> const&)#1})"
+      },
+      {
+        "ticks": 3562,
+        "symbol": "v8::internal::compiler::SparseSidetable<v8::internal::compiler::VirtualObject*>::Get(v8::internal::compiler::Node const*) const"
+      },
+      {
+        "ticks": 2828,
+        "symbol": "v8::internal::compiler::EffectGraphReducer::ReduceFrom(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 2677,
+        "symbol": "v8::internal::Map::FindFieldOwner(v8::internal::InternalIndex) const"
+      },
+      {
+        "ticks": 2558,
+        "symbol": "v8::internal::compiler::SpillRange::TryMerge(v8::internal::compiler::SpillRange*)"
+      },
+      {
+        "ticks": 2382,
+        "symbol": "v8::internal::compiler::GraphTrimmer::TrimGraph()"
+      },
+      {
+        "ticks": 2197,
+        "symbol": "v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::FindLeftmost(v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::FocusedTree const*, int*, std::__Cr::array<v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::FocusedTree const*, 32ul>*)"
+      },
+      {
+        "ticks": 1846,
+        "symbol": "void v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::Modify<v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::Set(v8::internal::compiler::Variable, v8::internal::compiler::Node*)::{lambda(v8::internal::compiler::Node**)#1}>(v8::internal::compiler::Variable, v8::internal::compiler::PersistentMap<v8::internal::compiler::Variable, v8::internal::compiler::Node*, v8::base::hash<v8::internal::compiler::Variable> >::Set(v8::internal::compiler::Variable, v8::internal::compiler::Node*)::{lambda(v8::internal::compiler::Node**)#1})"
+      },
+      {
+        "ticks": 1792,
+        "symbol": "v8::internal::compiler::(anonymous namespace)::SourcePositionWrapper::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 1616,
+        "symbol": "v8::internal::compiler::(anonymous namespace)::MayAlias(v8::internal::compiler::Node*, v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 1548,
+        "symbol": "v8::internal::compiler::Type::BitsetLub() const"
+      }
+    ],
+    "load_elimination_symbols": [
+      {
+        "ticks": 40542,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Kill(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 8383,
+        "symbol": "v8::internal::compiler::LoadElimination::AliasStateInfo::MayAlias(v8::internal::compiler::Node*) const"
+      },
+      {
+        "ticks": 287,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Kill(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 219,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::LookupField(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::compiler::ConstFieldInfo) const"
+      },
+      {
+        "ticks": 173,
+        "symbol": "std::__Cr::__tree<std::__Cr::__value_type<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::__map_value_compare<v8::internal::compiler::Node*, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::less<v8::internal::compiler::Node*> >, v8::internal::ZoneAllocator<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo> > >::__emplace_unique[abi:sqn240000]<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&>(std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&)::{lambda(v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&)#1}::operator()[abi:sqn240000](v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&) const"
+      },
+      {
+        "ticks": 133,
+        "symbol": "v8::internal::compiler::LoadElimination::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 128,
+        "symbol": "v8::internal::compiler::LoadElimination::UpdateState(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::AbstractState const*)"
+      },
+      {
+        "ticks": 128,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::KillFields(v8::internal::compiler::Node*, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 105,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceEffectPhi(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 105,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Merge(v8::internal::compiler::LoadElimination::AbstractField const*, v8::internal::Zone*, int*) const"
+      },
+      {
+        "ticks": 105,
+        "symbol": "std::__Cr::__tree<std::__Cr::__value_type<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::__map_value_compare<v8::internal::compiler::Node*, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::less<v8::internal::compiler::Node*> >, v8::internal::ZoneAllocator<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo> > >::__emplace_unique[abi:sqn240000]<std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>, std::__Cr::tuple<> >(std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&)::{lambda(v8::internal::compiler::Node* const&, std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&)#1}::operator()[abi:sqn240000](v8::internal::compiler::Node* const&, std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&) const"
+      },
+      {
+        "ticks": 104,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceLoadField(v8::internal::compiler::Node*, v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 101,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Extend(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo, v8::internal::Zone*, int) const"
+      },
+      {
+        "ticks": 95,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceStoreField(v8::internal::compiler::Node*, v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 70,
+        "symbol": "v8::internal::compiler::LoadElimination::FieldIndexOf(v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 66,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Merge(v8::internal::compiler::LoadElimination::AbstractMaps const*, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 38,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::AddField(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::compiler::LoadElimination::FieldInfo, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 34,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceOtherNode(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 27,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Extend(v8::internal::compiler::Node*, v8::internal::ZoneCompactSet<v8::internal::compiler::MapRef>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 23,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceCheckMaps(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 20,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Equals(v8::internal::compiler::LoadElimination::AbstractMaps const*) const"
+      },
+      {
+        "ticks": 13,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::KillAll(v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 10,
+        "symbol": "v8::internal::compiler::LoadElimination::ComputeLoopState(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::AbstractState const*) const"
+      },
+      {
+        "ticks": 10,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::KillField(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 9,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::Merge(v8::internal::compiler::LoadElimination::AbstractState const*, v8::internal::Zone*)"
+      },
+      {
+        "ticks": 6,
+        "symbol": "v8::internal::compiler::LoadElimination::UpdateStateForPhi(v8::internal::compiler::LoadElimination::AbstractState const*, v8::internal::compiler::Node*, v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 6,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceCompareMaps(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 5,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceMapGuard(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 3,
+        "symbol": "v8::internal::compiler::LoadEliminationPhase::Run(v8::internal::compiler::TFPipelineData*, v8::internal::Zone*)"
+      },
+      {
+        "ticks": 2,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceLoadElement(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 2,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractElements::Lookup(v8::internal::compiler::Node*, v8::internal::compiler::Node*, v8::internal::MachineRepresentation) const"
+      },
+      {
+        "ticks": 2,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractElements::Equals(v8::internal::compiler::LoadElimination::AbstractElements const*) const"
+      },
+      {
+        "ticks": 2,
+        "symbol": "std::__Cr::__tree<std::__Cr::__value_type<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::__map_value_compare<v8::internal::compiler::Node*, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::less<v8::internal::compiler::Node*> >, v8::internal::ZoneAllocator<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo> > >::__emplace_unique[abi:sqn240000]<std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo> >(std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>&&)::{lambda(v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>&&)#1}::operator()[abi:sqn240000](v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>&&) const"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceStoreElement(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::AddElement(v8::internal::compiler::Node*, v8::internal::compiler::Node*, v8::internal::compiler::Node*, v8::internal::MachineRepresentation, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractElements::Kill(v8::internal::compiler::Node*, v8::internal::compiler::Node*, v8::internal::Zone*) const"
+      }
+    ],
+    "graph_reducer_self_samples": 11484
+  },
+  "target-baseline": {
+    "header": "Statistical profiling result from /home/mmv/projects/1brc-node/results/v8-general/profiles/compilation-cost/target-baseline/v8.log, (43330 ticks, 0 unaccounted, 19657 excluded).",
+    "cpp_self_samples": 23372,
+    "top_cpp_symbols": [
+      {
+        "ticks": 1582,
+        "symbol": "v8::internal::compiler::GraphReducer::ReduceTop()"
+      },
+      {
+        "ticks": 1254,
+        "symbol": "v8::internal::compiler::GraphReducer::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 494,
+        "symbol": "v8::internal::compiler::(anonymous namespace)::SourcePositionWrapper::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 458,
+        "symbol": "v8::internal::compiler::GraphTrimmer::TrimGraph()"
+      },
+      {
+        "ticks": 338,
+        "symbol": "v8::internal::compiler::Reducer::Reduce(v8::internal::compiler::Node*, v8::internal::compiler::ObserveNodeManager*)"
+      },
+      {
+        "ticks": 328,
+        "symbol": "v8::internal::compiler::Type::BitsetLub() const"
+      },
+      {
+        "ticks": 263,
+        "symbol": "v8::internal::compiler::DeadCodeElimination::ReduceNode(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 234,
+        "symbol": "v8::internal::compiler::LoadElimination::ComputeLoopState(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::AbstractState const*) const"
+      },
+      {
+        "ticks": 229,
+        "symbol": "v8::internal::compiler::LoopFinderImpl::PropagateBackward()"
+      },
+      {
+        "ticks": 225,
+        "symbol": "v8::internal::compiler::turboshaft::Operation::Effects() const"
+      },
+      {
+        "ticks": 222,
+        "symbol": "v8::internal::compiler::LiveRangeBuilder::ProcessInstructions(v8::internal::compiler::InstructionBlock const*, v8::internal::SparseBitVector*)"
+      },
+      {
+        "ticks": 197,
+        "symbol": "v8::internal::compiler::Type::SlowIs(v8::internal::compiler::Type) const"
+      },
+      {
+        "ticks": 187,
+        "symbol": "v8::internal::compiler::EffectGraphReducer::ReduceFrom(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 177,
+        "symbol": "v8::internal::compiler::NodeProperties::HashCode(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 170,
+        "symbol": "void std::__Cr::__tree_balance_after_insert[abi:sqn240000]<std::__Cr::__tree_node_base<void*>*>(std::__Cr::__tree_node_base<void*>*, std::__Cr::__tree_node_base<void*>*)"
+      },
+      {
+        "ticks": 163,
+        "symbol": "std::__Cr::__tree<v8::internal::maglev::PropertyKey, std::__Cr::less<v8::internal::maglev::PropertyKey>, v8::internal::ZoneAllocator<v8::internal::maglev::PropertyKey> >::__emplace_unique[abi:sqn240000]<v8::internal::maglev::PropertyKey const&>(v8::internal::maglev::PropertyKey const&)::{lambda(v8::internal::maglev::PropertyKey const&, v8::internal::maglev::PropertyKey const&)#1}::operator()[abi:sqn240000](v8::internal::maglev::PropertyKey const&, v8::internal::maglev::PropertyKey const&) const"
+      },
+      {
+        "ticks": 154,
+        "symbol": "v8::internal::compiler::ValueNumberingReducer::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 147,
+        "symbol": "v8::internal::compiler::DeadCodeElimination::ReduceEffectNode(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 139,
+        "symbol": "v8::internal::compiler::LinearScanAllocator::ForwardStateTo(v8::internal::compiler::LifetimePosition)"
+      },
+      {
+        "ticks": 135,
+        "symbol": "v8::internal::compiler::RepresentationSelector::GenerateTraversal()"
+      }
+    ],
+    "load_elimination_symbols": [
+      {
+        "ticks": 234,
+        "symbol": "v8::internal::compiler::LoadElimination::ComputeLoopState(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::AbstractState const*) const"
+      },
+      {
+        "ticks": 34,
+        "symbol": "v8::internal::compiler::LoadElimination::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 28,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceOtherNode(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 22,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceLoadField(v8::internal::compiler::Node*, v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 22,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceCheckMaps(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 15,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Merge(v8::internal::compiler::LoadElimination::AbstractField const*, v8::internal::Zone*, int*) const"
+      },
+      {
+        "ticks": 13,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::LookupField(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::compiler::ConstFieldInfo) const"
+      },
+      {
+        "ticks": 12,
+        "symbol": "v8::internal::compiler::LoadElimination::UpdateState(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::AbstractState const*)"
+      },
+      {
+        "ticks": 10,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::Merge(v8::internal::compiler::LoadElimination::AbstractState const*, v8::internal::Zone*)"
+      },
+      {
+        "ticks": 8,
+        "symbol": "v8::internal::compiler::LoadElimination::FieldIndexOf(v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 6,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceEffectPhi(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 6,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Extend(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo, v8::internal::Zone*, int) const"
+      },
+      {
+        "ticks": 6,
+        "symbol": "std::__Cr::__tree<std::__Cr::__value_type<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::__map_value_compare<v8::internal::compiler::Node*, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::less<v8::internal::compiler::Node*> >, v8::internal::ZoneAllocator<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo> > >::__emplace_unique[abi:sqn240000]<std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>, std::__Cr::tuple<> >(std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&)::{lambda(v8::internal::compiler::Node* const&, std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&)#1}::operator()[abi:sqn240000](v8::internal::compiler::Node* const&, std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&) const"
+      },
+      {
+        "ticks": 5,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceMapGuard(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 5,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Merge(v8::internal::compiler::LoadElimination::AbstractMaps const*, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 4,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::KillAll(v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 4,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::AddField(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::compiler::LoadElimination::FieldInfo, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 4,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Equals(v8::internal::compiler::LoadElimination::AbstractMaps const*) const"
+      },
+      {
+        "ticks": 3,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceStoreField(v8::internal::compiler::Node*, v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 2,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::FieldsEquals(std::__Cr::array<v8::internal::compiler::LoadElimination::AbstractField const*, 32ul> const&, std::__Cr::array<v8::internal::compiler::LoadElimination::AbstractField const*, 32ul> const&) const"
+      },
+      {
+        "ticks": 2,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps* v8::internal::Zone::New<v8::internal::compiler::LoadElimination::AbstractMaps, v8::internal::compiler::Node*&, v8::internal::ZoneCompactSet<v8::internal::compiler::MapRef>&, v8::internal::Zone*&>(v8::internal::compiler::Node*&, v8::internal::ZoneCompactSet<v8::internal::compiler::MapRef>&, v8::internal::Zone*&)"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadEliminationPhase::Run(v8::internal::compiler::TFPipelineData*, v8::internal::Zone*)"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::UpdateStateForPhi(v8::internal::compiler::LoadElimination::AbstractState const*, v8::internal::compiler::Node*, v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceCompareMaps(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::KillField(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Extend(v8::internal::compiler::Node*, v8::internal::ZoneCompactSet<v8::internal::compiler::MapRef>, v8::internal::Zone*) const"
+      }
+    ],
+    "graph_reducer_self_samples": 3079
+  },
+  "target-candidate": {
+    "header": "Statistical profiling result from /home/mmv/projects/1brc-node/results/v8-general/profiles/compilation-cost/target-candidate/v8.log, (52930 ticks, 0 unaccounted, 19645 excluded).",
+    "cpp_self_samples": 32854,
+    "top_cpp_symbols": [
+      {
+        "ticks": 2061,
+        "symbol": "v8::internal::compiler::GraphReducer::ReduceTop()"
+      },
+      {
+        "ticks": 1641,
+        "symbol": "v8::internal::compiler::GraphReducer::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 643,
+        "symbol": "v8::internal::compiler::(anonymous namespace)::SourcePositionWrapper::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 475,
+        "symbol": "v8::internal::compiler::Type::BitsetLub() const"
+      },
+      {
+        "ticks": 451,
+        "symbol": "v8::internal::compiler::GraphTrimmer::TrimGraph()"
+      },
+      {
+        "ticks": 417,
+        "symbol": "v8::internal::compiler::Reducer::Reduce(v8::internal::compiler::Node*, v8::internal::compiler::ObserveNodeManager*)"
+      },
+      {
+        "ticks": 414,
+        "symbol": "v8::internal::compiler::turboshaft::Operation::Effects() const"
+      },
+      {
+        "ticks": 335,
+        "symbol": "v8::internal::compiler::DeadCodeElimination::ReduceNode(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 321,
+        "symbol": "v8::internal::compiler::ValueNumberingReducer::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 315,
+        "symbol": "v8::internal::compiler::EffectGraphReducer::ReduceFrom(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 314,
+        "symbol": "v8::internal::compiler::Type::SlowIs(v8::internal::compiler::Type) const"
+      },
+      {
+        "ticks": 312,
+        "symbol": "v8::internal::compiler::LoopFinderImpl::PropagateBackward()"
+      },
+      {
+        "ticks": 260,
+        "symbol": "v8::internal::compiler::LiveRangeBuilder::ProcessInstructions(v8::internal::compiler::InstructionBlock const*, v8::internal::SparseBitVector*)"
+      },
+      {
+        "ticks": 236,
+        "symbol": "v8::internal::compiler::SourcePositionTable::GetSourcePosition(v8::internal::compiler::Node*) const"
+      },
+      {
+        "ticks": 233,
+        "symbol": "v8::internal::compiler::DeadCodeElimination::ReduceEffectNode(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 228,
+        "symbol": "v8::internal::compiler::RepresentationSelector::GenerateTraversal()"
+      },
+      {
+        "ticks": 224,
+        "symbol": "v8::internal::compiler::LinearScanAllocator::PickRegisterThatIsAvailableLongest(v8::internal::compiler::LiveRange*, int, v8::base::Vector<v8::internal::compiler::LifetimePosition const>)"
+      },
+      {
+        "ticks": 219,
+        "symbol": "v8::internal::compiler::LoadElimination::ComputeLoopState(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::AbstractState const*) const"
+      },
+      {
+        "ticks": 215,
+        "symbol": "v8::internal::compiler::NodeProperties::HashCode(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 211,
+        "symbol": "v8::internal::compiler::ScheduleLateNodeVisitor::SplitNode(v8::internal::compiler::BasicBlock*, v8::internal::compiler::Node*)"
+      }
+    ],
+    "load_elimination_symbols": [
+      {
+        "ticks": 219,
+        "symbol": "v8::internal::compiler::LoadElimination::ComputeLoopState(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::AbstractState const*) const"
+      },
+      {
+        "ticks": 67,
+        "symbol": "v8::internal::compiler::LoadElimination::Reduce(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 58,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceLoadField(v8::internal::compiler::Node*, v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 55,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::FieldsEquals(std::__Cr::array<v8::internal::compiler::LoadElimination::AbstractField const*, 32ul> const&, std::__Cr::array<v8::internal::compiler::LoadElimination::AbstractField const*, 32ul> const&) const"
+      },
+      {
+        "ticks": 44,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceOtherNode(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 38,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Merge(v8::internal::compiler::LoadElimination::AbstractField const*, v8::internal::Zone*, int*) const"
+      },
+      {
+        "ticks": 37,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::LookupField(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::compiler::ConstFieldInfo) const"
+      },
+      {
+        "ticks": 33,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceCheckMaps(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 28,
+        "symbol": "std::__Cr::__tree<std::__Cr::__value_type<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::__map_value_compare<v8::internal::compiler::Node*, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::less<v8::internal::compiler::Node*> >, v8::internal::ZoneAllocator<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo> > >::__emplace_unique[abi:sqn240000]<std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>, std::__Cr::tuple<> >(std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&)::{lambda(v8::internal::compiler::Node* const&, std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&)#1}::operator()[abi:sqn240000](v8::internal::compiler::Node* const&, std::__Cr::piecewise_construct_t const&, std::__Cr::tuple<v8::internal::compiler::Node* const&>&&, std::__Cr::tuple<>&&) const"
+      },
+      {
+        "ticks": 25,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceEffectPhi(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 25,
+        "symbol": "v8::internal::compiler::LoadElimination::FieldIndexOf(v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 22,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::Merge(v8::internal::compiler::LoadElimination::AbstractState const*, v8::internal::Zone*)"
+      },
+      {
+        "ticks": 19,
+        "symbol": "v8::internal::compiler::LoadElimination::UpdateState(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::AbstractState const*)"
+      },
+      {
+        "ticks": 14,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::AddField(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::compiler::LoadElimination::FieldInfo, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 12,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Equals(v8::internal::compiler::LoadElimination::AbstractMaps const*) const"
+      },
+      {
+        "ticks": 11,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Merge(v8::internal::compiler::LoadElimination::AbstractMaps const*, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 11,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractField::Extend(v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo, v8::internal::Zone*, int) const"
+      },
+      {
+        "ticks": 6,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractMaps::Extend(v8::internal::compiler::Node*, v8::internal::ZoneCompactSet<v8::internal::compiler::MapRef>, v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 4,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceStoreField(v8::internal::compiler::Node*, v8::internal::compiler::FieldAccess const&)"
+      },
+      {
+        "ticks": 4,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceMapGuard(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 3,
+        "symbol": "v8::internal::compiler::LoadElimination::UpdateStateForPhi(v8::internal::compiler::LoadElimination::AbstractState const*, v8::internal::compiler::Node*, v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 3,
+        "symbol": "std::__Cr::__tree<std::__Cr::__value_type<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::__map_value_compare<v8::internal::compiler::Node*, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::less<v8::internal::compiler::Node*> >, v8::internal::ZoneAllocator<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo> > >::__emplace_unique[abi:sqn240000]<std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo> >(std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>&&)::{lambda(v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>&&)#1}::operator()[abi:sqn240000](v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>&&) const"
+      },
+      {
+        "ticks": 2,
+        "symbol": "v8::internal::compiler::LoadElimination::ReduceCompareMaps(v8::internal::compiler::Node*)"
+      },
+      {
+        "ticks": 2,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::KillAll(v8::internal::Zone*) const"
+      },
+      {
+        "ticks": 2,
+        "symbol": "std::__Cr::__tree<std::__Cr::__value_type<v8::internal::compiler::Node*, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::__map_value_compare<v8::internal::compiler::Node*, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>, std::__Cr::less<v8::internal::compiler::Node*> >, v8::internal::ZoneAllocator<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo> > >::__emplace_unique[abi:sqn240000]<std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&>(std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&)::{lambda(v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&)#1}::operator()[abi:sqn240000](v8::internal::compiler::Node* const&, std::__Cr::pair<v8::internal::compiler::Node* const, v8::internal::compiler::LoadElimination::FieldInfo>&) const"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadEliminationPhase::Run(v8::internal::compiler::TFPipelineData*, v8::internal::Zone*)"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::AliasStateInfo::MayAlias(v8::internal::compiler::Node*) const"
+      },
+      {
+        "ticks": 1,
+        "symbol": "v8::internal::compiler::LoadElimination::AbstractState::KillField(v8::internal::compiler::LoadElimination::AliasStateInfo const&, v8::internal::compiler::LoadElimination::IndexRange, v8::internal::MaybeHandle<v8::internal::Name>, v8::internal::Zone*) const"
+      }
+    ],
+    "graph_reducer_self_samples": 4067
+  }
+}

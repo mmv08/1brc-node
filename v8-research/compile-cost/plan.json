@@ -1,0 +1,16 @@
+{
+  "objective": "Reduce measured compilation time/allocation of the general V8 dispatch/terminal-peeling candidate while preserving runtime gains.",
+  "baseline": "fcc58178; out/x64.release-winning-followups",
+  "historical_reference": "f090ad58; out/x64.release-byte-length",
+  "method": "Inspect saved phase statistics, collect native compiler samples, then choose a source change with a concrete invariant. No benchmark-specific runtime behavior.",
+  "protocol": {
+    "cpu": 2,
+    "isolation": "Serial builds/tests/profiles/benchmarks; read-only analysis may overlap.",
+    "compilation_diagnostics": "Six fixed alternating AB/BA pairs after one warmup per binary, unchanged official DataView suite with the same synchronous compiler-statistics flags as the prior experiment.",
+    "runtime_validation": "Leading cost candidate: 21 fixed alternating AB/BA pairs on unchanged official DataView suite with stock flags.",
+    "official_compiler_validation": "Leading cost candidate: 12 fixed alternating AB/BA pairs on unchanged official Compiler suite; all nine cases reported.",
+    "checkpoints": "Unsigned source and result commits for every experiment, including rejected candidates.",
+    "acceptance": "Report both cost and runtime changes, native code size, count differences, and confidence intervals. Fewer allocations alone are not evidence of faster compilation."
+  },
+  "state": "profiling before source changes"
+}
