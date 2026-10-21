@@ -86,55 +86,6 @@ static const uint64_t short_masks[16][2] __attribute__((aligned(16))) = {
     {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff)},
 };
 
-// Entry n keeps n name bytes plus the delimiter in a 32-byte key.
-static const uint64_t wide_masks[32][4] __attribute__((aligned(16))) = {
-    {UINT64_C(0xff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0x0), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0x0), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xff), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffff), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffff), UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffff),
-     UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffff),
-     UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffff),
-     UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffff),
-     UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0x0)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffffffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffffffffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffffffffffff)},
-    {UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff), UINT64_C(0xffffffffffffffff),
-     UINT64_C(0xffffffffffffffff)},
-};
-
 // Freestanding memory helpers: the module imports neither libc nor WASI.
 void *memcpy(void *destination, const void *source, size_t length) {
   uint8_t *out = destination;
@@ -380,22 +331,20 @@ INLINE uint32_t same_key(v128_t key, const uint8_t *p) {
   return (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(key, wasm_v128_load(p)));
 }
 
-// Names below 32 bytes compare both vectors of their canonical arena key, so
-// short and longer names share one branch-free path.
-INLINE const uint8_t *process_wide(const uint8_t *start, uint32_t matches, v128_t low,
+// The first vector contains no delimiter; the second contains one. These names
+// are 16..31 bytes, so only the high vector needs masking and both hashes apply.
+INLINE const uint8_t *process_wide(const uint8_t *start, uint32_t high_matches, v128_t low,
                                    v128_t high) {
-  uint32_t length = (uint32_t)__builtin_ctz(matches);
-  const uint64_t *mask = wide_masks[length];
-  v128_t key_low = wasm_v128_and(low, wasm_v128_load(mask));
-  v128_t key_high = wasm_v128_and(high, wasm_v128_load(mask + 2));
-  uint64_t first = mix_pair(0, (uint64_t)wasm_i64x2_extract_lane(key_low, 0),
-                            (uint64_t)wasm_i64x2_extract_lane(key_low, 1), mixers);
-  uint64_t second = mix_pair(first, (uint64_t)wasm_i64x2_extract_lane(key_high, 0),
-                             (uint64_t)wasm_i64x2_extract_lane(key_high, 1), mixers);
-  uint64_t hash = length < 16 ? first : second;
+  uint32_t suffix = (uint32_t)__builtin_ctz(high_matches);
+  uint32_t length = 16 + suffix;
+  v128_t key_high = wasm_v128_and(high, wasm_v128_load(short_masks[suffix]));
+  uint64_t first = mix_pair(0, (uint64_t)wasm_i64x2_extract_lane(low, 0),
+                            (uint64_t)wasm_i64x2_extract_lane(low, 1), mixers);
+  uint64_t hash = mix_pair(first, (uint64_t)wasm_i64x2_extract_lane(key_high, 0),
+                           (uint64_t)wasm_i64x2_extract_lane(key_high, 1), mixers);
   Station *station = (Station *)(uintptr_t)buckets[hash >> 49];
   const uint8_t *key = names + (station->key & OFFSET_MASK);
-  if ((same_key(key_low, key) & same_key(key_high, key + 16)) != 0xffff) station = find_name(start);
+  if ((same_key(low, key) & same_key(key_high, key + 16)) != 0xffff) station = find_name(start);
   return update_row((ParsedRow){start + length + 1, station});
 }
 
@@ -410,42 +359,11 @@ INLINE const uint8_t *advance_short(const uint8_t *start, uint32_t matches, v128
   return start + __builtin_ctz(lines) + 1;
 }
 
-typedef struct {
-  Station *station;
-  v128_t key;
-  uint32_t length;
-} ShortLookup;
-
-INLINE ShortLookup prepare_short(uint32_t matches, v128_t bytes) {
-  uint32_t length = (uint32_t)__builtin_ctz(matches);
-  v128_t key = wasm_v128_and(bytes, wasm_v128_load(short_masks[length]));
-  v128_t mixed = wasm_v128_xor(key, wasm_v128_load(mixers));
-  uint64_t hash =
-      (uint64_t)wasm_i64x2_extract_lane(mixed, 0) * (uint64_t)wasm_i64x2_extract_lane(mixed, 1);
-  Station *station = (Station *)(uintptr_t)buckets[hash >> 49];
-  return (ShortLookup){station, key, length};
-}
-
-INLINE const uint8_t *next_short(const uint8_t *start, v128_t bytes) {
-  const v128_t newline = wasm_v128_load(&newlines);
-  uint32_t lines = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(bytes, newline)) |
-                   (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(wasm_v128_load(start + 16), newline))
-                       << 16;
-  return start + __builtin_ctz(lines) + 1;
-}
-
-INLINE void finish_short(const uint8_t *start, ShortLookup row, v128_t stored_key) {
-  Station *station = row.station;
-  if (wasm_i8x16_bitmask(wasm_i8x16_eq(stored_key, row.key)) != 0xffff) station = find_name(start);
-  update_row((ParsedRow){start + row.length + 1, station});
-}
-
 // Keep short rows in their fast path even when another lane has a long name.
 __attribute__((noinline, cold)) static const uint8_t *process_long(const uint8_t *start,
                                                                    v128_t low) {
   v128_t high = wasm_v128_load(start + 16);
-  uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high, wasm_v128_load(&separators)))
-                     << 16;
+  uint32_t matches = (uint32_t)wasm_i8x16_bitmask(wasm_i8x16_eq(high, wasm_v128_load(&separators)));
   return matches ? process_wide(start, matches, low, high) : process_row(start);
 }
 
@@ -526,29 +444,9 @@ EXPORT(parse_chunk) void parse_chunk(uint32_t begin, uint32_t end) {
       uint32_t matches_a = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_a, separator));
       uint32_t matches_b = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_b, separator));
       uint32_t matches_c = wasm_i8x16_bitmask(wasm_i8x16_eq(bytes_c, separator));
-      if (matches_a && matches_b && matches_c) {
-        // Fetch all three bucket pointers and keys before consuming a lookup.
-        ShortLookup row_a = prepare_short(matches_a, bytes_a);
-        ShortLookup row_b = prepare_short(matches_b, bytes_b);
-        ShortLookup row_c = prepare_short(matches_c, bytes_c);
-        v128_t stored_a = wasm_v128_load(&row_a.station->head);
-        v128_t stored_b = wasm_v128_load(&row_b.station->head);
-        v128_t stored_c = wasm_v128_load(&row_c.station->head);
-        const uint8_t *next_a = next_short(a, bytes_a);
-        const uint8_t *next_b = next_short(b, bytes_b);
-        const uint8_t *next_c = next_short(c, bytes_c);
-        // Misses rehash after any retune. Updates remain ordered for shared IDs.
-        finish_short(a, row_a, stored_a);
-        finish_short(b, row_b, stored_b);
-        finish_short(c, row_c, stored_c);
-        a = next_a;
-        b = next_b;
-        c = next_c;
-      } else {
-        a = matches_a ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
-        b = matches_b ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
-        c = matches_c ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
-      }
+      a = matches_a ? advance_short(a, matches_a, bytes_a) : process_long(a, bytes_a);
+      b = matches_b ? advance_short(b, matches_b, bytes_b) : process_long(b, bytes_b);
+      c = matches_c ? advance_short(c, matches_c, bytes_c) : process_long(c, bytes_c);
     } while (--rounds);
   }
   while (a < end_a) a = process_row(a);
