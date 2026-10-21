@@ -41,6 +41,28 @@ export function phaseEnd(name, start, bytes = 0) {
   phase.userUs += cpu.user - start.userUs;
   phase.systemUs += cpu.system - start.systemUs;
   phase.lastMs = end;
+  if (bytes) {
+    phase.windows ??= {};
+    const label =
+      phase.calls <= 8
+        ? '1-8'
+        : phase.calls <= 32
+          ? '9-32'
+          : phase.calls <= 128
+            ? '33-128'
+            : phase.calls <= 512
+              ? '129-512'
+              : phase.calls <= 2048
+                ? '513-2048'
+                : '2049+';
+    phase.windows[label] ??= { calls: 0, bytes: 0, wallMs: 0, userUs: 0, systemUs: 0 };
+    const window = phase.windows[label];
+    window.calls++;
+    window.bytes += bytes;
+    window.wallMs += end - start.atMs;
+    window.userUs += cpu.user - start.userUs;
+    window.systemUs += cpu.system - start.systemUs;
+  }
 }
 
 export function phaseWorker(worker) {
