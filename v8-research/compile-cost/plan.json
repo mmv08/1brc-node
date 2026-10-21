@@ -13,14 +13,15 @@
     "acceptance": "Report both cost and runtime changes, native code size, count differences, and confidence intervals. Fewer allocations alone are not evidence of faster compilation.",
     "remaining_original_cost": "After selecting and validating the final candidate, six fixed alternating compilation-diagnostic pairs against the earlier getter-only f090ad58 build measure how much of the original cost remains. These are separate from the fcc-based improvement comparisons."
   },
-  "state": "first candidate full validation continues; instruction-level profile identifies a third experiment",
+  "state": "first two experiments complete; fresh-allocation fixed official validation running; remaining-cost comparison and post-change profile queued",
   "experiments": [
     {
       "id": "field-name-invalidation",
       "source_commit": "2e2b333a",
       "hypothesis": "Use complete field-name and object alias predicate before allocating replacement cache; try cheap name test first. Official Compiler native profile attributes 18.9% of included samples to AbstractField::Kill.",
-      "tests": "26 tests pass including 3 new unit tests.",
-      "screen": "Superseded before collecting any official Compiler result: run the already planned12-pair final validation directly. Selected from the fixed six-pair compilation diagnostic; avoids an additional selection-only screen."
+      "tests": "81 selected tests pass, including 3 new unit tests.",
+      "screen": "Superseded before collecting any official Compiler result: run the already planned12-pair final validation directly. Selected from the fixed six-pair compilation diagnostic; avoids an additional selection-only screen.",
+      "state": "six cost pairs, twelve Compiler pairs, and twenty-one stock DataView pairs complete"
     },
     {
       "id": "outline-reduction-tracing",
@@ -32,8 +33,8 @@
     {
       "id": "fresh-allocation-invalidation",
       "base_commit": "fcc58178",
-      "source_checkpoint": "8944d358",
-      "state": "source and five targeted tests authored; builds wait for active measurements",
+      "source_checkpoint": "8944d358; final test coverage at 87e3481b",
+      "state": "83 selected tests and all 25 generated-code size comparisons pass; six cost pairs complete; twelve Compiler and twenty-one stock DataView pairs running serially",
       "evidence": "fresh-allocation-pc-evidence.json",
       "hypothesis": "Replace linear field-cache scans with exact-key map lookup when the existing Allocate alias rule already restricts aliases to that one node. 89.4% of sampled AbstractField::Kill self time is first-scan dead checks/tree iteration; almost all distinguishable alias-check samples use the Allocate identity path.",
       "safety": "Do not resolve renames before selecting the fast path. Preserve name wildcard behavior, dead-key skip, immutable states and cache counts.",

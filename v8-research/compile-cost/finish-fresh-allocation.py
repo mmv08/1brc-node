@@ -16,6 +16,10 @@ import time
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / 'v8-research'))
+from paired_benchmark import parse_scores, source_hashes
+
+
 V8 = ROOT / 'results/v8-general/v8'
 OUTPUT = ROOT / 'v8-research/compile-cost'
 CANDIDATE = V8 / 'out/x64.release-fresh-allocation/d8'
@@ -96,6 +100,11 @@ def main():
     manifest = read(OUTPUT / 'fresh-allocation-build-evidence.json')
     expected_digest = manifest['files']['d8']['sha256']
     assert digest(CANDIDATE) == expected_digest
+    for data in (runtime, compiler):
+        assert data['binaries']['candidate']['sha256'] == expected_digest
+    historical_reference = read(
+        ROOT / 'v8-research/followups/winning-compile-cost-results.json')
+    assert digest(HISTORICAL) == historical_reference['binaries']['baseline']['sha256']
 
     result_path = OUTPUT / 'fresh-allocation-remaining-cost-results.json'
     assert not result_path.exists(), 'Do not overwrite a completed experiment'
@@ -123,16 +132,23 @@ def main():
                '--no-logfile-per-isolate', '--logfile=' + str(log), 'run.js']
     print('Profiling the unchanged official Compiler suite after the change.',
           flush=True)
+    suite = V8 / 'test/js-perf-test/Compiler'
+    sources = source_hashes(suite, ['run.js'])
+    assert sources == compiler['source_sha256']
     started = time.monotonic()
     with (directory / 'stdout.txt').open('w') as stdout, \
             (directory / 'stderr.txt').open('w') as stderr:
-        run(command, cwd=V8 / 'test/js-perf-test/Compiler',
+        run(command, cwd=suite,
             stdout=stdout, stderr=stderr)
+    assert source_hashes(suite, ['run.js']) == sources
+    scores = parse_scores((directory / 'stdout.txt').read_text())
+    assert set(scores) == set(compiler['expected_scores'])
     capture = {
         'command': command, 'cwd': str(V8 / 'test/js-perf-test/Compiler'),
         'elapsed_seconds': time.monotonic() - started,
         'source_commit': manifest['source_commit'], 'binary_sha256': expected_digest,
-        'log_sha256': digest(log), 'returncode': 0,
+        'log_sha256': digest(log), 'returncode': 0, 'diagnostic_scores': scores,
+        'source_sha256': sources, 'sources_unchanged': True,
     }
     report = directory / 'compiler-report.txt'
     processor = ['tools/linux-tick-processor', '--compiler', str(log)]

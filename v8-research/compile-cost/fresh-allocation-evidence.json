@@ -79,7 +79,7 @@
         "ratio_note": "Ratio undefined with zero-valued observations."
       }
     },
-    "interpretation": "DataView total pipeline time is inconclusive; both the confidence interval and order split prevent a strong total-cost claim. Zone change is negligible. Official Compiler and runtime fixed runs still pending."
+    "interpretation": "DataView total pipeline time is inconclusive; both the confidence interval and order split prevent a strong total-cost claim. The target-only change is exploratory and order-sensitive (AB -0.088%, BA -1.177%). Zone change is negligible. Official Compiler and runtime fixed runs still pending."
   },
   "composition": "Independent change on fcc58178. Does not include field-name-invalidation or outline-reduction-tracing experiments."
 }

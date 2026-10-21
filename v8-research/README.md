@@ -156,3 +156,60 @@ Zone allocation is cumulative compiler allocation, not process RSS. Target times
 The [protocol](followups/plan.json), individual `*-results.json`, `*-evidence.json` and patch series are under [followups](followups/). The combined [patch series](followups/winning-followups.patch) applies on `f090ad58`; do not also apply its overlapping standalone dispatch/peeling patches. Neutral shift/mask patches are independent and are not included in that series.
 
 The [artifact manifest](followups/winning-build-manifest.json) records the preserved builds' source commits, GN arguments, executable, snapshot, ICU data and build-configuration hashes. To reproduce the incremental runtime comparison, use the earlier getter build as `--baseline`, the combined build as `--candidate`, the unchanged `DataView` directory as `--cwd`, and `--rounds 21` with [paired_benchmark.py](paired_benchmark.py). Exact commands, expected score names and source hashes are saved in every raw result. Every source experiment and result stage has an unsigned checkpoint; the production Node/Wasm solvers remain on stock Node.
+
+## Compilation-cost investigation
+
+Compilation cost is the CPU time and memory V8 spends producing optimized machine code. Copying a loop can make that code run faster while making later compiler passes process more nodes. The previous result therefore left two separate questions: can the compiler avoid unnecessary work, and how much of the original graph-growth cost remains afterward?
+
+The [fixed protocol](compile-cost/plan.json) compares each new experiment with the combined runtime candidate `fcc58178`. It uses six alternating compilation-diagnostic pairs, twelve unchanged official Compiler pairs and twenty-one unchanged stock DataView pairs for the candidates receiving full validation. A separate six-pair comparison against the older getter-only `f090ad58` measures the remaining original cost. Builds, tests, profiling and benchmarks run serially; timed processes are pinned to CPU 2. Confidence intervals use paired bootstrap resampling and include every measured pair.
+
+Native compiler profiles were collected before these edits, both for the unchanged official Compiler suite and for repeated compilation of the original DataView integer function. Hardware perf counters remained unavailable, so the evidence uses V8's native sampling profiler, phase statistics and disassembly. Compiler-state filtering excludes other VM states; the denominator is total ticks minus excluded ticks. The [phase evidence](compile-cost/initial-phase-evidence.json) and [native summaries](compile-cost/native-profile-evidence.json) retain both baselines. Phase groups and their child phases overlap and must not be added together.
+
+The official Compiler profile attributed 40,542 of 214,658 included ticks (18.9%) to `LoadElimination::AbstractField::Kill`; 40,531 of its ticks were under Large-Copy's runner. Matching sample PCs to the preserved binary showed that 89.4% of this function's self samples were in the initial dead-node checks and tree iteration. The alias checker overwhelmingly took the existing fresh-allocation identity path. This is evidence of repeated cache scanning when the only possible alias is already known exactly. The [PC analysis](compile-cost/fresh-allocation-pc-evidence.json) records reviewed instruction ranges, input hashes, accounting checks and reproduction commands.
+
+Three independent experiments start from `fcc58178`; their patches must not be assumed to be stacked:
+
+| Experiment | Implementation and evidence | Validation / disposition |
+|---|---|---|
+| Field-name invalidation, `2e2b333a` | Check both name and object aliasing before constructing a replacement field cache; check the cheap name predicate first. | 81 selected checks passed. Full official results below show modest compiler improvements; retained separately. |
+| Outline reduction tracing, `2f98c1e2` | Move cold trace printing to a noinline helper. Native `GraphReducer::Reduce` shrinks from 1,458 to 370 bytes, removing unconditional stream setup; extra stack reservation falls from 328 to 8 bytes. | 52 checks passed and normalized trace events match. Total compilation-time interval includes zero; excluded from the leading candidate. |
+| Fresh-allocation lookup, `8944d358` + `87e3481b` | Use the existing Allocate-only alias invariant to look up the exact key in the field map, avoiding a full scan on a miss. | 83 selected checks passed. Full fixed official validation is in progress. |
+
+The tracing experiment demonstrates why smaller native code is insufficient evidence of a speedup. Its separate cold helper is 930 bytes, and total pipeline time changed **+0.18%**, interval **−1.68% to +2.03%**. Source-position wrappers enabled by profiling also appeared in samples; their overhead was not treated as a stock-benchmark optimization target. The [trace equivalence evidence](compile-cost/trace-equivalence.json), [native/source review](compile-cost/outline-reduction-tracing-evidence.json) and [six-pair cost summary](compile-cost/outline-reduction-tracing-cost-summary.json) preserve the neutral result.
+
+The fresh-allocation path deliberately does not resolve `FinishRegion` or `TypeGuard` aliases before selecting its fast path. Those cases still use the original general logic. Tests cover exact-key invalidation, unrelated cached objects, immutable earlier states, same/disjoint/unknown field names, cache misses and the rename boundary. Native inspection confirms that the miss path makes no calls and performs no replacement-map allocation. All 25 generated DataView functions match the baseline in name and instruction size, including the 2,348-byte and 4,584-byte integer functions. These are size checks, not a claim of byte-identical machine code. See the [patch](compile-cost/fresh-allocation-invalidation.patch), [build/test manifest](compile-cost/fresh-allocation-build-evidence.json), [generated-code evidence](compile-cost/fresh-allocation-native-evidence.json) and [compiler disassembly](compile-cost/fresh-allocation-kill-native.txt).
+
+The short DataView cost diagnostics do not show a large solution to the original overhead. Each process completed 25 TurboFan pipelines, with two normal integer-target compilations and no target OSR compilation or traced abort. Positive numbers below mean more compilation cost.
+
+| Independent candidate vs. `fcc58178` | Total pipeline time change | 95% interval | Integer-target time change | 95% interval |
+|---|---:|---:|---:|---:|
+| Field-name invalidation | −2.30% | −4.04% to −0.75% | −1.31% | −2.29% to −0.47% |
+| Outline reduction tracing | +0.18% | −1.68% to +2.03% | −0.58% | −1.04% to −0.11% |
+| Fresh-allocation lookup | −0.81% | −1.97% to +0.30% | −0.63% | −1.27% to −0.13% |
+
+The field-name run also moved several unchanged phases; its whole-suite change cannot be assigned entirely to the edited path. The fresh-allocation total changes sign by AB/BA order (+0.32% / −1.92%). The small target-only improvement is also order-sensitive (−0.09% / −1.18%) and remains exploratory. Its zone-allocation change is negligible (−0.0016%), and loop-peeling allocation stays at 991,280 bytes. These diagnostics are not stock runtime scores. All measurements and order splits are in the individual `*-cost-results.json` and `*-cost-summary.json` files under [compile-cost](compile-cost/).
+
+The completed field-name candidate's official results are below. Compiler uses twelve pairs and stock DataView uses twenty-one. Several Compiler rounds moved together across unrelated cases; all remain in the analysis. DataView's low-scoring nineteenth pair is also retained without assigning an unmeasured cause.
+
+| Official Compiler case | Field-name score change | 95% interval |
+|---|---:|---:|
+| Small-Empty | +0.75% | −0.46% to +2.12% |
+| Small-Constant | +0.67% | −0.56% to +2.05% |
+| Small-Add | +0.58% | −0.22% to +1.35% |
+| Small-Load | +0.60% | −0.45% to +1.68% |
+| Medium-Copy | +0.85% | +0.63% to +1.08% |
+| Medium-Fact | +0.80% | +0.10% to +1.57% |
+| Medium-Prime | +0.97% | +0.36% to +1.54% |
+| Medium-Eratosthenes | +0.72% | +0.28% to +1.16% |
+| Large-Copy | +0.29% | +0.04% to +0.55% |
+
+| Official DataView case | Field-name score change | 95% interval |
+|---|---:|---:|
+| DataView-BigEndian | −0.00% | −0.24% to +0.24% |
+| DataView-Floats | −0.51% | −1.81% to +0.37% |
+| DataView-LittleEndian | −0.04% | −0.20% to +0.13% |
+| TypedArray-BigEndian | +0.05% | −0.09% to +0.21% |
+| TypedArray-Floats | −0.13% | −1.46% to +1.06% |
+| TypedArray-LittleEndian | +0.01% | −0.11% to +0.15% |
+
+Every field-name runtime interval includes zero. Full raw records are [official Compiler](compile-cost/field-name-compiler-results.json) and [stock DataView](compile-cost/field-name-runtime-results.json). The field-name and tracing experiments are saved separately and are not part of the fresh-allocation binary.
