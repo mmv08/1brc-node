@@ -60,7 +60,7 @@
       }
     ]
   },
-  "interpretation": "Combined polymorphic integer function4584bytes, versus3296baseline and5116peeling-only. Integer method constants remain eliminated. Runtime interactions and compilation costs are measured separately.",
+  "interpretation": "Combined polymorphic integer function is 4,584 bytes, versus 3,296 in the baseline and 5,116 with peeling alone. Integer method constants remain eliminated. Runtime interactions and compilation costs are measured separately.",
   "benchmark": {
     "file": "winning-followups-results.json",
     "pairs": 21,
@@ -69,6 +69,140 @@
       8.81001423679917,
       9.11425704937483
     ],
-    "interpretation": "Combined typed-array cases improve29.844%,18.616%,4.678%, all21wins; DataView LittleEndian+3.299%,21wins. DataView BigEndian+0.347%; DataView Floats interval includes zero. Controls pending."
+    "interpretation": "Combined typed-array cases improve 29.844%, 18.616%, and 4.678%, all with 21 wins; DataView LittleEndian improves 3.299%, with 21 wins. DataView BigEndian improves 0.347%; the DataView Floats interval includes zero. Controls pending."
+  },
+  "audit": {
+    "runtime_experiments": [
+      "shift-range",
+      "constant-phi-expression",
+      "bounded-dispatch-cloning",
+      "mask-implication",
+      "terminal-peeling",
+      "winning-followups"
+    ],
+    "per_experiment": "21 complete alternating AB/BA pairs plus two warmups; every exit code is zero, the six score names are exact, stdout reparses to the saved scores, and recorded benchmark source/binary hashes are unchanged.",
+    "patches": "All six follow-up patch files reference available unsigned source commits with required local contribution footers.",
+    "compilation_cost_parser": "Checked against V8 compilation-statistics.cc and compiler.cc output formats; manual checks cover normal/OSR timing, compilation counts, duplicate statistics, and missing peeling rows."
+  },
+  "controls": {
+    "compiler": {
+      "file": "winning-compiler-results.json",
+      "pairs": 12,
+      "results": {
+        "Large-Copy-Compile": {
+          "score_change_percent": -0.08350747680885284,
+          "paired_bootstrap_95_percent_interval": [
+            -0.2923908460412905,
+            0.1260241945824081
+          ],
+          "wins": 2
+        },
+        "Medium-Copy-Compile": {
+          "score_change_percent": -0.7562516199984826,
+          "paired_bootstrap_95_percent_interval": [
+            -0.8869530356937494,
+            -0.6252056714029508
+          ],
+          "wins": 0
+        },
+        "Medium-Eratosthenes-Compile": {
+          "score_change_percent": -0.915833859061399,
+          "paired_bootstrap_95_percent_interval": [
+            -1.1947626966849922,
+            -0.5977334264825274
+          ],
+          "wins": 1
+        },
+        "Medium-Fact-Compile": {
+          "score_change_percent": -0.7157858862678279,
+          "paired_bootstrap_95_percent_interval": [
+            -1.3719230825118944,
+            -0.04287473927877539
+          ],
+          "wins": 2
+        },
+        "Medium-Prime-Compile": {
+          "score_change_percent": -0.6293101852329452,
+          "paired_bootstrap_95_percent_interval": [
+            -1.167716768240068,
+            -0.06550978169345134
+          ],
+          "wins": 4
+        },
+        "Small-Add-Compile": {
+          "score_change_percent": -0.964293478915379,
+          "paired_bootstrap_95_percent_interval": [
+            -1.653913476417268,
+            -0.23396775180763996
+          ],
+          "wins": 2
+        },
+        "Small-Constant-Compile": {
+          "score_change_percent": -0.2977802917041861,
+          "paired_bootstrap_95_percent_interval": [
+            -1.22490957245589,
+            0.6303861519674436
+          ],
+          "wins": 4
+        },
+        "Small-Empty-Compile": {
+          "score_change_percent": -0.3823198968132213,
+          "paired_bootstrap_95_percent_interval": [
+            -1.2960108518731972,
+            0.5352478401300598
+          ],
+          "wins": 2
+        },
+        "Small-Load-Compile": {
+          "score_change_percent": -0.2997960117729681,
+          "paired_bootstrap_95_percent_interval": [
+            -1.3490194703975722,
+            0.8394334305241946
+          ],
+          "wins": 4
+        }
+      }
+    },
+    "forloops": {
+      "file": "winning-forloops-results.json",
+      "pairs": 12,
+      "results": {
+        "Let-Standard-ForLoop": {
+          "score_change_percent": 0.2305658255952192,
+          "paired_bootstrap_95_percent_interval": [
+            -0.010801469908272576,
+            0.5309674947938436
+          ],
+          "wins": 9
+        },
+        "Var-Standard-ForLoop": {
+          "score_change_percent": 0.19627520588565428,
+          "paired_bootstrap_95_percent_interval": [
+            -0.35781867760239505,
+            0.7342492277534918
+          ],
+          "wins": 8
+        }
+      }
+    },
+    "typedarray-construct": {
+      "file": "winning-typedarray-construct-results.json",
+      "pairs": 12,
+      "results": {
+        "TypedArrays-ConstructWithBuffer": {
+          "score_change_percent": 0.23853993784264116,
+          "paired_bootstrap_95_percent_interval": [
+            0.1529270875848754,
+            0.3298961691588165
+          ],
+          "wins": 12
+        }
+      }
+    }
+  },
+  "controls_interpretation": "Five official Compiler cases show lower scores, by 0.63\u20130.96%, with intervals excluding zero; the remaining four Compiler intervals include zero. Both ForLoops intervals include zero. Typed-array construction scores improve 0.24%. These limited controls do not establish whole-V8 performance or isolate the source of compilation regressions.",
+  "control_command_correction": {
+    "file": "winning-typedarray-construct-failed-command.json",
+    "reason": "Initial constructor invocation omitted the d8 -- argument separator and failed during baseline warmup with undefined.js. No measured pair was completed. Corrected command ran the full declared 12 pairs."
   }
 }
