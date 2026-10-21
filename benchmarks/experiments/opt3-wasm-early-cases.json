@@ -4,7 +4,8 @@
     "script": "results/opt3-base/calculate.mjs",
     "env": {
       "ENGINE": "wasm",
-      "WORKERS": "24"
+      "WORKERS": "24",
+      "FLAGS": ""
     }
   },
   {
@@ -12,7 +13,8 @@
     "script": "calculate.mjs",
     "env": {
       "ENGINE": "wasm",
-      "WORKERS": "24"
+      "WORKERS": "24",
+      "FLAGS": ""
     }
   }
 ]

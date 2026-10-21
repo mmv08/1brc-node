@@ -20,6 +20,7 @@ case "${ENGINE:-wasm}" in
     exec "$runtime" \
       --max-inlined-bytecode-size=1000 \
       --max-inlined-bytecode-size-cumulative=4000 \
+      --v8-pool-size=8 \
       "$root/plain/calculate.mjs" "$@"
     ;;
   *)

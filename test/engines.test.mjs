@@ -91,7 +91,7 @@ test('benchmark config selects the right flags and hashes the shared formatter',
   assert.equal(entryScript('node'), 'plain/calculate.mjs');
   assert.throws(() => entryScript('invalid'), /ENGINE/);
   assert.deepEqual(nodeFlags({ ENGINE: 'wasm' }), []);
-  assert.equal(nodeFlags({ ENGINE: 'node' }).length, 2);
+  assert.equal(nodeFlags({ ENGINE: 'node' }).length, 3);
   assert.deepEqual(nodeFlags({ ENGINE: 'node', FLAGS: '' }), []);
   assert.deepEqual(
     benchmarkEnv({ ENGINE: 'node', STREAMS: '3', IO: 'macro', NODE_OPTIONS: '', OTHER: 'ignored' }),

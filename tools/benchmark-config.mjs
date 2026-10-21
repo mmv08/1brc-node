@@ -17,7 +17,11 @@ export function nodeFlags(env) {
   if (env.FLAGS !== undefined) return env.FLAGS.split(/\s+/).filter(Boolean);
   // "phased" supports comparisons against historical plain-JavaScript worktrees.
   return ['node', 'phased'].includes(env.ENGINE)
-    ? ['--max-inlined-bytecode-size=1000', '--max-inlined-bytecode-size-cumulative=4000']
+    ? [
+        '--max-inlined-bytecode-size=1000',
+        '--max-inlined-bytecode-size-cumulative=4000',
+        '--v8-pool-size=8',
+      ]
     : [];
 }
 

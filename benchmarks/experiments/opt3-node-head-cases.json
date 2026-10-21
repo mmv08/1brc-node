@@ -4,7 +4,8 @@
     "script": "results/opt3-base/plain/calculate.mjs",
     "env": {
       "ENGINE": "node",
-      "WORKERS": "24"
+      "WORKERS": "24",
+      "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000"
     }
   },
   {
@@ -12,7 +13,8 @@
     "script": "plain/calculate.mjs",
     "env": {
       "ENGINE": "node",
-      "WORKERS": "24"
+      "WORKERS": "24",
+      "FLAGS": "--max-inlined-bytecode-size=1000 --max-inlined-bytecode-size-cumulative=4000"
     }
   }
 ]

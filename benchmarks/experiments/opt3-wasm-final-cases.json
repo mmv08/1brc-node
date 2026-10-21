@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Wasm retained",
+    "script": "calculate.mjs",
+    "env": {
+      "ENGINE": "wasm",
+      "WORKERS": "24",
+      "FLAGS": ""
+    }
+  }
+]
