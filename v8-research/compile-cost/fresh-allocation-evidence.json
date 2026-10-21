@@ -1,0 +1,85 @@
+{
+  "source_commit": "87e3481b97d9ae327293ec319b57f4ef79e0c2a3",
+  "base_commit": "fcc58178",
+  "tests_evidence": "fresh-allocation-build-evidence.json",
+  "native_generated_code_evidence": "fresh-allocation-native-evidence.json",
+  "native_compiler_function": {
+    "disassembly": "fresh-allocation-kill-native.txt",
+    "baseline_instruction_bytes": 1361,
+    "candidate_instruction_bytes": 1211,
+    "allocate_selection": "0x14b50ee..0x14b5103",
+    "tree_lookup": "0x14b5105..0x14b5144",
+    "miss_return": "0x14b5535",
+    "miss_path": "Exact-key tree search; no calls, map copy, allocation, alias scan, or full tree traversal. General alias path retained."
+  },
+  "short_cost_diagnostic": {
+    "pairs": 6,
+    "all_pipeline_counts": 25,
+    "all_normal_target_counts": 2,
+    "target_osr_or_aborts": 0,
+    "metrics": {
+      "pipeline_time_ms": {
+        "baseline_median": 20.0245,
+        "candidate_median": 20.002,
+        "paired_cost_change_percent": -0.8079766775071606,
+        "paired_bootstrap_95_percent_interval": [
+          -1.9738602335164335,
+          0.29615757347067895
+        ],
+        "ab_cost_change_percent": 0.3196168646196762,
+        "ba_cost_change_percent": -1.9228960564345754
+      },
+      "pipeline_zone_bytes": {
+        "baseline_median": 18813420.0,
+        "candidate_median": 18813188.0,
+        "paired_cost_change_percent": -0.0015804361687909996,
+        "paired_bootstrap_95_percent_interval": [
+          -0.002834866342582565,
+          -0.00041105287669207513
+        ],
+        "ab_cost_change_percent": -0.0003401905410038708,
+        "ba_cost_change_percent": -0.002820666414438122
+      },
+      "peeling_time_ms": {
+        "baseline_median": 0.605,
+        "candidate_median": 0.608,
+        "paired_cost_change_percent": 0.32963806941108675,
+        "paired_bootstrap_95_percent_interval": [
+          -0.5712589669805146,
+          1.267483763476318
+        ],
+        "ab_cost_change_percent": 0.6046860493307049,
+        "ba_cost_change_percent": 0.05534205636525957
+      },
+      "peeling_zone_bytes": {
+        "baseline_median": 991280.0,
+        "candidate_median": 991280.0,
+        "paired_cost_change_percent": 0.0,
+        "paired_bootstrap_95_percent_interval": [
+          0.0,
+          0.0
+        ],
+        "ab_cost_change_percent": 0.0,
+        "ba_cost_change_percent": 0.0
+      },
+      "target_normal_time_ms": {
+        "baseline_median": 3.808,
+        "candidate_median": 3.7889999999999997,
+        "paired_cost_change_percent": -0.6338571831628004,
+        "paired_bootstrap_95_percent_interval": [
+          -1.2710452756763302,
+          -0.131085625027072
+        ],
+        "ab_cost_change_percent": -0.08750209095819139,
+        "ba_cost_change_percent": -1.177224622240658
+      },
+      "target_osr_time_ms": {
+        "baseline_median": 0.0,
+        "candidate_median": 0.0,
+        "ratio_note": "Ratio undefined with zero-valued observations."
+      }
+    },
+    "interpretation": "DataView total pipeline time is inconclusive; both the confidence interval and order split prevent a strong total-cost claim. Zone change is negligible. Official Compiler and runtime fixed runs still pending."
+  },
+  "composition": "Independent change on fcc58178. Does not include field-name-invalidation or outline-reduction-tracing experiments."
+}

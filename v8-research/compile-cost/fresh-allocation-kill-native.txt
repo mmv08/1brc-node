@@ -1,0 +1,344 @@
+
+results/v8-general/v8/out/x64.release-fresh-allocation/d8:	file format elf64-x86-64
+
+Disassembly of section .text:
+
+00000000014b50d0 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE>:
+ 14b50d0: 55                           	pushq	%rbp
+ 14b50d1: 48 89 e5                     	movq	%rsp, %rbp
+ 14b50d4: 41 57                        	pushq	%r15
+ 14b50d6: 41 56                        	pushq	%r14
+ 14b50d8: 41 55                        	pushq	%r13
+ 14b50da: 41 54                        	pushq	%r12
+ 14b50dc: 53                           	pushq	%rbx
+ 14b50dd: 48 83 ec 48                  	subq	$0x48, %rsp
+ 14b50e1: 49 89 cc                     	movq	%rcx, %r12
+ 14b50e4: 48 89 55 d0                  	movq	%rdx, -0x30(%rbp)
+ 14b50e8: 49 89 f7                     	movq	%rsi, %r15
+ 14b50eb: 49 89 fe                     	movq	%rdi, %r14
+ 14b50ee: 48 8b 5e 08                  	movq	0x8(%rsi), %rbx
+ 14b50f2: 48 85 db                     	testq	%rbx, %rbx
+ 14b50f5: 74 52                        	je	0x14b5149 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x79>
+ 14b50f7: 48 8b 03                     	movq	(%rbx), %rax
+ 14b50fa: 0f b7 40 10                  	movzwl	0x10(%rax), %eax
+ 14b50fe: 3d 12 01 00 00               	cmpl	$0x112, %eax            # imm = 0x112
+ 14b5103: 75 44                        	jne	0x14b5149 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x79>
+ 14b5105: 49 8b 46 08                  	movq	0x8(%r14), %rax
+ 14b5109: 48 85 c0                     	testq	%rax, %rax
+ 14b510c: 0f 84 23 04 00 00            	je	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b5112: 49 8d 4e 08                  	leaq	0x8(%r14), %rcx
+ 14b5116: eb 14                        	jmp	0x14b512c <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x5c>
+ 14b5118: 0f 1f 84 00 00 00 00 00      	nopl	(%rax,%rax)
+ 14b5120: 48 8b 00                     	movq	(%rax), %rax
+ 14b5123: 48 85 c0                     	testq	%rax, %rax
+ 14b5126: 0f 84 09 04 00 00            	je	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b512c: 48 8b 50 20                  	movq	0x20(%rax), %rdx
+ 14b5130: 48 39 d3                     	cmpq	%rdx, %rbx
+ 14b5133: 72 eb                        	jb	0x14b5120 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x50>
+ 14b5135: 0f 86 af 02 00 00            	jbe	0x14b53ea <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x31a>
+ 14b513b: 48 8b 40 08                  	movq	0x8(%rax), %rax
+ 14b513f: 48 85 c0                     	testq	%rax, %rax
+ 14b5142: 75 e8                        	jne	0x14b512c <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x5c>
+ 14b5144: e9 ec 03 00 00               	jmp	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b5149: 4d 8b 2e                     	movq	(%r14), %r13
+ 14b514c: 49 8d 5e 08                  	leaq	0x8(%r14), %rbx
+ 14b5150: 49 39 dd                     	cmpq	%rbx, %r13
+ 14b5153: 0f 84 dc 03 00 00            	je	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b5159: 49 8b 75 20                  	movq	0x20(%r13), %rsi
+ 14b515d: 0f b6 4e 17                  	movzbl	0x17(%rsi), %ecx
+ 14b5161: 83 e1 0f                     	andl	$0xf, %ecx
+ 14b5164: 48 8d 46 20                  	leaq	0x20(%rsi), %rax
+ 14b5168: 83 f9 0f                     	cmpl	$0xf, %ecx
+ 14b516b: 75 0a                        	jne	0x14b5177 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0xa7>
+ 14b516d: 48 8b 00                     	movq	(%rax), %rax
+ 14b5170: 8b 48 08                     	movl	0x8(%rax), %ecx
+ 14b5173: 48 83 c0 10                  	addq	$0x10, %rax
+ 14b5177: 85 c9                        	testl	%ecx, %ecx
+ 14b5179: 7e 06                        	jle	0x14b5181 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0xb1>
+ 14b517b: 48 83 38 00                  	cmpq	$0x0, (%rax)
+ 14b517f: 74 0c                        	je	0x14b518d <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0xbd>
+ 14b5181: 4c 89 ff                     	movq	%r15, %rdi
+ 14b5184: e8 07 04 00 00               	callq	0x14b5590 <_ZNK2v88internal8compiler15LoadElimination14AliasStateInfo8MayAliasEPNS1_4NodeE>
+ 14b5189: 84 c0                        	testb	%al, %al
+ 14b518b: 75 32                        	jne	0x14b51bf <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0xef>
+ 14b518d: 49 8b 45 08                  	movq	0x8(%r13), %rax
+ 14b5191: 48 85 c0                     	testq	%rax, %rax
+ 14b5194: 74 1a                        	je	0x14b51b0 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0xe0>
+ 14b5196: 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+ 14b51a0: 49 89 c5                     	movq	%rax, %r13
+ 14b51a3: 48 8b 00                     	movq	(%rax), %rax
+ 14b51a6: 48 85 c0                     	testq	%rax, %rax
+ 14b51a9: 75 f5                        	jne	0x14b51a0 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0xd0>
+ 14b51ab: eb a3                        	jmp	0x14b5150 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x80>
+ 14b51ad: 0f 1f 00                     	nopl	(%rax)
+ 14b51b0: 4c 89 e8                     	movq	%r13, %rax
+ 14b51b3: 4d 8b 6d 10                  	movq	0x10(%r13), %r13
+ 14b51b7: 49 3b 45 00                  	cmpq	(%r13), %rax
+ 14b51bb: 75 f3                        	jne	0x14b51b0 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0xe0>
+ 14b51bd: eb 91                        	jmp	0x14b5150 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x80>
+ 14b51bf: 4c 89 f1                     	movq	%r14, %rcx
+ 14b51c2: 4d 8b 74 24 10               	movq	0x10(%r12), %r14
+ 14b51c7: 49 8b 44 24 18               	movq	0x18(%r12), %rax
+ 14b51cc: 4c 29 f0                     	subq	%r14, %rax
+ 14b51cf: 48 83 f8 1f                  	cmpq	$0x1f, %rax
+ 14b51d3: 0f 86 6e 03 00 00            	jbe	0x14b5547 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x477>
+ 14b51d9: 4c 89 f0                     	movq	%r14, %rax
+ 14b51dc: 48 83 c0 20                  	addq	$0x20, %rax
+ 14b51e0: 49 89 44 24 10               	movq	%rax, 0x10(%r12)
+ 14b51e5: 49 8d 46 08                  	leaq	0x8(%r14), %rax
+ 14b51e9: 49 c7 46 08 00 00 00 00      	movq	$0x0, 0x8(%r14)
+ 14b51f1: 4d 89 66 10                  	movq	%r12, 0x10(%r14)
+ 14b51f5: 49 c7 46 18 00 00 00 00      	movq	$0x0, 0x18(%r14)
+ 14b51fd: 49 89 06                     	movq	%rax, (%r14)
+ 14b5200: 4c 8b 21                     	movq	(%rcx), %r12
+ 14b5203: 66 66 66 66 2e 0f 1f 84 00 00 00 00 00       	nopw	%cs:(%rax,%rax)
+ 14b5210: 49 39 dc                     	cmpq	%rbx, %r12
+ 14b5213: 0f 84 1c 03 00 00            	je	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b5219: 41 0f 10 44 24 20            	movups	0x20(%r12), %xmm0
+ 14b521f: 41 0f 10 4c 24 30            	movups	0x30(%r12), %xmm1
+ 14b5225: 0f 29 45 90                  	movaps	%xmm0, -0x70(%rbp)
+ 14b5229: 49 8b 44 24 40               	movq	0x40(%r12), %rax
+ 14b522e: 48 89 45 b0                  	movq	%rax, -0x50(%rbp)
+ 14b5232: 0f 29 4d a0                  	movaps	%xmm1, -0x60(%rbp)
+ 14b5236: 4c 8b 6d 90                  	movq	-0x70(%rbp), %r13
+ 14b523a: 49 8b 7f 08                  	movq	0x8(%r15), %rdi
+ 14b523e: 48 8b 07                     	movq	(%rdi), %rax
+ 14b5241: 66 81 78 10 12 01            	cmpw	$0x112, 0x10(%rax)      # imm = 0x112
+ 14b5247: 0f 94 c0                     	sete	%al
+ 14b524a: 48 85 ff                     	testq	%rdi, %rdi
+ 14b524d: 0f 95 c1                     	setne	%cl
+ 14b5250: 84 c8                        	testb	%cl, %al
+ 14b5252: 0f 85 98 00 00 00            	jne	0x14b52f0 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x220>
+ 14b5258: 4c 89 ee                     	movq	%r13, %rsi
+ 14b525b: e8 70 f0 ff ff               	callq	0x14b42d0 <_ZN2v88internal8compiler12_GLOBAL__N_18MayAliasEPNS1_4NodeES4_>
+ 14b5260: 84 c0                        	testb	%al, %al
+ 14b5262: 0f 84 a8 00 00 00            	je	0x14b5310 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x240>
+ 14b5268: 4d 8b 47 10                  	movq	0x10(%r15), %r8
+ 14b526c: 4d 85 c0                     	testq	%r8, %r8
+ 14b526f: 0f 84 80 00 00 00            	je	0x14b52f5 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x225>
+ 14b5275: 48 c7 45 c0 01 00 00 00      	movq	$0x1, -0x40(%rbp)
+ 14b527d: 49 8b 07                     	movq	(%r15), %rax
+ 14b5280: 48 8b 80 08 02 00 00         	movq	0x208(%rax), %rax
+ 14b5287: 48 85 c0                     	testq	%rax, %rax
+ 14b528a: 75 07                        	jne	0x14b5293 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x1c3>
+ 14b528c: eb 67                        	jmp	0x14b52f5 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x225>
+ 14b528e: 66 90                        	nop
+ 14b5290: 4c 8b 29                     	movq	(%rcx), %r13
+ 14b5293: 49 8b 4d 00                  	movq	(%r13), %rcx
+ 14b5297: 0f b7 49 10                  	movzwl	0x10(%rcx), %ecx
+ 14b529b: 83 f9 29                     	cmpl	$0x29, %ecx
+ 14b529e: 74 11                        	je	0x14b52b1 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x1e1>
+ 14b52a0: 81 f9 1e 01 00 00            	cmpl	$0x11e, %ecx            # imm = 0x11E
+ 14b52a6: 74 09                        	je	0x14b52b1 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x1e1>
+ 14b52a8: 83 f9 3b                     	cmpl	$0x3b, %ecx
+ 14b52ab: 0f 85 a2 00 00 00            	jne	0x14b5353 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x283>
+ 14b52b1: 41 8b 55 14                  	movl	0x14(%r13), %edx
+ 14b52b5: 89 d6                        	movl	%edx, %esi
+ 14b52b7: c1 ee 18                     	shrl	$0x18, %esi
+ 14b52ba: 83 e6 0f                     	andl	$0xf, %esi
+ 14b52bd: 49 8d 4d 20                  	leaq	0x20(%r13), %rcx
+ 14b52c1: 48 89 cf                     	movq	%rcx, %rdi
+ 14b52c4: 83 fe 0f                     	cmpl	$0xf, %esi
+ 14b52c7: 75 0a                        	jne	0x14b52d3 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x203>
+ 14b52c9: 48 8b 39                     	movq	(%rcx), %rdi
+ 14b52cc: 8b 77 08                     	movl	0x8(%rdi), %esi
+ 14b52cf: 48 83 c7 10                  	addq	$0x10, %rdi
+ 14b52d3: 85 f6                        	testl	%esi, %esi
+ 14b52d5: 7e 06                        	jle	0x14b52dd <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x20d>
+ 14b52d7: 48 83 3f 00                  	cmpq	$0x0, (%rdi)
+ 14b52db: 74 76                        	je	0x14b5353 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x283>
+ 14b52dd: f7 d2                        	notl	%edx
+ 14b52df: f7 c2 00 00 00 0f            	testl	$0xf000000, %edx        # imm = 0xF000000
+ 14b52e5: 75 a9                        	jne	0x14b5290 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x1c0>
+ 14b52e7: 48 8b 09                     	movq	(%rcx), %rcx
+ 14b52ea: 48 83 c1 10                  	addq	$0x10, %rcx
+ 14b52ee: eb a0                        	jmp	0x14b5290 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x1c0>
+ 14b52f0: 4c 39 ef                     	cmpq	%r13, %rdi
+ 14b52f3: 75 1b                        	jne	0x14b5310 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x240>
+ 14b52f5: 48 83 7d d0 00               	cmpq	$0x0, -0x30(%rbp)
+ 14b52fa: 74 28                        	je	0x14b5324 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x254>
+ 14b52fc: 48 8b 45 a8                  	movq	-0x58(%rbp), %rax
+ 14b5300: 48 85 c0                     	testq	%rax, %rax
+ 14b5303: 74 1f                        	je	0x14b5324 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x254>
+ 14b5305: 48 39 45 d0                  	cmpq	%rax, -0x30(%rbp)
+ 14b5309: 74 19                        	je	0x14b5324 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x254>
+ 14b530b: 0f 1f 44 00 00               	nopl	(%rax,%rax)
+ 14b5310: 4c 89 75 c8                  	movq	%r14, -0x38(%rbp)
+ 14b5314: 48 8d 7d c8                  	leaq	-0x38(%rbp), %rdi
+ 14b5318: 48 8d 55 90                  	leaq	-0x70(%rbp), %rdx
+ 14b531c: 48 89 d6                     	movq	%rdx, %rsi
+ 14b531f: e8 0c 43 00 00               	callq	0x14b9630 <_ZZNSt4__Cr6__treeINS_12__value_typeIPN2v88internal8compiler4NodeENS4_15LoadElimination9FieldInfoEEENS_19__map_value_compareIS6_NS_4pairIKS6_S8_EENS_4lessIS6_EEEENS3_13ZoneAllocatorISD_EEE16__emplace_uniqueB9sqn240000IJRSD_EEENSB_INS_15__tree_iteratorIS9_PNS_11__tree_nodeIS9_PvEElEEbEEDpOT_ENKUlRSC_SL_E_clB9sqn240000ESW_SL_>
+ 14b5324: 49 8b 44 24 08               	movq	0x8(%r12), %rax
+ 14b5329: 48 85 c0                     	testq	%rax, %rax
+ 14b532c: 74 12                        	je	0x14b5340 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x270>
+ 14b532e: 66 90                        	nop
+ 14b5330: 49 89 c4                     	movq	%rax, %r12
+ 14b5333: 48 8b 00                     	movq	(%rax), %rax
+ 14b5336: 48 85 c0                     	testq	%rax, %rax
+ 14b5339: 75 f5                        	jne	0x14b5330 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x260>
+ 14b533b: e9 d0 fe ff ff               	jmp	0x14b5210 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x140>
+ 14b5340: 4c 89 e0                     	movq	%r12, %rax
+ 14b5343: 4d 8b 64 24 10               	movq	0x10(%r12), %r12
+ 14b5348: 49 3b 04 24                  	cmpq	(%r12), %rax
+ 14b534c: 75 f2                        	jne	0x14b5340 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x270>
+ 14b534e: e9 bd fe ff ff               	jmp	0x14b5210 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x140>
+ 14b5353: 48 8b 48 08                  	movq	0x8(%rax), %rcx
+ 14b5357: 48 85 c9                     	testq	%rcx, %rcx
+ 14b535a: 74 99                        	je	0x14b52f5 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x225>
+ 14b535c: 48 83 c0 08                  	addq	$0x8, %rax
+ 14b5360: eb 1a                        	jmp	0x14b537c <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x2ac>
+ 14b5362: 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00    	nopw	%cs:(%rax,%rax)
+ 14b5370: 48 8b 09                     	movq	(%rcx), %rcx
+ 14b5373: 48 85 c9                     	testq	%rcx, %rcx
+ 14b5376: 0f 84 79 ff ff ff            	je	0x14b52f5 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x225>
+ 14b537c: 48 8b 51 20                  	movq	0x20(%rcx), %rdx
+ 14b5380: 49 39 d5                     	cmpq	%rdx, %r13
+ 14b5383: 72 eb                        	jb	0x14b5370 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x2a0>
+ 14b5385: 76 0e                        	jbe	0x14b5395 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x2c5>
+ 14b5387: 48 8b 49 08                  	movq	0x8(%rcx), %rcx
+ 14b538b: 48 85 c9                     	testq	%rcx, %rcx
+ 14b538e: 75 ec                        	jne	0x14b537c <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x2ac>
+ 14b5390: e9 60 ff ff ff               	jmp	0x14b52f5 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x225>
+ 14b5395: 48 39 c1                     	cmpq	%rax, %rcx
+ 14b5398: 0f 84 57 ff ff ff            	je	0x14b52f5 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x225>
+ 14b539e: 48 8b 41 28                  	movq	0x28(%rcx), %rax
+ 14b53a2: 48 89 45 c0                  	movq	%rax, -0x40(%rbp)
+ 14b53a6: 48 83 f8 01                  	cmpq	$0x1, %rax
+ 14b53aa: 0f 84 45 ff ff ff            	je	0x14b52f5 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x225>
+ 14b53b0: a8 03                        	testb	$0x3, %al
+ 14b53b2: 74 0b                        	je	0x14b53bf <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x2ef>
+ 14b53b4: 48 83 78 06 01               	cmpq	$0x1, 0x6(%rax)
+ 14b53b9: 0f 85 36 ff ff ff            	jne	0x14b52f5 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x225>
+ 14b53bf: 48 8d 7d c0                  	leaq	-0x40(%rbp), %rdi
+ 14b53c3: 31 f6                        	xorl	%esi, %esi
+ 14b53c5: 4d 89 c5                     	movq	%r8, %r13
+ 14b53c8: e8 93 02 96 ff               	callq	0xe15660 <_ZNK2v88internal14ZoneCompactSetINS0_8compiler6MapRefEE2atEm>
+ 14b53cd: 4c 89 6d c8                  	movq	%r13, -0x38(%rbp)
+ 14b53d1: 48 8d 7d c8                  	leaq	-0x38(%rbp), %rdi
+ 14b53d5: 48 89 c6                     	movq	%rax, %rsi
+ 14b53d8: e8 53 a0 f5 ff               	callq	0x140f430 <_ZNK2v88internal8compiler9ObjectRef6equalsES2_>
+ 14b53dd: 84 c0                        	testb	%al, %al
+ 14b53df: 0f 85 10 ff ff ff            	jne	0x14b52f5 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x225>
+ 14b53e5: e9 26 ff ff ff               	jmp	0x14b5310 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x240>
+ 14b53ea: 48 39 c8                     	cmpq	%rcx, %rax
+ 14b53ed: 0f 84 42 01 00 00            	je	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b53f3: 0f b6 73 17                  	movzbl	0x17(%rbx), %esi
+ 14b53f7: 83 e6 0f                     	andl	$0xf, %esi
+ 14b53fa: 48 8d 53 20                  	leaq	0x20(%rbx), %rdx
+ 14b53fe: 83 fe 0f                     	cmpl	$0xf, %esi
+ 14b5401: 75 0a                        	jne	0x14b540d <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x33d>
+ 14b5403: 48 8b 12                     	movq	(%rdx), %rdx
+ 14b5406: 8b 72 08                     	movl	0x8(%rdx), %esi
+ 14b5409: 48 83 c2 10                  	addq	$0x10, %rdx
+ 14b540d: 85 f6                        	testl	%esi, %esi
+ 14b540f: 7e 0a                        	jle	0x14b541b <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x34b>
+ 14b5411: 48 83 3a 00                  	cmpq	$0x0, (%rdx)
+ 14b5415: 0f 84 1a 01 00 00            	je	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b541b: 48 83 7d d0 00               	cmpq	$0x0, -0x30(%rbp)
+ 14b5420: 74 13                        	je	0x14b5435 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x365>
+ 14b5422: 48 8b 40 38                  	movq	0x38(%rax), %rax
+ 14b5426: 48 85 c0                     	testq	%rax, %rax
+ 14b5429: 74 0a                        	je	0x14b5435 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x365>
+ 14b542b: 48 39 45 d0                  	cmpq	%rax, -0x30(%rbp)
+ 14b542f: 0f 85 00 01 00 00            	jne	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b5435: 4d 89 f5                     	movq	%r14, %r13
+ 14b5438: 4d 8b 74 24 10               	movq	0x10(%r12), %r14
+ 14b543d: 49 8b 44 24 18               	movq	0x18(%r12), %rax
+ 14b5442: 4c 29 f0                     	subq	%r14, %rax
+ 14b5445: 48 83 f8 1f                  	cmpq	$0x1f, %rax
+ 14b5449: 0f 86 0d 01 00 00            	jbe	0x14b555c <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x48c>
+ 14b544f: 4c 89 f0                     	movq	%r14, %rax
+ 14b5452: 48 83 c0 20                  	addq	$0x20, %rax
+ 14b5456: 49 89 44 24 10               	movq	%rax, 0x10(%r12)
+ 14b545b: 4d 8d 7e 08                  	leaq	0x8(%r14), %r15
+ 14b545f: 4d 89 3e                     	movq	%r15, (%r14)
+ 14b5462: 49 c7 46 08 00 00 00 00      	movq	$0x0, 0x8(%r14)
+ 14b546a: 49 8b 55 10                  	movq	0x10(%r13), %rdx
+ 14b546e: 49 89 56 10                  	movq	%rdx, 0x10(%r14)
+ 14b5472: 49 c7 46 18 00 00 00 00      	movq	$0x0, 0x18(%r14)
+ 14b547a: 49 83 7d 18 00               	cmpq	$0x0, 0x18(%r13)
+ 14b547f: 0f 84 b0 00 00 00            	je	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b5485: 48 8b 31                     	movq	(%rcx), %rsi
+ 14b5488: 4c 89 f7                     	movq	%r14, %rdi
+ 14b548b: 4c 89 f2                     	movq	%r14, %rdx
+ 14b548e: e8 3d c2 ee ff               	callq	0x13a16d0 <_ZNSt4__Cr6__treeINS_12__value_typeIjN2v88internal8compiler13PersistentMapIPNS4_4NodeENS4_18CsaLoadElimination9FieldInfoENS2_4base4hashIS7_EEEEEENS_19__map_value_compareIjNS_4pairIKjSD_EENS_4lessIjEEEENS3_13ZoneAllocatorISI_EEE21__construct_from_treeB9sqn240000IZNSO_21__copy_construct_treeB9sqn240000EPNS_11__tree_nodeISE_PvEEEUlRKSI_E_EEST_ST_T_>
+ 14b5493: 49 89 46 08                  	movq	%rax, 0x8(%r14)
+ 14b5497: 4c 89 78 10                  	movq	%r15, 0x10(%rax)
+ 14b549b: 49 8b 7e 08                  	movq	0x8(%r14), %rdi
+ 14b549f: 48 89 f9                     	movq	%rdi, %rcx
+ 14b54a2: 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00    	nopw	%cs:(%rax,%rax)
+ 14b54b0: 48 89 c8                     	movq	%rcx, %rax
+ 14b54b3: 48 8b 09                     	movq	(%rcx), %rcx
+ 14b54b6: 48 85 c9                     	testq	%rcx, %rcx
+ 14b54b9: 75 f5                        	jne	0x14b54b0 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x3e0>
+ 14b54bb: 49 89 06                     	movq	%rax, (%r14)
+ 14b54be: 49 8b 4d 18                  	movq	0x18(%r13), %rcx
+ 14b54c2: 49 89 4e 18                  	movq	%rcx, 0x18(%r14)
+ 14b54c6: 48 85 ff                     	testq	%rdi, %rdi
+ 14b54c9: 74 6a                        	je	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b54cb: 48 ff c9                     	decq	%rcx
+ 14b54ce: 48 89 fe                     	movq	%rdi, %rsi
+ 14b54d1: eb 08                        	jmp	0x14b54db <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x40b>
+ 14b54d3: 48 8b 36                     	movq	(%rsi), %rsi
+ 14b54d6: 48 85 f6                     	testq	%rsi, %rsi
+ 14b54d9: 74 5a                        	je	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b54db: 48 8b 56 20                  	movq	0x20(%rsi), %rdx
+ 14b54df: 48 39 d3                     	cmpq	%rdx, %rbx
+ 14b54e2: 72 ef                        	jb	0x14b54d3 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x403>
+ 14b54e4: 76 0b                        	jbe	0x14b54f1 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x421>
+ 14b54e6: 48 8b 76 08                  	movq	0x8(%rsi), %rsi
+ 14b54ea: 48 85 f6                     	testq	%rsi, %rsi
+ 14b54ed: 75 ec                        	jne	0x14b54db <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x40b>
+ 14b54ef: eb 44                        	jmp	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b54f1: 4c 39 fe                     	cmpq	%r15, %rsi
+ 14b54f4: 74 3f                        	je	0x14b5535 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x465>
+ 14b54f6: 4c 8b 46 08                  	movq	0x8(%rsi), %r8
+ 14b54fa: 4d 85 c0                     	testq	%r8, %r8
+ 14b54fd: 74 0d                        	je	0x14b550c <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x43c>
+ 14b54ff: 4c 89 c2                     	movq	%r8, %rdx
+ 14b5502: 4d 8b 00                     	movq	(%r8), %r8
+ 14b5505: 4d 85 c0                     	testq	%r8, %r8
+ 14b5508: 75 f5                        	jne	0x14b54ff <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x42f>
+ 14b550a: eb 0f                        	jmp	0x14b551b <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x44b>
+ 14b550c: 48 89 f2                     	movq	%rsi, %rdx
+ 14b550f: 49 89 d0                     	movq	%rdx, %r8
+ 14b5512: 48 8b 52 10                  	movq	0x10(%rdx), %rdx
+ 14b5516: 4c 3b 02                     	cmpq	(%rdx), %r8
+ 14b5519: 75 f4                        	jne	0x14b550f <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x43f>
+ 14b551b: 48 8d 5e 20                  	leaq	0x20(%rsi), %rbx
+ 14b551f: 48 39 f0                     	cmpq	%rsi, %rax
+ 14b5522: 75 03                        	jne	0x14b5527 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x457>
+ 14b5524: 49 89 16                     	movq	%rdx, (%r14)
+ 14b5527: 49 89 4e 18                  	movq	%rcx, 0x18(%r14)
+ 14b552b: e8 30 a3 16 ff               	callq	0x61f860 <_ZNSt4__Cr13__tree_removeB9sqn240000IPNS_16__tree_node_baseIPvEEEEvT_S5_>
+ 14b5530: 48 85 db                     	testq	%rbx, %rbx
+ 14b5533: 74 3c                        	je	0x14b5571 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x4a1>
+ 14b5535: 4c 89 f0                     	movq	%r14, %rax
+ 14b5538: 48 83 c4 48                  	addq	$0x48, %rsp
+ 14b553c: 5b                           	popq	%rbx
+ 14b553d: 41 5c                        	popq	%r12
+ 14b553f: 41 5d                        	popq	%r13
+ 14b5541: 41 5e                        	popq	%r14
+ 14b5543: 41 5f                        	popq	%r15
+ 14b5545: 5d                           	popq	%rbp
+ 14b5546: c3                           	retq
+ 14b5547: be 20 00 00 00               	movl	$0x20, %esi
+ 14b554c: 4c 89 e7                     	movq	%r12, %rdi
+ 14b554f: e8 dc ef 88 ff               	callq	0xd44530 <_ZN2v88internal4Zone17ExpandAndAllocateEm>
+ 14b5554: 49 89 c6                     	movq	%rax, %r14
+ 14b5557: e9 89 fc ff ff               	jmp	0x14b51e5 <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x115>
+ 14b555c: be 20 00 00 00               	movl	$0x20, %esi
+ 14b5561: 4c 89 e7                     	movq	%r12, %rdi
+ 14b5564: e8 c7 ef 88 ff               	callq	0xd44530 <_ZN2v88internal4Zone17ExpandAndAllocateEm>
+ 14b5569: 49 89 c6                     	movq	%rax, %r14
+ 14b556c: e9 ea fe ff ff               	jmp	0x14b545b <_ZNK2v88internal8compiler15LoadElimination13AbstractField4KillERKNS2_14AliasStateInfoENS0_11MaybeHandleINS0_4NameEEEPNS0_4ZoneE+0x38b>
+ 14b5571: 48 8d 3d ed f1 ca fe         	leaq	-0x1350e13(%rip), %rdi  # 0x164765 <_ZZN2v88internal4wasm7fuzzing12_GLOBAL__N_17BodyGen15choose_sub_typeENS1_8HeapTypeEPNS3_9DataRangeEE13generic_types_2+0x4f1ad>
+ 14b5578: 48 8d 35 e4 d7 cc fe         	leaq	-0x133281c(%rip), %rsi  # 0x182d63 <_ZZN2v88internal4wasm7fuzzing12_GLOBAL__N_17BodyGen15choose_sub_typeENS1_8HeapTypeEPNS3_9DataRangeEE13generic_types_2+0x6d7ab>
+ 14b557f: 31 c0                        	xorl	%eax, %eax
+ 14b5581: e8 5a 7b c8 00               	callq	0x213d0e0 <_ZNSt4__Cr22__libcpp_verbose_abortEPKcz>
+ 14b5586: 67 0f b9 40 01               	ud1l	0x1(%eax), %eax
+ 14b558b: cc                           	int3
+ 14b558c: cc                           	int3
+ 14b558d: cc                           	int3
+ 14b558e: cc                           	int3
+ 14b558f: cc                           	int3
