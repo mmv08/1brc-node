@@ -3,7 +3,7 @@ import { createCalculator } from '../lib/calculate.mjs';
 
 export const calculate = createCalculator(
   128 * 1024,
-  new URL('./lib/aggregate.mjs', import.meta.url),
+  new URL('./aggregate.mjs', import.meta.url),
   new URL('./worker.mjs', import.meta.url),
 );
 

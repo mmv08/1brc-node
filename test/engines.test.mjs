@@ -99,56 +99,56 @@ test('benchmark config selects the right flags and hashes shared code and worker
   );
   await fixture(async ({ directory }) => {
     const fake = join(directory, 'plain');
-    mkdirSync(join(fake, 'lib'), { recursive: true });
-    mkdirSync(join(directory, 'lib'));
-    writeFileSync(join(fake, 'calculate.mjs'), '// entry\n');
-    writeFileSync(join(fake, 'lib/aggregate.mjs'), '// parser\n');
-    for (const name of ['format', 'read', 'calculate']) {
-      const shared = join(directory, `lib/${name}.mjs`);
-      writeFileSync(shared, '// original\n');
+    cpSync(join(root, 'plain'), fake, { recursive: true });
+    cpSync(join(root, 'lib'), join(directory, 'lib'), { recursive: true });
+    for (const path of [
+      'lib/format.mjs',
+      'lib/read.mjs',
+      'lib/calculate.mjs',
+      'plain/worker.mjs',
+    ]) {
+      const shared = join(directory, path);
       const first = sourceHash('node', join(fake, 'calculate.mjs'));
       writeFileSync(shared, '// changed\n');
-      assert.notEqual(sourceHash('node', join(fake, 'calculate.mjs')), first, name);
+      assert.notEqual(sourceHash('node', join(fake, 'calculate.mjs')), first, path);
     }
-    const withoutWorker = sourceHash('node', join(fake, 'calculate.mjs'));
-    writeFileSync(join(fake, 'worker.mjs'), '// worker\n');
-    assert.notEqual(sourceHash('node', join(fake, 'calculate.mjs')), withoutWorker);
   });
 });
 
-test('comparison warms up both versions and records engine-specific defaults', async () => {
+test('one benchmark runner handles both engines together or individually', async () => {
   await fixture(async ({ file }) => {
-    const env = { ...cleanEnv(), RUNS: '1', WARMUP: '1' };
-    delete env.CHUNK_BYTES;
-    const child = spawnSync(process.execPath, ['tools/compare.mjs', 'integration', file], {
-      cwd: root,
-      env,
-      encoding: 'utf8',
-    });
-    assert.equal(child.status, 0, child.stderr);
-    const path = child.stdout.match(/Report: (results\/[^\n]+\.json)/)?.[1];
-    assert.ok(path, child.stdout);
-    const reportFile = join(root, path);
-    try {
-      const report = JSON.parse(readFileSync(reportFile, 'utf8'));
-      assert.equal(report.complete, true);
-      assert.equal(report.warmups.length, 2);
-      assert.deepEqual(
-        report.cases.map((entry) => entry.env.ENGINE),
-        ['node', 'wasm'],
-      );
-      assert.deepEqual(
-        report.cases.map((entry) => entry.chunkBytes),
-        [131072, 524288],
-      );
-      for (const entry of report.cases) {
-        assert.equal(entry.env.WORKERS, '4');
-        assert.equal(entry.times.length, 1);
-        assert.equal(entry.usage.length, 1);
-        assert.equal(entry.sourceSha256, sourceHash(entry.env.ENGINE, entry.script));
+    for (const engine of [undefined, 'node', 'wasm']) {
+      const env = { ...cleanEnv(), RUNS: '1', WARMUP: '1' };
+      delete env.CHUNK_BYTES;
+      if (engine) env.ENGINE = engine;
+      const child = spawnSync(process.execPath, ['tools/compare.mjs', 'integration', file], {
+        cwd: root,
+        env,
+        encoding: 'utf8',
+      });
+      assert.equal(child.status, 0, child.stderr);
+      const path = child.stdout.match(/Report: (results\/[^\n]+\.json)/)?.[1];
+      assert.ok(path, child.stdout);
+      const reportFile = join(root, path);
+      try {
+        const report = JSON.parse(readFileSync(reportFile, 'utf8'));
+        const engines = engine ? [engine] : ['node', 'wasm'];
+        assert.equal(report.complete, true);
+        assert.equal(report.warmups.length, engines.length);
+        assert.deepEqual(
+          report.cases.map((entry) => entry.env.ENGINE),
+          engines,
+        );
+        for (const entry of report.cases) {
+          assert.equal(entry.chunkBytes, entry.env.ENGINE === 'node' ? 131072 : 524288);
+          assert.equal(entry.env.WORKERS, '4');
+          assert.equal(entry.times.length, 1);
+          assert.equal(entry.usage.length, 1);
+          assert.equal(entry.sourceSha256, sourceHash(entry.env.ENGINE, entry.script));
+        }
+      } finally {
+        rmSync(reportFile);
       }
-    } finally {
-      rmSync(reportFile);
     }
   });
 });

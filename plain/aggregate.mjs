@@ -1,4 +1,4 @@
-import { consume } from '../../lib/read.mjs';
+import { consume } from '../lib/read.mjs';
 
 const BYTE_MASKS = [0, 0xff, 0xffff, 0xffffff];
 const MAX_STATIONS = 10000;

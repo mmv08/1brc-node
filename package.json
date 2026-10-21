@@ -13,9 +13,9 @@
     "test:node": "node --test test/node/*.test.mjs",
     "test:wasm": "node --test test/calculate.test.mjs test/wasm.test.mjs",
     "generate": "node tools/generate.mjs",
-    "bench": "node tools/bench.mjs",
-    "bench:node": "ENGINE=node node tools/bench.mjs",
-    "bench:wasm": "ENGINE=wasm node tools/bench.mjs",
+    "bench": "node tools/compare.mjs node-vs-wasm",
+    "bench:node": "ENGINE=node node tools/compare.mjs node",
+    "bench:wasm": "ENGINE=wasm node tools/compare.mjs wasm",
     "check": "biome check .",
     "format": "biome check --write ."
   },

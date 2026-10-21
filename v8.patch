@@ -1,0 +1,2042 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 0e0277b6..f96465e9 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -4417,6 +4417,7 @@ v8_header_set("v8_internal_headers") {
+     "src/compiler/simplified-lowering.h",
+     "src/compiler/simplified-operator-reducer.h",
+     "src/compiler/simplified-operator.h",
++    "src/compiler/sparse-sidetable.h",
+     "src/compiler/state-values-utils.h",
+     "src/compiler/turbofan-graph-visualizer.h",
+     "src/compiler/turbofan-graph.h",
+diff --git a/src/compiler/escape-analysis.cc b/src/compiler/escape-analysis.cc
+index 87757ff5..901c3241 100644
+--- a/src/compiler/escape-analysis.cc
++++ b/src/compiler/escape-analysis.cc
+@@ -9,6 +9,7 @@
+ #include "src/compiler/node-matchers.h"
+ #include "src/compiler/operator-properties.h"
+ #include "src/compiler/simplified-operator.h"
++#include "src/compiler/sparse-sidetable.h"
+ #include "src/compiler/state-values-utils.h"
+ #include "src/deoptimizer/translated-state.h"
+ #include "src/handles/handles-inl.h"
+@@ -43,29 +44,6 @@ class Sidetable {
+   ZoneVector<T> map_;
+ };
+ 
+-template <class T>
+-class SparseSidetable {
+- public:
+-  explicit SparseSidetable(Zone* zone, T def_value = T())
+-      : def_value_(std::move(def_value)), map_(zone) {}
+-  void Set(const Node* node, T value) {
+-    auto iter = map_.find(node->id());
+-    if (iter != map_.end()) {
+-      iter->second = std::move(value);
+-    } else if (value != def_value_) {
+-      map_.insert(iter, std::make_pair(node->id(), std::move(value)));
+-    }
+-  }
+-  const T& Get(const Node* node) const {
+-    auto iter = map_.find(node->id());
+-    return iter != map_.end() ? iter->second : def_value_;
+-  }
+-
+- private:
+-  T def_value_;
+-  ZoneUnorderedMap<NodeId, T> map_;
+-};
+-
+ // Keeps track of the changes to the current node during reduction.
+ // Encapsulates the current state of the IR graph and the reducer state like
+ // side-tables. All access to the IR and the reducer state should happen through
+diff --git a/src/compiler/graph-reducer.cc b/src/compiler/graph-reducer.cc
+index 0abbd11e..b1a022d6 100644
+--- a/src/compiler/graph-reducer.cc
++++ b/src/compiler/graph-reducer.cc
+@@ -77,7 +77,7 @@ void GraphReducer::ReduceNode(Node* node) {
+       // If the stack becomes empty, revisit any nodes in the revisit queue.
+       node = revisit_.front();
+       revisit_.pop();
+-      if (state_.Get(node) == State::kRevisit) {
++      if (state_.Is(node, State::kRevisit)) {
+         // state can change while in queue.
+         Push(node);
+       }
+@@ -301,14 +301,14 @@ void GraphReducer::Push(Node* const node) {
+ 
+ 
+ bool GraphReducer::Recurse(Node* node) {
+-  if (state_.Get(node) > State::kRevisit) return false;
++  if (state_.IsGreaterThan(node, State::kRevisit)) return false;
+   Push(node);
+   return true;
+ }
+ 
+ 
+ void GraphReducer::Revisit(Node* node) {
+-  if (state_.Get(node) == State::kVisited) {
++  if (state_.Is(node, State::kVisited)) {
+     state_.Set(node, State::kRevisit);
+     revisit_.push(node);
+   }
+diff --git a/src/compiler/js-call-reducer.cc b/src/compiler/js-call-reducer.cc
+index 2fa7a3d2..33a188cf 100644
+--- a/src/compiler/js-call-reducer.cc
++++ b/src/compiler/js-call-reducer.cc
+@@ -5500,6 +5500,8 @@ Reduction JSCallReducer::ReduceJSCall(Node* node,
+       return ReduceArrayIsArray(node);
+     case Builtin::kArrayBufferIsView:
+       return ReduceArrayBufferIsView(node);
++    case Builtin::kArrayBufferPrototypeGetByteLength:
++      return ReduceArrayBufferByteLengthAccessor(node);
+     case Builtin::kDataViewPrototypeGetByteLength:
+       // TODO(v8:11111): Optimize for JS_RAB_GSAB_DATA_VIEW_TYPE too.
+       return ReduceArrayBufferViewByteLengthAccessor(node, JS_DATA_VIEW_TYPE,
+@@ -9317,6 +9319,57 @@ Reduction JSCallReducer::ReduceArrayBufferIsView(Node* node) {
+   return Changed(node);
+ }
+ 
++Reduction JSCallReducer::ReduceArrayBufferByteLengthAccessor(Node* node) {
++  JSCallNode n(node);
++  Effect effect = n.effect();
++  TNode<JSArrayBuffer> receiver =
++      TNode<JSArrayBuffer>::UncheckedCast(n.receiver());
++  MapInference inference(broker(), receiver, effect);
++  if (!inference.HaveMaps() ||
++      !inference.AllOfInstanceTypesAre(JS_ARRAY_BUFFER_TYPE) ||
++      !inference.RelyOnMapsViaStability(dependencies())) {
++    return inference.NoChange();
++  }
++
++  JSCallReducerAssembler a(this, node, effect);
++  TNode<Word32T> bit_field = a.EnterMachineGraph<Word32T>(
++      a.LoadField<Word32T>(AccessBuilder::ForJSArrayBufferBitField(), receiver),
++      UseInfo::TruncatingWord32());
++  // ArrayBuffers and SharedArrayBuffers have the same instance type.
++  // Keep the builtin's throwing path rather than speculatively deoptimizing:
++  // getter calls need not have a CALL_IC slot to
++  // prevent deoptimization loops.
++  TNode<Word32T> is_shared = a.Word32And(
++      bit_field, a.Int32Constant(JSArrayBuffer::Bits::IsSharedBit::kMask));
++  a.MachineIf(is_shared)
++      .Then([&] {
++        Callable callable = CodeFactory::CallFunction(
++            isolate(), ConvertReceiverMode::kNotNullOrUndefined);
++        auto descriptor = Linkage::GetStubCallDescriptor(
++            graph()->zone(), callable.descriptor(), 1,
++            CallDescriptor::kNeedsFrameState);
++        a.MayThrow([&] {
++          return a.AddNode<Object>(graph()->NewNode(
++              common()->Call(descriptor),
++              jsgraph()->HeapConstantNoHole(callable.code()), n.target(),
++              jsgraph()->ConstantNoHole(JSParameterCount(0)), receiver,
++              n.context(), n.frame_state(), a.effect(), a.control()));
++        });
++        a.Unreachable();
++      })
++      .ExpectFalse();
++
++  // This mutable field is updated by both resizing and detachment (to zero).
++  TNode<UintPtrT> value = a.EnterMachineGraph<UintPtrT>(
++      a.LoadField<UintPtrT>(AccessBuilder::ForJSArrayBufferByteLength(),
++                            receiver),
++      UseInfo::Word());
++  TNode<Number> result = a.ExitMachineGraph<Number>(
++      value, MachineType::PointerRepresentation(),
++      TypeCache::Get()->kJSArrayBufferByteLengthType);
++  return ReplaceWithSubgraph(&a, result);
++}
++
+ Reduction JSCallReducer::ReduceArrayBufferViewAccessor(
+     Node* node, InstanceType instance_type, FieldAccess const& access,
+     Builtin builtin) {
+diff --git a/src/compiler/js-call-reducer.h b/src/compiler/js-call-reducer.h
+index 0d4d10d6..64b0f6be 100644
+--- a/src/compiler/js-call-reducer.h
++++ b/src/compiler/js-call-reducer.h
+@@ -239,6 +239,7 @@ class V8_EXPORT_PRIVATE JSCallReducer final : public AdvancedReducer {
+       InstanceType collection_iterator_instance_type_last);
+ 
+   Reduction ReduceArrayBufferIsView(Node* node);
++  Reduction ReduceArrayBufferByteLengthAccessor(Node* node);
+   Reduction ReduceArrayBufferViewAccessor(Node* node,
+                                           InstanceType instance_type,
+                                           FieldAccess const& access,
+diff --git a/src/compiler/load-elimination.cc b/src/compiler/load-elimination.cc
+index 05c5ca55..5034df6a 100644
+--- a/src/compiler/load-elimination.cc
++++ b/src/compiler/load-elimination.cc
+@@ -281,6 +281,10 @@ class LoadElimination::AliasStateInfo {
+ 
+   bool MayAlias(Node* other) const;
+ 
++  Node* fresh_allocation() const {
++    return object_->opcode() == IrOpcode::kAllocate ? object_ : nullptr;
++  }
++
+  private:
+   const AbstractState* state_;
+   Node* object_;
+@@ -312,6 +316,18 @@ LoadElimination::AbstractField const* LoadElimination::AbstractField::KillConst(
+ LoadElimination::AbstractField const* LoadElimination::AbstractField::Kill(
+     const AliasStateInfo& alias_info, MaybeHandle<Name> name,
+     Zone* zone) const {
++  if (Node* allocation = alias_info.fresh_allocation()) {
++    // During initialization, only the allocation itself can alias. Avoid
++    // scanning unrelated objects when the exact key can be looked up directly.
++    auto it = info_for_node_.find(allocation);
++    if (it == info_for_node_.end() || allocation->IsDead() ||
++        !MayAlias(name, it->second.name)) {
++      return this;
++    }
++    AbstractField* that = zone->New<AbstractField>(*this);
++    that->info_for_node_.erase(allocation);
++    return that;
++  }
+   for (auto info1 : this->info_for_node_) {
+     if (info1.first->IsDead()) continue;
+     if (alias_info.MayAlias(info1.first)) {
+@@ -711,8 +727,8 @@ bool LoadElimination::AliasStateInfo::MayAlias(Node* other) const {
+   // If {object} is being initialized right here (indicated by {object} being
+   // an Allocate node instead of a FinishRegion node), we know that {other}
+   // can only alias with {object} if they refer to exactly the same node.
+-  if (object_->opcode() == IrOpcode::kAllocate) {
+-    return object_ == other;
++  if (Node* allocation = fresh_allocation()) {
++    return allocation == other;
+   }
+   // Decide aliasing based on the node kinds.
+   if (!compiler::MayAlias(object_, other)) {
+diff --git a/src/compiler/loop-peeling.cc b/src/compiler/loop-peeling.cc
+index f2f3c4de..b573b588 100644
+--- a/src/compiler/loop-peeling.cc
++++ b/src/compiler/loop-peeling.cc
+@@ -122,14 +122,149 @@ Node* PeeledIteration::map(Node* node) {
+   return node;
+ }
+ 
++bool LoopPeeler::CollectTerminatingNodes(LoopTree::Loop* loop,
++                                         NodeVector* nodes) {
++  DCHECK(nodes->empty());
++  Node* loop_node = loop_tree_->GetLoopControl(loop);
++  auto is_own_exit = [&](Node* node) {
++    if (node->opcode() == IrOpcode::kLoopExit) {
++      return node->InputAt(1) == loop_node;
++    }
++    if (node->opcode() == IrOpcode::kLoopExitValue ||
++        node->opcode() == IrOpcode::kLoopExitEffect) {
++      return NodeProperties::GetControlInput(node)->InputAt(1) == loop_node;
++    }
++    return false;
++  };
++  ZoneUnorderedSet<Node*> visited(tmp_zone_);
++  auto enqueue = [&](Node* node) {
++    if (visited.find(node) != visited.end()) return true;
++    // Bound the frontier as well as the eventual copied region. With no
++    // escaping uses, leave the existing caller's size policy unchanged.
++    if (loop->TotalSize() + nodes->size() >= kMaxPeeledNodes) return false;
++    visited.insert(node);
++    nodes->push_back(node);
++    return true;
++  };
++
++  // Keep the usual marked-exit requirement. Additionally, a terminal side
++  // path can be copied together with the body, without merging it back into
++  // the loop. Collect every escaping use, including frame-state values.
++  for (Node* node : loop_tree_->LoopNodes(loop)) {
++    if (is_own_exit(node)) continue;
++    for (Node* use : node->uses()) {
++      if (!loop_tree_->Contains(loop, use) &&
++          use->opcode() != IrOpcode::kTerminate) {
++        if (!enqueue(use)) return false;
++      }
++    }
++  }
++
++  for (size_t i = 0; i < nodes->size(); ++i) {
++    Node* node = (*nodes)[i];
++    // Do not absorb another loop, ordinary exits, or an unrelated terminal.
++    if (loop_tree_->ContainingLoop(node) != nullptr ||
++        node->opcode() == IrOpcode::kLoop ||
++        node->opcode() == IrOpcode::kLoopExit ||
++        node->opcode() == IrOpcode::kReturn ||
++        node->opcode() == IrOpcode::kTerminate ||
++        node->opcode() == IrOpcode::kEnd || node->uses().empty()) {
++      return false;
++    }
++    for (Node* use : node->uses()) {
++      if (node->opcode() == IrOpcode::kThrow && use == graph_->end()) {
++        continue;
++      }
++      if (loop_tree_->Contains(loop, use)) return false;
++      if (!enqueue(use)) return false;
++    }
++  }
++
++  // Retained external inputs must not depend indirectly on this loop's exits
++  // either. Enclosing loop headers are invariant during one execution of this
++  // loop: their backedges belong to the next enclosing iteration, so do not
++  // follow them back into this loop. Other external dependencies are checked
++  // transitively, with a separate bound on the validation work.
++  auto is_enclosing_header = [&](Node* node) {
++    Node* header = node;
++    if (NodeProperties::IsPhi(node)) {
++      header = NodeProperties::GetControlInput(node);
++    }
++    if (header->opcode() != IrOpcode::kLoop) return false;
++    LoopTree::Loop* header_loop = loop_tree_->ContainingLoop(header);
++    for (LoopTree::Loop* parent = loop->parent(); parent != nullptr;
++         parent = parent->parent()) {
++      if (header_loop == parent) return true;
++    }
++    return false;
++  };
++  ZoneUnorderedSet<Node*> checked_inputs(tmp_zone_);
++  NodeVector external_inputs(tmp_zone_);
++  auto enqueue_external_input = [&](Node* node) {
++    if (is_own_exit(node)) return false;
++    if (is_enclosing_header(node) ||
++        checked_inputs.find(node) != checked_inputs.end()) {
++      return true;
++    }
++    if (external_inputs.size() >= kMaxPeeledNodes) return false;
++    checked_inputs.insert(node);
++    external_inputs.push_back(node);
++    return true;
++  };
++
++  // In particular, reject a merge with a path originating outside this loop:
++  // copying that merge would execute its other predecessor twice. All
++  // control inputs must belong to the body or the collected terminal region.
++  for (Node* node : *nodes) {
++    // This loop's exit markers are merged after copying, not mapped by the
++    // NodeCopier. A copied control, value, or effect input must not still
++    // reference such a shared exit. Child-loop exits are part of the body.
++    for (Node* input : node->inputs()) {
++      if (is_own_exit(input)) return false;
++      if (!loop_tree_->Contains(loop, input) &&
++          visited.find(input) == visited.end() &&
++          !enqueue_external_input(input)) {
++        return false;
++      }
++    }
++    for (int i = 0; i < node->op()->ControlInputCount(); ++i) {
++      Node* control = NodeProperties::GetControlInput(node, i);
++      if (!loop_tree_->Contains(loop, control) &&
++          visited.find(control) == visited.end()) {
++        return false;
++      }
++    }
++  }
++  for (size_t i = 0; i < external_inputs.size(); ++i) {
++    for (Node* input : external_inputs[i]->inputs()) {
++      // An uncopied predecessor cannot retain an input tied to the original
++      // iteration, even if that input itself would be mapped when copying.
++      if (loop_tree_->Contains(loop, input) ||
++          visited.find(input) != visited.end() ||
++          !enqueue_external_input(input)) {
++        return false;
++      }
++    }
++  }
++  return true;
++}
++
++bool LoopPeeler::CanPeel(LoopTree::Loop* loop) {
++  NodeVector terminating_nodes(tmp_zone_);
++  return CollectTerminatingNodes(loop, &terminating_nodes);
++}
++
+ PeeledIteration* LoopPeeler::Peel(LoopTree::Loop* loop) {
+-  if (!CanPeel(loop)) return nullptr;
++  NodeVector terminating_nodes(tmp_zone_);
++  if (!CollectTerminatingNodes(loop, &terminating_nodes)) return nullptr;
+ 
+   //============================================================================
+   // Construct the peeled iteration.
+   //============================================================================
+   PeeledIterationImpl* iter = tmp_zone_->New<PeeledIterationImpl>(tmp_zone_);
+-  uint32_t estimated_peeled_size = 5 + loop->TotalSize() * 2;
++  uint32_t estimated_peeled_size =
++      5 +
++      (loop->TotalSize() + static_cast<uint32_t>(terminating_nodes.size())) * 2;
+   NodeCopier copier(graph_, estimated_peeled_size, &iter->node_pairs_, 1);
+ 
+   Node* dead = graph_->NewNode(common_->Dead());
+@@ -139,9 +274,21 @@ PeeledIteration* LoopPeeler::Peel(LoopTree::Loop* loop) {
+     copier.Insert(node, node->InputAt(kAssumedLoopEntryIndex));
+   }
+ 
+-  // Copy all the nodes of loop body for the peeled iteration.
+-  copier.CopyNodes(graph_, tmp_zone_, dead, loop_tree_->BodyNodes(loop),
+-                   source_positions_, node_origins_);
++  // Copy the terminal paths as well, so their effects and frame states refer
++  // to the peeled iteration's values rather than the original loop's phis.
++  NodeRange body = loop_tree_->BodyNodes(loop);
++  NodeVector nodes_to_copy(body.begin(), body.end(), tmp_zone_);
++  nodes_to_copy.insert(nodes_to_copy.end(), terminating_nodes.begin(),
++                       terminating_nodes.end());
++  copier.CopyNodes(
++      graph_, tmp_zone_, dead,
++      base::make_iterator_range(nodes_to_copy.begin(), nodes_to_copy.end()),
++      source_positions_, node_origins_);
++  for (Node* node : terminating_nodes) {
++    if (node->opcode() == IrOpcode::kThrow) {
++      NodeProperties::MergeControlToEnd(graph_, common_, copier.map(node));
++    }
++  }
+ 
+   //============================================================================
+   // Replace the entry to the loop with the output of the peeled iteration.
+diff --git a/src/compiler/loop-peeling.h b/src/compiler/loop-peeling.h
+index 801cc10f..383d45a3 100644
+--- a/src/compiler/loop-peeling.h
++++ b/src/compiler/loop-peeling.h
+@@ -16,13 +16,12 @@ namespace compiler {
+ class NodeOriginTable;
+ class SourcePositionTable;
+ 
+-// Represents the output of peeling a loop, which is basically the mapping
+-// from the body of the loop to the corresponding nodes in the peeled
+-// iteration.
++// Represents the mapping from the loop body and terminal side paths to the
++// corresponding nodes in the peeled iteration.
+ class V8_EXPORT_PRIVATE PeeledIteration : public NON_EXPORTED_BASE(ZoneObject) {
+  public:
+   // Maps {node} to its corresponding copy in the peeled iteration, if
+-  // the node was part of the body of the loop. Returns {node} otherwise.
++  // the node was copied with the loop. Returns {node} otherwise.
+   Node* map(Node* node);
+ 
+  protected:
+@@ -43,9 +42,7 @@ class V8_EXPORT_PRIVATE LoopPeeler {
+         tmp_zone_(tmp_zone),
+         source_positions_(source_positions),
+         node_origins_(node_origins) {}
+-  bool CanPeel(LoopTree::Loop* loop) {
+-    return LoopFinder::HasMarkedExits(loop_tree_, loop);
+-  }
++  bool CanPeel(LoopTree::Loop* loop);
+   PeeledIteration* Peel(LoopTree::Loop* loop);
+   void PeelInnerLoopsOfTree();
+ 
+@@ -61,6 +58,7 @@ class V8_EXPORT_PRIVATE LoopPeeler {
+   SourcePositionTable* const source_positions_;
+   NodeOriginTable* const node_origins_;
+ 
++  bool CollectTerminatingNodes(LoopTree::Loop* loop, NodeVector* nodes);
+   void PeelInnerLoops(LoopTree::Loop* loop);
+ };
+ 
+diff --git a/src/compiler/node-marker.h b/src/compiler/node-marker.h
+index 5ee44173..507d8bcf 100644
+--- a/src/compiler/node-marker.h
++++ b/src/compiler/node-marker.h
+@@ -35,6 +35,20 @@ class NodeMarkerBase {
+     node->set_mark(mark + mark_min_);
+   }
+ 
++  V8_INLINE bool Is(const Node* node, Mark mark) {
++    DCHECK_LT(mark, mark_max_ - mark_min_);
++    DCHECK_LT(node->mark(), mark_max_);
++    // Marks from earlier markers have the local state zero.
++    return mark == 0 ? node->mark() <= mark_min_
++                     : node->mark() == mark_min_ + mark;
++  }
++
++  V8_INLINE bool IsGreaterThan(const Node* node, Mark mark) {
++    DCHECK_LT(mark, mark_max_ - mark_min_);
++    DCHECK_LT(node->mark(), mark_max_);
++    return node->mark() > mark_min_ + mark;
++  }
++
+  private:
+   Mark const mark_min_;
+   Mark const mark_max_;
+@@ -69,6 +83,14 @@ class NodeMarker : public NodeMarkerBase {
+   V8_INLINE void Set(Node* node, State state) {
+     NodeMarkerBase::Set(node, static_cast<Mark>(state));
+   }
++
++  V8_INLINE bool Is(const Node* node, State state) {
++    return NodeMarkerBase::Is(node, static_cast<Mark>(state));
++  }
++
++  V8_INLINE bool IsGreaterThan(const Node* node, State state) {
++    return NodeMarkerBase::IsGreaterThan(node, static_cast<Mark>(state));
++  }
+ };
+ 
+ }  // namespace compiler
+diff --git a/src/compiler/sparse-sidetable.h b/src/compiler/sparse-sidetable.h
+new file mode 100644
+index 00000000..831809dc
+--- /dev/null
++++ b/src/compiler/sparse-sidetable.h
+@@ -0,0 +1,80 @@
++// Copyright 2026 the V8 project authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef V8_COMPILER_SPARSE_SIDETABLE_H_
++#define V8_COMPILER_SPARSE_SIDETABLE_H_
++
++#include <array>
++#include <type_traits>
++#include <utility>
++
++#include "src/base/template-utils.h"
++#include "src/compiler/node.h"
++#include "src/zone/zone-containers.h"
++
++namespace v8::internal::compiler {
++
++// Node-indexed storage with allocation-free missing reads and default writes.
++// Chunks keep references stable when the index grows. The presence bits retain
++// the distinction between a missing entry and a stored default value.
++template <class T>
++class SparseSidetable {
++ public:
++  explicit SparseSidetable(Zone* zone, T def_value = T())
++      : def_value_(std::move(def_value)), chunks_(zone), zone_(zone) {}
++  SparseSidetable(const SparseSidetable&) = delete;
++  SparseSidetable& operator=(const SparseSidetable&) = delete;
++
++  void Set(const Node* node, T value) {
++    const size_t index = node->id() / kChunkSize;
++    const size_t slot = node->id() % kChunkSize;
++    Chunk* chunk = index < chunks_.size() ? chunks_[index] : nullptr;
++    if (chunk && chunk->Contains(slot)) {
++      chunk->values[slot] = std::move(value);
++      return;
++    }
++    if (!(value != def_value_)) return;
++    if (!chunk) {
++      if (index >= chunks_.size()) chunks_.resize(index + 1, nullptr);
++      chunk = zone_->New<Chunk>(def_value_);
++      chunks_[index] = chunk;
++    }
++    chunk->values[slot] = std::move(value);
++    chunk->present |= uint64_t{1} << slot;
++  }
++
++  const T& Get(const Node* node) const {
++    const size_t index = node->id() / kChunkSize;
++    if (index < chunks_.size()) {
++      const Chunk* chunk = chunks_[index];
++      const size_t slot = node->id() % kChunkSize;
++      if (chunk && chunk->Contains(slot)) return chunk->values[slot];
++    }
++    return def_value_;
++  }
++
++ private:
++  static constexpr size_t kChunkSize = 64;
++  static_assert(std::is_trivially_destructible_v<T>);
++
++  struct Chunk {
++    explicit Chunk(const T& def_value)
++        : values(
++              base::make_array<kChunkSize>([&](size_t) { return def_value; })) {
++    }
++    bool Contains(size_t slot) const {
++      return (present & (uint64_t{1} << slot)) != 0;
++    }
++    uint64_t present = 0;
++    std::array<T, kChunkSize> values;
++  };
++
++  T def_value_;
++  ZoneVector<Chunk*> chunks_;
++  Zone* const zone_;
++};
++
++}  // namespace v8::internal::compiler
++
++#endif  // V8_COMPILER_SPARSE_SIDETABLE_H_
+diff --git a/src/compiler/turboshaft/branch-elimination-reducer.h b/src/compiler/turboshaft/branch-elimination-reducer.h
+index e47c6cef..419642be 100644
+--- a/src/compiler/turboshaft/branch-elimination-reducer.h
++++ b/src/compiler/turboshaft/branch-elimination-reducer.h
+@@ -353,37 +353,39 @@ class BranchEliminationReducer : public Next {
+       goto no_change;
+     }
+ 
+-    // Maximum size up to which we allow cloning a block. Cloning too large
+-    // blocks will lead to increasing the size of the graph too much, which will
+-    // lead to slower compile time, and larger generated code.
+-    // TODO(dmercadier): we might want to exclude Phis from this, since they are
+-    // typically removed when we clone a block. However, computing the number of
+-    // operations in a block excluding Phis is more costly (because we'd have to
+-    // iterate all of the operations one by one).
+-    // TODO(dmercadier): this "13" was selected fairly arbitrarily (= it sounded
+-    // reasonable). It could be useful to run a few benchmarks to see if we can
+-    // find a more optimal number.
++    // Bound both generated code and compilation work. Phis are substituted
++    // when cloning an incoming edge, and FrameStates emit no instructions, so
++    // exclude them from the code budget. A separate bound on the total storage
++    // limits metadata growth and the cost of counting operations.
+     static constexpr int kMaxOpCountForCloning = 13;
++    static constexpr int kMaxOpCountUpperBoundForCloning =
++        2 * kMaxOpCountForCloning;
+ 
+     const Operation& last_op =
+         destination_origin->LastOperation(__ input_graph());
+ 
+-    if (destination_origin->OpCountUpperBound() > kMaxOpCountForCloning) {
++    const int op_count_upper_bound = destination_origin->OpCountUpperBound();
++    if (op_count_upper_bound > kMaxOpCountUpperBoundForCloning) {
+       goto no_change;
+     }
+ 
+-    if (!__ CanCreateNVariables(destination_origin->OpCountUpperBound())) {
++    if (!__ CanCreateNVariables(op_count_upper_bound)) {
+       goto no_change;
+     }
+ 
+-    if (__ data()->is_wasm()) {
++    if (op_count_upper_bound > kMaxOpCountForCloning || __ data()->is_wasm()) {
++      int op_count = 0;
+       // Wasm cannot handle it if too many deoptimization exits are created
+       // (kTooManyDeoptimizationBailouts in the CodeGenerator). In Wasm,
+       // DeoptimizeIfOps are rare and cloning them is probably not worth the
+       // metadata overhead.
+       for (const Operation& op :
+            __ input_graph().operations(*destination_origin)) {
+-        if (op.Is<DeoptimizeIfOp>()) {
++        if (__ data()->is_wasm() && op.Is<DeoptimizeIfOp>()) {
++          goto no_change;
++        }
++        if (!op.Is<PhiOp>() && !op.Is<FrameStateOp>() &&
++            ++op_count > kMaxOpCountForCloning) {
+           goto no_change;
+         }
+       }
+@@ -650,32 +652,39 @@ class BranchEliminationReducer : public Next {
+     }
+   }
+ 
+-  // Checks that {idx} only depends on only on Constants or on Phi whose input
+-  // from the current block is a Constant, and on a least one Phi (whose input
++  // Checks that {idx} only depends on Constants or on Phis whose input
++  // from the current block is a Constant, and on at least one Phi (whose input
+   // from the current block is a Constant). If it is the case and {idx} is used
+   // in a Branch, then the Branch's block could be cloned in the current block,
+   // and {idx} could then be constant-folded away such that the Branch becomes a
+   // Goto.
+-  bool CanBeConstantFolded(OpIndex idx, const Block* cond_input_block,
+-                           bool has_phi = false, int depth = 0) {
++  bool CanBeConstantFolded(OpIndex idx, const Block* cond_input_block) {
++    bool has_phi = false;
++    return CanBeConstantFoldedImpl(idx, cond_input_block, &has_phi, 0) &&
++           has_phi;
++  }
++
++  bool CanBeConstantFoldedImpl(OpIndex idx, const Block* cond_input_block,
++                               bool* has_phi, int depth) {
+     // We limit the depth of the search to {kMaxDepth} in order to avoid
+     // potentially visiting a lot of nodes.
+     static constexpr int kMaxDepth = 4;
+     if (depth > kMaxDepth) return false;
+     const Operation& op = __ input_graph().Get(idx);
+     if (!cond_input_block->Contains(idx)) {
+-      // If we reach a ConstantOp without having gone through a Phi, then the
+-      // condition can be constant-folded without performing block cloning.
+-      return has_phi && op.Is<ConstantOp>();
++      // A constant can be an operand of an expression whose other operand
++      // depends on a Phi. Check for that dependency on the whole expression.
++      return op.Is<ConstantOp>();
+     }
+     if (op.Is<PhiOp>()) {
++      *has_phi = true;
+       int curr_block_pred_idx = cond_input_block->GetPredecessorIndex(
+           __ current_block()->OriginForBlockEnd());
+       // There is no need to increment {depth} on this recursive call, because
+       // it will anyways exit early because {idx} won't be in
+       // {cond_input_block}.
+-      return CanBeConstantFolded(op.input(curr_block_pred_idx),
+-                                 cond_input_block, /*has_phi*/ true, depth);
++      return CanBeConstantFoldedImpl(op.input(curr_block_pred_idx),
++                                     cond_input_block, has_phi, depth);
+     } else if (op.Is<ConstantOp>()) {
+       return true;
+     } else if (op.input_count == 0) {
+@@ -688,13 +697,13 @@ class BranchEliminationReducer : public Next {
+     }
+ 
+     for (int i = 0; i < op.input_count; i++) {
+-      if (!CanBeConstantFolded(op.input(i), cond_input_block, has_phi,
+-                               depth + 1)) {
++      if (!CanBeConstantFoldedImpl(op.input(i), cond_input_block, has_phi,
++                                   depth + 1)) {
+         return false;
+       }
+     }
+ 
+-    return has_phi;
++    return true;
+   }
+ 
+   std::optional<int> GetExact(OpIndex index) {
+diff --git a/test/mjsunit/compiler/array-buffer-byte-length.js b/test/mjsunit/compiler/array-buffer-byte-length.js
+new file mode 100644
+index 00000000..ecc3cff9
+--- /dev/null
++++ b/test/mjsunit/compiler/array-buffer-byte-length.js
+@@ -0,0 +1,209 @@
++// Copyright 2026 the V8 project authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++// Flags: --allow-natives-syntax --turbofan
++
++(function NormalAndDetached() {
++  function byteLength(buffer) {
++    return buffer.byteLength;
++  }
++  const buffer = new ArrayBuffer(8);
++  const empty = new ArrayBuffer(0);
++  %PrepareFunctionForOptimization(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertEquals(0, byteLength(empty));
++  %OptimizeFunctionOnNextCall(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertOptimized(byteLength);
++  assertEquals(0, byteLength(empty));
++
++  %ArrayBufferDetach(buffer);
++  assertEquals(0, byteLength(buffer));
++  // A buffer that was already detached must also be accepted after tier-up.
++  %PrepareFunctionForOptimization(byteLength);
++  %OptimizeFunctionOnNextCall(byteLength);
++  assertEquals(0, byteLength(buffer));
++  assertOptimized(byteLength);
++})();
++
++(function Resizable() {
++  function byteLength(buffer) {
++    return buffer.byteLength;
++  }
++  const buffer = new ArrayBuffer(8, {maxByteLength: 32});
++  %PrepareFunctionForOptimization(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertEquals(8, byteLength(buffer));
++  %OptimizeFunctionOnNextCall(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertOptimized(byteLength);
++  buffer.resize(0);
++  assertEquals(0, byteLength(buffer));
++  buffer.resize(24);
++  assertEquals(24, byteLength(buffer));
++  %ArrayBufferDetach(buffer);
++  assertEquals(0, byteLength(buffer));
++})();
++
++(function SharedWithArrayBufferPrototype() {
++  function byteLength(buffer) {
++    try {
++      return buffer.byteLength;
++    } catch (error) {
++      if (error instanceof TypeError) return -1;
++      throw error;
++    }
++  }
++  const buffer = new ArrayBuffer(8);
++  // These buffers have different maps but the same instance type and getter.
++  // Include both maps in the feedback so the shared test cannot be bypassed
++  // by deoptimizing on an unexpected receiver map.
++  const shared = Reflect.construct(SharedArrayBuffer, [8], ArrayBuffer);
++  const growable = Reflect.construct(
++      SharedArrayBuffer, [8, {maxByteLength: 16}], ArrayBuffer);
++  assertSame(ArrayBuffer.prototype, Object.getPrototypeOf(shared));
++  assertSame(ArrayBuffer.prototype, Object.getPrototypeOf(growable));
++  %PrepareFunctionForOptimization(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertEquals(-1, byteLength(shared));
++  assertEquals(-1, byteLength(growable));
++  assertEquals(8, byteLength(buffer));
++  %OptimizeFunctionOnNextCall(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertOptimized(byteLength);
++  // Keep the handler inside the optimized function to test exception edges.
++  assertEquals(-1, byteLength(shared));
++  assertOptimized(byteLength);
++  assertEquals(-1, byteLength(growable));
++  assertOptimized(byteLength);
++  assertEquals(8, byteLength(buffer));
++})();
++
++(function BorrowedGetter() {
++  const getter =
++      Object.getOwnPropertyDescriptor(ArrayBuffer.prototype, 'byteLength').get;
++  function byteLength(receiver) {
++    return getter.call(receiver);
++  }
++  const buffer = new ArrayBuffer(8);
++  %PrepareFunctionForOptimization(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertEquals(8, byteLength(buffer));
++  %OptimizeFunctionOnNextCall(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertOptimized(byteLength);
++  for (const receiver of [
++    undefined, null, 0, {}, Object.create(ArrayBuffer.prototype),
++    new Uint8Array(8), new DataView(buffer), new SharedArrayBuffer(8),
++    new Proxy(buffer, {})
++  ]) {
++    assertThrows(() => byteLength(receiver), TypeError);
++  }
++})();
++
++(function ForeignGetterException() {
++  const realm = Realm.create();
++  const buffer = Realm.eval(realm, 'new ArrayBuffer(8)');
++  const shared = Realm.eval(
++      realm, 'Reflect.construct(SharedArrayBuffer, [8], ArrayBuffer)');
++  const ForeignTypeError = Realm.eval(realm, 'TypeError');
++  function byteLength(buffer) {
++    try {
++      return buffer.byteLength;
++    } catch (error) {
++      return error;
++    }
++  }
++  %PrepareFunctionForOptimization(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertInstanceof(byteLength(shared), ForeignTypeError);
++  assertEquals(8, byteLength(buffer));
++  assertInstanceof(byteLength(shared), ForeignTypeError);
++  %OptimizeFunctionOnNextCall(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertOptimized(byteLength);
++  // The getter's realm, rather than the optimized caller's, owns this error.
++  const error = byteLength(shared);
++  assertInstanceof(error, ForeignTypeError);
++  assertFalse(error instanceof TypeError);
++  assertOptimized(byteLength);
++})();
++
++(function ResizeInLoop() {
++  let resize = false;
++  function mutate(buffer, iteration) {
++    if (resize && iteration < 2) buffer.resize(iteration === 0 ? 2 : 12);
++  }
++  %NeverOptimizeFunction(mutate);
++  function sumByteLengths(buffer) {
++    let sum = 0;
++    for (let i = 0; i < 3; ++i) {
++      sum += buffer.byteLength;
++      mutate(buffer, i);
++    }
++    return sum;
++  }
++  const buffer = new ArrayBuffer(8, {maxByteLength: 16});
++  %PrepareFunctionForOptimization(sumByteLengths);
++  assertEquals(24, sumByteLengths(buffer));
++  assertEquals(24, sumByteLengths(buffer));
++  %OptimizeFunctionOnNextCall(sumByteLengths);
++  assertEquals(24, sumByteLengths(buffer));
++  assertOptimized(sumByteLengths);
++  // Calls can change length without changing the receiver's map.
++  resize = true;
++  assertEquals(22, sumByteLengths(buffer));  // 8 + 2 + 12.
++  assertEquals(12, buffer.byteLength);
++})();
++
++(function DetachInLoop() {
++  let detach = false;
++  function mutate(buffer, iteration) {
++    if (detach && iteration === 0) %ArrayBufferDetach(buffer);
++  }
++  %NeverOptimizeFunction(mutate);
++  function sumByteLengths(buffer) {
++    let sum = 0;
++    for (let i = 0; i < 3; ++i) {
++      sum += buffer.byteLength;
++      mutate(buffer, i);
++    }
++    return sum;
++  }
++  const buffer = new ArrayBuffer(8);
++  %PrepareFunctionForOptimization(sumByteLengths);
++  assertEquals(24, sumByteLengths(buffer));
++  assertEquals(24, sumByteLengths(buffer));
++  %OptimizeFunctionOnNextCall(sumByteLengths);
++  assertEquals(24, sumByteLengths(buffer));
++  assertOptimized(sumByteLengths);
++  detach = true;
++  assertEquals(8, sumByteLengths(buffer));  // 8 + 0 + 0.
++  assertEquals(0, buffer.byteLength);
++})();
++
++(function ReplacedInheritedGetter() {
++  function byteLength(buffer) {
++    return buffer.byteLength;
++  }
++  const buffer = new ArrayBuffer(8);
++  const descriptor =
++      Object.getOwnPropertyDescriptor(ArrayBuffer.prototype, 'byteLength');
++  %PrepareFunctionForOptimization(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertEquals(8, byteLength(buffer));
++  %OptimizeFunctionOnNextCall(byteLength);
++  assertEquals(8, byteLength(buffer));
++  assertOptimized(byteLength);
++  try {
++    Object.defineProperty(ArrayBuffer.prototype, 'byteLength', {
++      get() { return 99; },
++      configurable: true
++    });
++    assertEquals(99, byteLength(buffer));
++  } finally {
++    Object.defineProperty(ArrayBuffer.prototype, 'byteLength', descriptor);
++  }
++  assertEquals(8, byteLength(buffer));
++})();
+diff --git a/test/mjsunit/compiler/constant-phi-branch.js b/test/mjsunit/compiler/constant-phi-branch.js
+new file mode 100644
+index 00000000..da2644d1
+--- /dev/null
++++ b/test/mjsunit/compiler/constant-phi-branch.js
+@@ -0,0 +1,33 @@
++// Copyright 2026 the V8 project authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++// Flags: --allow-natives-syntax
++
++// Graph tests check the branch-threading transformation. This test preserves
++// the result and the deoptimization state of intervening checked arithmetic.
++(function ConstantMethodDispatch() {
++  function increment(value) { return value + 1; }
++  function decrement(value) { return value - 1; }
++  class Increment { operation = increment; }
++  class Decrement { operation = decrement; }
++  const incrementer = new Increment();
++  const decrementer = new Decrement();
++
++  function dispatch(receiver, value) {
++    const operation = receiver.operation;
++    const adjusted = value + 1;
++    return operation(adjusted);
++  }
++
++  %PrepareFunctionForOptimization(dispatch);
++  assertEquals(12, dispatch(incrementer, 10));
++  assertEquals(10, dispatch(decrementer, 10));
++  %OptimizeFunctionOnNextCall(dispatch);
++  assertEquals(12, dispatch(incrementer, 10));
++  assertEquals(10, dispatch(decrementer, 10));
++  assertEquals(2147483649, dispatch(incrementer, 2147483647));
++  assertEquals(2147483647, dispatch(decrementer, 2147483647));
++  assertEquals('511', dispatch(incrementer, '5'));
++  assertEquals(50, dispatch(decrementer, '5'));
++})();
+diff --git a/test/mjsunit/compiler/terminal-throw-loop-peeling.js b/test/mjsunit/compiler/terminal-throw-loop-peeling.js
+new file mode 100644
+index 00000000..331c9bb2
+--- /dev/null
++++ b/test/mjsunit/compiler/terminal-throw-loop-peeling.js
+@@ -0,0 +1,59 @@
++// Copyright 2026 the V8 project authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++// Flags: --allow-natives-syntax --turbofan
++
++const ordinary = new ArrayBuffer(8);
++const shared = Reflect.construct(SharedArrayBuffer, [8], ArrayBuffer);
++
++// Both receiver maps enter the feedback, so the shared buffer reaches the
++// getter's terminal throwing path rather than an unexpected-map deopt.
++(function FirstAndLaterIteration() {
++  function sumLengths(buffers) {
++    let total = 0;
++    for (let i = 0; i < buffers.length; ++i) {
++      total += buffers[i].byteLength;
++    }
++    return total;
++  }
++
++  %PrepareFunctionForOptimization(sumLengths);
++  assertEquals(16, sumLengths([ordinary, ordinary]));
++  assertEquals(0, sumLengths([]));
++  assertThrows(() => sumLengths([shared]), TypeError);
++  assertThrows(() => sumLengths([ordinary, shared]), TypeError);
++  %OptimizeFunctionOnNextCall(sumLengths);
++  assertEquals(16, sumLengths([ordinary, ordinary]));
++  assertOptimized(sumLengths);
++  assertEquals(0, sumLengths([]));
++  assertThrows(() => sumLengths([shared]), TypeError);
++  assertThrows(() => sumLengths([ordinary, ordinary, shared]), TypeError);
++  assertEquals(24, sumLengths([ordinary, ordinary, ordinary]));
++})();
++
++(function NestedIterations() {
++  function sumLengths(rows) {
++    let total = 0;
++    for (let row = 0; row < rows.length; ++row) {
++      const buffers = rows[row];
++      for (let column = 0; column < buffers.length; ++column) {
++        total += buffers[column].byteLength;
++      }
++    }
++    return total;
++  }
++
++  %PrepareFunctionForOptimization(sumLengths);
++  assertEquals(24, sumLengths([[ordinary], [ordinary, ordinary]]));
++  assertEquals(0, sumLengths([[], []]));
++  assertThrows(() => sumLengths([[shared]]), TypeError);
++  assertThrows(() => sumLengths([[ordinary], [ordinary, shared]]), TypeError);
++  %OptimizeFunctionOnNextCall(sumLengths);
++  assertEquals(24, sumLengths([[ordinary], [ordinary, ordinary]]));
++  assertOptimized(sumLengths);
++  assertEquals(0, sumLengths([[], []]));
++  assertThrows(() => sumLengths([[shared]]), TypeError);
++  assertThrows(() => sumLengths([[ordinary], [ordinary, shared]]), TypeError);
++  assertEquals(16, sumLengths([[ordinary], [], [ordinary]]));
++})();
+diff --git a/test/unittests/BUILD.gn b/test/unittests/BUILD.gn
+index a3f8174a..25c8c52c 100644
+--- a/test/unittests/BUILD.gn
++++ b/test/unittests/BUILD.gn
+@@ -624,6 +624,7 @@ v8_cluster_source_set("v8_unittests_sources") {
+       "compiler/machine-operator-reducer-unittest.cc",
+       "compiler/machine-operator-unittest.cc",
+       "compiler/node-cache-unittest.cc",
++      "compiler/node-marker-unittest.cc",
+       "compiler/node-matchers-unittest.cc",
+       "compiler/node-properties-unittest.cc",
+       "compiler/node-test-utils.cc",
+@@ -654,6 +655,7 @@ v8_cluster_source_set("v8_unittests_sources") {
+       "compiler/simplified-operator-reducer-unittest.cc",
+       "compiler/simplified-operator-unittest.cc",
+       "compiler/sloppy-equality-unittest.cc",
++      "compiler/sparse-sidetable-unittest.cc",
+       "compiler/state-values-utils-unittest.cc",
+       "compiler/turboshaft/call-runtime-unittest.cc",
+       "compiler/turboshaft/control-flow-unittest.cc",
+diff --git a/test/unittests/compiler/graph-reducer-unittest.cc b/test/unittests/compiler/graph-reducer-unittest.cc
+index ffa103c2..2d1116c7 100644
+--- a/test/unittests/compiler/graph-reducer-unittest.cc
++++ b/test/unittests/compiler/graph-reducer-unittest.cc
+@@ -879,6 +879,27 @@ TEST_F(GraphReducerTest, Order) {
+   }
+ }
+ 
++TEST_F(GraphReducerTest, RevisitConsumedBeforeQueueIsDrained) {
++  Node* leaf = graph()->NewNode(&kOpA0);
++  Node* first = graph()->NewNode(&kOpA1, leaf);
++  Node* second = graph()->NewNode(&kOpA1, leaf);
++  Node* end = graph()->NewNode(&kOpA2, first, second);
++  GraphReducer graph_reducer(zone(), graph(), tick_counter(), nullptr);
++  StrictMock<MockReducer> reducer;
++  graph_reducer.AddReducer(&reducer);
++  Sequence sequence;
++  EXPECT_CALL(reducer, Reduce(leaf)).InSequence(sequence);
++  EXPECT_CALL(reducer, Reduce(first)).InSequence(sequence).WillOnce([&](Node*) {
++    static_cast<AdvancedReducer::Editor&>(graph_reducer).Revisit(leaf);
++    return Reducer::NoChange();
++  });
++  // The second input reaches the queued leaf before the queue is drained.
++  EXPECT_CALL(reducer, Reduce(leaf)).InSequence(sequence);
++  EXPECT_CALL(reducer, Reduce(second)).InSequence(sequence);
++  EXPECT_CALL(reducer, Reduce(end)).InSequence(sequence);
++  graph_reducer.ReduceNode(end);
++}
++
+ }  // namespace graph_reducer_unittest
+ }  // namespace compiler
+ }  // namespace internal
+diff --git a/test/unittests/compiler/load-elimination-unittest.cc b/test/unittests/compiler/load-elimination-unittest.cc
+index 7e47445c..02d6d2b6 100644
+--- a/test/unittests/compiler/load-elimination-unittest.cc
++++ b/test/unittests/compiler/load-elimination-unittest.cc
+@@ -213,6 +213,168 @@ TEST_F(LoadEliminationTest, StoreFieldAndKillFields) {
+   EXPECT_EQ(store3, r.replacement());
+ }
+ 
++TEST_F(LoadEliminationTest, FreshAllocationInvalidationPreservesOtherObjects) {
++  FieldAccess access = {kTaggedBase,      kTaggedSize, MaybeHandle<Name>(),
++                        OptionalMapRef(), Type::Any(), MachineType::AnyTagged(),
++                        kNoWriteBarrier};
++  FieldAccess store_access = access;
++  store_access.offset = 2048 * kTaggedSize;
++  Node* start = graph()->start();
++  Node* value = Parameter(Type::Any(), 0);
++  Node* object_a = graph()->NewNode(
++      simplified()->Allocate(Type::Any(), AllocationType::kYoung),
++      jsgraph()->ConstantNoHole(16), start, start);
++  Node* load_a = graph()->NewNode(simplified()->LoadField(access), object_a,
++                                  object_a, start);
++  Node* object_b = graph()->NewNode(
++      simplified()->Allocate(Type::Any(), AllocationType::kYoung),
++      jsgraph()->ConstantNoHole(16), load_a, start);
++  Node* load_b = graph()->NewNode(simplified()->LoadField(access), object_b,
++                                  object_b, start);
++  // An unsupported offset invalidates without recording the stored value.
++  Node* store = graph()->NewNode(simplified()->StoreField(store_access),
++                                 object_a, value, load_b, start);
++  Node* reload_a =
++      graph()->NewNode(simplified()->LoadField(access), object_a, store, start);
++  Node* reload_b = graph()->NewNode(simplified()->LoadField(access), object_b,
++                                    reload_a, start);
++  Node* original_a = graph()->NewNode(simplified()->LoadField(access), object_a,
++                                      load_b, start);
++  StrictMock<MockAdvancedReducerEditor> editor;
++  LoadElimination reducer(&editor, broker(), jsgraph(), zone());
++  for (Node* node : {start, object_a, load_a, object_b, load_b, store}) {
++    reducer.Reduce(node);
++  }
++  EXPECT_EQ(reload_a, reducer.Reduce(reload_a).replacement());
++  EXPECT_CALL(editor, ReplaceWithValue(reload_b, load_b, reload_a, _));
++  EXPECT_EQ(load_b, reducer.Reduce(reload_b).replacement());
++  // Invalidation must not mutate an earlier effect's persistent state.
++  EXPECT_CALL(editor, ReplaceWithValue(original_a, load_a, load_b, _));
++  EXPECT_EQ(load_a, reducer.Reduce(original_a).replacement());
++}
++
++TEST_F(LoadEliminationTest, FreshAllocationDisjointNameDoesNotAllocate) {
++  FieldAccess access = {kTaggedBase,
++                        kTaggedSize,
++                        CanonicalHandle(factory()->InternalizeUtf8String("a")),
++                        OptionalMapRef(),
++                        Type::Any(),
++                        MachineType::AnyTagged(),
++                        kNoWriteBarrier};
++  FieldAccess store_access = access;
++  store_access.offset = 2048 * kTaggedSize;
++  store_access.name = CanonicalHandle(factory()->InternalizeUtf8String("b"));
++  Node* start = graph()->start();
++  Node* value = Parameter(Type::Any(), 0);
++  Node* object = graph()->NewNode(
++      simplified()->Allocate(Type::Any(), AllocationType::kYoung),
++      jsgraph()->ConstantNoHole(16), start, start);
++  Node* load =
++      graph()->NewNode(simplified()->LoadField(access), object, object, start);
++  Node* store = graph()->NewNode(simplified()->StoreField(store_access), object,
++                                 value, load, start);
++  Node* reload =
++      graph()->NewNode(simplified()->LoadField(access), object, store, start);
++  StrictMock<MockAdvancedReducerEditor> editor;
++  LoadElimination reducer(&editor, broker(), jsgraph(), zone());
++  for (Node* node : {start, object, load, store}) reducer.Reduce(node);
++  const size_t allocation_before = zone()->allocation_size();
++  EXPECT_FALSE(reducer.Reduce(store).Changed());
++  EXPECT_EQ(allocation_before, zone()->allocation_size());
++  EXPECT_CALL(editor, ReplaceWithValue(reload, load, store, _));
++  EXPECT_EQ(load, reducer.Reduce(reload).replacement());
++}
++
++TEST_F(LoadEliminationTest, FreshAllocationInvalidationWithAliasingNames) {
++  const char* names[][2] = {{"a", "a"}, {"a", nullptr}, {nullptr, "a"}};
++  auto name = [this](const char* text) -> MaybeHandle<Name> {
++    if (!text) return {};
++    return CanonicalHandle(factory()->InternalizeUtf8String(text));
++  };
++  for (const auto& pair : names) {
++    SCOPED_TRACE(pair[0] ? pair[0] : "<unknown load name>");
++    SCOPED_TRACE(pair[1] ? pair[1] : "<unknown store name>");
++    FieldAccess access = {kTaggedBase,    kTaggedSize,
++                          name(pair[0]),  OptionalMapRef(),
++                          Type::Any(),    MachineType::AnyTagged(),
++                          kNoWriteBarrier};
++    FieldAccess store_access = access;
++    store_access.offset = 2048 * kTaggedSize;
++    store_access.name = name(pair[1]);
++    Node* start = graph()->start();
++    Node* value = Parameter(Type::Any(), 0);
++    Node* object = graph()->NewNode(
++        simplified()->Allocate(Type::Any(), AllocationType::kYoung),
++        jsgraph()->ConstantNoHole(16), start, start);
++    Node* load = graph()->NewNode(simplified()->LoadField(access), object,
++                                  object, start);
++    Node* store = graph()->NewNode(simplified()->StoreField(store_access),
++                                   object, value, load, start);
++    Node* reload =
++        graph()->NewNode(simplified()->LoadField(access), object, store, start);
++    StrictMock<MockAdvancedReducerEditor> editor;
++    LoadElimination reducer(&editor, broker(), jsgraph(), zone());
++    for (Node* node : {start, object, load, store}) reducer.Reduce(node);
++    EXPECT_EQ(reload, reducer.Reduce(reload).replacement());
++  }
++}
++
++TEST_F(LoadEliminationTest, FreshAllocationMissPreservesCachedObjects) {
++  FieldAccess access = {kTaggedBase,      kTaggedSize, MaybeHandle<Name>(),
++                        OptionalMapRef(), Type::Any(), MachineType::AnyTagged(),
++                        kNoWriteBarrier};
++  FieldAccess store_access = access;
++  store_access.offset = 2048 * kTaggedSize;
++  Node* start = graph()->start();
++  Node* other = Parameter(Type::Any(), 0);
++  Node* value = Parameter(Type::Any(), 1);
++  Node* load =
++      graph()->NewNode(simplified()->LoadField(access), other, start, start);
++  Node* object = graph()->NewNode(
++      simplified()->Allocate(Type::Any(), AllocationType::kYoung),
++      jsgraph()->ConstantNoHole(16), load, start);
++  Node* store = graph()->NewNode(simplified()->StoreField(store_access), object,
++                                 value, object, start);
++  Node* reload =
++      graph()->NewNode(simplified()->LoadField(access), other, store, start);
++  StrictMock<MockAdvancedReducerEditor> editor;
++  LoadElimination reducer(&editor, broker(), jsgraph(), zone());
++  for (Node* node : {start, load, object, store}) reducer.Reduce(node);
++  const size_t allocation_before = zone()->allocation_size();
++  EXPECT_FALSE(reducer.Reduce(store).Changed());
++  EXPECT_EQ(allocation_before, zone()->allocation_size());
++  EXPECT_CALL(editor, ReplaceWithValue(reload, load, store, _));
++  EXPECT_EQ(load, reducer.Reduce(reload).replacement());
++}
++
++TEST_F(LoadEliminationTest, FinishedAllocationInvalidatesRenamedObject) {
++  FieldAccess access = {kTaggedBase,      kTaggedSize, MaybeHandle<Name>(),
++                        OptionalMapRef(), Type::Any(), MachineType::AnyTagged(),
++                        kNoWriteBarrier};
++  FieldAccess store_access = access;
++  store_access.offset = 2048 * kTaggedSize;
++  Node* start = graph()->start();
++  Node* value = Parameter(Type::Any(), 0);
++  Node* object = graph()->NewNode(
++      simplified()->Allocate(Type::Any(), AllocationType::kYoung),
++      jsgraph()->ConstantNoHole(16), start, start);
++  Node* finished = graph()->NewNode(common()->FinishRegion(), object, object);
++  Node* renamed = graph()->NewNode(common()->TypeGuard(Type::Any()), finished,
++                                   finished, start);
++  Node* load = graph()->NewNode(simplified()->LoadField(access), renamed,
++                                renamed, start);
++  Node* store = graph()->NewNode(simplified()->StoreField(store_access),
++                                 finished, value, load, start);
++  Node* reload =
++      graph()->NewNode(simplified()->LoadField(access), renamed, store, start);
++  StrictMock<MockAdvancedReducerEditor> editor;
++  LoadElimination reducer(&editor, broker(), jsgraph(), zone());
++  for (Node* node : {start, object, finished, renamed, load, store}) {
++    reducer.Reduce(node);
++  }
++  EXPECT_EQ(reload, reducer.Reduce(reload).replacement());
++}
++
+ TEST_F(LoadEliminationTest, StoreFieldAndStoreElementAndLoadField) {
+   Node* object = Parameter(Type::Any(), 0);
+   Node* value = Parameter(Type::Any(), 1);
+diff --git a/test/unittests/compiler/loop-peeling-unittest.cc b/test/unittests/compiler/loop-peeling-unittest.cc
+index 090bfd39..c163f24c 100644
+--- a/test/unittests/compiler/loop-peeling-unittest.cc
++++ b/test/unittests/compiler/loop-peeling-unittest.cc
+@@ -4,6 +4,8 @@
+ 
+ #include "src/compiler/loop-peeling.h"
+ 
++#include "src/compiler/frame-states.h"
++#include "src/compiler/js-operator.h"
+ #include "src/compiler/machine-operator.h"
+ #include "src/compiler/node.h"
+ #include "src/compiler/turbofan-graph-visualizer.h"
+@@ -146,6 +148,27 @@ class LoopPeelingTest : public GraphTest {
+         w->exit);
+     return c;
+   }
++
++  Node* NewTerminalThrow(Node* value, Node* other_value, Node* effect,
++                         Node* control) {
++    Node* empty =
++        graph()->NewNode(common()->StateValues(0, SparseInputMask::Dense()));
++    Node* locals = graph()->NewNode(
++        common()->StateValues(2, SparseInputMask::Dense()), value, other_value);
++    const FrameStateFunctionInfo* info = common()->CreateFrameStateFunctionInfo(
++        FrameStateType::kUnoptimizedFunction, 0, 0, 2, {}, {});
++    Node* frame_state = graph()->NewNode(
++        common()->FrameState(BytecodeOffset::None(),
++                             OutputFrameStateCombine::Ignore(), info),
++        empty, locals, empty, UndefinedConstant(), UndefinedConstant(),
++        start());
++    JSOperatorBuilder javascript(zone());
++    Node* call = graph()->NewNode(
++        javascript.CallRuntime(Runtime::kThrowCalledNonCallable), value,
++        UndefinedConstant(), frame_state, effect, control);
++    Node* unreachable = graph()->NewNode(common()->Unreachable(), call, call);
++    return graph()->NewNode(common()->Throw(), unreachable, call);
++  }
+ };
+ 
+ 
+@@ -527,6 +550,380 @@ TEST_F(LoopPeelingTest, SimpleLoopWithUnmarkedExit) {
+   }
+ }
+ 
++TEST_F(LoopPeelingTest, TerminalThrowCopiesEffectsAndFrameState) {
++  Node* p0 = Parameter(0);
++  While w = NewWhile(p0);
++  Counter counter = NewCounter(&w, 0, 1);
++  Node* effect =
++      graph()->NewNode(common()->EffectPhi(2), start(), start(), w.loop);
++  Node* load = graph()->NewNode(machine()->Load(MachineType::Int32()), p0,
++                                Int32Constant(0), effect, w.if_true);
++  effect->ReplaceInput(1, load);
++  Branch side = NewBranch(counter.phi, w.if_true);
++  w.loop->ReplaceInput(1, side.if_false);
++  Node* terminal =
++      NewTerminalThrow(counter.phi, counter.add, load, side.if_true);
++  Node* call = NodeProperties::GetControlInput(terminal);
++  Node* frame_state = NodeProperties::GetFrameStateInput(call);
++  Node* locals = NodeProperties::GetValueInput(frame_state, 1);
++  Node* result = InsertReturn(counter.exit_marker, start(), w.exit);
++  graph()->SetEnd(graph()->NewNode(common()->End(2), result, terminal));
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0];
++  EXPECT_FALSE(LoopFinder::HasMarkedExits(tree, loop));
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  PeeledIteration* peeled = Peel(peeler, loop);
++
++  Node* copied_call = ExpectPeeled(call, peeled);
++  Node* copied_frame = ExpectPeeled(frame_state, peeled);
++  Node* copied_locals = ExpectPeeled(locals, peeled);
++  EXPECT_EQ(counter.base, NodeProperties::GetValueInput(copied_call, 0));
++  EXPECT_EQ(peeled->map(load), NodeProperties::GetEffectInput(copied_call));
++  EXPECT_EQ(peeled->map(side.if_true),
++            NodeProperties::GetControlInput(copied_call));
++  EXPECT_EQ(copied_frame, NodeProperties::GetFrameStateInput(copied_call));
++  EXPECT_EQ(copied_locals, NodeProperties::GetValueInput(copied_frame, 1));
++  EXPECT_EQ(counter.base, copied_locals->InputAt(0));
++  EXPECT_EQ(peeled->map(counter.add), copied_locals->InputAt(1));
++  EXPECT_EQ(counter.phi, NodeProperties::GetValueInput(call, 0));
++  EXPECT_EQ(load, NodeProperties::GetEffectInput(call));
++  EXPECT_EQ(3, end()->InputCount());
++  EXPECT_EQ(terminal, end()->InputAt(1));
++  EXPECT_EQ(ExpectPeeled(terminal, peeled), end()->InputAt(2));
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowInNestedLoopPeelInner) {
++  Node* p0 = Parameter(0);
++  While outer = NewWhile(p0);
++  While inner = NewWhile(p0);
++  Nest(&inner, &outer);
++  Counter outer_counter = NewCounter(&outer, 10, 2);
++  Counter inner_counter = NewCounter(&inner, 1, 3);
++  Branch side = NewBranch(inner_counter.phi, inner.if_true);
++  inner.loop->ReplaceInput(1, side.if_false);
++  Node* terminal = NewTerminalThrow(inner_counter.phi, outer_counter.phi,
++                                    start(), side.if_true);
++  Node* call = NodeProperties::GetControlInput(terminal);
++  Node* frame_state = NodeProperties::GetFrameStateInput(call);
++  Node* locals = NodeProperties::GetValueInput(frame_state, 1);
++  Node* result = InsertReturn(p0, start(), outer.exit);
++  graph()->SetEnd(graph()->NewNode(common()->End(2), result, terminal));
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0]->children()[0];
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  PeeledIteration* peeled = Peel(peeler, loop);
++
++  Node* copied_locals = ExpectPeeled(locals, peeled);
++  EXPECT_EQ(inner_counter.base, copied_locals->InputAt(0));
++  EXPECT_EQ(outer_counter.phi, copied_locals->InputAt(1));
++  EXPECT_EQ(ExpectPeeled(terminal, peeled), end()->InputAt(2));
++  ExpectNotPeeled(outer.loop, peeled);
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowInNestedLoopPeelOuter) {
++  Node* p0 = Parameter(0);
++  While outer = NewWhile(p0);
++  While inner = NewWhile(p0);
++  Nest(&inner, &outer);
++  Counter outer_counter = NewCounter(&outer, 10, 2);
++  Counter inner_counter = NewCounter(&inner, 1, 3);
++  Branch side = NewBranch(inner_counter.phi, inner.if_true);
++  inner.loop->ReplaceInput(1, side.if_false);
++  Node* terminal = NewTerminalThrow(inner_counter.phi, outer_counter.phi,
++                                    start(), side.if_true);
++  Node* call = NodeProperties::GetControlInput(terminal);
++  Node* frame_state = NodeProperties::GetFrameStateInput(call);
++  Node* locals = NodeProperties::GetValueInput(frame_state, 1);
++  Node* result = InsertReturn(p0, start(), outer.exit);
++  graph()->SetEnd(graph()->NewNode(common()->End(2), result, terminal));
++
++  PeeledIteration* peeled = PeelOne();
++
++  Node* copied_locals = ExpectPeeled(locals, peeled);
++  EXPECT_EQ(ExpectPeeled(inner_counter.phi, peeled), copied_locals->InputAt(0));
++  EXPECT_EQ(outer_counter.base, copied_locals->InputAt(1));
++  EXPECT_EQ(ExpectPeeled(terminal, peeled), end()->InputAt(2));
++  ExpectPeeled(inner.loop, peeled);
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowRejectsExternalControl) {
++  Node* p0 = Parameter(0);
++  Branch entry = NewBranch(p0);
++  While w = NewWhile(p0, entry.if_true);
++  Counter counter = NewCounter(&w, 0, 1);
++  Branch side = NewBranch(counter.phi, w.if_true);
++  w.loop->ReplaceInput(1, side.if_false);
++  Node* merge =
++      graph()->NewNode(common()->Merge(2), side.if_true, entry.if_false);
++  Node* value =
++      graph()->NewNode(common()->Phi(MachineRepresentation::kTagged, 2),
++                       counter.phi, Int32Constant(0), merge);
++  Node* terminal = NewTerminalThrow(value, p0, start(), merge);
++  Node* result = InsertReturn(p0, start(), w.exit);
++  graph()->SetEnd(graph()->NewNode(common()->End(2), result, terminal));
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0];
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  EXPECT_FALSE(peeler.CanPeel(loop));
++  EXPECT_EQ(nullptr, peeler.Peel(loop));
++  EXPECT_EQ(2, end()->InputCount());
++  EXPECT_EQ(merge, NodeProperties::GetControlInput(
++                       NodeProperties::GetControlInput(terminal)));
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowRejectsOwnExitControl) {
++  Node* p0 = Parameter(0);
++  While w = NewWhile(p0);
++  Counter counter = NewCounter(&w, 0, 1);
++  Node* terminal = NewTerminalThrow(counter.phi, p0, start(), w.exit);
++  graph()->SetEnd(graph()->NewNode(common()->End(1), terminal));
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0];
++  EXPECT_FALSE(LoopFinder::HasMarkedExits(tree, loop));
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  EXPECT_FALSE(peeler.CanPeel(loop));
++  EXPECT_EQ(nullptr, peeler.Peel(loop));
++  EXPECT_EQ(IrOpcode::kLoopExit, w.exit->opcode());
++  EXPECT_EQ(1, end()->InputCount());
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowRejectsOwnExitValue) {
++  Node* p0 = Parameter(0);
++  While w = NewWhile(p0);
++  Counter counter = NewCounter(&w, 0, 1);
++  // The control escape is unmarked, but the value still crosses a marked exit.
++  Node* terminal =
++      NewTerminalThrow(counter.exit_marker, counter.phi, start(), w.if_false);
++  graph()->SetEnd(graph()->NewNode(common()->End(1), terminal));
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0];
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  EXPECT_FALSE(peeler.CanPeel(loop));
++  EXPECT_EQ(nullptr, peeler.Peel(loop));
++  EXPECT_EQ(IrOpcode::kLoopExitValue, counter.exit_marker->opcode());
++  EXPECT_EQ(1, end()->InputCount());
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowRejectsOwnExitEffect) {
++  Node* p0 = Parameter(0);
++  While w = NewWhile(p0);
++  Counter counter = NewCounter(&w, 0, 1);
++  Node* effect =
++      graph()->NewNode(common()->EffectPhi(2), start(), start(), w.loop);
++  Node* exit_effect =
++      graph()->NewNode(common()->LoopExitEffect(), effect, w.exit);
++  Node* terminal = NewTerminalThrow(counter.phi, p0, exit_effect, w.if_false);
++  graph()->SetEnd(graph()->NewNode(common()->End(1), terminal));
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0];
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  EXPECT_FALSE(peeler.CanPeel(loop));
++  EXPECT_EQ(nullptr, peeler.Peel(loop));
++  EXPECT_EQ(IrOpcode::kLoopExitEffect, exit_effect->opcode());
++  EXPECT_EQ(1, end()->InputCount());
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowRejectsIndirectOwnExitFrameState) {
++  Node* p0 = Parameter(0);
++  While w = NewWhile(p0);
++  Counter counter = NewCounter(&w, 0, 1);
++  Node* exit_value = graph()->NewNode(machine()->Int32Add(),
++                                      counter.exit_marker, Int32Constant(1));
++  // Both controls describe the same exit path, but the marked value and its
++  // users would remain outside the copied region. The raw phi makes the frame
++  // state escape without a marker, so it cannot simply be left after the exit.
++  Node* terminal =
++      NewTerminalThrow(counter.phi, exit_value, start(), w.if_false);
++  graph()->SetEnd(graph()->NewNode(common()->End(1), terminal));
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0];
++  EXPECT_FALSE(tree->Contains(loop, exit_value));
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  EXPECT_FALSE(peeler.CanPeel(loop));
++  EXPECT_EQ(nullptr, peeler.Peel(loop));
++  EXPECT_EQ(IrOpcode::kLoopExitValue, counter.exit_marker->opcode());
++  EXPECT_EQ(1, end()->InputCount());
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowRejectsIndirectOwnExitEffect) {
++  Node* p0 = Parameter(0);
++  While w = NewWhile(p0);
++  Counter counter = NewCounter(&w, 0, 1);
++  Node* effect =
++      graph()->NewNode(common()->EffectPhi(2), start(), start(), w.loop);
++  Node* exit_effect =
++      graph()->NewNode(common()->LoopExitEffect(), effect, w.exit);
++  Node* load = graph()->NewNode(machine()->Load(MachineType::Int32()), p0,
++                                Int32Constant(0), exit_effect, w.exit);
++  Node* terminal = NewTerminalThrow(counter.phi, p0, load, w.if_false);
++  graph()->SetEnd(graph()->NewNode(common()->End(1), terminal));
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0];
++  EXPECT_FALSE(tree->Contains(loop, load));
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  EXPECT_FALSE(peeler.CanPeel(loop));
++  EXPECT_EQ(nullptr, peeler.Peel(loop));
++  EXPECT_EQ(IrOpcode::kLoopExitEffect, exit_effect->opcode());
++  EXPECT_EQ(1, end()->InputCount());
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowKeepsExternalPreheaderEffect) {
++  Node* p0 = Parameter(0);
++  Node* load = graph()->NewNode(machine()->Load(MachineType::Int32()), p0,
++                                Int32Constant(0), start(), start());
++  While w = NewWhile(p0);
++  Counter counter = NewCounter(&w, 0, 1);
++  Branch side = NewBranch(counter.phi, w.if_true);
++  w.loop->ReplaceInput(1, side.if_false);
++  Node* terminal = NewTerminalThrow(counter.phi, load, load, side.if_true);
++  Node* call = NodeProperties::GetControlInput(terminal);
++  Node* result = InsertReturn(counter.exit_marker, start(), w.exit);
++  graph()->SetEnd(graph()->NewNode(common()->End(2), result, terminal));
++
++  PeeledIteration* peeled = PeelOne();
++
++  Node* copied_call = ExpectPeeled(call, peeled);
++  EXPECT_EQ(load, NodeProperties::GetEffectInput(copied_call));
++  Node* copied_locals = NodeProperties::GetValueInput(
++      NodeProperties::GetFrameStateInput(copied_call), 1);
++  EXPECT_EQ(load, copied_locals->InputAt(1));
++  ExpectNotPeeled(load, peeled);
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowAfterInnerExitPeelOuter) {
++  Node* p0 = Parameter(0);
++  While outer = NewWhile(p0);
++  While inner = NewWhile(p0);
++  Nest(&inner, &outer);
++  Counter outer_counter = NewCounter(&outer, 10, 2);
++  Counter inner_counter = NewCounter(&inner, 1, 3);
++  Branch side = NewBranch(inner_counter.exit_marker, inner.exit);
++  outer.loop->ReplaceInput(1, side.if_false);
++  Node* terminal = NewTerminalThrow(inner_counter.exit_marker,
++                                    outer_counter.phi, start(), side.if_true);
++  Node* call = NodeProperties::GetControlInput(terminal);
++  Node* result = InsertReturn(p0, start(), outer.exit);
++  graph()->SetEnd(graph()->NewNode(common()->End(2), result, terminal));
++
++  PeeledIteration* peeled = PeelOne();
++
++  Node* copied_call = ExpectPeeled(call, peeled);
++  EXPECT_EQ(ExpectPeeled(inner_counter.exit_marker, peeled),
++            NodeProperties::GetValueInput(copied_call, 0));
++  EXPECT_EQ(ExpectPeeled(side.if_true, peeled),
++            NodeProperties::GetControlInput(copied_call));
++  EXPECT_EQ(ExpectPeeled(terminal, peeled), end()->InputAt(2));
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowRejectsLargeSeedRegion) {
++  Node* p0 = Parameter(0);
++  While w = NewWhile(p0);
++  Counter counter = NewCounter(&w, 0, 1);
++  Branch side = NewBranch(counter.phi, w.if_true);
++  w.loop->ReplaceInput(1, side.if_false);
++  Node* value = Int32Constant(0);
++  for (size_t i = 0; i < LoopPeeler::kMaxPeeledNodes; ++i) {
++    value = graph()->NewNode(machine()->Int32Add(), counter.phi, value);
++  }
++  Node* terminal = NewTerminalThrow(counter.phi, value, start(), side.if_true);
++  Node* result = InsertReturn(counter.exit_marker, start(), w.exit);
++  graph()->SetEnd(graph()->NewNode(common()->End(2), result, terminal));
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0];
++  EXPECT_TRUE(loop->TotalSize() < LoopPeeler::kMaxPeeledNodes);
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  EXPECT_FALSE(peeler.CanPeel(loop));
++  EXPECT_EQ(nullptr, peeler.Peel(loop));
++  EXPECT_EQ(2, end()->InputCount());
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowRejectsLargeSuccessorRegion) {
++  Node* p0 = Parameter(0);
++  While w = NewWhile(p0);
++  Counter counter = NewCounter(&w, 0, 1);
++  Branch side = NewBranch(counter.phi, w.if_true);
++  w.loop->ReplaceInput(1, side.if_false);
++  Node* root =
++      graph()->NewNode(machine()->Int32Add(), counter.phi, Int32Constant(1));
++  Node* value = Int32Constant(0);
++  for (size_t i = 0; i < LoopPeeler::kMaxPeeledNodes; ++i) {
++    value = graph()->NewNode(machine()->Int32Add(), root, value);
++  }
++  Node* terminal = NewTerminalThrow(counter.phi, value, start(), side.if_true);
++  Node* result = InsertReturn(counter.exit_marker, start(), w.exit);
++  graph()->SetEnd(graph()->NewNode(common()->End(2), result, terminal));
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0];
++  EXPECT_TRUE(loop->TotalSize() < LoopPeeler::kMaxPeeledNodes);
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  EXPECT_FALSE(peeler.CanPeel(loop));
++  EXPECT_EQ(nullptr, peeler.Peel(loop));
++  EXPECT_EQ(2, end()->InputCount());
++}
++
++TEST_F(LoopPeelingTest, TerminalThrowRejectsLargeExternalInputRegion) {
++  Node* p0 = Parameter(0);
++  While w = NewWhile(p0);
++  Counter counter = NewCounter(&w, 0, 1);
++  Branch side = NewBranch(counter.phi, w.if_true);
++  w.loop->ReplaceInput(1, side.if_false);
++  Node* value = p0;
++  for (size_t i = 0; i < LoopPeeler::kMaxPeeledNodes; ++i) {
++    value = graph()->NewNode(machine()->Int32Add(), value, Int32Constant(1));
++  }
++  Node* terminal = NewTerminalThrow(counter.phi, value, start(), side.if_true);
++  Node* result = InsertReturn(counter.exit_marker, start(), w.exit);
++  graph()->SetEnd(graph()->NewNode(common()->End(2), result, terminal));
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0];
++  EXPECT_FALSE(tree->Contains(loop, value));
++  EXPECT_TRUE(loop->TotalSize() < LoopPeeler::kMaxPeeledNodes);
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  EXPECT_FALSE(peeler.CanPeel(loop));
++  EXPECT_EQ(nullptr, peeler.Peel(loop));
++  EXPECT_EQ(2, end()->InputCount());
++}
++
++TEST_F(LoopPeelingTest, MarkedExitsKeepCallerSizePolicy) {
++  Node* p0 = Parameter(0);
++  While w = NewWhile(p0);
++  Counter counter = NewCounter(&w, 0, 1);
++  Node* value = counter.add;
++  for (size_t i = 0; i < LoopPeeler::kMaxPeeledNodes; ++i) {
++    value = graph()->NewNode(machine()->Int32Add(), value, counter.inc);
++  }
++  counter.phi->ReplaceInput(1, value);
++  InsertReturn(counter.exit_marker, start(), w.exit);
++
++  LoopTree* tree = GetLoopTree();
++  LoopTree::Loop* loop = tree->outer_loops()[0];
++  EXPECT_TRUE(loop->TotalSize() > LoopPeeler::kMaxPeeledNodes);
++  LoopPeeler peeler(graph(), common(), tree, zone(), source_positions(),
++                    node_origins());
++  EXPECT_TRUE(peeler.CanPeel(loop));
++}
+ 
+ }  // namespace compiler
+ }  // namespace internal
+diff --git a/test/unittests/compiler/node-marker-unittest.cc b/test/unittests/compiler/node-marker-unittest.cc
+new file mode 100644
+index 00000000..de6f99cf
+--- /dev/null
++++ b/test/unittests/compiler/node-marker-unittest.cc
+@@ -0,0 +1,66 @@
++// Copyright 2026 the V8 project authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "src/compiler/node-marker.h"
++
++#include "src/compiler/common-operator.h"
++#include "src/compiler/turbofan-graph.h"
++#include "test/unittests/test-utils.h"
++
++namespace v8::internal::compiler {
++
++class NodeMarkerTest : public TestWithZone {
++ protected:
++  TFGraph graph_{zone()};
++  CommonOperatorBuilder common_{zone()};
++};
++
++TEST_F(NodeMarkerTest, CompareAllStates) {
++  Node* node = graph_.NewNode(common_.Int32Constant(0));
++  // Exercise current states with both zero and nonzero epoch offsets, including
++  // offsets larger than the State type can represent.
++  for (int epoch = 0; epoch < 130; ++epoch) {
++    NodeMarker<uint8_t> marker(&graph_, 4);
++    for (uint8_t state = 0; state < 4; ++state) {
++      marker.Set(node, state);
++      for (uint8_t other = 0; other < 4; ++other) {
++        EXPECT_EQ(state == other, marker.Is(node, other));
++        EXPECT_EQ(state > other, marker.IsGreaterThan(node, other));
++      }
++    }
++  }
++}
++
++TEST_F(NodeMarkerTest, UntouchedNodesHaveStateZero) {
++  Node* old_node = graph_.NewNode(common_.Int32Constant(0));
++  NodeMarker<uint8_t> marker(&graph_, 4);
++  Node* new_node = graph_.NewNode(common_.Int32Constant(1));
++  for (Node* node : {old_node, new_node}) {
++    for (uint8_t other = 0; other < 4; ++other) {
++      EXPECT_EQ(other == 0, marker.Is(node, other));
++      EXPECT_FALSE(marker.IsGreaterThan(node, other));
++    }
++  }
++}
++
++TEST_F(NodeMarkerTest, PreviousEpochsHaveStateZero) {
++  Node* nodes[4];
++  NodeMarker<uint8_t> first(&graph_, 4);
++  for (uint8_t state = 0; state < 4; ++state) {
++    nodes[state] = graph_.NewNode(common_.Int32Constant(state));
++    first.Set(nodes[state], state);
++  }
++  // Include epoch differences that cannot be represented by the State type.
++  for (int epoch = 0; epoch < 130; ++epoch) {
++    NodeMarker<uint8_t> marker(&graph_, 4);
++    for (Node* node : nodes) {
++      for (uint8_t other = 0; other < 4; ++other) {
++        EXPECT_EQ(other == 0, marker.Is(node, other));
++        EXPECT_FALSE(marker.IsGreaterThan(node, other));
++      }
++    }
++  }
++}
++
++}  // namespace v8::internal::compiler
+diff --git a/test/unittests/compiler/sparse-sidetable-unittest.cc b/test/unittests/compiler/sparse-sidetable-unittest.cc
+new file mode 100644
+index 00000000..ec1f32f0
+--- /dev/null
++++ b/test/unittests/compiler/sparse-sidetable-unittest.cc
+@@ -0,0 +1,97 @@
++// Copyright 2026 the V8 project authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "src/compiler/sparse-sidetable.h"
++
++#include "src/compiler/common-operator.h"
++#include "test/unittests/test-utils.h"
++
++namespace v8::internal::compiler {
++
++class SparseSidetableTest : public TestWithZone {
++ protected:
++  Node* NewNode(NodeId id) {
++    return Node::New(zone(), id, common_.Int32Constant(0), 0, nullptr, false);
++  }
++  CommonOperatorBuilder common_{zone()};
++};
++
++TEST_F(SparseSidetableTest, MissingOperationsDoNotAllocate) {
++  Node* low = NewNode(0);
++  Node* high = NewNode(65535);
++  SparseSidetable<int> table(zone(), -1);
++  size_t before = zone()->allocation_size();
++  for (Node* node : {low, high}) {
++    EXPECT_EQ(-1, table.Get(node));
++    table.Set(node, -1);
++    EXPECT_EQ(-1, table.Get(node));
++  }
++  EXPECT_EQ(before, zone()->allocation_size());
++}
++
++TEST_F(SparseSidetableTest, SparseGrowthPreservesReferences) {
++  Node* first = NewNode(0);
++  Node* adjacent = NewNode(1);
++  Node* boundary = NewNode(63);
++  Node* next = NewNode(64);
++  Node* high = NewNode(65535);
++  SparseSidetable<int> table(zone(), -1);
++  const int& missing = table.Get(first);
++  table.Set(first, 7);
++  const int& stored = table.Get(first);
++  for (Node* node : {adjacent, boundary, next, high}) {
++    EXPECT_EQ(-1, table.Get(node));
++    table.Set(node, static_cast<int>(node->id()));
++  }
++  EXPECT_EQ(-1, missing);
++  EXPECT_EQ(7, stored);
++  EXPECT_EQ(&stored, &table.Get(first));
++  for (Node* node : {adjacent, boundary, next, high}) {
++    EXPECT_EQ(static_cast<int>(node->id()), table.Get(node));
++  }
++  table.Set(first, -1);
++  EXPECT_EQ(-1, stored);
++  EXPECT_EQ(&stored, &table.Get(first));
++  EXPECT_NE(&missing, &table.Get(first));
++  table.Set(first, 9);
++  EXPECT_EQ(9, stored);
++  EXPECT_EQ(-1, missing);
++}
++
++TEST_F(SparseSidetableTest, MissingSlotSharesDefaultInAllocatedChunk) {
++  Node* first = NewNode(0);
++  Node* missing_node = NewNode(1);
++  Node* remote = NewNode(4096);
++  SparseSidetable<int> table(zone(), -1);
++  table.Set(first, 7);
++  const int& missing = table.Get(missing_node);
++  EXPECT_EQ(&missing, &table.Get(remote));
++  size_t before = zone()->allocation_size();
++  table.Set(missing_node, -1);
++  EXPECT_EQ(before, zone()->allocation_size());
++  EXPECT_EQ(&missing, &table.Get(missing_node));
++  table.Set(missing_node, 8);
++  EXPECT_EQ(-1, missing);
++  EXPECT_EQ(8, table.Get(missing_node));
++}
++
++TEST_F(SparseSidetableTest, NonDefaultConstructibleValue) {
++  struct Value {
++    explicit Value(int value) : value(value) {}
++    bool operator!=(const Value& other) const { return value != other.value; }
++    int value;
++  };
++  Node* first = NewNode(0);
++  Node* high = NewNode(4096);
++  SparseSidetable<Value> table(zone(), Value(-1));
++  table.Set(first, Value(7));
++  const Value& stored = table.Get(first);
++  table.Set(high, Value(8));
++  EXPECT_EQ(7, stored.value);
++  EXPECT_EQ(8, table.Get(high).value);
++  table.Set(first, Value(-1));
++  EXPECT_EQ(-1, stored.value);
++}
++
++}  // namespace v8::internal::compiler
+diff --git a/test/unittests/compiler/turboshaft/control-flow-unittest.cc b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+index 1d23775d..74712c46 100644
+--- a/test/unittests/compiler/turboshaft/control-flow-unittest.cc
++++ b/test/unittests/compiler/turboshaft/control-flow-unittest.cc
+@@ -19,7 +19,63 @@ namespace v8::internal::compiler::turboshaft {
+ 
+ #include "src/compiler/turboshaft/define-assembler-macros.inc"
+ 
+-class ControlFlowTest : public ReducerTest {};
++class ControlFlowTest : public ReducerTest {
++ public:
++  TestInstance CreateConstantPhiWithFrameState(int arithmetic_count,
++                                               int local_count,
++                                               bool is_wasm = false) {
++    std::initializer_list<RegisterRepresentation> reps{
++        RegisterRepresentation::Word32(), RegisterRepresentation::Word32()};
++    return CreateFromGraph(
++        base::VectorOf(reps),
++        [&](auto& Asm) {
++          V<Word32> cond = Asm.template GetParameter<Word32>(0);
++          V<Word32> unknown = Asm.template GetParameter<Word32>(1);
++          V<Word32> first = __ Word32Constant(7);
++          V<Word32> second = __ Word32Constant(11);
++          V<Smi> closure = __ SmiConstant(Smi::FromInt(0));
++          Block *left = __ NewBlock(), *right = __ NewBlock();
++          Block* merge = __ NewBlock();
++          __ Branch(cond, left, right);
++          __ Bind(left);
++          __ Goto(merge);
++          __ Bind(right);
++          __ Goto(merge);
++          __ Bind(merge);
++          V<Word32> phi =
++              __ Phi({first, second}, RegisterRepresentation::Word32());
++          V<Word32> value = phi;
++          for (int i = 0; i < arithmetic_count; ++i) {
++            value = __ Word32Add(value, unknown);
++          }
++          FrameStateData::Builder builder;
++          builder.AddInput(MachineType::AnyTagged(), closure);
++          for (int i = 0; i < local_count; ++i) {
++            builder.AddInput(MachineType::Int32(), value);
++          }
++          auto* function_info =
++              Asm.zone()->template New<FrameStateFunctionInfo>(
++                  FrameStateType::kUnoptimizedFunction, 0, 0, local_count,
++                  Handle<SharedFunctionInfo>{}, Handle<BytecodeArray>{});
++          FrameStateInfo frame_state_info(BytecodeOffset(0),
++                                          OutputFrameStateCombine::Ignore(),
++                                          function_info);
++          V<EagerFrameState> frame_state =
++              __ template FrameState<EagerFrameState>(
++                  builder.Inputs(), builder.inlined(),
++                  builder.AllocateFrameStateData(frame_state_info, Asm.zone()));
++          __ DeoptimizeIf(unknown, frame_state, DeoptimizeReason::kOverflow,
++                          {});
++          Block *matched = __ NewBlock(), *other = __ NewBlock();
++          __ Branch(__ Word32Equal(phi, first), matched, other);
++          __ Bind(matched);
++          __ Return(value);
++          __ Bind(other);
++          __ Return(value);
++        },
++        is_wasm);
++  }
++};
+ 
+ // This test creates a chain of empty blocks linked by Gotos. CopyingPhase
+ // should automatically inline them, leading to the graph containing a single
+@@ -112,6 +168,148 @@ TEST_F(ControlFlowTest, BranchElimination) {
+             static_cast<size_t>(kSize * 2 + kMaxOtherBlocksCount));
+ }
+ 
++TEST_F(ControlFlowTest, BranchEliminationConstantPhiExpression) {
++  // Constants outside the merge must be accepted regardless of which operand
++  // contains the Phi. The Phi dependency belongs to the whole expression.
++  for (bool phi_on_left : {false, true}) {
++    std::initializer_list<RegisterRepresentation> reps{
++        RegisterRepresentation::Word32()};
++    auto test = CreateFromGraph(base::VectorOf(reps), [&](auto& Asm) {
++      V<Word32> cond = Asm.template GetParameter<Word32>(0);
++      V<Word32> first = __ Word32Constant(7);
++      V<Word32> second = __ Word32Constant(11);
++      V<Word32> offset = __ Word32Constant(3);
++      V<Word32> expected = __ Word32Constant(phi_on_left ? 4 : -4);
++      Block *left = __ NewBlock(), *right = __ NewBlock();
++      Block* merge = __ NewBlock();
++      __ Branch(cond, left, right);
++      __ Bind(left);
++      __ Goto(merge);
++      __ Bind(right);
++      __ Goto(merge);
++      __ Bind(merge);
++      V<Word32> phi = __ Phi({first, second}, RegisterRepresentation::Word32());
++      V<Word32> value =
++          phi_on_left ? __ Word32Sub(phi, offset) : __ Word32Sub(offset, phi);
++      Block *matched = __ NewBlock(), *other = __ NewBlock();
++      __ Branch(__ Word32Equal(value, expected), matched, other);
++      __ Bind(matched);
++      __ Return(__ Word32Constant(1));
++      __ Bind(other);
++      __ Return(__ Word32Constant(0));
++    });
++
++    test.Run<BranchEliminationReducer, MachineOptimizationReducer>();
++
++    EXPECT_EQ(test.CountOp(Opcode::kBranch), 1u);
++    EXPECT_EQ(test.CountOp(Opcode::kPhi), 0u);
++  }
++}
++
++TEST_F(ControlFlowTest, BranchEliminationConstantPhiNonConstantOperand) {
++  std::initializer_list<RegisterRepresentation> reps{
++      RegisterRepresentation::Word32(), RegisterRepresentation::Word32()};
++  auto test = CreateFromGraph(base::VectorOf(reps), [](auto& Asm) {
++    V<Word32> cond = Asm.template GetParameter<Word32>(0);
++    V<Word32> unknown = Asm.template GetParameter<Word32>(1);
++    V<Word32> first = __ Word32Constant(7);
++    V<Word32> second = __ Word32Constant(11);
++    Block *left = __ NewBlock(), *right = __ NewBlock();
++    Block* merge = __ NewBlock();
++    __ Branch(cond, left, right);
++    __ Bind(left);
++    __ Goto(merge);
++    __ Bind(right);
++    __ Goto(merge);
++    __ Bind(merge);
++    V<Word32> phi = __ Phi({first, second}, RegisterRepresentation::Word32());
++    Block *matched = __ NewBlock(), *other = __ NewBlock();
++    __ Branch(__ Word32Equal(phi, unknown), matched, other);
++    __ Bind(matched);
++    __ Return(__ Word32Constant(1));
++    __ Bind(other);
++    __ Return(__ Word32Constant(0));
++  });
++
++  test.Run<BranchEliminationReducer, MachineOptimizationReducer>();
++
++  EXPECT_EQ(test.CountOp(Opcode::kBranch), 2u);
++  EXPECT_EQ(test.CountOp(Opcode::kPhi), 1u);
++}
++
++TEST_F(ControlFlowTest, BranchEliminationConstantExpressionWithoutPhi) {
++  std::initializer_list<RegisterRepresentation> reps{
++      RegisterRepresentation::Tagged(), RegisterRepresentation::Word32()};
++  auto test = CreateFromGraph(base::VectorOf(reps), [](auto& Asm) {
++    V<HeapObject> object = Asm.template GetParameter<HeapObject>(0);
++    V<Word32> cond = Asm.template GetParameter<Word32>(1);
++    V<Word32> first = __ Word32Constant(7);
++    V<Word32> second = __ Word32Constant(11);
++    Block *left = __ NewBlock(), *right = __ NewBlock();
++    Block* merge = __ NewBlock();
++    __ Branch(cond, left, right);
++    __ Bind(left);
++    __ Goto(merge);
++    __ Bind(right);
++    __ Goto(merge);
++    __ Bind(merge);
++    V<Word32> phi = __ Phi({first, second}, RegisterRepresentation::Word32());
++    __ Store(object, {}, phi, StoreOp::Kind::TaggedBase(),
++             MemoryRepresentation::Int32(), WriteBarrierKind::kNoWriteBarrier,
++             0);
++    Block *matched = __ NewBlock(), *other = __ NewBlock();
++    __ Branch(__ Word32Equal(first, second), matched, other);
++    __ Bind(matched);
++    __ Return(first);
++    __ Bind(other);
++    __ Return(second);
++  });
++
++  test.Run<BranchEliminationReducer, MachineOptimizationReducer>();
++
++  // Folding an expression that does not depend on a Phi needs no cloning.
++  EXPECT_EQ(test.CountOp(Opcode::kStore), 1u);
++}
++
++TEST_F(ControlFlowTest, BranchEliminationDiscountsFrameState) {
++  auto test = CreateConstantPhiWithFrameState(7, 12);
++
++  test.Run<BranchEliminationReducer, MachineOptimizationReducer>();
++
++  EXPECT_EQ(test.CountOp(Opcode::kBranch), 1u);
++  EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 2u);
++  EXPECT_EQ(test.CountOp(Opcode::kFrameState), 2u);
++}
++
++TEST_F(ControlFlowTest, BranchEliminationCloningCodeBudget) {
++  auto test = CreateConstantPhiWithFrameState(14, 1);
++
++  test.Run<BranchEliminationReducer, MachineOptimizationReducer>();
++
++  EXPECT_EQ(test.CountOp(Opcode::kBranch), 2u);
++  EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 1u);
++}
++
++TEST_F(ControlFlowTest, BranchEliminationCloningStorageBudget) {
++  auto test = CreateConstantPhiWithFrameState(0, 120);
++
++  test.Run<BranchEliminationReducer, MachineOptimizationReducer>();
++
++  EXPECT_EQ(test.CountOp(Opcode::kBranch), 2u);
++  EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 1u);
++}
++
++#if V8_ENABLE_WEBASSEMBLY
++TEST_F(ControlFlowTest, BranchEliminationPreservesWasmDeoptRestriction) {
++  auto test = CreateConstantPhiWithFrameState(7, 12, true);
++
++  test.Run<BranchEliminationReducer, MachineOptimizationReducer>();
++
++  EXPECT_EQ(test.CountOp(Opcode::kBranch), 2u);
++  EXPECT_EQ(test.CountOp(Opcode::kDeoptimizeIf), 1u);
++}
++#endif
++
+ // When the block following a loop header has a single predecessor and contains
+ // Phis with a single input, loop peeling should be careful not to think that
+ // these phis are loop phis.

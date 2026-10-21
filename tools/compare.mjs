@@ -22,10 +22,10 @@ const runtime = nodeRuntime();
 const expected = readFileSync(`${file}.out`, 'utf8');
 const cases = process.env.CASES
   ? JSON.parse(process.env.CASES)
-  : [
-      { name: 'Plain Node.js', env: { ENGINE: 'node' } },
-      { name: 'Wasm SIMD', env: { ENGINE: 'wasm' } },
-    ];
+  : (process.env.ENGINE ? [process.env.ENGINE] : ['node', 'wasm']).map((engine) => ({
+      name: engine === 'node' ? 'Plain Node.js' : 'Wasm SIMD',
+      env: { ENGINE: engine },
+    }));
 if (!Array.isArray(cases) || !cases.length) throw new Error('CASES must be a nonempty array');
 mkdirSync('results', { recursive: true });
 const stamp = `${Date.now()}-${process.pid}`;

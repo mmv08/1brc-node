@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
-import { basename, dirname, resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 
 export function nodeRuntime() {
   const local = resolve('.runtimes/node-v26.12.0/bin/node');
@@ -25,7 +25,6 @@ export function nodeFlags(env) {
 }
 
 // Preserve inherited runtime controls as well as per-case overrides.
-// Omitted keys use the defaults of the measured source, including older checkouts.
 export function benchmarkEnv(env) {
   const keys = [
     'ENGINE',
@@ -43,37 +42,22 @@ export function benchmarkEnv(env) {
 }
 
 export function sourceHash(engine = 'wasm', script = entryScript(engine)) {
-  const root = dirname(resolve(script));
-  const paths = [basename(script)];
-  if (basename(script) === 'calculate.mjs') {
-    // Include both current shared modules and the earlier standalone layout
-    // so comparisons against historical checkouts hash their own dependencies.
-    paths.push(
-      ...[
-        'lib/aggregate.mjs',
-        'lib/calculate.mjs',
-        'lib/format.mjs',
-        'lib/parse-utils.mjs',
-        'lib/read.mjs',
-        'worker.mjs',
-      ].filter((path) => existsSync(resolve(root, path))),
-    );
-    if (engine === 'wasm') {
-      paths.push(
-        ...['wasm/engine.mjs', 'wasm/worker.mjs'].filter((path) => existsSync(resolve(root, path))),
-        'wasm/kernel.c',
-        'wasm/kernel.wasm',
-        'wasm/build.json',
-      );
-    } else if (!existsSync(resolve(root, 'lib/format.mjs'))) {
-      paths.push(
-        ...['../lib/calculate.mjs', '../lib/format.mjs', '../lib/read.mjs'].filter((path) =>
-          existsSync(resolve(root, path)),
-        ),
-      );
-    }
-  }
+  entryScript(engine); // Validate the engine even for an explicit script path.
+  const root = resolve(dirname(script), engine === 'node' ? '..' : '.');
+  const paths = ['lib/calculate.mjs', 'lib/format.mjs', 'lib/read.mjs'];
+  paths.push(
+    ...(engine === 'node'
+      ? ['plain/aggregate.mjs', 'plain/worker.mjs']
+      : [
+          'wasm/engine.mjs',
+          'wasm/worker.mjs',
+          'wasm/kernel.c',
+          'wasm/kernel.wasm',
+          'wasm/build.json',
+        ]),
+  );
   const hash = createHash('sha256');
+  hash.update('entry\0').update(readFileSync(script));
   for (const path of paths) hash.update(`${path}\0`).update(readFileSync(resolve(root, path)));
   return hash.digest('hex');
 }
