@@ -114,10 +114,10 @@ index ffa103c2..2d1116c7 100644
  }  // namespace internal
 diff --git a/test/unittests/compiler/node-marker-unittest.cc b/test/unittests/compiler/node-marker-unittest.cc
 new file mode 100644
-index 00000000..51639361
+index 00000000..de6f99cf
 --- /dev/null
 +++ b/test/unittests/compiler/node-marker-unittest.cc
-@@ -0,0 +1,62 @@
+@@ -0,0 +1,66 @@
 +// Copyright 2026 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -138,12 +138,16 @@ index 00000000..51639361
 +
 +TEST_F(NodeMarkerTest, CompareAllStates) {
 +  Node* node = graph_.NewNode(common_.Int32Constant(0));
-+  NodeMarker<uint8_t> marker(&graph_, 4);
-+  for (uint8_t state = 0; state < 4; ++state) {
-+    marker.Set(node, state);
-+    for (uint8_t other = 0; other < 4; ++other) {
-+      EXPECT_EQ(state == other, marker.Is(node, other));
-+      EXPECT_EQ(state > other, marker.IsGreaterThan(node, other));
++  // Exercise current states with both zero and nonzero epoch offsets, including
++  // offsets larger than the State type can represent.
++  for (int epoch = 0; epoch < 130; ++epoch) {
++    NodeMarker<uint8_t> marker(&graph_, 4);
++    for (uint8_t state = 0; state < 4; ++state) {
++      marker.Set(node, state);
++      for (uint8_t other = 0; other < 4; ++other) {
++        EXPECT_EQ(state == other, marker.Is(node, other));
++        EXPECT_EQ(state > other, marker.IsGreaterThan(node, other));
++      }
 +    }
 +  }
 +}
