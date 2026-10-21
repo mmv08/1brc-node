@@ -1,0 +1,34 @@
+{
+  "objective": "Reduce remaining general compiler overhead using native profiles and unchanged official V8 benchmarks.",
+  "baseline": "87e3481b97d9ae327293ec319b57f4ef79e0c2a3",
+  "baseline_binary": "results/v8-general/v8/out/x64.release-fresh-allocation/d8",
+  "baseline_sha256": "33127a72e7381aa41dbe855f30e551fa8531eb1be51ffd54f7e784e336356d87",
+  "evidence": "initial-pc-samples.json; current baseline's native compiler profile, 32959 included ticks and zero unaccounted ticks",
+  "protocol": {
+    "cpu": 2,
+    "isolation": "Builds, tests, profiles and benchmarks run serially. Read-only source analysis may overlap.",
+    "cost_diagnostic": "Each valid candidate: six fixed alternating AB/BA pairs after one warmup per binary, unchanged official DataView suite with synchronous phase statistics.",
+    "official_compiler": "Each correctness- and native-validated candidate: twelve fixed alternating pairs on unchanged official Compiler, all nine cases reported, regardless of diagnostic outcome.",
+    "runtime": "Candidate retained on official Compiler evidence: twenty-one fixed stock DataView pairs, all six cases reported.",
+    "checkpoints": "Unsigned source and result commits for every experiment, including neutral or rejected candidates.",
+    "selection": "Start experiments independently from the preserved baseline. Do not stack unmeasured changes. Smaller code or fewer sampled ticks alone is not proof of a speedup.",
+    "statistics": "Existing paired runner: 10000 paired bootstrap resamples, seed 20261021; report intervals and AB/BA order splits, retain every round."
+  },
+  "experiments": [
+    {
+      "id": "encoded-marker",
+      "hypothesis": "GraphReducer decodes an epoch-based node mark, clamps older epochs to zero and narrows to uint8 before comparing. Compare full encoded marks directly for equality and greater-than while preserving zero and old-epoch semantics.",
+      "evidence": "ReduceTop: 2182 self ticks, 6.62% of included compiler samples; native code has subtract/cmov/byte-test sequences at all three input scans.",
+      "safety": "Keep traversal, self guards, revisit queue checks and input rescans. Preserve bounds assertions; explicitly test old epochs beyond 256 marks and logical zero.",
+      "state": "planned"
+    },
+    {
+      "id": "safepoint-predicate",
+      "hypothesis": "The reducer's safepoint poll contains a dependent test/set/or/test sequence for running-and-requested. Investigate moving the parked-state guard to the cold path, without removing polls or weakening atomic ordering.",
+      "evidence": "Reduce: 1849 self ticks, 5.61% of included compiler samples. 700 samples at the three request/predicate test-or instructions, with additional nearby samples.",
+      "safety": "Source review must establish parked-state and asynchronous request semantics before selecting an implementation. GC correctness takes precedence over native code size.",
+      "state": "source review"
+    }
+  ],
+  "limits": "Hardware perf counters remain denied. V8 native sampler PCs identify sampled code, not precise instruction latency or branch counts. Profiling-only source-position wrappers are excluded as stock optimization targets."
+}
