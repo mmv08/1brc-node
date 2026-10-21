@@ -1,0 +1,96 @@
+{
+  "checkpoint": "0e186a5",
+  "baselineSeconds": 1.0756177551428583,
+  "candidateSeconds": 1.0962353614285718,
+  "moreTimePercent": 1.9168153544448785,
+  "pairedWins": 1,
+  "decision": "Reject: exact head loads use the hash slot in both lanes, but end-to-end time regresses. The next record-tail comparison takes 11.2% of native parser ticks; the removed load was not an independently removable elapsed-time component.",
+  "nativeParserBytes": 13276,
+  "nativeHeadRegions": [
+    {
+      "startOffset": 651,
+      "endOffsetExclusive": 661,
+      "inlineId": 6,
+      "origin": "scan file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:92:18",
+      "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+      "line": 110,
+      "source": "prefixCache[prefixSlot + 1] === head &&",
+      "ticks": 1,
+      "instructions": [
+        {
+          "address": 128159668277387,
+          "offset": 651,
+          "operation": "cmpl [r12*4+0x46c34090],r8",
+          "ticks": 0
+        },
+        {
+          "address": 128159668277395,
+          "offset": 659,
+          "operation": "jnz 0x748f7f809032  <+0x232>",
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "startOffset": 4371,
+      "endOffsetExclusive": 4381,
+      "inlineId": 4,
+      "origin": "scan file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:92:18",
+      "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+      "line": 110,
+      "source": "prefixCache[prefixSlot + 1] === head &&",
+      "ticks": 3,
+      "instructions": [
+        {
+          "address": 128159668281107,
+          "offset": 4371,
+          "operation": "cmpl [rbx*4+0x46c34090],r15",
+          "ticks": 0
+        },
+        {
+          "address": 128159668281115,
+          "offset": 4379,
+          "operation": "jnz 0x748f7f809eb5  <+0x10b5>",
+          "ticks": 3
+        }
+      ]
+    }
+  ],
+  "nativeCapture": {
+    "label": "opt3-node-head-native1",
+    "engine": "node",
+    "workers": 1,
+    "mode": "js-ticks",
+    "command": [
+      "/usr/bin/time",
+      "-o",
+      "results/profiles/opt3-node-head-native1/usage.json",
+      "-f",
+      "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+      "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+      "--max-inlined-bytecode-size=1000",
+      "--max-inlined-bytecode-size-cumulative=4000",
+      "--prof",
+      "--prof-sampling-interval=250",
+      "--logfile=/home/mmv/projects/1brc-node/results/profiles/opt3-node-head-native1/v8.log",
+      "--print-opt-code",
+      "--code-comments",
+      "--log-source-code",
+      "--log-source-position",
+      "--trace-deopt",
+      "plain/calculate.mjs",
+      "measurements.txt"
+    ],
+    "secondsWithProfiling": 9.872671226970851,
+    "usage": {
+      "user": 9.22,
+      "system": 0.97,
+      "maxRssKiB": 65004,
+      "filesystemInputs": 0
+    },
+    "sourceSha256": "342a07df250c5b6465b921d6f1e22c69d9978b23c425a289c4591c49a37ffecb",
+    "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+    "correct": true,
+    "profiles": []
+  }
+}

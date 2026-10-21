@@ -11,9 +11,8 @@ export async function aggregate(config) {
     throw new Error('TABLE_BITS must be 14, 15, or 16');
   const table = new Uint16Array(tableSize);
   // Worker-local, direct-mapped predictions; the hash table remains authoritative.
-  // Each entry carries packed ID/length and the exact first word. Both loads
-  // use the hash slot, so head verification does not depend on the station ID.
-  const prefixCache = new Int32Array(32768 * 2);
+  // Carry the name length with its ID to avoid a dependent record load on hits.
+  const prefixCache = new Uint32Array(32768);
   // Dense station IDs. Each 32-byte record holds hash, head, tail, middle,
   // byte length, arena offset, minimum, maximum, in that order.
   const records = new Int32Array(MAX_STATIONS * 8);
@@ -52,7 +51,8 @@ export async function aggregate(config) {
   }
 
   // Cache predictions supply the stored length; hash lookups validate it first.
-  function equalTail(view, start, length, r) {
+  function equal(view, start, length, r, head) {
+    if (records[r + 1] !== head) return false;
     if (length <= 4) return true;
     if (view.getInt32(start + length - 4, true) !== records[r + 2]) return false;
     if (branchlessNames) {
@@ -78,12 +78,7 @@ export async function aggregate(config) {
         if (id < 0) return insert(buffer, view, start, end, hash, head, slot);
         const r = id * 8;
         const length = end - start;
-        if (
-          records[r] === hash &&
-          records[r + 4] === length &&
-          records[r + 1] === head &&
-          equalTail(view, start, length, r)
-        )
+        if (records[r] === hash && records[r + 4] === length && equal(view, start, length, r, head))
           return id;
         slot = (slot + 1) & (tableSize - 1);
       }
@@ -94,7 +89,7 @@ export async function aggregate(config) {
       let head = view.getInt32(p, true);
       // A fifth byte is stable even for four-byte names: it is their delimiter.
       // It distinguishes common four-byte prefixes without scanning the name.
-      const prefixSlot = (Math.imul(head ^ buffer[p + 4], 0x9e3779b1) >>> 17) * 2;
+      const prefixSlot = Math.imul(head ^ buffer[p + 4], 0x9e3779b1) >>> 17;
       const prediction = prefixCache[prefixSlot];
       const predicted = (prediction & 0xffff) - 1;
       if (predicted >= 0) {
@@ -105,11 +100,7 @@ export async function aggregate(config) {
         // lookahead. Full equality plus the delimiter rejects a wrong length,
         // another row, stale padding, or a short name whose first word includes
         // its delimiter. Only names of at least four bytes enter this cache.
-        if (
-          buffer[end] === 59 &&
-          prefixCache[prefixSlot + 1] === head &&
-          equalTail(view, start, length, r)
-        ) {
+        if (buffer[end] === 59 && equal(view, start, length, r, head)) {
           temperatures[lane] = end + 1;
           return predicted;
         }
@@ -133,10 +124,7 @@ export async function aggregate(config) {
       temperatures[lane] = p + 1;
       const id = find(start, p, hash, head);
       // Never cache a short name: its initial word includes temperature bytes.
-      if (p - start >= 4) {
-        prefixCache[prefixSlot] = ((p - start) << 16) | (id + 1);
-        prefixCache[prefixSlot + 1] = head;
-      }
+      if (p - start >= 4) prefixCache[prefixSlot] = ((p - start) << 16) | (id + 1);
       return id;
     }
 
@@ -165,12 +153,15 @@ export async function aggregate(config) {
     }
 
     return (start, end) => {
+      // Reader chunk bounds plus lookahead fit in a signed 32-bit cursor.
+      start |= 0;
+      end |= 0;
       if (streams === 1) return remainder(start, end);
       const boundary = (part) =>
         Math.min(end, buffer.indexOf(10, start + Math.floor(((end - start) * part) / streams)) + 1);
-      const endA = boundary(1);
-      const endB = streams > 2 ? boundary(2) : end;
-      const endC = streams > 3 ? boundary(3) : end;
+      const endA = boundary(1) | 0;
+      const endB = (streams > 2 ? boundary(2) : end) | 0;
+      const endC = (streams > 3 ? boundary(3) : end) | 0;
       let a = start;
       let b = endA;
       let c = endB;
@@ -179,17 +170,17 @@ export async function aggregate(config) {
         while (a < endA && b < end) {
           const idA = scan(a, 0);
           const idB = scan(b, 1);
-          a = update(temperatures[0], idA);
-          b = update(temperatures[1], idB);
+          a = update(temperatures[0], idA) | 0;
+          b = update(temperatures[1], idB) | 0;
         }
       } else if (streams === 3) {
         while (a < endA && b < endB && c < end) {
           const idA = scan(a, 0);
           const idB = scan(b, 1);
           const idC = scan(c, 2);
-          a = update(temperatures[0], idA);
-          b = update(temperatures[1], idB);
-          c = update(temperatures[2], idC);
+          a = update(temperatures[0], idA) | 0;
+          b = update(temperatures[1], idB) | 0;
+          c = update(temperatures[2], idC) | 0;
         }
       } else {
         while (a < endA && b < endB && c < endC && d < end) {
@@ -197,10 +188,10 @@ export async function aggregate(config) {
           const idB = scan(b, 1);
           const idC = scan(c, 2);
           const idD = scan(d, 3);
-          a = update(temperatures[0], idA);
-          b = update(temperatures[1], idB);
-          c = update(temperatures[2], idC);
-          d = update(temperatures[3], idD);
+          a = update(temperatures[0], idA) | 0;
+          b = update(temperatures[1], idB) | 0;
+          c = update(temperatures[2], idC) | 0;
+          d = update(temperatures[3], idD) | 0;
         }
       }
       remainder(a, endA);

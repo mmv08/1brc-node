@@ -1,0 +1,193 @@
+{
+  "date": "2026-10-21T07:23:04.441Z",
+  "label": "opt3-node-head",
+  "file": "measurements.txt",
+  "bytes": 13795455110,
+  "cpu": "AMD Ryzen 9 7900 12-Core Processor",
+  "runtime": "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+  "version": "v26.12.0",
+  "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+  "warmups": [
+    {
+      "name": "Node baseline",
+      "round": 1,
+      "seconds": 1.091501291
+    },
+    {
+      "name": "Node eight-byte head predictor",
+      "round": 1,
+      "seconds": 1.07118809
+    },
+    {
+      "name": "Node eight-byte head predictor",
+      "round": 2,
+      "seconds": 1.0723769429999999
+    },
+    {
+      "name": "Node baseline",
+      "round": 2,
+      "seconds": 1.0740617280000002
+    },
+    {
+      "name": "Node baseline",
+      "round": 3,
+      "seconds": 1.057316551
+    },
+    {
+      "name": "Node eight-byte head predictor",
+      "round": 3,
+      "seconds": 1.1010760150000005
+    }
+  ],
+  "complete": true,
+  "cases": [
+    {
+      "name": "Node baseline",
+      "script": "results/opt3-base/plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "WORKERS": "24"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "b71e446e04f44dbcf4bce22279e8caf78d3a5118635bcb72ed7d637092bebc92",
+      "times": [
+        1.0938466779999998, 1.072569359000001, 1.0829085110000014, 1.097293753, 1.0645705039999993,
+        1.0715675990000018, 1.067149773000001, 1.0668509870000016, 1.0744313790000015
+      ],
+      "usage": [
+        {
+          "user": 22.82,
+          "system": 1.37,
+          "maxRssKiB": 338464,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.44,
+          "system": 1.34,
+          "maxRssKiB": 338528,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.3,
+          "system": 1.39,
+          "maxRssKiB": 338808,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.41,
+          "system": 1.45,
+          "maxRssKiB": 339344,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.32,
+          "system": 1.39,
+          "maxRssKiB": 339556,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.21,
+          "system": 1.44,
+          "maxRssKiB": 343576,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 21.95,
+          "system": 1.43,
+          "maxRssKiB": 339172,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22,
+          "system": 1.44,
+          "maxRssKiB": 338320,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.1,
+          "system": 1.43,
+          "maxRssKiB": 338528,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.0756177551428583,
+      "best": 1.0645705039999993
+    },
+    {
+      "name": "Node eight-byte head predictor",
+      "script": "plain/calculate.mjs",
+      "env": {
+        "ENGINE": "node",
+        "WORKERS": "24"
+      },
+      "flags": ["--max-inlined-bytecode-size=1000", "--max-inlined-bytecode-size-cumulative=4000"],
+      "requestedWorkers": 24,
+      "chunkBytes": 131072,
+      "sourceSha256": "342a07df250c5b6465b921d6f1e22c69d9978b23c425a289c4591c49a37ffecb",
+      "times": [
+        1.096417622, 1.1015972030000012, 1.0834126059999998, 1.0857323150000011, 1.0973333289999991,
+        1.100811603000002, 1.0890865830000003, 1.1026688749999993, 1.1038440719999998
+      ],
+      "usage": [
+        {
+          "user": 23.05,
+          "system": 1.39,
+          "maxRssKiB": 344336,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 23.06,
+          "system": 1.38,
+          "maxRssKiB": 342320,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.38,
+          "system": 1.47,
+          "maxRssKiB": 343068,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.39,
+          "system": 1.39,
+          "maxRssKiB": 340968,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.72,
+          "system": 1.38,
+          "maxRssKiB": 342004,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.69,
+          "system": 1.48,
+          "maxRssKiB": 342712,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.64,
+          "system": 1.46,
+          "maxRssKiB": 343084,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.96,
+          "system": 1.41,
+          "maxRssKiB": 341848,
+          "filesystemInputs": 0
+        },
+        {
+          "user": 22.84,
+          "system": 1.44,
+          "maxRssKiB": 342228,
+          "filesystemInputs": 0
+        }
+      ],
+      "average": 1.0962353614285718,
+      "best": 1.0834126059999998
+    }
+  ]
+}
