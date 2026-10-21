@@ -1,0 +1,35 @@
+{
+  "baseline": "338c04c",
+  "scope": "Profile current engines and rank further optimization targets; no solver changes in this pass.",
+  "input": "measurements.txt",
+  "bytes": 13795455110,
+  "rows": 1000000000,
+  "runtime": "v26.12.0",
+  "date": "2026-10-21",
+  "cpuProfiles": {
+    "engines": [
+      "node",
+      "wasm"
+    ],
+    "workers": 24,
+    "repetitions": 3,
+    "intervalMicroseconds": 1000,
+    "ordering": "Alternate engine order each round."
+  },
+  "nativeProfiles": {
+    "engines": [
+      "node",
+      "wasm"
+    ],
+    "workers": 1,
+    "intervalMicroseconds": 250,
+    "sameProcessDisassembly": true
+  },
+  "checks": [
+    "Validate exact complete stdout and before/after source hashes for every capture.",
+    "Keep profiling times separate from uninstrumented end-to-end timings.",
+    "Record sample denominators and inspect emitted native operations before proposing changes.",
+    "Check historical rejected experiments before ranking targets.",
+    "Hardware counters remain restricted by perf_event_paranoid=4; no system setting changes."
+  ]
+}
