@@ -1,0 +1,20 @@
+0x57c8a1608395   215  c4e1f97ec1           vmovq rcx,xmm0
+0x57c8a160839a   21a  480fc9               REX.W bswapq rcx
+0x57c8a160839d   21d  c4e1f96ec9           vmovq xmm1,rcx
+0x57c8a16083a2   222  488b4dd8             REX.W movq rcx,[rbp-0x28]
+0x57c8a16083a6   226  4c8b45c0             REX.W movq r8,[rbp-0x40]
+0x57c8a16083aa   22a  c4a17b110c01         vmovsd [rcx+r8*1],xmm1
+
+0x57c8a16083d4   254  c4c1797ecb           vmovd r11,xmm1
+0x57c8a16083d9   259  410fcb               bswapl r11
+0x57c8a16083dc   25c  c4c1796ecb           vmovd xmm1,r11
+0x57c8a16083e1   261  c4a17a110c09         vmovss [rcx+r9*1],xmm1
+0x57c8a16083e7   267  4183c00c             addl r8,0xc
+0x57c8a16083eb   26b  0f808e010000         jo 0x57c8a160857f  <+0x3ff>
+
+0x57c8a1608442   2c2  c5f97ec9             vmovd rcx,xmm1
+0x57c8a1608446   2c6  0fc9                 bswapl rcx
+0x57c8a1608448   2c8  c5f96ec9             vmovd xmm1,rcx
+0x57c8a160844c   2cc  488b4dd8             REX.W movq rcx,[rbp-0x28]
+0x57c8a1608450   2d0  4c8b45c0             REX.W movq r8,[rbp-0x40]
+0x57c8a1608454   2d4  c4a17a110c01         vmovss [rcx+r8*1],xmm1
