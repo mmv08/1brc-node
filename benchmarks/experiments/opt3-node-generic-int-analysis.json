@@ -1,0 +1,264 @@
+{
+  "checkpoint": "2ae08e2",
+  "baselineSeconds": 1.0770907895714283,
+  "candidateSeconds": 1.0575024607142856,
+  "lessTimePercent": 1.818633029527339,
+  "pairedWins": 7,
+  "decision": "Promising original-entry alternative. Test one native-code-motivated follow-up: leave captured parameters immutable and constrain only local loop limits/cursors.",
+  "nativeParserBytes": 14868,
+  "nativeLoopRegions": [
+    {
+      "startOffset": 678,
+      "endOffsetExclusive": 704,
+      "inlineId": null,
+      "origin": " file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:155:12",
+      "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+      "line": 170,
+      "source": "while (a < endA && b < end) {",
+      "ticks": 0,
+      "instructions": [
+        {
+          "address": 133717943161062,
+          "offset": 678,
+          "operation": "REX.W movq rax,0x16b8f0226619    ;; object: 0x16b8f0226619 <Int32Array map = 0x1919370857d9>",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161072,
+          "offset": 688,
+          "operation": "REX.W movq [rbp-0x48],r9",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161076,
+          "offset": 692,
+          "operation": "jmp 0x799da280910e  <+0x2ce>",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161081,
+          "offset": 697,
+          "operation": "nop",
+          "ticks": 0
+        }
+      ]
+    },
+    {
+      "startOffset": 704,
+      "endOffsetExclusive": 718,
+      "inlineId": null,
+      "origin": " file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:155:12",
+      "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+      "line": 170,
+      "source": "while (a < endA && b < end) {",
+      "ticks": 316,
+      "instructions": [
+        {
+          "address": 133717943161088,
+          "offset": 704,
+          "operation": "REX.W movq r15,rdi",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161091,
+          "offset": 707,
+          "operation": "REX.W movq [rbp-0x48],rsi",
+          "ticks": 3
+        },
+        {
+          "address": 133717943161095,
+          "offset": 711,
+          "operation": "REX.W movq r11,[rbp-0x20]",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161099,
+          "offset": 715,
+          "operation": "REX.W movq rax,r8",
+          "ticks": 313
+        }
+      ]
+    },
+    {
+      "startOffset": 718,
+      "endOffsetExclusive": 787,
+      "inlineId": null,
+      "origin": " file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:155:12",
+      "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+      "line": 170,
+      "source": "while (a < endA && b < end) {",
+      "ticks": 307,
+      "instructions": [
+        {
+          "address": 133717943161102,
+          "offset": 718,
+          "operation": "testb r15,0x1",
+          "ticks": 2
+        },
+        {
+          "address": 133717943161106,
+          "offset": 722,
+          "operation": "jnz 0x799da280c642  <+0x3802>",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161112,
+          "offset": 728,
+          "operation": "REX.W movq rbx,r15",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161115,
+          "offset": 731,
+          "operation": "REX.W sarq rbx,32",
+          "ticks": 2
+        },
+        {
+          "address": 133717943161119,
+          "offset": 735,
+          "operation": "movl rcx,rbx",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161121,
+          "offset": 737,
+          "operation": "REX.W movq r14,[r13+0x3d0] (root (context_cell_map))",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161128,
+          "offset": 744,
+          "operation": "cmpl rbx,[rbp-0x90]",
+          "ticks": 2
+        },
+        {
+          "address": 133717943161134,
+          "offset": 750,
+          "operation": "jge 0x799da280b0e2  <+0x22a2>",
+          "ticks": 8
+        },
+        {
+          "address": 133717943161140,
+          "offset": 756,
+          "operation": "REX.W movq rsi,[r11+0x1f]",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161144,
+          "offset": 760,
+          "operation": "REX.W movq [rbp-0xc8],r15",
+          "ticks": 13
+        },
+        {
+          "address": 133717943161151,
+          "offset": 767,
+          "operation": "testb rsi,0x1",
+          "ticks": 56
+        },
+        {
+          "address": 133717943161155,
+          "offset": 771,
+          "operation": "jz 0x799da2809153  <+0x313>",
+          "ticks": 224
+        },
+        {
+          "address": 133717943161161,
+          "offset": 777,
+          "operation": "REX.W cmpq [rsi-0x1],r14",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161165,
+          "offset": 781,
+          "operation": "jz 0x799da280ba1f  <+0x2bdf>",
+          "ticks": 0
+        }
+      ]
+    },
+    {
+      "startOffset": 787,
+      "endOffsetExclusive": 812,
+      "inlineId": null,
+      "origin": " file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs:155:12",
+      "url": "file:///home/mmv/projects/1brc-node/plain/lib/aggregate.mjs",
+      "line": 170,
+      "source": "while (a < endA && b < end) {",
+      "ticks": 11,
+      "instructions": [
+        {
+          "address": 133717943161171,
+          "offset": 787,
+          "operation": "testb rsi,0x1",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161175,
+          "offset": 791,
+          "operation": "jnz 0x799da280c646  <+0x3806>",
+          "ticks": 8
+        },
+        {
+          "address": 133717943161181,
+          "offset": 797,
+          "operation": "REX.W sarq rsi,32",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161185,
+          "offset": 801,
+          "operation": "movl rdi,[rbp-0x48]",
+          "ticks": 0
+        },
+        {
+          "address": 133717943161188,
+          "offset": 804,
+          "operation": "cmpl rdi,rsi",
+          "ticks": 2
+        },
+        {
+          "address": 133717943161190,
+          "offset": 806,
+          "operation": "jge 0x799da280b0f9  <+0x22b9>",
+          "ticks": 1
+        }
+      ]
+    }
+  ],
+  "nativeCapture": {
+    "label": "opt3-node-generic-int-native1",
+    "engine": "node",
+    "workers": 1,
+    "mode": "js-ticks",
+    "command": [
+      "/usr/bin/time",
+      "-o",
+      "results/profiles/opt3-node-generic-int-native1/usage.json",
+      "-f",
+      "{\"user\":%U,\"system\":%S,\"maxRssKiB\":%M,\"filesystemInputs\":%I}",
+      "/home/mmv/projects/1brc-node/.runtimes/node-v26.12.0/bin/node",
+      "--max-inlined-bytecode-size=1000",
+      "--max-inlined-bytecode-size-cumulative=4000",
+      "--prof",
+      "--prof-sampling-interval=250",
+      "--logfile=/home/mmv/projects/1brc-node/results/profiles/opt3-node-generic-int-native1/v8.log",
+      "--print-opt-code",
+      "--code-comments",
+      "--log-source-code",
+      "--log-source-position",
+      "--trace-deopt",
+      "plain/calculate.mjs",
+      "measurements.txt"
+    ],
+    "secondsWithProfiling": 9.476604867028072,
+    "usage": {
+      "user": 8.8,
+      "system": 0.97,
+      "maxRssKiB": 65960,
+      "filesystemInputs": 0
+    },
+    "sourceSha256": "0e8547901d91dae38164a3fc16853affa29b82520d75915382e3cc2f1b05b9a2",
+    "outputSha256": "4b6676633c613621d0049ae3894e909c4dd5f6d507bc2ef0876974d55798fdf5",
+    "correct": true,
+    "profiles": []
+  }
+}

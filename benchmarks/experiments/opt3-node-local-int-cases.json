@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Node baseline",
+    "script": "results/opt3-base/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24"
+    }
+  },
+  {
+    "name": "Node generic integer cursors",
+    "script": "results/opt3-generic-int/plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24"
+    }
+  },
+  {
+    "name": "Node local integer cursors",
+    "script": "plain/calculate.mjs",
+    "env": {
+      "ENGINE": "node",
+      "WORKERS": "24"
+    }
+  }
+]

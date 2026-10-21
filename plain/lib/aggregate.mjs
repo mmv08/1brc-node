@@ -153,28 +153,28 @@ export async function aggregate(config) {
     }
 
     return (start, end) => {
-      // Reader chunk bounds plus lookahead fit in a signed 32-bit cursor.
-      start |= 0;
-      end |= 0;
       if (streams === 1) return remainder(start, end);
+      // Buffer-local bounds fit in int32. Keep these locals outside the
+      // boundary closure so hot-loop limits do not need context-cell loads.
+      const limit = end | 0;
       const boundary = (part) =>
         Math.min(end, buffer.indexOf(10, start + Math.floor(((end - start) * part) / streams)) + 1);
       const endA = boundary(1) | 0;
-      const endB = (streams > 2 ? boundary(2) : end) | 0;
-      const endC = (streams > 3 ? boundary(3) : end) | 0;
-      let a = start;
+      const endB = (streams > 2 ? boundary(2) : limit) | 0;
+      const endC = (streams > 3 ? boundary(3) : limit) | 0;
+      let a = start | 0;
       let b = endA;
       let c = endB;
       let d = endC;
       if (streams === 2) {
-        while (a < endA && b < end) {
+        while (a < endA && b < limit) {
           const idA = scan(a, 0);
           const idB = scan(b, 1);
           a = update(temperatures[0], idA) | 0;
           b = update(temperatures[1], idB) | 0;
         }
       } else if (streams === 3) {
-        while (a < endA && b < endB && c < end) {
+        while (a < endA && b < endB && c < limit) {
           const idA = scan(a, 0);
           const idB = scan(b, 1);
           const idC = scan(c, 2);
@@ -183,7 +183,7 @@ export async function aggregate(config) {
           c = update(temperatures[2], idC) | 0;
         }
       } else {
-        while (a < endA && b < endB && c < endC && d < end) {
+        while (a < endA && b < endB && c < endC && d < limit) {
           const idA = scan(a, 0);
           const idB = scan(b, 1);
           const idC = scan(c, 2);
